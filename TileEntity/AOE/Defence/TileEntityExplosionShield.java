@@ -178,11 +178,15 @@ public class TileEntityExplosionShield extends CrystalReceiverBase implements Lo
 	@Override
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
+
+		range.readFromNBT(NBT);
 	}
 
 	@Override
 	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
+
+		range.writeToNBT(NBT);
 	}
 
 	private void checkAndRequest() {

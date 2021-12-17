@@ -22,7 +22,6 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.passive.EntityWolf;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.Container;
@@ -187,6 +186,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.AppEngHandler;
+import Reika.Satisforestry.API.SFAPI;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -1219,7 +1219,7 @@ public class ChromatiPackets implements PacketHandler {
 					break;
 				}
 				case DOGGOSONAR: {
-					Entity hit = new EntityWolf(world); //dummy
+					Entity hit = SFAPI.genericLookups.getDoggoClass().getConstructor(new Class[] {World.class}).newInstance(new Object[] {world});
 					hit.setLocationAndAngles(data[0]+0.5, data[1]+0.5, data[2]+0.5, 0, 0);
 					MobSonarRenderer.instance.addCoordinate(hit);
 					break;

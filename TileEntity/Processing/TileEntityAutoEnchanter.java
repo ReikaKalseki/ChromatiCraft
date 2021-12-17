@@ -56,6 +56,7 @@ import Reika.DragonAPI.Libraries.ReikaRegistryHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.ModInteract.ItemHandlers.InfusionEnchantmentHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerToolHandler;
 
 import cpw.mods.fml.common.Loader;
@@ -266,20 +267,6 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 				return false;
 			}
 		}
-		else if (ModList.TINKERER.isLoaded() && TinkerToolHandler.getInstance().isTool(is)) {
-			if (!(e instanceof ChromaticEnchantment))
-				return false;
-			if (((ChromaticEnchantment)e).type != EnumEnchantmentType.all && ((ChromaticEnchantment)e).type != EnumEnchantmentType.digger) {
-				return false;
-			}
-		}
-		else if (ModList.TINKERER.isLoaded() && TinkerToolHandler.getInstance().isWeapon(is)) {
-			if (!(e instanceof ChromaticEnchantment))
-				return false;
-			if (((ChromaticEnchantment)e).type != EnumEnchantmentType.all && ((ChromaticEnchantment)e).type != EnumEnchantmentType.weapon) {
-				return false;
-			}
-		}
 
 		if (checkLevels && ReikaEnchantmentHelper.getEnchantmentLevel(e, is) >= selected.get(e))
 			return false;
@@ -300,13 +287,28 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			if (e != Enchantment.unbreaking)
 				return false;
 
-		boolean soulbound = e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound");
+		boolean soulbound = e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound") || e == Enchantment.baneOfArthropods;
 
 		if (soulbound && this.isSoulboundable(is, i))
 			return true;
 
 		if (i instanceof ItemShears)
 			return e.type == EnumEnchantmentType.digger || e.type == EnumEnchantmentType.breakable || e.type == EnumEnchantmentType.all;
+
+		if (ModList.TINKERER.isLoaded() && TinkerToolHandler.getInstance().isTool(is)) {
+			if (!(e instanceof ChromaticEnchantment))
+				return false;
+			if (((ChromaticEnchantment)e).type != EnumEnchantmentType.all && ((ChromaticEnchantment)e).type != EnumEnchantmentType.digger) {
+				return false;
+			}
+		}
+		else if (ModList.TINKERER.isLoaded() && TinkerToolHandler.getInstance().isWeapon(is)) {
+			if (!(e instanceof ChromaticEnchantment))
+				return false;
+			if (((ChromaticEnchantment)e).type != EnumEnchantmentType.all && ((ChromaticEnchantment)e).type != EnumEnchantmentType.weapon) {
+				return false;
+			}
+		}
 
 		return i == Items.book || i == Items.enchanted_book ? true : e.canApply(is);
 	}
@@ -319,6 +321,8 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 		if (Loader.isModLoaded("EnderStorage") && i.getClass().getName().toLowerCase(Locale.ENGLISH).contains("enderpouch"))
 			return true;
 		if (ModList.THAUMCRAFT.isLoaded() && i.getClass().getName().toLowerCase(Locale.ENGLISH).contains("focuspouch"))
+			return true;
+		if (ModList.THAUMCRAFT.isLoaded() && i == ThaumItemHelper.ItemEntry.WAND.getItem().getItem())
 			return true;
 		if (ModList.THAUMICTINKER.isLoaded() && i.getClass().getName().toLowerCase(Locale.ENGLISH).contains("ichorpouch"))
 			return true;

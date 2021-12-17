@@ -32,6 +32,7 @@ public class RangeTracker {
 	protected final int getMaxUpgradedRange(RangeUpgradeable te) {
 		int max = baseRange;
 		int boost = TileEntityAdjacencyUpgrade.getAdjacentUpgrade((TileEntityBase)te, CrystalElement.LIME);
+		//ReikaJavaLibrary.pConsole(te+", "+FMLCommonHandler.instance().getEffectiveSide()+", "+boost);
 		if (boost > 0) {
 			double fac = TileEntityRangeBoost.getFactor(boost-1);
 			max = (int)(max*fac);
@@ -44,6 +45,8 @@ public class RangeTracker {
 	}
 
 	public final boolean update(RangeUpgradeable te) {
+		if (((TileEntityBase)te).worldObj.isRemote)
+			return false;
 		int max = this.getMaxUpgradedRange(te);
 		if (max > currentRange) {
 			currentRange = Math.min(max, currentRange+stepSpeed);
@@ -54,6 +57,14 @@ public class RangeTracker {
 			return true;
 		}
 		return false;
+	}
+
+	public void writeToNBT(NBTTagCompound tag) {
+		tag.setInteger("current", currentRange);
+	}
+
+	public void readFromNBT(NBTTagCompound tag) {
+		currentRange = tag.getInteger("current");
 	}
 
 	public static final class ConfigurableRangeTracker extends RangeTracker {
@@ -100,11 +111,15 @@ public class RangeTracker {
 			return Math.min(super.getRange(), configuredRange);
 		}
 
+		@Override
 		public void writeToNBT(NBTTagCompound tag) {
+			super.writeToNBT(tag);
 			tag.setInteger("range", configuredRange);
 		}
 
+		@Override
 		public void readFromNBT(NBTTagCompound tag) {
+			super.readFromNBT(tag);
 			configuredRange = tag.getInteger("range");
 		}
 

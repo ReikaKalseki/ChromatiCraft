@@ -39,6 +39,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
+import Reika.Satisforestry.API.LizardDoggo;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.ClientTickEvent;
@@ -118,47 +119,56 @@ public class MobSonarRenderer {
 		double s = 1.5*Math.sqrt(f);
 		int c = ReikaColorAPI.getColorWithBrightnessMultiplier(loc.baseColor, f1);
 		v5.setColorOpaque_I(c);
-		v5.addVertex(loc.box.minX, loc.box.minY, loc.box.minZ);
-		v5.addVertex(loc.box.maxX, loc.box.minY, loc.box.minZ);
+		for (int i = 0; i <= loc.highlight; i++) {
+			double nx = loc.box.minX+i*s/8;
+			double ny = loc.box.minY+i*s/8;
+			double nz = loc.box.minZ+i*s/8;
+			double px = loc.box.maxX+i*s/8;
+			double py = loc.box.maxY+i*s/8;
+			double pz = loc.box.maxZ+i*s/8;
 
-		v5.addVertex(loc.box.minX, loc.box.minY, loc.box.minZ);
-		v5.addVertex(loc.box.minX, loc.box.maxY, loc.box.minZ);
+			v5.addVertex(nx, ny, nz);
+			v5.addVertex(px, ny, nz);
 
-		v5.addVertex(loc.box.minX, loc.box.minY, loc.box.minZ);
-		v5.addVertex(loc.box.minX, loc.box.minY, loc.box.maxZ);
+			v5.addVertex(nx, ny, nz);
+			v5.addVertex(nx, py, nz);
 
-		v5.addVertex(loc.box.maxX, loc.box.maxY, loc.box.maxZ);
-		v5.addVertex(loc.box.minX, loc.box.maxY, loc.box.maxZ);
+			v5.addVertex(nx, ny, nz);
+			v5.addVertex(nx, ny, pz);
 
-		v5.addVertex(loc.box.maxX, loc.box.maxY, loc.box.maxZ);
-		v5.addVertex(loc.box.maxX, loc.box.minY, loc.box.maxZ);
+			v5.addVertex(px, py, pz);
+			v5.addVertex(nx, py, pz);
 
-		v5.addVertex(loc.box.maxX, loc.box.maxY, loc.box.maxZ);
-		v5.addVertex(loc.box.maxX, loc.box.maxY, loc.box.minZ);
+			v5.addVertex(px, py, pz);
+			v5.addVertex(px, ny, pz);
 
-		v5.addVertex(loc.box.maxX, loc.box.maxY, loc.box.maxZ);
-		v5.addVertex(loc.box.maxX, loc.box.minY, loc.box.maxZ);
+			v5.addVertex(px, py, pz);
+			v5.addVertex(px, py, nz);
 
-		v5.addVertex(loc.box.maxX, loc.box.maxY, loc.box.maxZ);
-		v5.addVertex(loc.box.maxX, loc.box.maxY, loc.box.minZ);
+			v5.addVertex(px, py, pz);
+			v5.addVertex(px, ny, pz);
 
-		v5.addVertex(loc.box.maxX, loc.box.minY, loc.box.minZ);
-		v5.addVertex(loc.box.maxX, loc.box.maxY, loc.box.minZ);
+			v5.addVertex(px, py, pz);
+			v5.addVertex(px, py, nz);
 
-		v5.addVertex(loc.box.maxX, loc.box.minY, loc.box.minZ);
-		v5.addVertex(loc.box.maxX, loc.box.minY, loc.box.maxZ);
+			v5.addVertex(px, ny, nz);
+			v5.addVertex(px, py, nz);
 
-		v5.addVertex(loc.box.minX, loc.box.maxY, loc.box.minZ);
-		v5.addVertex(loc.box.maxX, loc.box.maxY, loc.box.minZ);
+			v5.addVertex(px, ny, nz);
+			v5.addVertex(px, ny, pz);
 
-		v5.addVertex(loc.box.minX, loc.box.maxY, loc.box.minZ);
-		v5.addVertex(loc.box.minX, loc.box.maxY, loc.box.maxZ);
+			v5.addVertex(nx, py, nz);
+			v5.addVertex(px, py, nz);
 
-		v5.addVertex(loc.box.minX, loc.box.minY, loc.box.maxZ);
-		v5.addVertex(loc.box.maxX, loc.box.minY, loc.box.maxZ);
+			v5.addVertex(nx, py, nz);
+			v5.addVertex(nx, py, pz);
 
-		v5.addVertex(loc.box.minX, loc.box.minY, loc.box.maxZ);
-		v5.addVertex(loc.box.minX, loc.box.maxY, loc.box.maxZ);
+			v5.addVertex(nx, ny, pz);
+			v5.addVertex(px, ny, pz);
+
+			v5.addVertex(nx, ny, pz);
+			v5.addVertex(nx, py, pz);
+		}
 		/*
 		GL11.glPushMatrix();
 		RenderManager rm = RenderManager.instance;
@@ -204,6 +214,7 @@ public class MobSonarRenderer {
 		private final AxisAlignedBB box;
 		private final int baseColor;
 		private final float soundPitch;
+		private final int highlight;
 
 		private EntityEntry(Entity e) {
 			entityID = e.getEntityId();
@@ -212,10 +223,12 @@ public class MobSonarRenderer {
 			entityType = e.getClass();
 			box = e.boundingBox != null ? e.boundingBox.copy() : null;
 			int c = 0xffffff;
+			int h = 0;
 			MusicKey k = MusicKey.C5;
 			if (e instanceof EntityTameable) {
 				c = 0xba69ff;
 				k = MusicKey.C6;
+				h = 1;
 			}
 			else if (e instanceof EntityAnimal) {
 				c = 0x22ff22;
@@ -229,8 +242,14 @@ public class MobSonarRenderer {
 				c = 0x22aaff;
 				k = MusicKey.G4;
 			}
+			else if (e instanceof LizardDoggo) {
+				c = 0xFF7F60;
+				k = MusicKey.A5;
+				h = 2;
+			}
 			baseColor = c;
 			soundPitch = (float)MusicKey.C5.getRatio(k);
+			highlight = h;
 		}
 
 		@Override
