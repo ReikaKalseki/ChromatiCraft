@@ -163,7 +163,6 @@ import Reika.ChromatiCraft.World.Nether.NetherStructureGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonOptions;
 import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.Auxiliary.CreativeTabSorter;
 import Reika.DragonAPI.Auxiliary.IconLookupRegistry;
 import Reika.DragonAPI.Auxiliary.PopupWriter;
@@ -544,8 +543,11 @@ public class ChromatiCraft extends DragonAPIMod {
 		BiomeDictionary.registerBiomeType(glowingcliffs, BiomeDictionary.Type.MOUNTAIN, BiomeDictionary.Type.LUSH, BiomeDictionary.Type.MAGICAL, BiomeDictionary.Type.BEACH, BiomeDictionary.Type.WET);
 		BiomeDictionary.registerBiomeType(glowingcliffsEdge, BiomeDictionary.Type.MOUNTAIN, BiomeDictionary.Type.LUSH, BiomeDictionary.Type.MAGICAL, BiomeDictionary.Type.BEACH, BiomeDictionary.Type.WET);
 
-		if (Loader.isModLoaded("climatecontrol"))
-			this.initClimateControl();
+		if (ModList.CLIMATECONTROL.isLoaded()) {
+			ReikaClimateControl.registerBiome(rainbowforest, 4, true, "MEDIUM");
+			ReikaClimateControl.registerBiome(enderforest, 5, true, "MEDIUM");
+			ReikaClimateControl.registerBiome(glowingcliffs, 1, false, "MEDIUM");
+		}
 
 		ChromaDimensionManager.initialize();
 
@@ -740,13 +742,6 @@ public class ChromatiCraft extends DragonAPIMod {
 		RosettaStone.init.test();
 
 		this.finishTiming();
-	}
-
-	@ClassDependent("climateControl.api.BiomeSettings")
-	private void initClimateControl() {
-		ReikaClimateControl.registerBiome(rainbowforest, 4, true, "MEDIUM");
-		ReikaClimateControl.registerBiome(enderforest, 5, true, "MEDIUM");
-		ReikaClimateControl.registerBiome(glowingcliffs, 1, false, "MEDIUM");
 	}
 
 	private static void addRerunnableDecorator(ChromaDecorator d, int wt) {

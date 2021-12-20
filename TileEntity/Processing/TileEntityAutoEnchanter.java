@@ -287,7 +287,7 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			if (e != Enchantment.unbreaking)
 				return false;
 
-		boolean soulbound = e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound") || e == Enchantment.baneOfArthropods;
+		boolean soulbound = e.getName().toLowerCase(Locale.ENGLISH).contains("soulbound");
 
 		if (soulbound && this.isSoulboundable(is, i))
 			return true;
@@ -296,18 +296,10 @@ public class TileEntityAutoEnchanter extends FluidReceiverInventoryBase implemen
 			return e.type == EnumEnchantmentType.digger || e.type == EnumEnchantmentType.breakable || e.type == EnumEnchantmentType.all;
 
 		if (ModList.TINKERER.isLoaded() && TinkerToolHandler.getInstance().isTool(is)) {
-			if (!(e instanceof ChromaticEnchantment))
-				return false;
-			if (((ChromaticEnchantment)e).type != EnumEnchantmentType.all && ((ChromaticEnchantment)e).type != EnumEnchantmentType.digger) {
-				return false;
-			}
+			return e instanceof ChromaticEnchantment && (e.type == EnumEnchantmentType.all || e.type == EnumEnchantmentType.digger);
 		}
 		else if (ModList.TINKERER.isLoaded() && TinkerToolHandler.getInstance().isWeapon(is)) {
-			if (!(e instanceof ChromaticEnchantment))
-				return false;
-			if (((ChromaticEnchantment)e).type != EnumEnchantmentType.all && ((ChromaticEnchantment)e).type != EnumEnchantmentType.weapon) {
-				return false;
-			}
+			return e instanceof ChromaticEnchantment && (e.type == EnumEnchantmentType.all || e.type == EnumEnchantmentType.weapon);
 		}
 
 		return i == Items.book || i == Items.enchanted_book ? true : e.canApply(is);

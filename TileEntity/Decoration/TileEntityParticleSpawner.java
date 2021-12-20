@@ -14,6 +14,7 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.Fluid;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -22,10 +23,13 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.ChromatiCraft.Render.Particle.EntityChromaFluidFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
 import Reika.DragonAPI.Auxiliary.IconLookupRegistry;
+import Reika.DragonAPI.Auxiliary.IconLookupRegistry.FluidDelegate;
 import Reika.DragonAPI.Instantiable.BoundedValue;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Effects.EntityFluidFX;
 import Reika.DragonAPI.Instantiable.IO.LuaBlock;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.IconEnum;
@@ -108,6 +112,10 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 		this.syncAllData(true);
 	}
 
+	public void markAsFluid(Fluid f) {
+		particles.particleIcon = new FluidDelegate(f);
+	}
+
 	public static class ParticleDefinition {
 
 		private Coordinate location = new Coordinate(0, 0, 0);
@@ -158,6 +166,21 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 				if (particleIcon instanceof CrystalElement) {
 					EntityRuneFX fx = new EntityRuneFX(world, px, py, pz, vx, vy, vz, (CrystalElement)particleIcon).setGravity(g).setLife(l).setScale(s);
 					return fx;
+				}
+				else if (particleIcon instanceof FluidDelegate) {
+					Fluid f = ((FluidDelegate)particleIcon).fluid;
+					if (f == ChromatiCraft.chroma) {
+						EntityChromaFluidFX fx = new EntityChromaFluidFX(world, px, py, pz, vx, vy, vz).setGravity(g).setLife(l).setScale(s);
+						if (noSlowdown)
+							fx.setNoSlowdown();
+						return fx;
+					}
+					else {
+						EntityFluidFX fx = new EntityFluidFX(world, px, py, pz, vx, vy, vz, f).setGravity(g).setLife(l).setScale(s);
+						if (particleCollision)
+							fx.setColliding();
+						return fx;
+					}
 				}
 				else {
 					ChromaIcons ico = (ChromaIcons)particleIcon;

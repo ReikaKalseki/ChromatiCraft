@@ -230,7 +230,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			return 15;
 		if (c == ChromaTiles.TANK) {
 			TileEntityCrystalTank te = (TileEntityCrystalTank)world.getTileEntity(x, y, z);
-			return te.getFluid() != null ? te.getFluid().getLuminosity() : 0;
+			return te.getCurrentFluid() != null ? te.getCurrentFluid().getLuminosity() : 0;
 		}
 		if (c == ChromaTiles.ASPECTJAR) {
 			TileEntityAspectJar te = (TileEntityAspectJar)world.getTileEntity(x, y, z);
@@ -494,18 +494,27 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			}
 		}
 
-		if (m == ChromaTiles.PARTICLES && is != null && is.getItem() == Items.book) {
+		if (m == ChromaTiles.PARTICLES && is != null) {
 			TileEntityParticleSpawner tp = (TileEntityParticleSpawner)te;
-			if (is.stackTagCompound != null && is.stackTagCompound.hasKey("particleprogram")) {
-				tp.readCopyableData(is.stackTagCompound.getCompoundTag("particleprogram"));
-				world.markBlockForUpdate(x, y, z);
-				ReikaSoundHelper.playPlaceSound(world, x, y, z, Blocks.stone);
+			if (is.getItem() == Items.book) {
+				if (is.stackTagCompound != null && is.stackTagCompound.hasKey("particleprogram")) {
+					tp.readCopyableData(is.stackTagCompound.getCompoundTag("particleprogram"));
+					world.markBlockForUpdate(x, y, z);
+					ReikaSoundHelper.playPlaceSound(world, x, y, z, Blocks.stone);
+				}
+				else {
+					is.stackTagCompound = new NBTTagCompound();
+					NBTTagCompound tag = new NBTTagCompound();
+					tp.writeCopyableData(tag);
+					is.stackTagCompound.setTag("particleprogram", tag);
+				}
 			}
 			else {
-				is.stackTagCompound = new NBTTagCompound();
-				NBTTagCompound tag = new NBTTagCompound();
-				tp.writeCopyableData(tag);
-				is.stackTagCompound.setTag("particleprogram", tag);
+				FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(is);
+				if (fs != null) {
+					tp.markAsFluid(fs.getFluid());
+					return true;
+				}
 			}
 		}
 
@@ -563,7 +572,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 				return true;
 			}
 			else if (FluidContainerRegistry.isEmptyContainer(is)) {
-				FluidStack rem = tile.drain(null, tile.getLevel(), false);
+				FluidStack rem = tile.drain(null, tile.getCurrentFluidLevel(), false);
 				if (rem != null) {
 					ItemStack fill = FluidContainerRegistry.fillFluidContainer(rem, is);
 					if (fill != null) {
@@ -799,9 +808,9 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 		}
 		if (te instanceof TileEntityCrystalTank) {
 			TileEntityCrystalTank tank = (TileEntityCrystalTank)te;
-			int amt = tank.getLevel();
+			int amt = tank.getCurrentFluidLevel();
 			int capacity = tank.getCapacity();
-			Fluid f = tank.getFluid();
+			Fluid f = tank.getCurrentFluid();
 			if (amt > 0 && f != null) {
 				currenttip.add(String.format("Tank: %dmB/%dmB of %s", amt, capacity, f.getLocalizedName()));
 			}

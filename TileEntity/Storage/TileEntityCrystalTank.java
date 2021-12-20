@@ -22,8 +22,8 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
 
+import Reika.ChromatiCraft.API.Interfaces.CrystalTank;
 import Reika.ChromatiCraft.Auxiliary.Render.TankRunes;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -47,7 +47,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCrystalTank extends TileEntityChromaticBase implements IFluidHandler, TankWatcher, BreakAction, AdjacentUpdateWatcher {
+public class TileEntityCrystalTank extends TileEntityChromaticBase implements CrystalTank, TankWatcher, BreakAction, AdjacentUpdateWatcher {
 
 	public static final int MAXCAPACITY = 2000000000;
 
@@ -156,7 +156,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 
 	@Override
 	public int fill(ForgeDirection from, FluidStack resource, boolean doFill) {
-		int add = Math.min(this.getCapacity()-this.getLevel(), resource.amount);
+		int add = Math.min(this.getCapacity()-this.getCurrentFluidLevel(), resource.amount);
 		if (add > 0) {
 			FluidStack fs = new FluidStack(resource.getFluid(), add);
 			return tank.fill(fs, doFill);
@@ -217,14 +217,6 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		if (rnd > 1)
 			bucket = ReikaMathLibrary.roundUpToX(rnd, bucket);
 		return Math.min(bucket*1000, MAXCAPACITY);
-	}
-
-	public Fluid getFluid() {
-		return fluidType;
-	}
-
-	public int getLevel() {
-		return tank.getLevel();
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -409,8 +401,34 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements IF
 		return (int)Math.round(15*this.getFillPercentage());
 	}
 
-	public void addLiquid(Fluid f, int amt) {
-		tank.addLiquid(amt, f);
+	@Override
+	public CrystalTank getController() {
+		return this;
+	}
+
+	@Override
+	public boolean isController() {
+		return true;
+	}
+
+	@Override
+	public Fluid getCurrentFluid() {
+		return fluidType;
+	}
+
+	@Override
+	public int getCurrentFluidLevel() {
+		return tank.getLevel();
+	}
+
+	@Override
+	public int addFluid(Fluid f, int amt) {
+		if (!tank.isEmpty() && tank.getActualFluid() != f)
+			return 0;
+		int add = Math.min(amt, this.getCapacity()-tank.getLevel());
+		if (add > 0)
+			tank.addLiquid(add, f);
+		return add;
 	}
 
 }

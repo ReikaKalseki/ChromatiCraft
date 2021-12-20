@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -41,10 +41,10 @@ public class GuiCrystalTank extends GuiChromaBase {
 		//fontRendererObj = Minecraft.getMinecraft().fontRenderer;
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
-		Fluid f = tank.getFluid();
+		Fluid f = tank.getCurrentFluid();
 		if (f != null) {
 			if (api.isMouseInBox(j+24, j+151, k+16, k+115)) {
-				String s = String.format("%s: %d/%d", f.getLocalizedName(), Math.round(tank.getLevel()/1000F), tank.getCapacity()/1000);
+				String s = String.format("%s: %d/%d", f.getLocalizedName(), Math.round(tank.getCurrentFluidLevel()/1000F), tank.getCapacity()/1000);
 				api.drawTooltipAt(fontRendererObj, s, api.getMouseRealX()-j, api.getMouseRealY()-k);
 			}
 		}
@@ -77,9 +77,9 @@ public class GuiCrystalTank extends GuiChromaBase {
 		super.drawGuiContainerBackgroundLayer(p, a, b);
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
-		Fluid f = tank.getFluid();
+		Fluid f = tank.getCurrentFluid();
 		if (f != null) {
-			int amt = tank.getLevel();
+			int amt = tank.getCurrentFluidLevel();
 			int cap = tank.getCapacity();
 			int frac = (int)(100L*amt/cap);
 			int num = frac/16;

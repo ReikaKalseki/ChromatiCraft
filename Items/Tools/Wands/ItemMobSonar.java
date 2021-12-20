@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Items.Tools.Wands;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -47,6 +48,10 @@ public class ItemMobSonar extends ItemWandBase {
 			this.doPing(world, ep);
 		}
 		else {
+			if (is.stackTagCompound == null) {
+				is.stackTagCompound = new NBTTagCompound();
+				is.stackTagCompound.setInteger("typeFlags", MobSonarRenderer.EntitySonarType.getAllFlags());
+			}
 			this.drainPlayer(ep);
 			if (ModList.SATISFORESTRY.isLoaded()) {
 				this.findLizardDoggo(world, ep);

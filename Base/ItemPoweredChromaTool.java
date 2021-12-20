@@ -55,6 +55,11 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Po
 		return 0;
 	}
 
+	@Override
+	public int getPlayerBufferExtractionRate(ItemStack is) {
+		return 0;
+	}
+
 	public int getChargeRate(ItemStack is, int base) {
 		return base;
 	}
@@ -77,10 +82,12 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Po
 	@Override
 	public final void onUpdate(ItemStack is, World world, Entity e, int slot, boolean held) {
 		if (e instanceof EntityPlayer) {
-			if (this.isActivated((EntityPlayer)e, is, held)) {
+			EntityPlayer ep = (EntityPlayer)e;
+			ToolChargingSystem.instance.tryChargeFromPlayer(is, ep);
+			if (this.isActivated(ep, is, held)) {
 				if (ToolChargingSystem.instance.getCharge(is) > 0) {
-					if (this.doTick(is, world, (EntityPlayer)e, held) && !((EntityPlayer)e).capabilities.isCreativeMode) {
-						ToolChargingSystem.instance.removeCharge(is, this.getChargeConsumptionRate((EntityPlayer)e, world, is), (EntityPlayer)e);
+					if (this.doTick(is, world, ep, held) && !(ep).capabilities.isCreativeMode) {
+						ToolChargingSystem.instance.removeCharge(is, this.getChargeConsumptionRate(ep, world, is), ep);
 					}
 				}
 			}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -34,9 +34,9 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaLiquidRenderer;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 public class TankRender extends ChromaRenderBase {
 
@@ -50,9 +50,9 @@ public class TankRender extends ChromaRenderBase {
 		if (Keyboard.isKeyDown(Keyboard.KEY_NUMPAD5))
 			return;
 		TileEntityCrystalTank te = (TileEntityCrystalTank)tile;
-		Fluid f = te.getFluid();
+		Fluid f = te.getCurrentFluid();
 		if (te.hasWorldObj()) {
-			if (f != null && te.getLevel() > 0) {
+			if (f != null && te.getCurrentFluidLevel() > 0) {
 				GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
 				if (!Keyboard.isKeyDown(Keyboard.KEY_NUMPAD2))
 					this.renderLiquid(te, par2, par4, par6, par8, f);
@@ -73,7 +73,7 @@ public class TankRender extends ChromaRenderBase {
 		BlockArray blocks = te.getBlocks();
 		int d = Math.max(5, 100-blocks.getSize()/2);
 		int tick = te.getTicksExisted()/d;
-		CrystalElement et = ChromaAux.getRune(te.getFluid());
+		CrystalElement et = ChromaAux.getRune(te.getCurrentFluid());
 		int last = te.lastptick;
 		if (et != null && te.getTicksExisted() != last && te.getTicksExisted()%d == 0 || (et != null && Keyboard.isKeyDown(Keyboard.KEY_NUMPAD6))) {
 			Coordinate dat = blocks.getRandomBlock();

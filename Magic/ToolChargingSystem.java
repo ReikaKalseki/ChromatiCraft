@@ -90,6 +90,18 @@ public class ToolChargingSystem {
 			is.setItemDamage(this.getItem(is).getChargeState(this.getCharge(is)/(float)max));
 	}
 
+	public void tryChargeFromPlayer(ItemStack is, EntityPlayer ep) {
+		int extr = this.getItem(is).getPlayerBufferExtractionRate(is);
+		if (extr > 0) {
+			CrystalElement ec = this.getItem(is).getColor(is);
+			int get = Math.min(extr, PlayerElementBuffer.instance.getPlayerContent(ep, ec));
+			if (get > 0) {
+				int add = this.addCharge(is, get);
+				PlayerElementBuffer.instance.removeFromPlayer(ep, ec, add);
+			}
+		}
+	}
+
 	private PoweredItem getItem(ItemStack is) {
 		return (PoweredItem)is.getItem();
 	}

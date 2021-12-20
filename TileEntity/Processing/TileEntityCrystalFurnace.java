@@ -27,6 +27,7 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.oredict.OreDictionary;
 
+import Reika.ChromatiCraft.API.Interfaces.CrystalFurnaceMultiplier;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
@@ -203,6 +204,20 @@ VariableTexture {
 	}
 
 	public static int getMultiplyRate(ItemStack in, ItemStack out) {
+		if (in.getItem() instanceof CrystalFurnaceMultiplier) {
+			int ret = ((CrystalFurnaceMultiplier)in.getItem()).getMultiplyRateAsInput(in, out);
+			if (ret > 0)
+				return ret;
+		}
+		if (out.getItem() instanceof CrystalFurnaceMultiplier) {
+			int ret = ((CrystalFurnaceMultiplier)out.getItem()).getMultiplyRateAsOutput(out, in);
+			if (ret > 0)
+				return ret;
+		}
+		return calcMultiplyRate(in, out);//Integer get = multiply
+	}
+
+	private static int calcMultiplyRate(ItemStack in, ItemStack out) {
 		if (ChromaBlocks.PYLONSTRUCT.match(out)) {
 			return 1;
 		}

@@ -49,4 +49,9 @@ public class ItemBodyLight extends ItemPoweredChromaTool {
 		return false;
 	}
 
+	@Override
+	public int getPlayerBufferExtractionRate(ItemStack is) {
+		return 0;
+	}
+
 }

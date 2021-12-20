@@ -291,8 +291,8 @@ public class EntityGlowCloud extends EntityLiving implements EtherealEntity, IMo
 			CrystalTankAuxTile te = (CrystalTankAuxTile)c.getTileEntity(worldObj);
 			if (te != null) {
 				TileEntityCrystalTank te2 = te.getTankController();
-				if (te2 != null && (te2.isEmpty() || te2.getFluid() == ChromatiCraft.luma)) {
-					te2.addLiquid(ChromatiCraft.luma, 10);
+				if (te2 != null && (te2.isEmpty() || te2.getCurrentFluid() == ChromatiCraft.luma)) {
+					te2.addFluid(ChromatiCraft.luma, 10);
 				}
 			}
 		}

@@ -34,9 +34,9 @@ import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidHandler;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.Interfaces.CrystalTank;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaISBRH;
@@ -113,7 +113,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 				return true;
 			}
 			else if (FluidContainerRegistry.isEmptyContainer(is)) {
-				FluidStack rem = tk.drain(null, tk.getLevel(), false);
+				FluidStack rem = tk.drain(null, tk.getCurrentFluidLevel(), false);
 				if (rem != null) {
 					ItemStack fill = FluidContainerRegistry.fillFluidContainer(rem, is);
 					if (fill != null) {
@@ -302,9 +302,9 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		TileEntityCrystalTank tank = te.getTankController();
 		if (tank != null) {
 			tank.syncAllData(false);
-			int amt = tank.getLevel();
+			int amt = tank.getCurrentFluidLevel();
 			int capacity = tank.getCapacity();
-			Fluid f = tank.getFluid();
+			Fluid f = tank.getCurrentFluid();
 			if (amt > 0 && f != null) {
 				currenttip.add(String.format("Tank: %dmB/%dmB of %s", amt, capacity, f.getLocalizedName()));
 			}
@@ -438,7 +438,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 	public int isProvidingWeakPower(IBlockAccess iba, int x, int y, int z, int par5) {
 		CrystalTankAuxTile te = (CrystalTankAuxTile)iba.getTileEntity(x, y, z);
 		TileEntityCrystalTank te2 = te.getTankController();
-		return te2 != null && te2.getFluid() == FluidRegistry.getFluid("redstone") ? (int)Math.round(te2.getFillPercentage()*15) : 0;
+		return te2 != null && te2.getCurrentFluid() == FluidRegistry.getFluid("redstone") ? (int)Math.round(te2.getFillPercentage()*15) : 0;
 	}
 
 	@Override
@@ -458,7 +458,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		return false;
 	}
 
-	public static class CrystalTankAuxTile extends TileEntity implements IFluidHandler {
+	public static class CrystalTankAuxTile extends TileEntity implements CrystalTank {
 
 		private boolean isLit;
 
@@ -473,7 +473,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 			if (isLit)
 				return 15;
 			TileEntityCrystalTank te = this.getTankController();
-			return te != null && te.getFluid() != null ? te.getFluid().getLuminosity() : 0;
+			return te != null && te.getCurrentFluid() != null ? te.getCurrentFluid().getLuminosity() : 0;
 		}
 
 		public void setTile(TileEntityCrystalTank te) {
@@ -606,6 +606,37 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 			if (is.stackTagCompound == null)
 				return;
 			isLit = is.stackTagCompound.getBoolean("lit");
+		}
+
+		@Override
+		public CrystalTank getController() {
+			TileEntity te = controller != null ? controller.getTileEntity(worldObj) : null;
+			return te instanceof CrystalTank ? (CrystalTank)te : null;
+		}
+
+		@Override
+		public boolean isController() {
+			return false;
+		}
+
+		@Override
+		public Fluid getCurrentFluid() {
+			return null;
+		}
+
+		@Override
+		public int getCurrentFluidLevel() {
+			return 0;
+		}
+
+		@Override
+		public int getCapacity() {
+			return 0;
+		}
+
+		@Override
+		public int addFluid(Fluid f, int amt) {
+			return 0;
 		}
 
 	}

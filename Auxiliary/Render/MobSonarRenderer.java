@@ -26,13 +26,16 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Maps.TimerMap;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
+import Reika.DragonAPI.Interfaces.Entity.TameHostile;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -62,10 +65,18 @@ public class MobSonarRenderer {
 
 	@SideOnly(Side.CLIENT)
 	public void addCoordinate(Entity e) {
+		ItemStack held = Minecraft.getMinecraft().thePlayer.getCurrentEquippedItem();
+		if (!ChromaItems.MOBSONAR.matchWith(held))
+			return;
 		EntityEntry ee = new EntityEntry(e);
+		if (held.stackTagCompound != null) {
+			int flags = held.stackTagCompound.getInteger("typeFlags");
+			if ((ee.type.ordinal() & flags) == 0)
+				return;
+		}
 		coords.put(ee, DURATION);
-		ReikaSoundHelper.playClientSound(ChromaSounds.DING, e, 1, ee.soundPitch);
-		ReikaSoundHelper.playClientSound(ChromaSounds.DING, Minecraft.getMinecraft().thePlayer, 0.2F, ee.soundPitch);
+		ReikaSoundHelper.playClientSound(ChromaSounds.DING, e, 1, ee.type.soundPitch);
+		ReikaSoundHelper.playClientSound(ChromaSounds.DING, Minecraft.getMinecraft().thePlayer, 0.2F, ee.type.soundPitch);
 	}
 
 	@SubscribeEvent
@@ -117,15 +128,15 @@ public class MobSonarRenderer {
 		float f1 = (float)ticks/DURATION;
 		float f = Math.min(1, f1+0.375F);
 		double s = 1.5*Math.sqrt(f);
-		int c = ReikaColorAPI.getColorWithBrightnessMultiplier(loc.baseColor, f1);
+		int c = ReikaColorAPI.getColorWithBrightnessMultiplier(loc.type.baseColor, f1);
 		v5.setColorOpaque_I(c);
-		for (int i = 0; i <= loc.highlight; i++) {
-			double nx = loc.box.minX+i*s/8;
-			double ny = loc.box.minY+i*s/8;
-			double nz = loc.box.minZ+i*s/8;
-			double px = loc.box.maxX+i*s/8;
-			double py = loc.box.maxY+i*s/8;
-			double pz = loc.box.maxZ+i*s/8;
+		for (int i = 0; i <= loc.type.highlight; i++) {
+			double nx = loc.box.minX-i/8D;
+			double ny = loc.box.minY-i/8D;
+			double nz = loc.box.minZ-i/8D;
+			double px = loc.box.maxX+i/8D;
+			double py = loc.box.maxY+i/8D;
+			double pz = loc.box.maxZ+i/8D;
 
 			v5.addVertex(nx, ny, nz);
 			v5.addVertex(px, ny, nz);
@@ -212,9 +223,7 @@ public class MobSonarRenderer {
 		private final DecimalPosition location;
 		private final Class entityType;
 		private final AxisAlignedBB box;
-		private final int baseColor;
-		private final float soundPitch;
-		private final int highlight;
+		private final EntitySonarType type;
 
 		private EntityEntry(Entity e) {
 			entityID = e.getEntityId();
@@ -222,34 +231,7 @@ public class MobSonarRenderer {
 			location = new DecimalPosition(e);
 			entityType = e.getClass();
 			box = e.boundingBox != null ? e.boundingBox.copy() : null;
-			int c = 0xffffff;
-			int h = 0;
-			MusicKey k = MusicKey.C5;
-			if (e instanceof EntityTameable) {
-				c = 0xba69ff;
-				k = MusicKey.C6;
-				h = 1;
-			}
-			else if (e instanceof EntityAnimal) {
-				c = 0x22ff22;
-				k = MusicKey.G5;
-			}
-			else if (e instanceof EntityMob) {
-				c = 0xff2222;
-				k = MusicKey.C4;
-			}
-			else if (e instanceof EntityWaterMob) {
-				c = 0x22aaff;
-				k = MusicKey.G4;
-			}
-			else if (e instanceof LizardDoggo) {
-				c = 0xFF7F60;
-				k = MusicKey.A5;
-				h = 2;
-			}
-			baseColor = c;
-			soundPitch = (float)MusicKey.C5.getRatio(k);
-			highlight = h;
+			type = EntitySonarType.getFromEntity(e);
 		}
 
 		@Override
@@ -262,6 +244,56 @@ public class MobSonarRenderer {
 			return o instanceof EntityEntry && ((EntityEntry)o).entityID == entityID;//.location.equals(location) && ((EntityEntry)o).entityType == entityType;
 		}
 
+	}
+
+	public static enum EntitySonarType {
+		DOGGO(MusicKey.A5, 0xFF7F60, 2),
+		TAMEHOSTILE(MusicKey.E4, 0xffff44),
+		TAMEABLE(MusicKey.C6, 0xba69ff, 1),
+		ANIMAL(MusicKey.G5, 0x22ff22),
+		MOB(MusicKey.C4, 0xff2222),
+		WATER(MusicKey.G4, 0x22aaff),
+		OTHER(MusicKey.C5, 0xffffff);
+
+		private final int baseColor;
+		private final float soundPitch;
+		private final int highlight;
+
+		private EntitySonarType(MusicKey k, int c) {
+			this(k, c, 0);
+		}
+
+		private EntitySonarType(MusicKey k, int c, int h) {
+			baseColor = c;
+			soundPitch = (float)MusicKey.C5.getRatio(k);
+			highlight = h;
+		}
+
+		public static EntitySonarType getFromEntity(Entity e) {
+			if (e instanceof LizardDoggo) {
+				return DOGGO;
+			}
+			else if (e instanceof TameHostile) {
+				return TAMEHOSTILE;
+			}
+			else if (e instanceof EntityTameable) {
+				return TAMEABLE;
+			}
+			else if (e instanceof EntityAnimal) {
+				return ANIMAL;
+			}
+			else if (e instanceof EntityMob) {
+				return MOB;
+			}
+			else if (e instanceof EntityWaterMob) {
+				return WATER;
+			}
+			return OTHER;
+		}
+
+		public static int getAllFlags() {
+			return (1 << (OTHER.ordinal()+1))-1;
+		}
 	}
 
 	private static class Ping {

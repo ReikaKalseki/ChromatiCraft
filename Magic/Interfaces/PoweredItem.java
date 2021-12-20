@@ -24,6 +24,7 @@ public interface PoweredItem extends SpriteRenderCallback, DynamicallyGeneratedS
 	public int getChargeState(float frac);
 
 	public float getPlayerChargeCoefficient(ItemStack is);
+	public int getPlayerBufferExtractionRate(ItemStack is);
 
 	@SideOnly(Side.CLIENT)
 	public abstract void doChargeFX(EntityItem ei, int charge);
