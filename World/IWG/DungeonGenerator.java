@@ -830,7 +830,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			case SNOWSTRUCT:
 				return b != BiomeGenBase.biomeList[BiomeGenBase.icePlains.biomeID+128] && !ocean && b.topBlock == Blocks.grass && b.getEnableSnow() && ReikaBiomeHelper.getBiomeDecorator(b).treesPerChunk < 1 && !b.biomeName.toLowerCase(Locale.ENGLISH).contains("forest");
 			case BIOMEFRAG:
-				return ChromatiCraft.isCCBiome(b);
+				return b != ChromatiCraft.rainbowRiver && ChromatiCraft.isCCBiome(b);
 			default:
 				return false;
 		}

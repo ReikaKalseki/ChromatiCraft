@@ -125,18 +125,22 @@ public class BlockEtherealLuma extends BlockFluidClassic {
 			if (elb instanceof EntityPlayer && world.getBlockMetadata(x, y, z) == 0) {
 				EntityPlayer ep = (EntityPlayer)elb;
 				ProgressStage.LUMA.stepPlayerTo(ep);
-				PotionEffect cur = ep.getActivePotionEffect(ChromatiCraft.voidGaze);
-				if (cur == null || cur.getDuration() < 5) {
-					int lvl = PotionVoidGaze.VoidGazeLevels.getAppliedLevel(ep);
-					if (lvl >= 0) {
-						elb.addPotionEffect(new PotionEffect(ChromatiCraft.voidGaze.id, 100, lvl));
-						if (cur == null)
-							VoidGazeLevels.list[lvl].onStart(ep);
-					}
-				}
+				addPotions(ep);
 			}
 		}
 		super.onEntityCollidedWithBlock(world, x, y, z, e);
+	}
+
+	public static void addPotions(EntityPlayer ep) {
+		PotionEffect cur = ep.getActivePotionEffect(ChromatiCraft.voidGaze);
+		if (cur == null || cur.getDuration() < 5) {
+			int lvl = PotionVoidGaze.VoidGazeLevels.getAppliedLevel(ep);
+			if (lvl >= 0) {
+				ep.addPotionEffect(new PotionEffect(ChromatiCraft.voidGaze.id, 100, lvl));
+				if (cur == null)
+					VoidGazeLevels.list[lvl].onStart(ep);
+			}
+		}
 	}
 
 	@Override

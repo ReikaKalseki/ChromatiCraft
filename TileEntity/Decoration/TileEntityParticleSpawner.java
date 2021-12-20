@@ -177,6 +177,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 					}
 					else {
 						EntityFluidFX fx = new EntityFluidFX(world, px, py, pz, vx, vy, vz, f).setGravity(g).setLife(l).setScale(s);
+						fx.noClip = true;
 						if (particleCollision)
 							fx.setColliding();
 						return fx;

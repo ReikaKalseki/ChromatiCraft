@@ -71,7 +71,7 @@ public class MobSonarRenderer {
 		EntityEntry ee = new EntityEntry(e);
 		if (held.stackTagCompound != null) {
 			int flags = held.stackTagCompound.getInteger("typeFlags");
-			if ((ee.type.ordinal() & flags) == 0)
+			if (((1 << ee.type.ordinal()) & flags) == 0)
 				return;
 		}
 		coords.put(ee, DURATION);

@@ -44,20 +44,26 @@ public class ItemMobSonar extends ItemWandBase {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
+		this.prepareNBT(is);
 		if (world.isRemote) {
 			this.doPing(world, ep);
 		}
 		else {
-			if (is.stackTagCompound == null) {
-				is.stackTagCompound = new NBTTagCompound();
-				is.stackTagCompound.setInteger("typeFlags", MobSonarRenderer.EntitySonarType.getAllFlags());
-			}
 			this.drainPlayer(ep);
 			if (ModList.SATISFORESTRY.isLoaded()) {
 				this.findLizardDoggo(world, ep);
 			}
 		}
 		return is;
+	}
+
+	private void prepareNBT(ItemStack is) {
+		if (is.stackTagCompound == null) {
+			is.stackTagCompound = new NBTTagCompound();
+		}
+		if (!is.stackTagCompound.hasKey("typeFlags")) {
+			is.stackTagCompound.setInteger("typeFlags", MobSonarRenderer.EntitySonarType.getAllFlags());
+		}
 	}
 
 	@ModDependent(ModList.SATISFORESTRY)

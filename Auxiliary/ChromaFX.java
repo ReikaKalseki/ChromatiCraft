@@ -18,10 +18,12 @@ import java.util.Random;
 import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -35,6 +37,7 @@ import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Magic.Network.TargetData;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -51,6 +54,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
+import Reika.DragonAPI.Instantiable.Effects.EntityFluidFX;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
 import Reika.DragonAPI.Instantiable.Math.Spline;
 import Reika.DragonAPI.Instantiable.Math.Spline.BasicSplinePoint;
@@ -803,7 +807,6 @@ public class ChromaFX {
 	}
 
 	/** In the words of {@link SoundHandler} line 171, "IN YOU FACE!" */
-	@SideOnly(Side.CLIENT)
 	public static void dischargeIntoPlayerFX(World world, int x, int y, int z, CrystalElement e, EntityLivingBase ep, float beamSize) {
 		ReikaSoundHelper.playClientSound(ChromaSounds.MONUMENTRAY, ep, 1, (float)CrystalMusicManager.instance.getDingPitchScale(e), false);
 		doBoltFX(world, x, y, z, new DecimalPosition(ep).offset(0, -0.25, 0), e.getColor(), beamSize, 1);
@@ -829,10 +832,15 @@ public class ChromaFX {
 		}
 	}
 
-	@SideOnly(Side.CLIENT)
 	public static void doElementalParticle(World world, double x, double y, double z, CrystalElement e, double s, double vy, int l) {
 		EntityRuneFX fx = new EntityRuneFX(world, x, y, z, 0, vy, 0, e).setGravity(0).setScale((float)s).setLife(l);
 		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+	}
+
+	public static boolean cancelParticleBlockCollision(World world, int x, int y, int z, Block block, Entity fx) {
+		if (block == ChromaBlocks.TANK.getBlockInstance() && (fx instanceof EntityFluidFX || fx instanceof EntityChromaFluidFX))
+			return true;
+		return false;
 	}
 
 }

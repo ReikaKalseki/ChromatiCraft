@@ -23,6 +23,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeavesBase;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
+import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -618,6 +619,10 @@ public class ChromaAux {
 							ChromaDimensionManager.onPlayerBlockedFromBiome(world, x, y, z, ep);
 							flag = false;
 						}
+						else if (world.isRemote && isParticle(ep)) {
+							if (ChromaFX.cancelParticleBlockCollision(world, x, y, z, block, ep))
+								flag = false;
+						}
 						else if (ep instanceof EntityGlowCloud) {
 							if (EntityGlowCloud.isBlockNonColliding(world, x, y, z, block)) {
 								flag = false;
@@ -657,6 +662,11 @@ public class ChromaAux {
 		}
 
 		return li;
+	}
+
+	@SideOnly(Side.CLIENT)
+	private static boolean isParticle(Entity e) {
+		return e instanceof EntityFX;
 	}
 
 	public static boolean applyNoclipPhase(EntityPlayer ep) {

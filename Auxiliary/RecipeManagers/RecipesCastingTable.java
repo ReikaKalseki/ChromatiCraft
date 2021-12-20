@@ -214,6 +214,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.Efficie
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.EnderBucketRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.EnderCrystalRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.EnhancedPendantRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.EtherealPendantRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.ExcavatorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.FloatstoneBootsRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.GrowthWandRecipe;
@@ -951,6 +952,8 @@ public class RecipesCastingTable implements CastingAPI {
 		this.addRecipe(new NetherKeyRecipe(is, sr));
 
 		this.addRecipe(new RecipeCacheRecipe(ChromaItems.RECIPECACHE.getStackOf(), new ItemStack(Blocks.obsidian)));
+
+		this.addRecipe(new EtherealPendantRecipe(ChromaItems.ETHERPENDANT.getStackOf(), ChromaStacks.voidCore));
 
 		this.addSpecialRecipes();
 	}

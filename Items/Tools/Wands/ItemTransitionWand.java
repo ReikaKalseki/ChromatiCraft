@@ -48,6 +48,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ReikaChiselHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerBlockHandler;
 
 public class ItemTransitionWand extends ItemBlockChangingWand {
 
@@ -253,15 +254,18 @@ public class ItemTransitionWand extends ItemBlockChangingWand {
 	@Override
 	public boolean canBreak(ProgressiveBreaker b, World world, int x, int y, int z, Block id, int meta) {
 		BlockReplace r = breakers.get(b.hashCode());
+		if (world.getTileEntity(x, y, z) != null) {
+			if (this.isUpgradingTank(world, x, y, z, id, meta, r) || (ModList.TINKERER.isLoaded() && TinkerBlockHandler.getInstance().isSmelteryBlock(id)))
+				;
+			else
+				return false;
+		}
 		if (!r.player.capabilities.isCreativeMode) {
 			if (ReikaBlockHelper.isUnbreakable(world, x, y, z, id, meta, r.player))
 				return false;
 			if (id instanceof SemiUnbreakable)
 				if (((SemiUnbreakable)id).isUnbreakable(world, x, y, z, meta))
 					return false;
-		}
-		if (world.getTileEntity(x, y, z) != null && !this.isUpgradingTank(world, x, y, z, id, meta, r)) {
-			return false;
 		}
 		if (r != null) {
 			boolean exists = world.getPlayerEntityByName(r.player.getCommandSenderName()) != null;
@@ -285,7 +289,7 @@ public class ItemTransitionWand extends ItemBlockChangingWand {
 	}
 
 	private boolean isUpgradingTank(World world, int x, int y, int z, Block id, int meta, BlockReplace r) {
-		return id == ChromaBlocks.TANK.getBlockInstance() && r.place == id && id.damageDropped(meta) != id.damageDropped(r.placeM);
+		return id == ChromaBlocks.TANK.getBlockInstance() && r != null && r.place == id && id.damageDropped(meta) != id.damageDropped(r.placeM);
 	}
 
 	private boolean playerHas(EntityPlayer ep, Block b, int m) {
