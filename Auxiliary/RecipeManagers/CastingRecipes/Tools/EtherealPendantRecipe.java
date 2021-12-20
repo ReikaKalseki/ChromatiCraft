@@ -40,8 +40,8 @@ public class EtherealPendantRecipe extends MultiBlockCastingRecipe {
 		this.addAuxItem(Items.string, -2, -4);
 		this.addAuxItem(Items.string, 2, -4);
 
-		this.addAuxItem(ChromaStacks.spaceIngot, -2, -4);
-		this.addAuxItem(ChromaStacks.spaceIngot, 2, -4);
+		this.addAuxItem(ChromaStacks.spaceIngot, -2, 4);
+		this.addAuxItem(ChromaStacks.spaceIngot, 2, 4);
 
 		this.addAuxItem(ChromaStacks.auraDust, 4, -2);
 		this.addAuxItem(ChromaStacks.auraDust, 4, 2);
