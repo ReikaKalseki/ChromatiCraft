@@ -27,8 +27,8 @@ import net.minecraftforge.fluids.BlockFluidClassic;
 import net.minecraftforge.fluids.Fluid;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze;
-import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze.VoidGazeLevels;
+import Reika.ChromatiCraft.Magic.Potions.PotionVoidGaze;
+import Reika.ChromatiCraft.Magic.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;

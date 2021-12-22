@@ -39,9 +39,14 @@ public abstract class ItemChromaMulti extends ItemChromaBasic {
 		for (int i = 0; i < this.getNumberTypes(); i++) {
 			if (this.isMetaInCreative(i)) {
 				ItemStack item = new ItemStack(par1, 1, i);
+				this.addNBTForCreative(item);
 				par3List.add(item);
 			}
 		}
+	}
+
+	protected void addNBTForCreative(ItemStack item) {
+
 	}
 
 	protected boolean isMetaInCreative(int meta) {

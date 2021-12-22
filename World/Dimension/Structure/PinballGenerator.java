@@ -18,7 +18,7 @@ import Reika.ChromatiCraft.Base.StructureData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 
-public class PinballGenerator extends DimensionStructureGenerator {
+public class PinballGenerator extends DimensionStructureGenerator { //FIXME complete this structure
 
 	@Override
 	protected void calculate(int chunkX, int chunkZ, Random rand) {

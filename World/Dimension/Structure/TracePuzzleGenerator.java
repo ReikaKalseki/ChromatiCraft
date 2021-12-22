@@ -10,7 +10,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.World.Dimension.Structure.Traces.TracePuzzle;
 
 
-public class TracePuzzleGenerator extends DimensionStructureGenerator {
+public class TracePuzzleGenerator extends DimensionStructureGenerator { //FIXME complete this structure
 
 	private TracePuzzle[] puzzles;
 

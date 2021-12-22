@@ -60,6 +60,13 @@ public class ItemBoostedPendant extends ItemPendant implements PoweredItem {
 	}
 
 	@Override
+	protected void addNBTForCreative(ItemStack item) {
+		if (ChromaOptions.POWEREDPENDANTS.getState()) {
+			ToolChargingSystem.instance.addCharge(item, MAX_CHARGE);
+		}
+	}
+
+	@Override
 	public final boolean onEntityItemUpdate(EntityItem ei) {
 		return ChromaOptions.POWEREDPENDANTS.getState() ? ToolChargingSystem.instance.tickItem(ei) : super.onEntityItemUpdate(ei);
 	}
@@ -142,7 +149,7 @@ public class ItemBoostedPendant extends ItemPendant implements PoweredItem {
 
 	@Override
 	public int getPlayerBufferExtractionRate(ItemStack is) {
-		return 1;
+		return 2;
 	}
 
 	@Override

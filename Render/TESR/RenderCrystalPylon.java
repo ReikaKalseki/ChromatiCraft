@@ -18,9 +18,9 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
 
-import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
 import Reika.ChromatiCraft.Magic.Lore.LoreScripts.ScriptLocations;
+import Reika.ChromatiCraft.Magic.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.InWorldScriptRenderer;

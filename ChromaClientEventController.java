@@ -80,7 +80,6 @@ import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHotkeys;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityXRays;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaSound;
-import Reika.ChromatiCraft.Auxiliary.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Auxiliary.Render.BlockChangeCache;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaOverlays;
@@ -105,6 +104,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
+import Reika.ChromatiCraft.Magic.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterDestructionRitual;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects;
@@ -700,10 +700,20 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 				int mdx = MathHelper.floor_double(dx);
 				int mdy = MathHelper.floor_double(dy);
 				int mdz = MathHelper.floor_double(dz);
-				if (ep.worldObj.getBlock(mdx, mdy, mdz).isAir(ep.worldObj, mdx, mdy, mdz)) {
+				if (ep.worldObj.getBlock(mdx, mdy, mdz).isAir(ep.worldObj, mdx, mdy, mdz) && ep.worldObj.getSavedLightValue(EnumSkyBlock.Sky, mdx, mdy, mdz) == 0) {
 					EntityFX fx = new EntityCCBlurFX(ep.worldObj, dx, dy, dz).setIcon(ChromaIcons.FLARE).setLife(8).setAlphaFading().setScale(1.5F);
 					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void hideVoidGazeSnow(RenderBlockAtPosEvent evt) {
+		if (evt.block == Blocks.snow_layer) {
+			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			if (ep != null && VoidGazeLevels.FACEFLIP.isActiveOnPlayer(ep)) {
+				evt.setCanceled(true);
 			}
 		}
 	}

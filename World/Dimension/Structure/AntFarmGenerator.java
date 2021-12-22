@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -33,7 +33,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 
-public class AntFarmGenerator extends DimensionStructureGenerator {
+public class AntFarmGenerator extends DimensionStructureGenerator { //FIXME complete this structure
 
 	public static final float LIGHT_DURATION = 1024;
 
@@ -95,9 +95,10 @@ public class AntFarmGenerator extends DimensionStructureGenerator {
 				int dy = l.posY+y;
 				int dz = l.posZ+z;
 				AntFarmTunnel t = this.createTunnel(l.posX, l.posY, l.posZ, dx, dy, dz, 3, 3, rand);
-				while (t.intersectsWith(tunnelSpaces, levelSpaces) && false) {
-					t = this.createTunnel(l.posX, l.posY, l.posZ, dx, dy, dz, 3, 3, rand);
-				}
+				//TODO revisit
+				//while (t.intersectsWith(tunnelSpaces, levelSpaces)) {
+				//	t = this.createTunnel(l.posX, l.posY, l.posZ, dx, dy, dz, 3, 3, rand);
+				//}
 				t.register(this, tunnelSpaces);
 				tunnels.add(t);
 			}

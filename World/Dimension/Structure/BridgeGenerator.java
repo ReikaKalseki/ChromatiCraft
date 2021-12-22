@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -32,7 +32,7 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
 
-public class BridgeGenerator extends DimensionStructureGenerator {
+public class BridgeGenerator extends DimensionStructureGenerator { //TODO cancelled
 
 	private final CountMap<UUID> totalSwitches = new CountMap();
 	private final CountMap<UUID> activeSwitches = new CountMap();

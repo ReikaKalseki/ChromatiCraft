@@ -17,7 +17,7 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
 
 
-public class TessellationGenerator extends DimensionStructureGenerator {
+public class TessellationGenerator extends DimensionStructureGenerator { //FIXME complete this structure
 
 	@Override
 	protected void calculate(int chunkX, int chunkZ, Random rand) {

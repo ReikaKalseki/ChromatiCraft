@@ -101,6 +101,7 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionLinking;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionLinking.LinkFailure;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
+import Reika.ChromatiCraft.ModInterface.AuroraHandler;
 import Reika.ChromatiCraft.ModInterface.RFWeb;
 import Reika.ChromatiCraft.ModInterface.TileEntitySmelteryDistributor;
 import Reika.ChromatiCraft.ModInterface.AE.TileEntityMEDistributor;
@@ -1222,6 +1223,10 @@ public class ChromatiPackets implements PacketHandler {
 					Entity hit = SFAPI.genericLookups.getDoggoClass().getConstructor(new Class[] {World.class}).newInstance(new Object[] {world});
 					hit.setLocationAndAngles(data[0]+0.5, data[1]+0.5, data[2]+0.5, 0, 0);
 					MobSonarRenderer.instance.addCoordinate(hit);
+					break;
+				}
+				case AURORACLEAR: {
+					AuroraHandler.instance.clear();
 					break;
 				}
 			}

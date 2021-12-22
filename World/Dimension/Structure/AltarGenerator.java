@@ -22,7 +22,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.Altar.AltarNode;
 import Reika.ChromatiCraft.World.Dimension.Structure.Altar.AltarTunnel;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
-public class AltarGenerator extends DimensionStructureGenerator {
+public class AltarGenerator extends DimensionStructureGenerator { //TODO cancelled
 
 	private int lastPosY;
 

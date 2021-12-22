@@ -17,7 +17,7 @@ import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
 import Reika.ChromatiCraft.Base.StructureData;
 
 
-public class GravityPuzzleGenerator extends DimensionStructureGenerator {
+public class GravityPuzzleGenerator extends DimensionStructureGenerator { //FIXME complete this structure
 
 	@Override
 	protected void calculate(int chunkX, int chunkZ, Random rand) {
