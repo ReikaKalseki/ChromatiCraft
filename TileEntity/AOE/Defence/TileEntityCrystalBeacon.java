@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.TileEntity.AOE.Defence;
 
 import java.util.Random;
+import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -277,7 +278,7 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 		return false;
 	}
 
-	public static boolean isEntityInvincible(EntityLiving ep, String owner, float dmg) {
+	public static boolean isEntityInvincible(EntityLiving ep, String owner, String uuid, float dmg) {
 		if (updateDamageNBT(ep, dmg))
 			return true;
 		if (cache.lookForMatch(ep.worldObj, true, (WorldLocation loc, TileEntity tile) -> {
@@ -286,7 +287,17 @@ public class TileEntityCrystalBeacon extends CrystalReceiverBase implements Loca
 			if (Math.abs(ep.posY-te.yCoord) <= r/2) {
 				if (loc.getDistanceTo(ep) <= r) {
 					String n = te.getPlacerName();
-					if (n != null && n.equals(owner) && te.prevent(dmg)) {
+					boolean flag = false;
+					if (n != null && n.equals(owner)) {
+						flag = true;
+					}
+					else {
+						UUID u = te.getPlacerUUID();
+						if (u != null && u.toString().equals(uuid)) {
+							flag = true;
+						}
+					}
+					if (flag && te.prevent(dmg)) {
 						return true;
 					}
 				}

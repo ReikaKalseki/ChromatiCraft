@@ -39,4 +39,9 @@ public class SelectiveGlassRecipe extends CastingRecipe {
 		return enhanced ? 18 : 9;
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 }

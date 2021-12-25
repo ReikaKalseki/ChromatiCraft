@@ -23,6 +23,7 @@ import net.minecraft.util.IIcon;
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
+import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -46,7 +47,7 @@ public class RenderCrystalMusic extends ChromaRenderBase {
 		GL11.glTranslatef((float)par2, (float)par4 + 1.0F, (float)par6 + 1.0F);
 		GL11.glScalef(1.0F, -1.0F, -1.0F);
 
-		if (tile.hasWorldObj()) {
+		if (tile.hasWorldObj() || StructureRenderer.isRenderingTiles()) {
 			if (te.hasTempleRender()) {
 				GL11.glPushMatrix();
 				GL11.glScalef(1.0F, -1.0F, -1.0F);
@@ -57,7 +58,7 @@ public class RenderCrystalMusic extends ChromaRenderBase {
 			this.drawMiddle(te);
 		}
 		this.drawInner(te);
-		if (!tile.hasWorldObj()) {
+		if (!tile.hasWorldObj() && !StructureRenderer.isRenderingTiles()) {
 			GL11.glTranslated(0, 0, 1);
 			GL11.glRotated(90, 0, 1, 0);
 			//this.drawInner(te);
@@ -79,8 +80,9 @@ public class RenderCrystalMusic extends ChromaRenderBase {
 			for (double s = min; s <= max; s += ds) {
 				double d = 0.5;
 
-				double ax = (te.getTicksExisted()+par8)*(1+da)/2D;
-				double ay = (te.getTicksExisted()+par8)*(1+da)/2D;
+				long tick = StructureRenderer.isRenderingTiles() ? (System.currentTimeMillis()/40)%1200 : te.getTicksExisted();
+				double ax = (tick+par8)*(1+da)/2D;
+				double ay = (tick+par8)*(1+da)/2D;
 
 				GL11.glPushMatrix();
 				GL11.glTranslated(d, d, d);

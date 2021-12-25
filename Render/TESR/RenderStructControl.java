@@ -121,7 +121,7 @@ public class RenderStructControl extends ChromaRenderBase {
 						v5.startDrawing(GL11.GL_TRIANGLE_FAN);
 						v5.setBrightness(240);
 						v5.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(0xffffff, br));
-						v5.addVertexWithUV(0.5, 0, 0.5, 0.5, 0.5);
+						v5.addVertexWithUV(0.5, 0.01, 0.5, 0.5, 0.5);
 						double r0 = 18.5;
 						double r1 = 12;
 						double dt = r1/r0*0.5;
@@ -148,7 +148,7 @@ public class RenderStructControl extends ChromaRenderBase {
 								int c = e.getColor();
 								c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, MonumentCompletionRitual.getIntensity(e));
 								v5.setColorOpaque_I(c);
-								v5.addVertexWithUV(dx, 0, dz, u, v);
+								v5.addVertexWithUV(dx, 0.01, dz, u, v);
 							}
 						}
 

@@ -60,7 +60,7 @@ public class TileEntityBeeStorage extends TileEntityMassStorage {
 
 	@Override
 	protected void onRemoveItem(ItemStack is) {
-		if (isEmpty()) {
+		if (this.isEmpty()) {
 			filter = null;
 		}
 	}

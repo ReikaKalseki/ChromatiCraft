@@ -74,4 +74,9 @@ public class CrystalStoneRecipe extends CastingRecipe implements CoreRecipe {
 		c.addAll(requiredProgress);
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 }

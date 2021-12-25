@@ -41,4 +41,9 @@ public class HoverPadLampRecipe extends CastingRecipe {
 		return 1;
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 }

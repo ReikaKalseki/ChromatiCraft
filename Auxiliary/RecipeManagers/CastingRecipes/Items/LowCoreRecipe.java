@@ -55,7 +55,7 @@ public class LowCoreRecipe extends MultiBlockCastingRecipe implements ShardGroup
 	}
 
 	@Override
-	public boolean canGiveDoubleOutput() {
+	public final boolean canGiveDoubleOutput() {
 		return true;
 	}
 

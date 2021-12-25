@@ -30,12 +30,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
 
+import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
+import Reika.ChromatiCraft.Auxiliary.Structure.MusicTempleStructure;
 import Reika.ChromatiCraft.Base.BlockModelledChromaTile;
 import Reika.ChromatiCraft.Base.FragmentStructureBase;
 import Reika.ChromatiCraft.Base.GuiBookSection;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningManager;
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
+import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -57,6 +61,7 @@ import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer.EntityRender;
 import Reika.DragonAPI.Interfaces.Registry.TreeType;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
@@ -69,65 +74,75 @@ public class GuiStructure extends GuiBookSection {
 	private final FilledBlockArray array;
 	private final StructureRenderer render;
 
+	private final boolean musicStructure;
+
 	public GuiStructure(EntityPlayer ep, ChromaResearch r) {
 		super(ChromaGuis.STRUCTURE, ep, r, 256, 220, false);
 
-		array = page.getStructure().getStructureForDisplay();
-		if (page.name().toLowerCase(Locale.ENGLISH).contains("casting")) {
-			array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ(), ChromaTiles.TABLE.getBlock(), ChromaTiles.TABLE.getBlockMetadata());
-			if (page == ChromaResearch.CASTING2 || page == ChromaResearch.CASTING3) {
-				for (int i = -4; i <= 4; i += 2) {
-					for (int k = -4; k <= 4; k += 2) {
-						if (i != 0 || k != 0) {
-							int dx = array.getMidX()+i;
-							int dz = array.getMidZ()+k;
-							int dy = array.getMinY()+1+(Math.abs(i) != 4 && Math.abs(k) != 4 ? 0 : 1);
-							array.setBlock(dx, dy, dz, ChromaTiles.STAND.getBlock(), ChromaTiles.STAND.getBlockMetadata());
+		musicStructure = ReikaRandomHelper.doWithChance(5) && ChromaResearchManager.instance.playerHasFragment(ep, ChromaResearch.MUSIC) && !page.getStructure().isNatural() && !page.level.isAtLeast(ResearchLevel.ENERGY);
+		array = musicStructure ? new MusicTempleStructure().getStructureForDisplay() : page.getStructure().getStructureForDisplay();
+
+		if (musicStructure) {
+			MusicTempleStructure.prepareArray(array, new Coordinate(0, 0, 0));
+			array.setBlock(array.getMidX(), array.getMaxY()-3, array.getMidZ(), ChromaTiles.MUSIC.getBlock(), ChromaTiles.MUSIC.getBlockMetadata());
+		}
+		else {
+			if (page.name().toLowerCase(Locale.ENGLISH).contains("casting")) {
+				array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ(), ChromaTiles.TABLE.getBlock(), ChromaTiles.TABLE.getBlockMetadata());
+				if (page == ChromaResearch.CASTING2 || page == ChromaResearch.CASTING3) {
+					for (int i = -4; i <= 4; i += 2) {
+						for (int k = -4; k <= 4; k += 2) {
+							if (i != 0 || k != 0) {
+								int dx = array.getMidX()+i;
+								int dz = array.getMidZ()+k;
+								int dy = array.getMinY()+1+(Math.abs(i) != 4 && Math.abs(k) != 4 ? 0 : 1);
+								array.setBlock(dx, dy, dz, ChromaTiles.STAND.getBlock(), ChromaTiles.STAND.getBlockMetadata());
+							}
 						}
 					}
+					for (Coordinate c : CastingTuningManager.instance.getTuningKeyLocations()) { //hide tuning runes from the lexicon
+						array.setBlock(c.xCoord, c.yCoord+1, c.zCoord, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.SMOOTH.ordinal());
+					}
 				}
-				for (Coordinate c : CastingTuningManager.instance.getTuningKeyLocations()) { //hide tuning runes from the lexicon
-					array.setBlock(c.xCoord, c.yCoord+1, c.zCoord, ChromaBlocks.PYLONSTRUCT.getBlockInstance(), StoneTypes.SMOOTH.ordinal());
-				}
+				array.setBlock(array.getMidX()+1, array.getMinY()+1, array.getMidZ(), Blocks.air);
+				array.setBlock(array.getMidX()-1, array.getMinY()+1, array.getMidZ(), Blocks.air);
+				array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ()+1, Blocks.air);
+				array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ()-1, Blocks.air);
 			}
-			array.setBlock(array.getMidX()+1, array.getMinY()+1, array.getMidZ(), Blocks.air);
-			array.setBlock(array.getMidX()-1, array.getMinY()+1, array.getMidZ(), Blocks.air);
-			array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ()+1, Blocks.air);
-			array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ()-1, Blocks.air);
-		}
-		if (page == ChromaResearch.TREE || page == ChromaResearch.BOOSTTREE) {
-			array.setBlock(array.getMidX()-1, array.getMaxY(), array.getMidZ(), ChromaTiles.POWERTREE.getBlock(), ChromaTiles.POWERTREE.getBlockMetadata());
-		}
-		if (page == ChromaResearch.INFUSION) {
-			array.setBlock(array.getMidX(), array.getMinY()+2, array.getMidZ(), ChromaTiles.INFUSER.getBlock(), ChromaTiles.INFUSER.getBlockMetadata());
-		}
-		if (page == ChromaResearch.PLAYERINFUSION) {
-			array.setBlock(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.PLAYERINFUSER.getBlock(), ChromaTiles.PLAYERINFUSER.getBlockMetadata());
-		}
-		if (page == ChromaResearch.MINIPYLON) {
-			array.setBlock(array.getMidX(), array.getMinY()+6, array.getMidZ(), ChromaTiles.PERSONAL.getBlock(), ChromaTiles.PERSONAL.getBlockMetadata());
-		}
-		if (page == ChromaResearch.PYLON) {
-			array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ(), Blocks.air);
-		}
-		if (page == ChromaResearch.PYLON || page == ChromaResearch.PYLONTURBORING) {
-			array.setBlock(array.getMidX(), array.getMinY()+9, array.getMidZ(), ChromaTiles.PYLON.getBlock(), ChromaTiles.PYLON.getBlockMetadata());
-		}
-		if (page == ChromaResearch.PYLONBROADCAST) {
-			array.setBlock(array.getMidX(), array.getMinY()+10, array.getMidZ(), ChromaTiles.PYLON.getBlock(), ChromaTiles.PYLON.getBlockMetadata());
-		}
-		if (page == ChromaResearch.CLOAKTOWER) {
-			array.setBlock(array.getMidX(), array.getMinY()+5, array.getMidZ(), ChromaTiles.CLOAKING.getBlock(), ChromaTiles.CLOAKING.getBlockMetadata());
-		}
-		if (page == ChromaResearch.VOIDTRAPSTRUCT || page == ChromaResearch.VOIDTRAPSTRUCTN) {
-			array.setBlock(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.VOIDTRAP.getBlock(), ChromaTiles.VOIDTRAP.getBlockMetadata());
-		}
-		if (page == ChromaResearch.GATESTRUCT) {
-			for (int i = 0; i <= 1; i++) {
-				array.setBlock(array.getMidX()+3-i, array.getMinY()+3+i, array.getMidZ(), Blocks.air);
-				array.setBlock(array.getMidX()-3+i, array.getMinY()+3+i, array.getMidZ(), Blocks.air);
-				array.setBlock(array.getMidX(), array.getMinY()+3+i, array.getMidZ()+3-i, Blocks.air);
-				array.setBlock(array.getMidX(), array.getMinY()+3+i, array.getMidZ()-3+i, Blocks.air);
+			if (page == ChromaResearch.TREE || page == ChromaResearch.BOOSTTREE) {
+				array.setBlock(array.getMidX()-1, array.getMaxY(), array.getMidZ(), ChromaTiles.POWERTREE.getBlock(), ChromaTiles.POWERTREE.getBlockMetadata());
+			}
+			if (page == ChromaResearch.INFUSION) {
+				array.setBlock(array.getMidX(), array.getMinY()+2, array.getMidZ(), ChromaTiles.INFUSER.getBlock(), ChromaTiles.INFUSER.getBlockMetadata());
+			}
+			if (page == ChromaResearch.PLAYERINFUSION) {
+				array.setBlock(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.PLAYERINFUSER.getBlock(), ChromaTiles.PLAYERINFUSER.getBlockMetadata());
+			}
+			if (page == ChromaResearch.MINIPYLON) {
+				array.setBlock(array.getMidX(), array.getMinY()+6, array.getMidZ(), ChromaTiles.PERSONAL.getBlock(), ChromaTiles.PERSONAL.getBlockMetadata());
+			}
+			if (page == ChromaResearch.PYLON) {
+				array.setBlock(array.getMidX(), array.getMinY()+1, array.getMidZ(), Blocks.air);
+			}
+			if (page == ChromaResearch.PYLON || page == ChromaResearch.PYLONTURBORING) {
+				array.setBlock(array.getMidX(), array.getMinY()+9, array.getMidZ(), ChromaTiles.PYLON.getBlock(), ChromaTiles.PYLON.getBlockMetadata());
+			}
+			if (page == ChromaResearch.PYLONBROADCAST) {
+				array.setBlock(array.getMidX(), array.getMinY()+10, array.getMidZ(), ChromaTiles.PYLON.getBlock(), ChromaTiles.PYLON.getBlockMetadata());
+			}
+			if (page == ChromaResearch.CLOAKTOWER) {
+				array.setBlock(array.getMidX(), array.getMinY()+5, array.getMidZ(), ChromaTiles.CLOAKING.getBlock(), ChromaTiles.CLOAKING.getBlockMetadata());
+			}
+			if (page == ChromaResearch.VOIDTRAPSTRUCT || page == ChromaResearch.VOIDTRAPSTRUCTN) {
+				array.setBlock(array.getMidX(), array.getMaxY(), array.getMidZ(), ChromaTiles.VOIDTRAP.getBlock(), ChromaTiles.VOIDTRAP.getBlockMetadata());
+			}
+			if (page == ChromaResearch.GATESTRUCT) {
+				for (int i = 0; i <= 1; i++) {
+					array.setBlock(array.getMidX()+3-i, array.getMinY()+3+i, array.getMidZ(), Blocks.air);
+					array.setBlock(array.getMidX()-3+i, array.getMinY()+3+i, array.getMidZ(), Blocks.air);
+					array.setBlock(array.getMidX(), array.getMinY()+3+i, array.getMidZ()+3-i, Blocks.air);
+					array.setBlock(array.getMidX(), array.getMinY()+3+i, array.getMidZ()-3+i, Blocks.air);
+				}
 			}
 		}
 		HashSet<Coordinate> set = new HashSet();
@@ -429,6 +444,15 @@ public class GuiStructure extends GuiBookSection {
 		GL11.glPopMatrix();
 	}
 
+	@Override
+	public String getPageTitle() {
+		String ret = super.getPageTitle();
+		if (musicStructure) {
+			ret = ChromaFontRenderer.FontType.OBFUSCATED.id+ret;
+		}
+		return ret;
+	}
+
 	private void drawSlice(int j, int k) {
 		render.drawSlice(j, k, fontRendererObj);
 	}
@@ -462,6 +486,9 @@ public class GuiStructure extends GuiBookSection {
 			}
 			else if (ChromaBlocks.MOLTENLUMEN.match(is)) {
 				is2 = ChromaItems.BUCKET.getStackOfMetadata(4);
+			}
+			else if (ReikaItemHelper.matchStackWithBlock(is, Blocks.water)) {
+				is2 = new ItemStack(Items.water_bucket);
 			}
 			else if (ChromaBlocks.RUNE.match(is)) {
 				is2 = ChromaBlocks.RUNE.getStackOfMetadata(getElementByTick());
@@ -497,6 +524,9 @@ public class GuiStructure extends GuiBookSection {
 				if (ChromaBlocks.getEntryByID(ChromaTiles.STAND.getBlock()).match(is2) && is2.getItemDamage() == ChromaTiles.STAND.getBlockMetadata()) {
 					is2 = ChromaTiles.STAND.getCraftedProduct();
 				}
+			}
+			if (ChromaBlocks.getEntryByID(ChromaTiles.MUSIC.getBlock()).match(is2) && is2.getItemDamage() == ChromaTiles.MUSIC.getBlockMetadata()) {
+				is2 = ChromaTiles.MUSIC.getCraftedProduct();
 			}
 			if (ChromaBlocks.PYLON.match(is2)) {
 				is2 = ChromaTiles.getTileFromIDandMetadata(Block.getBlockFromItem(is2.getItem()), is2.getItemDamage()).getCraftedProduct();

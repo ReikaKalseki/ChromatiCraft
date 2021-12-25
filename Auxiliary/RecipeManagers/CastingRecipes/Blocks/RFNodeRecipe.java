@@ -34,4 +34,9 @@ public class RFNodeRecipe extends TempleCastingRecipe {
 		return 1;
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 }

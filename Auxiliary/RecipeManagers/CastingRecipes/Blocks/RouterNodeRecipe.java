@@ -40,4 +40,9 @@ public class RouterNodeRecipe extends CastingRecipe {
 		is.stackTagCompound.removeTag("target");
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 }

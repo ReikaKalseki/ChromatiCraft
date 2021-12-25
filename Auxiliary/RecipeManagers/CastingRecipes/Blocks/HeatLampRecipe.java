@@ -46,4 +46,9 @@ public class HeatLampRecipe extends TempleCastingRecipe {
 		return 8;
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 }

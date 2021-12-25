@@ -107,7 +107,7 @@ public class MonumentCompletionRitual {
 	private final int x;
 	private final int y;
 	private final int z;
-	private final EntityPlayer ep;
+	private final EntityPlayer player;
 
 	private final PacketTarget packetTarget;
 	@SideOnly(Side.CLIENT)
@@ -271,7 +271,7 @@ public class MonumentCompletionRitual {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.ep = ep;
+		player = ep;
 
 		int t0 = 100;
 		long off = 0;
@@ -444,6 +444,7 @@ public class MonumentCompletionRitual {
 			runTime = time-(startTime+pauseTotal);
 			//ReikaJavaLibrary.pConsole(time+" - "+startTime+" - "+pauseTotal+" = "+runTime+" @ "+FMLCommonHandler.instance().getEffectiveSide());
 			tick++;
+			player.distanceWalkedOnStepModified = player.nextStepDistance-1;
 
 			if (world.isRemote) {
 				this.manipulateCamera();
@@ -617,8 +618,8 @@ public class MonumentCompletionRitual {
 		Minecraft.getMinecraft().gameSettings.hideGUI = true;
 		Minecraft.getMinecraft().gameSettings.viewBobbing = false;
 		Minecraft.getMinecraft().gameSettings.thirdPersonView = 0;
-		double ang = ((world.getTotalWorldTime()+ep.getUniqueID().hashCode()%8000)/2D);
-		double angPrev = ((world.getTotalWorldTime()+ep.getUniqueID().hashCode()%8000-1)/2D);
+		double ang = ((world.getTotalWorldTime()+player.getUniqueID().hashCode()%8000)/2D);
+		double angPrev = ((world.getTotalWorldTime()+player.getUniqueID().hashCode()%8000-1)/2D);
 		//double r = 15+7.5*Math.sin(ang/32D);
 		//double cx = x+0.5+r*Math.cos(Math.toRadians(ang));
 		//double cz = z+0.5+r*Math.sin(Math.toRadians(ang));
@@ -641,7 +642,7 @@ public class MonumentCompletionRitual {
 		double pitchPrev = 90-angsPrev[1];
 		double yaw = -angs[2];
 		double yawPrev = -angsPrev[2];
-		ReikaRenderHelper.setCameraPosition(ep, cx, cy, cz, cxPrev, cyPrev, czPrev, yaw, yawPrev, pitch, pitchPrev, true, true);
+		ReikaRenderHelper.setCameraPosition(player, cx, cy, cz, cxPrev, cyPrev, czPrev, yaw, yawPrev, pitch, pitchPrev, true, true);
 	}
 
 	public boolean doChecks() {
@@ -712,20 +713,20 @@ public class MonumentCompletionRitual {
 			if (!complete)
 				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.MONUMENTCOMPLETE.ordinal(), packetTarget, x, y, z);
 
-			double[] angs = ReikaPhysicsHelper.cartesianToPolar(ep.posX-x-0.5, ep.posY-y-0.5, ep.posZ-z-0.5);
+			double[] angs = ReikaPhysicsHelper.cartesianToPolar(player.posX-x-0.5, player.posY-y-0.5, player.posZ-z-0.5);
 			double pitch = 90-angs[1];
 			double yaw = -angs[2];
-			ep.rotationYaw = ep.rotationYawHead = ep.prevRotationYawHead = ep.prevRotationYaw = (float)yaw;
-			ep.rotationPitch = ep.prevRotationPitch = (float)pitch;
+			player.rotationYaw = player.rotationYawHead = player.prevRotationYawHead = player.prevRotationYaw = (float)yaw;
+			player.rotationPitch = player.prevRotationPitch = (float)pitch;
 		}
 		else {
 			world.setBlock(x, y, z, ChromaTiles.AURAPOINT.getBlock(), ChromaTiles.AURAPOINT.getBlockMetadata(), 3);
 			TileEntityAuraPoint te = (TileEntityAuraPoint)world.getTileEntity(x, y, z);
-			te.setPlacer(ep);
-			ep.setLocationAndAngles(x+0.5, y-4, z-4.5, 0, -25);
-			ep.onGround = true;
-			ep.motionX = ep.motionY = ep.motionZ = 0;
-			ProgressStage.CTM.stepPlayerTo(ep);
+			te.setPlacer(player);
+			player.setLocationAndAngles(x+0.5, y-4, z-4.5, 0, -25);
+			player.onGround = true;
+			player.motionX = player.motionY = player.motionZ = 0;
+			ProgressStage.CTM.stepPlayerTo(player);
 			if (!world.isRemote)
 				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.RESETMONUMENT.ordinal(), packetTarget, x, y, z);
 			running = false;

@@ -28,6 +28,7 @@ import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.wands.FocusUpgradeType;
@@ -76,6 +77,7 @@ public class ItemAbilityFocus extends ItemCustomFocus {
 			int pwr = focus.stackTagCompound.getInteger("power");
 			pwr = Math.min(pwr, MathHelper.ceiling_float_int(a.getMaxPower()*this.getUpgradeLevel(focus, FocusUpgradeType.potency)/5F));
 			Chromabilities.triggerAbility(ep, a, pwr, this.getCostScale(focus));
+			ThaumcraftApi.internalMethods.consumeVisFromWand(wand, ep, this.getVisCost(focus), true, false);
 		}
 		else {
 			ChromaSounds.ERROR.playSound(ep);

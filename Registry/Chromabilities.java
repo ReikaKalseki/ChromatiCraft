@@ -235,6 +235,7 @@ public enum Chromabilities implements Ability {
 			case MOBSEEK:
 			case BEEALYZE:
 			case NUKER:
+			case DOUBLECRAFT:
 				//case VOXELPLACE:
 				return true;
 			default:

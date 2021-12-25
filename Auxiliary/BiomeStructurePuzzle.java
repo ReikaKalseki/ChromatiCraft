@@ -510,7 +510,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	public void handleMusicTrigger(World world, int x, int y, int z, CrystalElement e, MusicKey mk, TileEntityStructControl root, EntityPlayer ep) {
 		if (complete)
 			return;
-		if (mk == remainingGuess.get(0)) {
+		if (mk == remainingGuess.get(0) || ProgressStage.CTM.isPlayerAtStage(ep)) {
 			remainingGuess.remove(0);
 			if (remainingGuess.isEmpty()) {
 				this.complete(world, root, ep);

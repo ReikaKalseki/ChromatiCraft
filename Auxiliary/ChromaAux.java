@@ -511,7 +511,7 @@ public class ChromaAux {
 		return li.get(ReikaRandomHelper.getSafeRandomInt(li.size()));
 	}
 
-	public static boolean chargePlayerFromPylon(EntityPlayer player, ChargingPoint te, CrystalElement e, int tick) {
+	public static boolean chargePlayerFromPylon(EntityPlayer player, ChargingPoint te, CrystalElement e, int tick, boolean doFX) {
 		if (te.canConduct() && te.allowCharging(player, e) && allowPlayerChargingAt(player, te, e)) {
 			int add = Math.max(1, (int)(PlayerElementBuffer.instance.getChargeSpeed(player)*te.getChargeRateMultiplier(player, e)));
 			int n = PlayerElementBuffer.instance.getChargeInefficiency(player);
@@ -523,6 +523,7 @@ public class ChromaAux {
 			}
 			if (add > 0 && PlayerElementBuffer.instance.canPlayerAccept(player, e, add)) {
 				te.onUsedBy(player, e);
+				//player.getEntityData().setLong("lastSelfCharge", player.worldObj.getTotalWorldTime());
 				if (PlayerElementBuffer.instance.addToPlayer(player, e, add, true))
 					te.drain(e, drain);
 				ProgressStage.CHARGE.stepPlayerTo(player);
@@ -530,7 +531,8 @@ public class ChromaAux {
 					ProgressionManager.instance.setPlayerDiscoveredColor(player, ((TileEntityCrystalPylon)te).getColor(), true, true);
 				if (player.worldObj.isRemote) {
 					//this.spawnParticles(player, e);
-					ChromaFX.createPylonChargeBeam(te, player, (tick%20)/20D, e);
+					if (doFX)
+						ChromaFX.createPylonChargeBeam(te, player, (tick%20)/20D, e);
 				}
 				else {
 					chargePlayerTools(player, te, e);

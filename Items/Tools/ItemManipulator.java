@@ -511,7 +511,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 
 				if (te instanceof ChargingPoint) {
 					ChargingPoint cp = (ChargingPoint)te;
-					ChromaAux.chargePlayerFromPylon(player, cp, cp.getDeliveredColor(player, world, x, y, z), count);
+					ChromaAux.chargePlayerFromPylon(player, cp, cp.getDeliveredColor(player, world, x, y, z), count, true);
 				}
 			}
 		}

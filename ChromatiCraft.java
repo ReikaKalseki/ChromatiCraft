@@ -444,6 +444,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		ConfigMatcher.instance.addConfigList(this, ChromaOptions.optionList);
 		ConfigMatcher.instance.addConfigList(this, ExtraChromaIDs.idList);
 
+		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.TANK.getBlockInstance());
 		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.GLASS.getBlockInstance());
 		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.SELECTIVEGLASS.getBlockInstance());
 		RayTracer.addVisuallyTransparentBlock(ChromaBlocks.DOOR.getBlockInstance());

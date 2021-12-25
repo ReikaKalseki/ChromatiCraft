@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -32,6 +32,11 @@ public class RedstonePodRecipe extends TempleCastingRecipe {
 	@Override
 	public int getNumberProduced() {
 		return 2;
+	}
+
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
 	}
 
 }

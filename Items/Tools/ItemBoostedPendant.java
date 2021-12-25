@@ -148,8 +148,8 @@ public class ItemBoostedPendant extends ItemPendant implements PoweredItem {
 	}
 
 	@Override
-	public int getPlayerBufferExtractionRate(ItemStack is) {
-		return 2;
+	public float getPlayerBufferExtractionValue(ItemStack is) {
+		return 40;
 	}
 
 	@Override

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -37,6 +37,11 @@ public class CrystalGlassRecipe extends CastingRecipe {
 	@Override
 	public int getTypicalCraftedAmount() {
 		return 128;
+	}
+
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
 	}
 
 }

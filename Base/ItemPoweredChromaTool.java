@@ -56,7 +56,7 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Po
 	}
 
 	@Override
-	public int getPlayerBufferExtractionRate(ItemStack is) {
+	public float getPlayerBufferExtractionValue(ItemStack is) {
 		return 0;
 	}
 

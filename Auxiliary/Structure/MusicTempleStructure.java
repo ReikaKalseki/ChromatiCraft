@@ -81,6 +81,14 @@ public class MusicTempleStructure extends ChromaStructureBase {
 			}
 		}
 
+		prepareArray(array, ctr);
+	}
+
+	public static void prepareArray(FilledBlockArray array, Coordinate ctr) {
+		array.setEmpty(ctr.xCoord+1, ctr.yCoord, ctr.zCoord, false, false);
+		array.setEmpty(ctr.xCoord-1, ctr.yCoord, ctr.zCoord, false, false);
+		array.setEmpty(ctr.xCoord, ctr.yCoord, ctr.zCoord-1, false, false);
+		array.setEmpty(ctr.xCoord, ctr.yCoord, ctr.zCoord+1, false, false);
 		array.addBlock(ctr.xCoord+1, ctr.yCoord, ctr.zCoord, Blocks.lever);
 		array.addBlock(ctr.xCoord-1, ctr.yCoord, ctr.zCoord, Blocks.lever);
 		array.addBlock(ctr.xCoord, ctr.yCoord, ctr.zCoord+1, Blocks.lever);
@@ -108,7 +116,7 @@ public class MusicTempleStructure extends ChromaStructureBase {
 		 */
 
 		for (int n = 0; n < 8; n++) {
-			Coordinate c = this.getPillarRoot(n).offset(ctr);
+			Coordinate c = getPillarRoot(n).offset(ctr);
 			for (int i = -1; i <= 1; i++) {
 				for (int k = -1; k <= 1; k++) {
 					if (i != 0 || k != 0) {

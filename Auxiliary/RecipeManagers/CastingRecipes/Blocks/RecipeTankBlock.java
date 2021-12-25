@@ -39,4 +39,9 @@ public class RecipeTankBlock extends MultiBlockCastingRecipe {
 		return 4;
 	}
 
+	@Override
+	public boolean canGiveDoubleOutput() {
+		return true;
+	}
+
 }

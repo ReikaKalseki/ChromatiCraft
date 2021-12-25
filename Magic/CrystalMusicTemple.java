@@ -31,6 +31,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Structure.MusicTempleStructure;
+import Reika.ChromatiCraft.ModInterface.AuroraHandler;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
@@ -38,6 +39,7 @@ import Reika.ChromatiCraft.TileEntity.Decoration.TileEntityCrystalMusic;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.IO.ReikaFileReader;
+import Reika.DragonAPI.Instantiable.BasicModEntry;
 import Reika.DragonAPI.Instantiable.MusicScore.Note;
 import Reika.DragonAPI.Instantiable.MusicScore.ScoreTrack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
@@ -188,6 +190,15 @@ public class CrystalMusicTemple {
 				//spillFluid(world);
 
 				fluidSource.offset(tileLocation).setBlock(world, Blocks.air);
+
+				if (new BasicModEntry("dsurround").isLoaded()) {
+					try {
+						AuroraHandler.instance.addAurora(world, tileLocation.xCoord, tileLocation.zCoord);
+					}
+					catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}
 	}

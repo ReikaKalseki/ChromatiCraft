@@ -43,6 +43,7 @@ import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntitySheep;
+import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -193,7 +194,7 @@ import Reika.ChromatiCraft.World.Dimension.ChromaDimensionTicker;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.WorldProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.Structure.BridgeGenerator;
-import Reika.CritterPet.Interfaces.TamedMob;
+import Reika.CritterPet.API.TamedCritter;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.ModList;
@@ -2251,8 +2252,13 @@ public class ChromaticEventManager {
 	@SubscribeEvent(priority=EventPriority.LOWEST)
 	public void rangedPetInvincibility(LivingAttackEvent evt) {
 		if (evt.ammount > 0 && TileEntityCrystalBeacon.isDamageBlockable(evt.source)) {
-			if (evt.entityLiving instanceof TamedMob) {
-				if (TileEntityCrystalBeacon.isEntityInvincible((EntityLiving)evt.entityLiving, ((TamedMob)evt.entityLiving).getMobOwner(), evt.ammount)) {
+			if (evt.entityLiving instanceof TamedCritter) {
+				if (TileEntityCrystalBeacon.isEntityInvincible((EntityLiving)evt.entityLiving, ((TamedCritter)evt.entityLiving).getMobOwner(), null, evt.ammount)) {
+					evt.setCanceled(true);
+				}
+			}
+			if (evt.entityLiving instanceof EntityTameable) {
+				if (TileEntityCrystalBeacon.isEntityInvincible((EntityLiving)evt.entityLiving, null, ((EntityTameable)evt.entityLiving).func_152113_b(), evt.ammount)) {
 					evt.setCanceled(true);
 				}
 			}

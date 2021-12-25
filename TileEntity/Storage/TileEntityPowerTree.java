@@ -320,10 +320,12 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 						if (this.getEnergy(e) > 0) {
 							int cap = PlayerElementBuffer.instance.getElementCap(ep);
 							int space = cap-PlayerElementBuffer.instance.getPlayerContent(ep, e);
+							//long last = ep.getEntityData().getLong("lastSelfCharge");
+							//int gap = ep.worldObj.getTotalWorldTime()-last > 50 ? 20 : 0;
 							if (space > 0) {
 								//int amt = Math.min(this.getEnergy(e), Math.min(space, Math.max(cap/24/8, 1+rand.nextInt(Math.max(1, space/4*4)))));
 								//ReikaJavaLibrary.pConsole(e+":"+amt);
-								ChromaAux.chargePlayerFromPylon(ep, this, e, this.getTicksExisted());
+								ChromaAux.chargePlayerFromPylon(ep, this, e, this.getTicksExisted(), ep.getDistanceSq(x+0.5, y+0.5, z+0.5) <= 4096);
 							}
 						}
 					}

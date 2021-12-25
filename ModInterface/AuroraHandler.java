@@ -15,6 +15,7 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.BasicModEntry;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget.DimensionTarget;
+import Reika.DragonAPI.Interfaces.Registry.ModEntry;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
@@ -69,74 +70,77 @@ public class AuroraHandler {
 	private Field colorList;
 
 	private AuroraHandler() {
-		try {
-			network = Class.forName("org.blockartistry.mod.DynSurround.network.Network");
+		ModEntry mod = new BasicModEntry("dsurround");
+		if (mod.isLoaded()) {
+			try {
+				network = Class.forName("org.blockartistry.mod.DynSurround.network.Network");
 
-			data = Class.forName("org.blockartistry.mod.DynSurround.data.AuroraData");
+				data = Class.forName("org.blockartistry.mod.DynSurround.data.AuroraData");
 
-			dimData = Class.forName("org.blockartistry.mod.DynSurround.data.DimensionEffectData");
+				dimData = Class.forName("org.blockartistry.mod.DynSurround.data.DimensionEffectData");
 
-			colors = Class.forName("org.blockartistry.mod.DynSurround.data.ColorPair");
-			presets = Class.forName("org.blockartistry.mod.DynSurround.data.AuroraPreset");
+				colors = Class.forName("org.blockartistry.mod.DynSurround.data.ColorPair");
+				presets = Class.forName("org.blockartistry.mod.DynSurround.data.AuroraPreset");
 
-			color = Class.forName("org.blockartistry.mod.DynSurround.util.Color");
+				color = Class.forName("org.blockartistry.mod.DynSurround.util.Color");
 
-			dataCtr = data.getDeclaredConstructor(int.class, int.class, int.class, long.class, int.class, int.class);
-			dataCtr.setAccessible(true);
+				dataCtr = data.getDeclaredConstructor(int.class, int.class, int.class, long.class, int.class, int.class);
+				dataCtr.setAccessible(true);
 
-			colorPairCtr = colors.getDeclaredConstructor(color, color);
-			colorPairCtr.setAccessible(true);
+				colorPairCtr = colors.getDeclaredConstructor(color, color);
+				colorPairCtr.setAccessible(true);
 
-			colorCtr = color.getDeclaredConstructor(int.class, int.class, int.class);
-			colorCtr.setAccessible(true);
+				colorCtr = color.getDeclaredConstructor(int.class, int.class, int.class);
+				colorCtr.setAccessible(true);
 
-			randomColor = colors.getDeclaredMethod("randomId");
-			randomPreset = presets.getDeclaredMethod("randomId");
+				randomColor = colors.getDeclaredMethod("randomId");
+				randomPreset = presets.getDeclaredMethod("randomId");
 
-			getDataForDim = dimData.getDeclaredMethod("get", World.class);
-			getDataForDim.setAccessible(true);
+				getDataForDim = dimData.getDeclaredMethod("get", World.class);
+				getDataForDim.setAccessible(true);
 
-			auroraeServer = dimData.getDeclaredField("auroras");
-			auroraeServer.setAccessible(true);
+				auroraeServer = dimData.getDeclaredField("auroras");
+				auroraeServer.setAccessible(true);
 
-			colorList = colors.getDeclaredField("PAIRS");
-			colorList.setAccessible(true);
+				colorList = colors.getDeclaredField("PAIRS");
+				colorList.setAccessible(true);
 
-			sendAurora = network.getDeclaredMethod("sendAurora", data, int.class);
+				sendAurora = network.getDeclaredMethod("sendAurora", data, int.class);
 
-			if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT || DragonAPICore.isSinglePlayer()) {
-				aurora = Class.forName("org.blockartistry.mod.DynSurround.client.aurora.Aurora");
-				handler = Class.forName("org.blockartistry.mod.DynSurround.client.AuroraEffectHandler");
-				renderer = Class.forName("org.blockartistry.mod.DynSurround.client.aurora.AuroraRenderer");
+				if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT || DragonAPICore.isSinglePlayer()) {
+					aurora = Class.forName("org.blockartistry.mod.DynSurround.client.aurora.Aurora");
+					handler = Class.forName("org.blockartistry.mod.DynSurround.client.AuroraEffectHandler");
+					renderer = Class.forName("org.blockartistry.mod.DynSurround.client.aurora.AuroraRenderer");
 
-				aurorae = handler.getDeclaredField("auroras");
-				aurorae.setAccessible(true);
-				current = handler.getDeclaredField("currentAurora");
-				current.setAccessible(true);
+					aurorae = handler.getDeclaredField("auroras");
+					aurorae.setAccessible(true);
+					current = handler.getDeclaredField("currentAurora");
+					current.setAccessible(true);
 
-				baseColor = aurora.getDeclaredField("baseColor");
-				baseColor.setAccessible(true);
-				fadeColor = aurora.getDeclaredField("fadeColor");
-				fadeColor.setAccessible(true);
-				die = aurora.getDeclaredMethod("die");
-				die.setAccessible(true);
+					baseColor = aurora.getDeclaredField("baseColor");
+					baseColor.setAccessible(true);
+					fadeColor = aurora.getDeclaredField("fadeColor");
+					fadeColor.setAccessible(true);
+					die = aurora.getDeclaredMethod("die");
+					die.setAccessible(true);
 
-				render = renderer.getDeclaredMethod("renderAurora", float.class, aurora);
-				render.setAccessible(true);
+					render = renderer.getDeclaredMethod("renderAurora", float.class, aurora);
+					render.setAccessible(true);
 
-				auroraCtr = aurora.getDeclaredConstructor(data);
-				auroraCtr.setAccessible(true);
+					auroraCtr = aurora.getDeclaredConstructor(data);
+					auroraCtr.setAccessible(true);
+				}
+
+				for (int i = 0; i < 16; i++) {
+					int c = CrystalElement.elements[i].getColor();
+					//this.addColorPair(c, c);
+				}
 			}
-
-			for (int i = 0; i < 16; i++) {
-				int c = CrystalElement.elements[i].getColor();
-				//this.addColorPair(c, c);
+			catch (Exception e) {
+				e.printStackTrace();
+				ChromatiCraft.logger.logError("Could not load DynSurround aurora hooks!");
+				ReflectiveFailureTracker.instance.logModReflectiveFailure(mod, e);
 			}
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-			ChromatiCraft.logger.logError("Could not load DynSurround aurora hooks!");
-			ReflectiveFailureTracker.instance.logModReflectiveFailure(new BasicModEntry("dsurround"), e);
 		}
 	}
 

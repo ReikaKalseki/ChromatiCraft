@@ -91,16 +91,16 @@ public class ToolChargingSystem {
 	}
 
 	public void tryChargeFromPlayer(ItemStack is, EntityPlayer ep) {
-		int extr = this.getItem(is).getPlayerBufferExtractionRate(is);
+		if (this.getCharge(is) >= this.getItem(is).getMaxCharge()/2)
+			return;
+		float extr = this.getItem(is).getPlayerBufferExtractionValue(is);
 		if (extr > 0) {
 			CrystalElement ec = this.getItem(is).getColor(is);
-			int get = Math.min(extr, PlayerElementBuffer.instance.getPlayerContent(ep, ec));
+			int get = PlayerElementBuffer.instance.getPlayerContent(ep, ec);
 			if (get > 0) {
-				int scale = 40; //40x since lumens in items are worth a LOT less
-				int add = this.addCharge(is, get*scale);
+				int add = this.addCharge(is, (int)(get*extr));
 				if (add > 0)
-					add = Math.max(1, add/scale);
-				PlayerElementBuffer.instance.removeFromPlayer(ep, ec, add);
+					PlayerElementBuffer.instance.removeFromPlayer(ep, ec, Math.max(1, (int)(add/extr)));
 			}
 		}
 	}

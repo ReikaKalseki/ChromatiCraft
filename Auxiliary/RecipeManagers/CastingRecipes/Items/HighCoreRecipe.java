@@ -73,7 +73,7 @@ public abstract class HighCoreRecipe extends PylonCastingRecipe implements Shard
 	}
 
 	@Override
-	public boolean canGiveDoubleOutput() {
+	public final boolean canGiveDoubleOutput() {
 		return true;
 	}
 

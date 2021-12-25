@@ -57,8 +57,8 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
 
 
-@Strippable(value={"appeng.api.networking.security.IActionHost"}) //implement IMEInventoryHandler ?
-public abstract class TileEntityMassStorage extends TileEntityChromaticBase implements IInventory, IActionHost, BreakAction, ConditionBreakDropsInventory {
+@Strippable(value={"appeng.api.networking.security.IActionHost", "appeng.api.storage.ICellContainer", "appeng.api.storage.IMEInventoryHandler"})
+public abstract class TileEntityMassStorage extends TileEntityChromaticBase implements IInventory, IActionHost/*, ICellContainer, IMEInventoryHandler*/, BreakAction, ConditionBreakDropsInventory {
 
 	private static final HashMap<UUID, ArrayList<ItemStack>> itemData = new HashMap();
 
@@ -517,7 +517,140 @@ public abstract class TileEntityMassStorage extends TileEntityChromaticBase impl
 	public final void securityBreak() {
 
 	}
+	/*
+	@Override
+	@ModDependent(ModList.APPENG)
+	public final void blinkCell(int slot) {
+		TO DO maybe a packet to spawn some particles or something
+	}
 
+	@Override
+	@ModDependent(ModList.APPENG)
+	public final List<IMEInventoryHandler> getCellArray(StorageChannel channel) {
+		return Arrays.asList(this);
+	}
+
+	@Override
+	@ModDependent(ModList.APPENG)
+	public final int getPriority() {
+		return 60000;
+	}
+
+	@Override
+	@ModDependent(ModList.APPENG)
+	public final void saveChanges(IMEInventory cellInventory) {
+
+	}
+
+	@Override
+	public final AccessRestriction getAccess() {
+		return AccessRestriction.READ_WRITE;
+	}
+
+	@Override
+	public boolean isPrioritized(IAEStack input) {
+		return this.canAccept(input);
+	}
+
+	@Override
+	@ModDependent(ModList.APPENG)
+	public final boolean canAccept(IAEStack input) {
+		return input.isMeaningful() && input.isItem() && this.isItemValid(((IAEItemStack)input).getItemStack());
+	}
+
+	@Override
+	@ModDependent(ModList.APPENG)
+	public final int getSlot() {
+		return 0;
+	}
+
+	@Override
+	@ModDependent(ModList.APPENG)
+	public boolean validForPass(int i) {
+		return true;
+	}
+
+	@Override
+	@ModDependent(ModList.APPENG)
+	public final IAEStack injectItems(IAEStack input, Actionable type, BaseActionSource src) { FIX ME this disobeys maxItemCount
+		if (!input.isItem())
+			return input;
+		ItemStack ref = ((IAEItemStack)input).getItemStack();
+		if (ref == null || ref.getItem() == null)
+			return input;
+		if (type == Actionable.SIMULATE)
+			return null;
+		long amt = input.getStackSize();
+		long added = 0;
+		while (amt > 0) {
+			ItemStack put = ReikaItemHelper.getSizedItemStack(ref, Math.min((int)Math.min(Integer.MAX_VALUE, amt), ref.getMaxStackSize()));
+			this.addItem(put);
+			amt -= put.stackSize;
+			added += put.stackSize;
+		}
+		return null; //add can never fail
+	}
+
+	@Override
+	@ModDependent(ModList.APPENG)
+	public final IAEStack extractItems(IAEStack request, Actionable mode, BaseActionSource src) {
+		if (!request.isItem())
+			return null;
+		ItemStack seek = ((IAEItemStack)request).getItemStack();
+		int amt = this.countExactItem(seek);
+		if (amt == 0)
+			return null;
+		long get = Math.min(request.getStackSize(), amt);
+		if (mode == Actionable.MODULATE) {
+			long take = get;
+			Iterator<ItemStack> it = this.getItems().iterator();
+			while (it.hasNext()) {
+				ItemStack at = it.next();
+				if (ReikaItemHelper.matchStacks(at, seek) && ItemStack.areItemStackTagsEqual(seek, at)) {
+					if (take >= at.stackSize) {
+						take -= at.stackSize;
+						it.remove();
+					}
+					else {
+						take = 0;
+						at.stackSize -= take;
+					}
+					if (take <= 0)
+						break;
+				}
+			}
+		}
+		IAEItemStack ret = (IAEItemStack)request.copy();
+		ret.setStackSize(get);
+		return ret;
+	}
+
+	private int countExactItem(ItemStack seek) {
+		int amt = 0;
+		for (ItemStack is : this.getItems()) {
+			if (ReikaItemHelper.matchStacks(is, seek) && ItemStack.areItemStackTagsEqual(is, seek)) {
+				amt += is.stackSize;
+			}
+		}
+		return amt;
+	}
+
+	@Override
+	@ModDependent(ModList.APPENG)
+	public final IItemList getAvailableItems(IItemList out) {
+		IItemList li = AEApi.instance().storage().createItemList();
+		for (ItemStack is : this.getItems()) {
+			li.add(MESystemReader.createAEStack(is));
+		}
+		return li;
+	}
+
+	@Override
+	@ModDependent(ModList.APPENG)
+	public final StorageChannel getChannel() {
+		return StorageChannel.ITEMS;
+	}
+	 */
 	@Override
 	public final void breakBlock() {
 		ReikaItemHelper.dropItems(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, this.getItems());
