@@ -3,6 +3,7 @@ package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumRarity;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 import net.minecraft.util.MovingObjectPosition;
@@ -15,6 +16,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.ModInteract.DeepInteract.ItemCustomFocus;
+import Reika.DragonAPI.ModInteract.ItemHandlers.BotaniaHandler;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -47,6 +49,10 @@ public class ItemManipulatorFocus extends ItemCustomFocus {
 		}
 		else {
 			ChromaItems.TOOL.getItemInstance().onItemUse(ChromaItems.TOOL.getStackOf(), player, world, mov.blockX, mov.blockY, mov.blockZ, mov.sideHit, (float)mov.hitVec.xCoord, (float)mov.hitVec.yCoord, (float)mov.hitVec.zCoord);
+			if (ModList.BOTANIA.isLoaded()) {
+				Item petals = BotaniaHandler.getInstance().wandID;
+				petals.onItemUse(new ItemStack(petals), player, world, mov.blockX, mov.blockY, mov.blockZ, mov.sideHit, (float)mov.hitVec.xCoord, (float)mov.hitVec.yCoord, (float)mov.hitVec.zCoord);
+			}
 		}
 		return null;
 	}

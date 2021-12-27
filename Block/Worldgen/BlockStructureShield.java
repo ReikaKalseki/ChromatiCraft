@@ -228,11 +228,9 @@ public class BlockStructureShield extends Block implements SemiUnbreakable, Subm
 	public boolean isSideSolid(IBlockAccess world, int x, int y, int z, ForgeDirection side)
 	{
 		int meta = world.getBlockMetadata(x, y, z);
-		if (BlockType.list[meta%8].isOpaque(side))
-			return true;
 		if (BlockType.list[meta%8].isTransparent(side))
 			return false;
-		return meta < 8;
+		return true;
 	}
 
 	@Override

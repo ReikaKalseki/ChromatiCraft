@@ -203,6 +203,11 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 						if (rand.nextInt(20) == 0) {
 							b = ChromaBlocks.DIMGEN.getBlockInstance();
 							meta = DimDecoTypes.GLOWCAVE.ordinal();
+							for (Coordinate c2 : c.getAdjacentCoordinates()) {
+								if (!set.contains(c2)) {
+									c2.setBlock(world, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+								}
+							}
 						}
 						else {
 							b = ChromaBlocks.STRUCTSHIELD.getBlockInstance();
@@ -249,6 +254,11 @@ public class WorldGenGlowCave extends ChromaWorldGenerator {
 					if (rand.nextDouble() < f) {
 						b = ChromaBlocks.BEDROCKCRACK.getBlockInstance();
 						meta = this.getRandomCrackMeta(rand, c);
+						for (Coordinate c2 : c.getAdjacentCoordinates()) {
+							if (!set.contains(c2)) {
+								c2.setBlock(world, Blocks.bedrock);
+							}
+						}
 					}
 				}
 			}

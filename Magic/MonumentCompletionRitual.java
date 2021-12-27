@@ -547,27 +547,9 @@ public class MonumentCompletionRitual {
 
 	@SideOnly(Side.CLIENT)
 	private void doVortexFX() {
-		double y0 = y+0.5-4.5;
-		double h = 0;
-		double vy = 0.25;
 		//for (double h = 0; h <= 6; h += 0.125) {
 		//vy = 0;
-		double r = 2.25-h/3+0.5*vortexSize;
-		for (double a = 0; a < 360; a += 30) {
-			double ang = a+h*30+(System.currentTimeMillis()/20D)%360D;
-			double dx = x+0.5+r*Math.cos(Math.toRadians(ang));
-			double dz = z+0.5+r*Math.sin(Math.toRadians(ang));
-			double vx = (x+0.5-dx)*0.01875/vortexSize;
-			double vz = (z+0.5-dz)*0.01875/vortexSize;
-			double dy = y0+h;
-			float s = 4;//(float)(7.5-h);
-			int l = a%60 == 0 ? 60 : 40;
-			l *= vortexSize;
-			EntityCCBlurFX fx = new EntityCCBlurFX(world, dx, dy, dz, vx, vy, vz);
-			fx.setIcon(ChromaIcons.CHROMA);
-			fx.setScale(s).setLife(l).setRapidExpand();
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-		}
+		doVortexFX(world, x, y, z, vortexSize);
 		if (vortexSize < 1) {
 			vortexSize = Math.min(1, vortexSize+0.02F);
 		}
@@ -577,6 +559,29 @@ public class MonumentCompletionRitual {
 		}
 		else if (vortexSize > 1) {
 			vortexSize = Math.max(1, vortexSize*0.998F-0.01F);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void doVortexFX(World world, int x, int y, int z, double s) {
+		double h = 0;
+		double vy = 0.25;
+		double y0 = y+0.5-4.5;
+		double r = 2.25-h/3+0.5*s;
+		for (double a = 0; a < 360; a += 30) {
+			double ang = a+h*30+(System.currentTimeMillis()/20D)%360D;
+			double dx = x+0.5+r*Math.cos(Math.toRadians(ang));
+			double dz = z+0.5+r*Math.sin(Math.toRadians(ang));
+			double vx = (x+0.5-dx)*0.01875/s;
+			double vz = (z+0.5-dz)*0.01875/s;
+			double dy = y0+h;
+			float sc = 4;//(float)(7.5-h);
+			int l = a%60 == 0 ? 60 : 40;
+			l *= s;
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, dx, dy, dz, vx, vy, vz);
+			fx.setIcon(ChromaIcons.CHROMA);
+			fx.setScale(sc).setLife(l).setRapidExpand();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 	}
 

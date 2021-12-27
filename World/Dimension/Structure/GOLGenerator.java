@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -86,6 +86,8 @@ public class GOLGenerator extends DimensionStructureGenerator {
 		}
 
 		world.setTileEntity(posX-SIZE-3, floorY+1, posZ, ChromaBlocks.GOLCONTROL.getBlockInstance(), 0, new GOLTileCallback(this, false));
+
+		this.generatePasswordTile(posX-SIZE-3, floorY+2, posZ);
 
 		new GOLDoors(this).generate(world, x, floorY+1, z-8);
 		new GOLLoot(this).generate(world, x+SIZE+1+1, floorY-1, z-3);
