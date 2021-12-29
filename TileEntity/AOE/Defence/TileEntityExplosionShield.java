@@ -23,6 +23,7 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Auxiliary.RangeTracker;
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -91,6 +92,7 @@ public class TileEntityExplosionShield extends CrystalReceiverBase implements Lo
 		int r = this.getRange();
 		int ry = this.getYRange();
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		boolean hold = HoldingChecks.MANIPULATOR.isHolding(ep);
 		double mx = xCoord+0.5-r;
 		double my = Math.max(0, yCoord+0.5-ry);
 		double mz = zCoord+0.5-r;
@@ -117,6 +119,10 @@ public class TileEntityExplosionShield extends CrystalReceiverBase implements Lo
 		 */
 		int n = (int)Math.ceil(3*dx*dy*dz/(MAXRANGE*MAXRANGE*MAXRANGE));
 		int n2 = 9*n;
+		if (!hold) {
+			n /= 9;
+			n2 /= 18;
+		}
 		for (int i = 0; i < n; i++) {
 			double px = ReikaRandomHelper.getRandomBetween(mx2, ax2);
 			double py = ReikaRandomHelper.getRandomBetween(my, ay);

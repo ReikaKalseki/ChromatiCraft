@@ -16,6 +16,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.ModInteract.DeepInteract.ItemCustomFocus;
+import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BotaniaHandler;
 
 import cpw.mods.fml.relauncher.Side;
@@ -49,12 +50,17 @@ public class ItemManipulatorFocus extends ItemCustomFocus {
 		}
 		else {
 			ChromaItems.TOOL.getItemInstance().onItemUse(ChromaItems.TOOL.getStackOf(), player, world, mov.blockX, mov.blockY, mov.blockZ, mov.sideHit, (float)mov.hitVec.xCoord, (float)mov.hitVec.yCoord, (float)mov.hitVec.zCoord);
-			if (ModList.BOTANIA.isLoaded()) {
+			if (this.canMultiTool(wand) && ModList.BOTANIA.isLoaded()) {
 				Item petals = BotaniaHandler.getInstance().wandID;
 				petals.onItemUse(new ItemStack(petals), player, world, mov.blockX, mov.blockY, mov.blockZ, mov.sideHit, (float)mov.hitVec.xCoord, (float)mov.hitVec.yCoord, (float)mov.hitVec.zCoord);
 			}
 		}
 		return null;
+	}
+
+	private boolean canMultiTool(ItemStack wand) {
+		ItemStack focus = ReikaThaumHelper.getWandFocusStack(wand);
+		return focus != null && this.getUpgradeLevel(focus, FocusUpgradeType.enlarge) > 0;
 	}
 
 	@Override
@@ -112,7 +118,7 @@ public class ItemManipulatorFocus extends ItemCustomFocus {
 
 	@Override
 	public FocusUpgradeType[] getPossibleUpgradesByRank(ItemStack focusstack, int rank) {
-		return null;
+		return new FocusUpgradeType[] {FocusUpgradeType.enlarge};
 	}
 
 }

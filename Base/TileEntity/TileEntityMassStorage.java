@@ -105,7 +105,7 @@ public abstract class TileEntityMassStorage extends TileEntityChromaticBase impl
 	}
 
 	private static void loadItemData(NBTTagCompound data) {
-		ChromatiCraft.logger.log("Loading tool crate data from disk: "+data);
+		//ChromatiCraft.logger.log("Loading tool crate data from disk: "+data);
 		itemData.clear();
 		NBTTagList list = data.getTagList("data", NBTTypes.COMPOUND.ID);
 		for (Object o : list.tagList) {
@@ -460,7 +460,7 @@ public abstract class TileEntityMassStorage extends TileEntityChromaticBase impl
 
 		if (NBT.hasKey("Items")) {
 			NBTTagList li = NBT.getTagList("Items", NBTTypes.COMPOUND.ID);
-			ChromatiCraft.logger.log("Loading legacy tool crate data from NBT: "+li);
+			//ChromatiCraft.logger.log("Loading legacy tool crate data from NBT: "+li);
 			this.getItems().clear();
 			types.clear();
 

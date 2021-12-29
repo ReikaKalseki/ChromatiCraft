@@ -607,7 +607,12 @@
 		<note>
 			Can be toggled into private mode (purple), as well as between arrival/departure only (red/yellow).
 			
-			GUI Color Statuses: White = Available; Red = Owned by Other; Yellow = Unpowered; Magenta = No Structure; Blue = Other Dimension
+			GUI Color Statuses:
+			White = Fully Available
+			Red = Owned by Other
+			Yellow = Unpowered
+			Magenta = No Structure
+			Blue = Other Dimension
 		</note>
 	</teleport>
 	<harvestplant>

@@ -46,6 +46,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Instantiable.StepTimer;
@@ -67,8 +68,11 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
+import Reika.DragonAPI.ModInteract.ItemHandlers.HexcraftHandler;
 import Reika.DragonAPI.ModRegistry.ModOreList;
 
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -341,6 +345,12 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		}
 		else if (b instanceof MinerBlock && ((MinerBlock)b).isMineable(meta)) {
 			return MineralCategory.from(((MinerBlock)b).getCategory());
+		}
+		else if (b == ForestryHandler.BlockEntry.HIVE.getBlock() || b == GameRegistry.findBlock(ModList.MAGICBEES.modLabel, "hive") || b == GameRegistry.findBlock("ExtraBees", "hive")) {
+			return MineralCategory.MISC_UNDERGROUND_VALUABLE;
+		}
+		else if (ModList.HEXCRAFT.isLoaded() && HexcraftHandler.getActiveHandler().isWorldGenMonolith(b)) {
+			return MineralCategory.MISC_UNDERGROUND_VALUABLE;
 		}
 		return null;
 	}

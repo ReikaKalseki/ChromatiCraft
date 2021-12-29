@@ -35,6 +35,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
+import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.Base.BlockTieredResource;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockSpiral;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
@@ -342,14 +343,19 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 			int dz = z+dir.offsetZ;
 			TileEntity te = world.getTileEntity(dx, dy, dz);
 			if (InterfaceCache.AREAPROVIDER.instanceOf(te)) {
-				IAreaProvider iap = (IAreaProvider)te;
-				areaOverride = new BlockBox(iap.xMin(), iap.yMin(), iap.zMin(), iap.xMax()+1, iap.yMax()+1, iap.zMax()+1);
-				range = areaOverride.getLongestEdge()+2;
-				iap.removeFromWorld();
+				this.readIAP(te);
 				this.syncAllData(false);
 				return;
 			}
 		}
+	}
+
+	@ClassDependent("buildcraft.api.core.IAreaProvider")
+	private void readIAP(TileEntity te) {
+		IAreaProvider iap = (IAreaProvider)te;
+		areaOverride = BlockBox.getFromIAP(iap);
+		range = areaOverride.getLongestEdge()+2;
+		iap.removeFromWorld();
 	}
 
 	public static enum BreakShape {

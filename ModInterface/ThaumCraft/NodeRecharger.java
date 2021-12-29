@@ -61,12 +61,12 @@ public class NodeRecharger implements TickHandler {
 			blacklist.add(new BlockKey(b));
 	}
 
-	public boolean addNode(INode n) {
+	public boolean addNode(INode n, EntityPlayer ep) {
 		TileEntity te = (TileEntity)n;
 		if (blacklist.contains(new BlockKey(te.getBlockType(), te.getBlockMetadata())))
 			return false;
 		WorldLocation loc = new WorldLocation(te);
-		this.addLocation(loc, n);
+		this.addLocation(loc, n, ep);
 		return true;
 	}
 
@@ -148,8 +148,10 @@ public class NodeRecharger implements TickHandler {
 		this.register(loc, wrap);
 	}
 
-	private void addLocation(WorldLocation loc, INode n) {
+	private void addLocation(WorldLocation loc, INode n, EntityPlayer ep) {
 		NodeReceiverWrapper wrap = new NodeReceiverWrapper(n);
+		if (ep != null)
+			wrap.setOwner(ep);
 		this.register(loc, wrap);
 		NodeRechargeData.initNetworkData(((TileEntity)n).worldObj).setDirty(true);
 	}
@@ -194,7 +196,7 @@ public class NodeRecharger implements TickHandler {
 		if (wrap == null && create) {
 			TileEntity te = loc.getTileEntity();
 			if (te instanceof INode) {
-				this.addLocation(loc, (INode)te);
+				this.addLocation(loc, (INode)te, null);
 			}
 		}
 		return wrap;

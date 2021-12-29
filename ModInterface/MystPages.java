@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -75,19 +75,20 @@ public class MystPages implements MystcraftPageRegistry {
 	public static enum Pages implements IAgeSymbol {
 
 		PYLONS("Crystal Pylons", 				50, 	4, 0.25F,		Symbols.STRUCTURE, Symbols.ENERGY),
-		STRUCTURES("Buried Structures", 		200, 	4, 0.125F,		Symbols.STRUCTURE, Symbols.CIVILIZATION),
+		STRUCTURES("Buried Structures", 		500, 	4, 0.125F,		Symbols.STRUCTURE, Symbols.CIVILIZATION),
 		PLANTS("Chroma Plants", 				20, 	3, 0.75F,		Symbols.MATERIAL, Symbols.HERBAL),
 		ORES("Chroma Ores", 					10, 	3, 0.75F,		Symbols.MATERIAL, Symbols.MINERAL),
 		CRYSTALS("Cave Crystals", 				80, 	2, 0.5F,		Symbols.MATERIAL, Symbols.MINERAL, Symbols.ENERGY),
 		TREES("Dye Trees", 						5, 		1, 1F,			Symbols.HERBAL, Symbols.ENERGY),
-		DENSE("Dense Generation", 				400, 	6, 0.03125F,	Symbols.UPGRADE),
-		LOSSY("Lumen Loss",						-80,	4, 0.0625F,		Symbols.ENERGY, Symbols.CIVILIZATION, Symbols.UPGRADE, Symbols.INVERSION),
-		BUFFERDRAIN("Energy Drain",				-150,	4, 0.125F,		Symbols.ENERGY, Symbols.PLAYER, Symbols.UPGRADE, Symbols.INVERSION),
-		HOSTILE("Hostile Aura",					-40,	5, 0.03125F,	Symbols.ENERGY, Symbols.PLAYER, Symbols.MINERAL, Symbols.INVERSION),
-		CORRUPTED("Corrupted Aura",				-400,	5, 0.03125F,	Symbols.MATERIAL, Symbols.UPGRADE, Symbols.INVERSION),
+		DENSE("Dense Generation", 				1200, 	6, 0.03125F,	Symbols.UPGRADE),
+		LOSSY("Lumen Loss",						-200,	4, 0.0625F,		Symbols.ENERGY, Symbols.CIVILIZATION, Symbols.UPGRADE, Symbols.INVERSION),
+		BUFFERDRAIN("Energy Drain",				-400,	4, 0.125F,		Symbols.ENERGY, Symbols.PLAYER, Symbols.UPGRADE, Symbols.INVERSION),
+		HOSTILE("Hostile Aura",					-50,	5, 0.03125F,	Symbols.ENERGY, Symbols.PLAYER, Symbols.MINERAL, Symbols.INVERSION),
+		CORRUPTED("Corrupted Aura",				-200,	5, 0.03125F,	Symbols.MATERIAL, Symbols.UPGRADE, Symbols.INVERSION),
 		LAVARIVER("Sky Rivers",					2,		4, 0.0625F,		Symbols.STRUCTURE, Symbols.MATERIAL, Symbols.MINERAL),
-		VIOLENTPYLONS("Excessive Discharge",	-60,	4, 0.0625F,		Symbols.STRUCTURE, Symbols.PLAYER, Symbols.UPGRADE, Symbols.INVERSION),
-		UNSTABLEPYLONS("Pylon Destabilization",	-200,	5, 0.015625F,	Symbols.ENERGY, Symbols.UPGRADE, Symbols.INVERSION);
+		VIOLENTPYLONS("Excessive Discharge",	-100,	4, 0.0625F,		Symbols.STRUCTURE, Symbols.PLAYER, Symbols.UPGRADE, Symbols.INVERSION),
+		UNSTABLEPYLONS("Pylon Destabilization",	-200,	5, 0.015625F,	Symbols.ENERGY, Symbols.UPGRADE, Symbols.INVERSION),
+		ABILITYBLOCK("Disabled",				-750,	5, 0.005F,		Symbols.CIVILIZATION, Symbols.PLAYER, Symbols.UPGRADE, Symbols.INVERSION);
 
 		public final String name;
 		public final int instability;

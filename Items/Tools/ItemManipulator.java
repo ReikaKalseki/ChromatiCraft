@@ -448,7 +448,7 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 							if (((INode)tile).getAspects().getAmount(asp) > 1)
 								((INode)tile).takeFromContainer(asp, 1);
 						}
-						NodeRecharger.instance.addNode((INode)tile);
+						NodeRecharger.instance.addNode((INode)tile, ep);
 					}
 				}
 			}

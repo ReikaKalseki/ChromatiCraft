@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.ScaledDirection;
@@ -579,6 +580,8 @@ public enum Chromabilities implements Ability {
 	}
 
 	public static boolean canPlayerExecuteAt(EntityPlayer ep, Ability a) {
+		if (ModList.MYSTCRAFT.isLoaded() && MystPages.Pages.ABILITYBLOCK.existsInWorld(ep.worldObj))
+			return false;
 		ElementTagCompound use = AbilityHelper.instance.getUsageElementsFor(a, ep);
 		return PlayerElementBuffer.instance.playerHas(ep, use) && a.canPlayerExecuteAt(ep);
 	}

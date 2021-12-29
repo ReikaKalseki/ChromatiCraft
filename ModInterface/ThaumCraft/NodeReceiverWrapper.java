@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map.Entry;
@@ -18,6 +19,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.lwjgl.opengl.GL11;
+
+import com.google.common.base.Strings;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
@@ -49,13 +52,16 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityLaserFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.DragonAPI.Auxiliary.ModularLogger;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
@@ -101,6 +107,8 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	public final WorldLocation location;
 	private final UUID uid = UUID.randomUUID();
 
+	private String owner;
+
 	private long age = 0;
 	private int fulltick = MIN_DELAY;
 	private int tick = DELAY;
@@ -118,6 +126,8 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 
 	private final boolean isJarred;
 	private final boolean isClient;
+
+	private Coordinate auraLocus;
 
 	private boolean needsSync = true;
 
@@ -195,6 +205,8 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 	@Override
 	public int maxThroughput() {
 		int base = isJarred ? 40 : 60;
+		if (auraLocus != null)
+			base *= 2;
 		return this.getAgeModifiedThroughput(base);
 	}
 
@@ -217,7 +229,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 
 	@Override
 	public UUID getPlacerUUID() {
-		return null;
+		return !Strings.isNullOrEmpty(owner) ? UUID.fromString(owner) : null;
 	}
 
 	@Override
@@ -250,6 +262,24 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 			return;
 		}
 		 */
+
+		if (auraLocus != null) {
+			if (ChromaTiles.getTile(this.getWorld(), auraLocus.xCoord, auraLocus.yCoord, auraLocus.zCoord) != ChromaTiles.AURAPOINT)
+				auraLocus = null;
+		}
+		else {
+			UUID id = this.getPlacerUUID();
+			EntityPlayer ep = id != null ? this.getWorld().func_152378_a(id) : null;
+			if (ep != null) {
+				Collection<TileEntityAuraPoint> c = TileEntityAuraPoint.getPoints(ep);
+				for (TileEntityAuraPoint te : c) {
+					if (te.worldObj.provider.dimensionId == location.dimensionID && te.getDistanceFrom(this.getX()+0.5, this.getY()+0.5, this.getZ()+0.5) <= 256) {
+						auraLocus = new Coordinate(te);
+						break;
+					}
+				}
+			}
+		}
 
 		if (rand.nextInt(240) == 0) {
 			this.playSound("thaumcraft:zap");
@@ -431,11 +461,11 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		if (status == NodeImprovementStatus.IDLE)
 			return;
 		this.playSound("thaumcraft:craftfail");
-		if (rand.nextInt(8) == 0)
-			this.damageNode();
+		if (f != FlowFail.FULL && rand.nextInt(f == FlowFail.ENERGY ? 12 : 8) == 0)
+			this.damageNode(f == FlowFail.SIGHT || f == FlowFail.TILE);
 	}
 
-	private void damageNode() {
+	private void damageNode(boolean bad) {
 		ChromaSounds.ERROR.playSound(((TileEntity)node).worldObj, this.getX()+0.5, this.getY()+0.5, this.getZ()+0.5, 0.75F, 2);
 		ChromaSounds.ERROR.playSound(((TileEntity)node).worldObj, this.getX()+0.5, this.getY()+0.5, this.getZ()+0.5, 1F, 1);
 		ChromaSounds.ERROR.playSound(((TileEntity)node).worldObj, this.getX()+0.5, this.getY()+0.5, this.getZ()+0.5, 0.75F, 0.5F);
@@ -451,7 +481,8 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 						node.setNodeModifier(NodeModifier.FADING);
 						break;
 					case FADING:
-						this.emptyNode();
+						if (bad)
+							this.emptyNode();
 						break;
 				}
 			}
@@ -472,13 +503,16 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 					node.setNodeType(NodeType.DARK);
 					break;
 				case DARK:
-					node.setNodeType(NodeType.TAINTED);
+					if (bad)
+						node.setNodeType(NodeType.TAINTED);
 					break;
 				case TAINTED:
-					node.setNodeType(NodeType.HUNGRY);
+					if (bad)
+						node.setNodeType(NodeType.HUNGRY);
 					break;
 				case HUNGRY:
-					this.destroyNode();
+					if (bad)
+						this.destroyNode();
 					break;
 			}
 		}
@@ -487,7 +521,7 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		for (Aspect a : al.aspects.keySet()) {
 			int amt = al.getAmount(a);
 			if (amt > 1) {
-				int rem = Math.min(amt-1, (int)(rand.nextFloat()*(amt/2F)));
+				int rem = Math.min(amt-1, (int)(rand.nextFloat()*(bad ? amt/2F : amt/4F)));
 				al.remove(a, rem);
 			}
 		}
@@ -888,7 +922,11 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		else if (sync)
 			currentRequestSet = null;
 
+		owner = tag.getString("owner");
+
 		ticksSinceEnergyInput = tag.getInteger("receiveTime");
+
+		auraLocus = Coordinate.readFromNBT("locus", tag);
 
 		this.recalculateCandidateAspects();
 	}
@@ -902,9 +940,15 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		storedEnergy.writeToNBT("energy", tag);
 		tag.setInteger("receiveTime", ticksSinceEnergyInput);
 
+		if (!Strings.isNullOrEmpty(owner))
+			tag.getString("owner");
+
 		if (activeAspect != null) {
 			tag.setString("request", activeAspect.getTag());
 		}
+
+		if (auraLocus != null)
+			auraLocus.writeToNBT("locus", tag);
 	}
 
 	public void recalculateCandidateAspects() {
@@ -1123,6 +1167,10 @@ public final class NodeReceiverWrapper implements CrystalReceiver, NotifiedNetwo
 		li.add("Queued Fill Aspects: "+candidateRefillAspects);
 		li.add("Energy: "+storedEnergy);
 		li.add("Jar: "+isJarred);
+	}
+
+	public void setOwner(EntityPlayer ep) {
+		owner = ep.getUniqueID().toString();
 	}
 
 	public static enum NodeImprovementStatus {
