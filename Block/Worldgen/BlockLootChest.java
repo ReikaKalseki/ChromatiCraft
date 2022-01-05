@@ -27,7 +27,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
@@ -44,6 +43,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.Event.StructureChestPopulationEvent;
+import Reika.ChromatiCraft.API.Interfaces.LootChest;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Base.ChromaStructureBase;
@@ -266,7 +266,7 @@ public class BlockLootChest extends BlockContainer {
 
 	}
 
-	public static final class TileEntityLootChest extends TileEntity implements ISidedInventory {
+	public static final class TileEntityLootChest extends TileEntity implements LootChest {
 
 		protected ItemStack[] inv = new ItemStack[this.getSizeInventory()];
 

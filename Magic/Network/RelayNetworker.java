@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Block.Relay.BlockRelayBase;
 import Reika.ChromatiCraft.Block.Relay.BlockRelayBase.TileRelayBase;
 import Reika.ChromatiCraft.Block.Relay.BlockRelayFilter.TileEntityRelayFilter;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
+import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -205,7 +206,7 @@ public final class RelayNetworker {
 					else if (b.getLightOpacity(world, c.xCoord, c.yCoord, c.zCoord) > 0)
 						return null;
 					 */
-					if (!PylonFinder.isBlockPassable(world, c.xCoord, c.yCoord, c.zCoord) && !this.isBlockRelayTransparent(world, c.xCoord, c.yCoord, c.zCoord)) {
+					if (!instance.isRelayPassable(world, c.xCoord, c.yCoord, c.zCoord)) {
 						return null;
 					}
 				}
@@ -213,20 +214,26 @@ public final class RelayNetworker {
 			return null;
 		}
 
-		private boolean isBlockRelayTransparent(World world, int x, int y, int z) {
-			Block b = world.getBlock(x, y, z);
-			int meta = world.getBlockMetadata(x, y, z);
-			if (b == ChromaBlocks.ROUTERNODE.getBlockInstance())
-				return true;
-			if (b == ChromaBlocks.DECOFLOWER.getBlockInstance() && (meta == Flowers.FLOWIVY.ordinal() || meta == Flowers.GLOWDAISY.ordinal()))
-				return true;
-			if (b == Blocks.yellow_flower || b == Blocks.red_flower)
-				return true;
-			if (ModList.BOP.isLoaded() && BoPBlockHandler.getInstance().isFlower(b))
-				return true;
-			return false;
-		}
+	}
 
+	public boolean isRelayPassable(World world, int x, int y, int z) {
+		return PylonFinder.isBlockPassable(world, x, y, z) || this.isBlockRelayTransparent(world, x, y, z);
+	}
+
+	private boolean isBlockRelayTransparent(World world, int x, int y, int z) {
+		Block b = world.getBlock(x, y, z);
+		int meta = world.getBlockMetadata(x, y, z);
+		if (b == ChromaBlocks.ROUTERNODE.getBlockInstance())
+			return true;
+		if (b == ChromaBlocks.DECOFLOWER.getBlockInstance() && (meta == Flowers.FLOWIVY.ordinal() || meta == Flowers.GLOWDAISY.ordinal()))
+			return true;
+		if (b == Blocks.yellow_flower || b == Blocks.red_flower)
+			return true;
+		if (ModList.BOP.isLoaded() && BoPBlockHandler.getInstance().isFlower(b))
+			return true;
+		if (b == ChromaBlocks.STRUCTSHIELD.getBlockInstance() && meta%8 == BlockType.GLASS.ordinal())
+			return true;
+		return false;
 	}
 
 }

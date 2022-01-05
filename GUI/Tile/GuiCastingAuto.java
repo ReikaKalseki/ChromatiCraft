@@ -207,6 +207,10 @@ public class GuiCastingAuto extends GuiChromaBase {
 				break;
 			}
 			case 7: {
+				if (this.getRecipe() == null) {
+					ChromaSounds.ERROR.playSound(player);
+					break;
+				}
 				RecursiveCastingAutomationSystem sys = (RecursiveCastingAutomationSystem)tile.getAutomationHandler();
 				String cr = RecipesCastingTable.instance.getStringIDForRecipe(this.getRecipe());
 				sys.toggleRecipePriority(this.getRecipe());

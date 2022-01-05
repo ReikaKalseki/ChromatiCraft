@@ -772,6 +772,8 @@ public class AbilityCalls {
 		ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(ep.worldObj, c.xCoord, c.yCoord, c.zCoord, 200);
 		for (Block bk : LightCast.getPassthroughBlocks())
 			b.passthrough.add(new BlockKey(bk));
+		if (ModList.THAUMCRAFT.isLoaded())
+			b.passthrough.add(new BlockKey(ThaumItemHelper.BlockEntry.HOLE.getBlock()));
 		b.call = new LightCast(ep);
 		b.player = ep;
 		b.hungerFactor = 0;

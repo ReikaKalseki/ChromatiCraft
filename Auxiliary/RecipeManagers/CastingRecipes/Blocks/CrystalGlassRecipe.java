@@ -12,14 +12,13 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.crafting.IRecipe;
 
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
 
-public class CrystalGlassRecipe extends CastingRecipe {
+public class CrystalGlassRecipe extends DecoCastingRecipe {
 
 	public CrystalGlassRecipe(CrystalElement e) {
 		super(ChromaBlocks.GLASS.getStackOfMetadata(e.ordinal()), getRecipe(e));
@@ -35,13 +34,8 @@ public class CrystalGlassRecipe extends CastingRecipe {
 	}
 
 	@Override
-	public int getTypicalCraftedAmount() {
-		return 128;
-	}
-
-	@Override
-	public boolean canGiveDoubleOutput() {
-		return true;
+	public int getTypicalTotalAmount() {
+		return 1024;
 	}
 
 }

@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Container;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -25,6 +26,9 @@ import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget.PlayerTarget;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ContainerItemCollector extends CoreContainer {
 
@@ -74,6 +78,35 @@ public class ContainerItemCollector extends CoreContainer {
 
 	public int getRowOffset() {
 		return rowOffset;
+	}
+
+	@Override
+	public void detectAndSendChanges()
+	{
+		super.detectAndSendChanges();
+
+		for (int i = 0; i < crafters.size(); ++i)
+		{
+			ICrafting icrafting = (ICrafting)crafters.get(i);
+			icrafting.sendProgressBarUpdate(this, 0, tile.filterLimit);
+		}
+	}
+
+	@Override
+	public void addCraftingToCrafters(ICrafting par1ICrafting)
+	{
+		super.addCraftingToCrafters(par1ICrafting);
+		par1ICrafting.sendProgressBarUpdate(this, 0, tile.filterLimit);
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void updateProgressBar(int par1, int par2)
+	{
+		if (par1 == 0)
+		{
+			tile.filterLimit = par2;
+		}
 	}
 
 	@Override

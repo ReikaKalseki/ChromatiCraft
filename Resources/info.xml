@@ -102,6 +102,21 @@
 	<pylonlink>
 		Having connected various colors of pylon to your network, you quickly learned that their energy sources are not infinite; they will deplete and require significant time to recharge. You may to find a way to improve that later, but for now, the fact you have many pylons of any given color, all useless without being directly connected with repeaters, proves too irksome to ignore. However, a clue from a strange structure with a beaconlike aura provided an insight: linking the pylons themselves. If you can pull this off, they will effectively become one large energy buffer, with recharge rate to match.
 	</pylonlink>
+	<itemburner>
+		You have recently discovered that most items contain trace amounts of some combination of colors of crystal energy, and while you are probably some time from being able to reshape that energy into new forms, you just might be able to use the energy directly. Simply "burning" items for their lumen content will allow you to dispose of things to clear inventory space, with your body absorbing the energy released in the process. Later constructs can no doubt be built upon this concept, but for now you can probably use that to power some basic tools or something.
+	</itemburner>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
+	<name>
+		
+	</name>
 	<name>
 		
 	</name>

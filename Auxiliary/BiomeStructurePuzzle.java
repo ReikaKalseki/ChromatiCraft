@@ -492,12 +492,19 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	@Override
 	public void handleTileInteract(World world, int x, int y, int z, InteractionDelegateTile te, TileEntityStructControl root, EntityPlayer ep) {
 		if (te instanceof LightSwitchTile) {
-			if (!ProgressionManager.instance.playerHasPrerequisites(ep, ProgressStage.BIOMESTRUCT)) {
+			Coordinate c = new Coordinate(root);
+			if (ProgressStage.CTM.isPlayerAtStage(ep)) {
+				for (int i = 0; i < 4; i++) {
+					this.setDoors(world, c, i, true);
+				}
+			}
+			else if (!ProgressionManager.instance.playerHasPrerequisites(ep, ProgressStage.BIOMESTRUCT)) {
 				world.setBlockMetadataWithNotify(x, y, z, 0, 2);
 				ChromaSounds.ERROR.playSoundAtBlock(world, x, y, z);
-				return;
 			}
-			this.updateSwitchDoors(world, new Coordinate(root));
+			else {
+				this.updateSwitchDoors(world, c);
+			}
 		}
 	}
 
@@ -573,12 +580,16 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	private void updateSwitchDoors(World world, Coordinate root) {
 		for (int i = 0; i < 4; i++) {
 			boolean flag = doorKeys[i].validate(world, this.switchLoc(root, ForgeDirection.NORTH, ForgeDirection.WEST), this.switchLoc(root, ForgeDirection.SOUTH, ForgeDirection.WEST), this.switchLoc(root, ForgeDirection.NORTH, ForgeDirection.EAST), this.switchLoc(root, ForgeDirection.SOUTH, ForgeDirection.EAST));
-			Coordinate sw = this.switchLoc(root, doorKeys[i].areaNS, doorKeys[i].areaEW);
-			sw.offset(0, 1, 0).setBlockMetadata(world, flag ? 2 : 3);
-			sw.offset(0, -1, 0).setBlockMetadata(world, flag ? 1 : 0);
-			for (Coordinate c : this.getSwitchDoorLocations(root, i).keySet()) {
-				BlockShiftLock.setOpen(world, c.xCoord, c.yCoord, c.zCoord, flag);
-			}
+			this.setDoors(world, root, i, flag);
+		}
+	}
+
+	private void setDoors(World world, Coordinate root, int i, boolean open) {
+		Coordinate sw = this.switchLoc(root, doorKeys[i].areaNS, doorKeys[i].areaEW);
+		sw.offset(0, 1, 0).setBlockMetadata(world, open ? 2 : 3);
+		sw.offset(0, -1, 0).setBlockMetadata(world, open ? 1 : 0);
+		for (Coordinate c : this.getSwitchDoorLocations(root, i).keySet()) {
+			BlockShiftLock.setOpen(world, c.xCoord, c.yCoord, c.zCoord, open);
 		}
 	}
 

@@ -55,6 +55,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.Crysta
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CrystalGlowRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CrystalLampRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.CrystalStoneRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.DecoCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.DoorRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.EnhancedRuneRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks.FakeSkyRecipe;
@@ -445,8 +446,8 @@ public class RecipesCastingTable implements CastingAPI {
 		is = ChromaBlocks.SELECTIVEGLASS.getStackOf();
 		sr = new ShapedOreRecipe(is, "GgG", "beb", "GvG", 'G', Blocks.glass, 'g', Items.glowstone_dust, 'e', ChromaStacks.teleDust, 'v', ChromaStacks.voidDust, 'b', ChromaStacks.icyDust);
 		this.addRecipe(new SelectiveGlassRecipe(is, sr, false));
-		sr = new ShapedOreRecipe(is, "GgG", "beb", "GvG", 'G', Blocks.glass, 'g', Blocks.glowstone, 'e', ChromaStacks.enderDust, 'v', ChromaStacks.spaceDust, 'b', ChromaStacks.bindingCrystal);
-		this.addRecipe(new SelectiveGlassRecipe(is, sr, true));
+		//sr = new ShapedOreRecipe(is, "GgG", "beb", "GvG", 'G', Blocks.glass, 'g', Blocks.glowstone, 'e', ChromaStacks.enderDust, 'v', ChromaStacks.spaceDust, 'b', ChromaStacks.);
+		//this.addRecipe(new SelectiveGlassRecipe(is, sr, true));
 
 		//sr = ReikaRecipeHelper.getShapedRecipeFor(ChromaStacks.crystalMirror, "GWI", "GWI", "GWI", 'G', Blocks.glass, 'I', Items.iron_ingot, 'W', ChromaItems.SHARD.getStackOfMetadata(15));
 		this.addRecipe(new CrystalMirrorRecipe(ChromaStacks.crystalMirror, new ItemStack(Blocks.glass)));
@@ -970,10 +971,10 @@ public class RecipesCastingTable implements CastingAPI {
 		if (ModList.THAUMCRAFT.isLoaded()) {
 			ItemStack is = ReikaItemHelper.getSizedItemStack(ThaumItemHelper.BlockEntry.ANCIENTROCK.getItem(), 32);
 			IRecipe sr = new ShapedOreRecipe(is, "SdS", "dOd", "SdS", 'S', "stone", 'd', ChromaStacks.auraDust, 'O', Blocks.obsidian);
-			this.addModRecipe(new CastingRecipe(is, sr));
+			this.addModRecipe(new DecoCastingRecipe(is, sr));
 			is = ReikaItemHelper.getSizedItemStack(ThaumItemHelper.BlockEntry.ANCIENTROCK.getItem(), 32);
 			sr = new ShapedOreRecipe(is, "SvS", "dOd", "SvS", 'S', "stone", 'v', ChromaStacks.voidDust, 'd', ChromaStacks.spaceDust, 'O', Blocks.obsidian);
-			this.addModRecipe(new CastingRecipe(is, sr));
+			this.addModRecipe(new DecoCastingRecipe(is, sr));
 
 			is = ThaumItemHelper.ItemEntry.ZOMBIEBRAIN.getItem();
 			sr = ReikaRecipeHelper.getShapedRecipeFor(is, "lll", "lbl", "lll", 'b', ThaumItemHelper.ItemEntry.DEFUNCTBRAIN.getItem(), 'l', ChromaStacks.lifegel);

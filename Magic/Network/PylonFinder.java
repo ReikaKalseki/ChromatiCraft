@@ -32,7 +32,6 @@ import net.minecraft.world.biome.BiomeGenDesert;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.LoggingLevel;
-import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalRepeater;
@@ -584,8 +583,6 @@ public class PylonFinder {
 		tracer.addTransparentBlock(Blocks.glass_pane);
 		tracer.addTransparentBlock(Blocks.snow_layer, 0);
 		tracer.addTransparentBlock(ChromaBlocks.SELECTIVEGLASS.getBlockInstance());
-		tracer.addTransparentBlock(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.ordinal());
-		tracer.addTransparentBlock(ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.GLASS.metadata);
 		if (ModList.ROTARYCRAFT.isLoaded()) {
 			addRCGlass();
 		}

@@ -27,7 +27,12 @@ public class TrapFloorRecipe extends TempleCastingRecipe {
 
 	@Override
 	public int getTypicalCraftedAmount() {
-		return 5;
+		return 6;
+	}
+
+	@Override
+	public int getNumberProduced() {
+		return 6;
 	}
 
 	@Override

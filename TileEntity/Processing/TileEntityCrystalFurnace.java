@@ -227,7 +227,7 @@ VariableTexture {
 		else if (ModList.GENDUSTRY.isLoaded() && in.getDisplayName() != null && in.getDisplayName().toLowerCase(Locale.ENGLISH).contains("gene")) {
 			return 1;
 		}
-		else if (Block.getBlockFromItem(in.getItem()) instanceof CraftableStone) {
+		else if (Block.getBlockFromItem(in.getItem()) instanceof CraftableStone || Block.getBlockFromItem(out.getItem()) instanceof CraftableStone) {
 			return 1;
 		}
 		else if (ModList.GREGTECH.isLoaded() && (ReikaItemHelper.getRegistrantMod(in).toLowerCase(Locale.ENGLISH).contains("gregapi") || ReikaItemHelper.getRegistrantMod(in).toLowerCase(Locale.ENGLISH).contains("gregtech"))) {

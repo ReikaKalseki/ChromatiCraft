@@ -12,16 +12,14 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 
+public class SelectiveGlassRecipe extends DecoCastingRecipe {
 
-public class SelectiveGlassRecipe extends CastingRecipe {
-
-	private final boolean enhanced;
+	//private final boolean enhanced;
 
 	public SelectiveGlassRecipe(ItemStack out, IRecipe recipe, boolean t2) {
 		super(out, recipe);
-		enhanced = t2;
+		//enhanced = t2;
 	}
 
 	@Override
@@ -30,18 +28,13 @@ public class SelectiveGlassRecipe extends CastingRecipe {
 	}
 
 	@Override
-	public int getTypicalCraftedAmount() {
-		return enhanced ? 16 : 32;
+	public int getTypicalTotalAmount() {
+		return 270;
 	}
 
 	@Override
 	public int getNumberProduced() {
-		return enhanced ? 18 : 9;
-	}
-
-	@Override
-	public boolean canGiveDoubleOutput() {
-		return true;
+		return /*enhanced ? 18 : */9;
 	}
 
 }

@@ -40,7 +40,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.Linkable;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
-import Reika.ChromatiCraft.Magic.Network.PylonFinder;
+import Reika.ChromatiCraft.Magic.Network.RelayNetworker;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -304,7 +304,7 @@ public class TileEntityItemRift extends TileEntityRelayPowered implements SidePl
 
 	private boolean isPassableBlock(World world, int x, int y, int z) {
 		//return ReikaWorldHelper.softBlocks(world, x, y, z) || RayTracer.getTransparentBlocks().contains(BlockKey.getAt(world, x, y, z)) || (ModList.BCTRANSPORT.isLoaded() && world.getBlock(x, y, z) == BCPipeHandler.getInstance().pipeID);
-		return PylonFinder.isBlockPassable(world, x, y, z) || (ModList.BCTRANSPORT.isLoaded() && world.getBlock(x, y, z) == BCPipeHandler.getInstance().pipeID);
+		return RelayNetworker.instance.isRelayPassable(world, x, y, z) || (ModList.BCTRANSPORT.isLoaded() && world.getBlock(x, y, z) == BCPipeHandler.getInstance().pipeID);
 	}
 
 	private boolean isValidDirection(ForgeDirection dir) {

@@ -12,12 +12,11 @@ package Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 
 
-public class HoverPadLampRecipe extends CastingRecipe {
+public class HoverPadLampRecipe extends DecoCastingRecipe {
 
 	public HoverPadLampRecipe(ChromaBlocks b) {
 		super(calcOutput(), ReikaRecipeHelper.getShapedRecipeFor(calcOutput(), getRecipe(b)));
@@ -42,8 +41,8 @@ public class HoverPadLampRecipe extends CastingRecipe {
 	}
 
 	@Override
-	public boolean canGiveDoubleOutput() {
-		return true;
+	protected int getTypicalTotalAmount() {
+		return 36;
 	}
 
 }

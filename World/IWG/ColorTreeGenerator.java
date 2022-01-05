@@ -137,7 +137,9 @@ public class ColorTreeGenerator implements RetroactiveGenerator, ChromaDecorator
 			return false;
 		if (Math.abs(world.provider.dimensionId) == ReikaTwilightHelper.getDimensionID())
 			return false;
-		if (world.getWorldInfo().getTerrainType() == WorldType.FLAT && !ChromaOptions.FLATGEN.getState())
+		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world))
+			;
+		else if (world.getWorldInfo().getTerrainType() == WorldType.FLAT && !ChromaOptions.FLATGEN.getState())
 			return false;
 		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
 		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world) && !ChromatiCraft.isRainbowForest(biome)) {

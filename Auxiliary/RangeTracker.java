@@ -95,7 +95,7 @@ public class RangeTracker {
 		}
 
 		public boolean increment(RangeUpgradeable te, int amt) {
-			return this.setRange(Math.min(configuredRange+amt, this.getMaxUpgradedRange(te)));
+			return this.setRange(Math.min(configuredRange+amt, currentRange));
 		}
 
 		private boolean setRange(int r) {

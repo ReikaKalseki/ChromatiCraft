@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack;
 
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityGlowFire;
 import Reika.DragonAPI.Instantiable.BasicInventory;
@@ -66,7 +67,14 @@ public class ContainerItemBurner extends Container {
 					ReikaInventoryHelper.decrStack(0, inventory, 1);
 					PlayerElementBuffer.instance.addToPlayer(player, tag.copy(), false);
 					burnTick = 0;
-					burnDuration = Math.max(MIN_BURN_DURATION, burnDuration-4);
+					int d = 4;
+					if (ProgressStage.CTM.isPlayerAtStage(player))
+						d *= 2;
+					if (ProgressStage.DIMENSION.isPlayerAtStage(player))
+						d *= 2;
+					if (ProgressStage.LINK.isPlayerAtStage(player))
+						d *= 2;
+					burnDuration = Math.max(MIN_BURN_DURATION, burnDuration-d);
 					for (int i = 0; i < crafters.size(); ++i) {
 						ICrafting icrafting = (ICrafting)crafters.get(i);
 						icrafting.sendProgressBarUpdate(this, 2, 0);

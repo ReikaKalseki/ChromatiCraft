@@ -56,6 +56,8 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	private final ConfigurableRangeTracker range = new ConfigurableRangeTracker(MAXRANGE, 24, 1);
 
+	public int filterLimit;
+
 	private Filter[] filter = new Filter[5*9];
 	private final StepTimer scanTimer = new StepTimer(200);
 
@@ -80,6 +82,8 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	}
 
 	public int getMaxFilterCount() {
+		if (worldObj != null && worldObj.isRemote)
+			return filterLimit;
 		int adj = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PURPLE);
 		if (adj <= 0)
 			return 9;
@@ -117,6 +121,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 		range.update(this);
 
 		if (canIntake && !world.isRemote) {
+			filterLimit = this.getMaxFilterCount();
 			scanTimer.update();
 			if (scanTimer.checkCap()) {
 				this.doScan(world, x, y, z);

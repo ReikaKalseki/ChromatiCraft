@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -162,6 +162,7 @@ public class RenderAreaBreaker extends ChromaRenderBase {
 				v5.setBrightness(240);
 				v5.addTranslation(te.xCoord+0.5F, te.getRange()+0.01F-0.5F, te.zCoord+0.5F);
 				v5.setColorOpaque_I(0xffffff);
+				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				te.getShape().renderPreview(v5, te.getRange());
 				v5.addTranslation(-te.xCoord-0.5F, -te.getRange()-0.01F+0.5F, -te.zCoord-0.5F);
 				v5.addVertex(0, 0, 0);

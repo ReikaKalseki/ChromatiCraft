@@ -105,6 +105,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.Potions.PotionVoidGaze.VoidGazeLevels;
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterDestructionRitual;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects;
@@ -519,9 +520,9 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void addLumenBurnButton(GuiScreenEvent.InitGuiEvent.Post evt) {
-		if (evt.gui instanceof GuiInventory && ProgressStage.ALLCOLORS.isPlayerAtStage(Minecraft.getMinecraft().thePlayer) && ProgressStage.CHARGE.isPlayerAtStage(Minecraft.getMinecraft().thePlayer)) {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+		if (evt.gui instanceof GuiInventory && ChromaResearchManager.instance.playerHasFragment(ep, ChromaResearch.ITEMBURNER)) {
 			GuiContainer gui = (GuiContainer)evt.gui;
-			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 			evt.buttonList.add(new ButtonItemBurner(gui, gui.guiLeft+(ep.getActivePotionEffects().isEmpty() ? 142 : 82), gui.guiTop+56));
 		}
 	}

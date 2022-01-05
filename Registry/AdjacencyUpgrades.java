@@ -126,7 +126,7 @@ public enum AdjacencyUpgrades {
 			case GRAY:
 				return String.format("Shuffles blocks around it %s times a second", ReikaStringParser.getAutoDecimal(this.getFactor(tier)));
 			case LIGHTGRAY:
-				return "Fakes player interaction";
+				return String.format("Fakes player interaction, Tier %d", tier);
 			case PINK:
 				return String.format("Increases construct damage %sx", ReikaStringParser.getAutoDecimal(this.getFactor(tier)));
 			case LIME:

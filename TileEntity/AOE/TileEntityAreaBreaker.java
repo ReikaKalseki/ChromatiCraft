@@ -72,7 +72,7 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 	private int newloctick = 0;
 	private int activeIndex = 0;
 	private BreakShape shape = BreakShape.CUBOID;
-	private BlockBox areaOverride = null;;
+	private BlockBox areaOverride = null;
 	private int range = MAX_RANGE;
 
 	private static final ElementTagCompound required = new ElementTagCompound();
@@ -156,7 +156,7 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 	}
 
 	private boolean shouldTryBreaking(World world, int x, int y, int z, Block b) {
-		return !b.isAir(world, x, y, z) && !ReikaBlockHelper.isLiquid(b);
+		return !b.isAir(world, x, y, z) && !ReikaBlockHelper.isLiquid(b) && b != Blocks.lever;
 	}
 
 	private void createBolts(Coordinate c) {
@@ -332,7 +332,8 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
-		return this.isRunning() ? ReikaAABBHelper.getBlockAABB(this).expand(MAX_RANGE, MAX_RANGE, MAX_RANGE) : super.getRenderBoundingBox();
+		int r = this.isRunning() ? MAX_RANGE : range;
+		return ReikaAABBHelper.getBlockAABB(this).expand(r, r, r);
 	}
 
 	private void getCoordsFromIAP(World world, int x, int y, int z) {
@@ -353,7 +354,7 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 	@ClassDependent("buildcraft.api.core.IAreaProvider")
 	private void readIAP(TileEntity te) {
 		IAreaProvider iap = (IAreaProvider)te;
-		areaOverride = BlockBox.getFromIAP(iap);
+		areaOverride = BlockBox.getFromIAP(iap).contract(ForgeDirection.UP, 1).contract(ForgeDirection.EAST, 1).contract(ForgeDirection.SOUTH, 1);
 		range = areaOverride.getLongestEdge()+2;
 		iap.removeFromWorld();
 	}
@@ -361,6 +362,7 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 	public static enum BreakShape {
 
 		CUBOID(),
+		COLUMN(),
 		HEMISPHERE(),
 		CYLINDER(),
 		DIAMONDPRISM(),
@@ -375,6 +377,8 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 			switch(this) {
 				case CUBOID:
 					return Math.abs(dx) <= r && Math.abs(dy) <= r && Math.abs(dz) <= r;
+				case COLUMN:
+					return Math.abs(dx) <= r && Math.abs(dz) <= r;
 				case HEMISPHERE:
 					return ReikaMathLibrary.py3d(dx, dy, dz) <= r+0.5;
 				case CYLINDER:
@@ -404,43 +408,50 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 		}
 
 		public void renderPreview(Tessellator v5, double s) {
+			double sy = s;
 			switch(this) {
+				case COLUMN:
+					if (s < 1)
+						sy *= 1.25;
+					else
+						sy = 255;
+					s *= 0.8;
 				case CUBOID:
-					v5.addVertex(-s, -s, -s);
-					v5.addVertex(s, -s, -s);
+					v5.addVertex(-s, -sy, -s);
+					v5.addVertex(s, -sy, -s);
 
-					v5.addVertex(s, -s, -s);
-					v5.addVertex(s, -s, s);
+					v5.addVertex(s, -sy, -s);
+					v5.addVertex(s, -sy, s);
 
-					v5.addVertex(s, -s, s);
-					v5.addVertex(-s, -s, s);
+					v5.addVertex(s, -sy, s);
+					v5.addVertex(-s, -sy, s);
 
-					v5.addVertex(-s, -s, s);
-					v5.addVertex(-s, -s, -s);
+					v5.addVertex(-s, -sy, s);
+					v5.addVertex(-s, -sy, -s);
 
-					v5.addVertex(-s, s, -s);
-					v5.addVertex(s, s, -s);
+					v5.addVertex(-s, sy, -s);
+					v5.addVertex(s, sy, -s);
 
-					v5.addVertex(s, s, -s);
-					v5.addVertex(s, s, s);
+					v5.addVertex(s, sy, -s);
+					v5.addVertex(s, sy, s);
 
-					v5.addVertex(s, s, s);
-					v5.addVertex(-s, s, s);
+					v5.addVertex(s, sy, s);
+					v5.addVertex(-s, sy, s);
 
-					v5.addVertex(-s, s, s);
-					v5.addVertex(-s, s, -s);
+					v5.addVertex(-s, sy, s);
+					v5.addVertex(-s, sy, -s);
 
-					v5.addVertex(-s, -s, -s);
-					v5.addVertex(-s, s, -s);
+					v5.addVertex(-s, -sy, -s);
+					v5.addVertex(-s, sy, -s);
 
-					v5.addVertex(s, -s, -s);
-					v5.addVertex(s, s, -s);
+					v5.addVertex(s, -sy, -s);
+					v5.addVertex(s, sy, -s);
 
-					v5.addVertex(-s, -s, s);
-					v5.addVertex(-s, s, s);
+					v5.addVertex(-s, -sy, s);
+					v5.addVertex(-s, sy, s);
 
-					v5.addVertex(s, -s, s);
-					v5.addVertex(s, s, s);
+					v5.addVertex(s, -sy, s);
+					v5.addVertex(s, sy, s);
 					break;
 				case HEMISPHERE:
 					for (double s2 = 0; s2 <= s; s2 += s/8) {
@@ -458,6 +469,8 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 					}
 					break;
 				case CYLINDER:
+					if (s >= 1)
+						sy = 64;
 					for (double a = 0; a <= 350; a += 10) {
 						double a1 = Math.toRadians(a);
 						double a2 = Math.toRadians(a+10);
@@ -466,58 +479,60 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 						double x2 = s*Math.cos(a2);
 						double z2 = s*Math.sin(a2);
 
-						v5.addVertex(x1, -s, z1);
-						v5.addVertex(x2, -s, z2);
+						v5.addVertex(x1, -sy, z1);
+						v5.addVertex(x2, -sy, z2);
 
-						v5.addVertex(x1, s, z1);
-						v5.addVertex(x2, s, z2);
+						v5.addVertex(x1, sy, z1);
+						v5.addVertex(x2, sy, z2);
 
-						v5.addVertex(x1, -s, z1);
-						v5.addVertex(0, -s, 0);
+						v5.addVertex(x1, -sy, z1);
+						v5.addVertex(0, -sy, 0);
 
-						v5.addVertex(x1, s, z1);
-						v5.addVertex(0, s, 0);
+						v5.addVertex(x1, sy, z1);
+						v5.addVertex(0, sy, 0);
 
-						v5.addVertex(x1, -s, z1);
-						v5.addVertex(x1, s, z1);
+						v5.addVertex(x1, -sy, z1);
+						v5.addVertex(x1, sy, z1);
 					}
 					break;
 				case DIAMONDPRISM:
-					v5.addVertex(s, -s, 0);
-					v5.addVertex(0, -s, s);
+					if (s >= 1)
+						sy = 64;
+					v5.addVertex(s, -sy, 0);
+					v5.addVertex(0, -sy, s);
 
-					v5.addVertex(0, -s, s);
-					v5.addVertex(-s, -s, 0);
+					v5.addVertex(0, -sy, s);
+					v5.addVertex(-s, -sy, 0);
 
-					v5.addVertex(-s, -s, 0);
-					v5.addVertex(0, -s, -s);
+					v5.addVertex(-s, -sy, 0);
+					v5.addVertex(0, -sy, -s);
 
-					v5.addVertex(0, -s, -s);
-					v5.addVertex(s, -s, 0);
+					v5.addVertex(0, -sy, -s);
+					v5.addVertex(s, -sy, 0);
 
-					v5.addVertex(s, s, 0);
-					v5.addVertex(0, s, s);
+					v5.addVertex(s, sy, 0);
+					v5.addVertex(0, sy, s);
 
-					v5.addVertex(0, s, s);
-					v5.addVertex(-s, s, 0);
+					v5.addVertex(0, sy, s);
+					v5.addVertex(-s, sy, 0);
 
-					v5.addVertex(-s, s, 0);
-					v5.addVertex(0, s, -s);
+					v5.addVertex(-s, sy, 0);
+					v5.addVertex(0, sy, -s);
 
-					v5.addVertex(0, s, -s);
-					v5.addVertex(s, s, 0);
+					v5.addVertex(0, sy, -s);
+					v5.addVertex(s, sy, 0);
 
-					v5.addVertex(s, -s, 0);
-					v5.addVertex(s, s, 0);
+					v5.addVertex(s, -sy, 0);
+					v5.addVertex(s, sy, 0);
 
-					v5.addVertex(0, -s, s);
-					v5.addVertex(0, s, s);
+					v5.addVertex(0, -sy, s);
+					v5.addVertex(0, sy, s);
 
-					v5.addVertex(-s, -s, 0);
-					v5.addVertex(-s, s, 0);
+					v5.addVertex(-s, -sy, 0);
+					v5.addVertex(-s, sy, 0);
 
-					v5.addVertex(0, -s, -s);
-					v5.addVertex(0, s, -s);
+					v5.addVertex(0, -sy, -s);
+					v5.addVertex(0, sy, -s);
 					break;
 				case PYRAMID:
 					v5.addVertex(0, -s, s);
@@ -551,6 +566,8 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 					v5.addVertex(s, -s, 0);
 					break;
 				case HEXAGON:
+					if (s >= 1)
+						sy = 64;
 					for (int i = 0; i < 6; i++) {
 						double a = Math.toRadians(30+i*60);
 						double a2 = Math.toRadians(30+(i+1)*60);
@@ -558,17 +575,19 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 						double dz = s*Math.sin(a);
 						double dx2 = s*Math.cos(a2);
 						double dz2 = s*Math.sin(a2);
-						v5.addVertex(dx, -s, dz);
-						v5.addVertex(dx, s, dz);
+						v5.addVertex(dx, -sy, dz);
+						v5.addVertex(dx, sy, dz);
 
-						v5.addVertex(dx, -s, dz);
-						v5.addVertex(dx2, -s, dz2);
+						v5.addVertex(dx, -sy, dz);
+						v5.addVertex(dx2, -sy, dz2);
 
-						v5.addVertex(dx, s, dz);
-						v5.addVertex(dx2, s, dz2);
+						v5.addVertex(dx, sy, dz);
+						v5.addVertex(dx2, sy, dz2);
 					}
 					break;
 				case OCTAGON:
+					if (s >= 1)
+						sy = 64;
 					for (int i = 0; i < 8; i++) {
 						double a = Math.toRadians(22.5+i*45);
 						double a2 = Math.toRadians(22.5+(i+1)*45);
@@ -576,14 +595,14 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 						double dz = s*Math.sin(a);
 						double dx2 = s*Math.cos(a2);
 						double dz2 = s*Math.sin(a2);
-						v5.addVertex(dx, -s, dz);
-						v5.addVertex(dx, s, dz);
+						v5.addVertex(dx, -sy, dz);
+						v5.addVertex(dx, sy, dz);
 
-						v5.addVertex(dx, -s, dz);
-						v5.addVertex(dx2, -s, dz2);
+						v5.addVertex(dx, -sy, dz);
+						v5.addVertex(dx2, -sy, dz2);
 
-						v5.addVertex(dx, s, dz);
-						v5.addVertex(dx2, s, dz2);
+						v5.addVertex(dx, sy, dz);
+						v5.addVertex(dx2, sy, dz2);
 					}
 					break;
 				default:

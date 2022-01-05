@@ -476,6 +476,18 @@ public class CrystalBees {
 		return purity;
 	}
 
+	public static BeeSpecies getSparkleBee() {
+		return sparkle;
+	}
+
+	public static BeeSpecies getLuminousBee() {
+		return luminous;
+	}
+
+	public static BeeSpecies getProximalBee() {
+		return magical;
+	}
+
 	public static BeeSpecies getTowerBee() {
 		return tower;
 	}

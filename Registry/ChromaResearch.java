@@ -141,6 +141,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	CASTTUNING("Personalized Casting",		new ItemStack(Blocks.skull, 1, 3),						ResearchLevel.NETWORKING,	ProgressionManager.instance.getPrereqsArray(ProgressStage.TUNECAST)),
 	MULTIBLOCKS("Functional Construction",	ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.COLUMN.ordinal()),	ResearchLevel.BASICCRAFT),
 	PYLONLINK("Interconnected Energy",		ChromaTiles.PYLONLINK.getCraftedProduct(),				ResearchLevel.ENERGY, ProgressStage.PYLONLINK),
+	ITEMBURNER("Item Decomposition",		new ItemStack(Blocks.dirt),								ResearchLevel.ENERGY, ProgressStage.CHARGE, ProgressStage.ALLCOLORS),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING,		ProgressStage.BLOWREPEATER),
@@ -649,6 +650,17 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 			ReikaTextureHelper.bindTerrainTexture();
 			GL11.glColor4f(1, 1, 1, 1);
 			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y+1, ChromaIcons.QUESTION.getIcon(), 16, 14);
+			GL11.glPopAttrib();
+			return;
+		}
+		else if (this == ITEMBURNER) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ADDITIVEDARK.apply();
+			String var4 = "Textures/GUIs/itemburner.png";
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, var4);
+			ReikaGuiAPI.instance.drawTexturedModalRect(x, y, 202, 58, 16, 16);
 			GL11.glPopAttrib();
 			return;
 		}

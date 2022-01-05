@@ -337,7 +337,7 @@ BreakAction, FocusAcceleratable {
 
 	@Override
 	protected boolean canReceiveFrom(CrystalElement e, ForgeDirection dir) {
-		return dir != ForgeDirection.UP;
+		return dir != ForgeDirection.UP || tank.getLevel() <= 1000;
 	}
 
 	@Override
