@@ -37,7 +37,6 @@ import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.GUI.StatusLogger;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.IBeeGenome;
@@ -53,7 +52,6 @@ public class ChromaBeeHelpers {
 
 	private static HashMap<SelectionKey, EntitySelection> entityLists = new HashMap();
 	private static HashMap<ChunkCoordinates, Coordinate> alvearyControllerLocations = new HashMap();
-	private static HashMap<ChunkCoordinates, CachedTerritory> territoryCache = new HashMap();
 
 	static List<WeakReference<EntityLivingBase>> getEntityList(AxisAlignedBB box, long time, World world, ChunkCoordinates c, Class ce, IEntitySelector s) {
 		if (EntityPlayer.class.isAssignableFrom(ce) || s == ReikaEntityHelper.playerSelector) {
@@ -290,35 +288,6 @@ public class ChromaBeeHelpers {
 		}
 		GameProfile gp = ibh.getOwner();
 		return gp != null && p.isPlayerAtStage(world, gp.getId());
-	}
-
-	public static int[] getEffectiveTerritory(IBeeHousing ibh, ChunkCoordinates c, IBeeGenome ibg, long time) {
-		CachedTerritory t = territoryCache.get(c);
-		if (t == null || t.territory == null || t.age >= 20) {
-			if (t == null) {
-				t = new CachedTerritory();
-				territoryCache.put(c, t);
-			}
-			t.recalculate(ibg, ibh);
-		}
-		else if (time > t.lastTick) {
-			t.lastTick = time;
-			t.age++;
-		}
-		return t.territory;
-	}
-
-	private static class CachedTerritory {
-
-		private int[] territory;
-		private int age;
-		private long lastTick;
-
-		private void recalculate(IBeeGenome ibg, IBeeHousing ibh) {
-			age = 0;
-			territory = ReikaBeeHelper.getFinalTerritory(ibg, ibh);
-		}
-
 	}
 
 }

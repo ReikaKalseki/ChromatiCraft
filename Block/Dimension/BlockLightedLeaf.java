@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Block.Dimension;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -19,6 +20,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
@@ -28,18 +30,20 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.Interfaces.CustomExcavationStarBehavior;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LightedTreeBlock;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Render.ShuffledIconControl;
 import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.DragonAPI.Base.BlockCustomLeaf;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBlock {
+public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBlock, CustomExcavationStarBehavior {
 
 	private final IIcon[] overlay = new IIcon[16];
 	private static final Random rand = new Random();
@@ -220,6 +224,20 @@ public class BlockLightedLeaf extends BlockCustomLeaf implements LightedTreeBloc
 	@Override
 	protected int getMetaLimit() {
 		return 1;
+	}
+
+	@Override
+	public int getRange(World world, int x, int y, int z, EntityPlayer ep) {
+		return -1;
+	}
+
+	@Override
+	public Collection<BlockKey> getSpreadBlocks(World world, int x, int y, int z) {
+		Collection<BlockKey> ret = new ArrayList();
+		for (int i = 0; i < 16; i++) {
+			ret.add(new BlockKey(this, i));
+		}
+		return ret;
 	}
 
 }

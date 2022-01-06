@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Items.Tools.Wands;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,6 +25,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 
+import Reika.ChromatiCraft.API.Interfaces.CustomExcavationStarBehavior;
 import Reika.ChromatiCraft.Base.ItemBlockChangingWand;
 import Reika.ChromatiCraft.Block.Decoration.BlockEtherealLight.Flags;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
@@ -31,7 +33,6 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
-import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 import Reika.DragonAPI.Instantiable.PlayerReference;
@@ -42,7 +43,6 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TwilightForestHandler;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
-import Reika.GeoStrata.Registry.GeoBlocks;
 
 public class ItemExcavationWand extends ItemBlockChangingWand {
 
@@ -91,7 +91,7 @@ public class ItemExcavationWand extends ItemBlockChangingWand {
 		if (!this.canSpreadOn(world, x, y, z, world.getBlock(x, y, z), world.getBlockMetadata(x, y, z)))
 			return false;
 		if (!world.isRemote) {
-			ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, this.getDepth(ep));
+			ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, this.getDepth(ep, world, x, y, z));
 			//b.looseMatches.put(Blocks.redstone_ore, new BlockKey(Blocks.lit_redstone_ore));
 			b.call = this;
 			b.silkTouch = ReikaEnchantmentHelper.getEnchantmentLevel(Enchantment.silkTouch, itemstack) > 0;
@@ -127,16 +127,6 @@ public class ItemExcavationWand extends ItemBlockChangingWand {
 				set.add(new BlockKey(bk, i));
 			}
 		}
-		else if (bk == ChromaBlocks.GLOWLEAF.getBlockInstance()) {
-			for (int i = 0; i < 16; i++) {
-				set.add(new BlockKey(bk, i));
-			}
-		}
-		else if (ModList.GEOSTRATA.isLoaded() && bk == GeoBlocks.LAVAROCK.getBlockInstance()) {
-			for (int i = 0; i < 16; i++) {
-				set.add(new BlockKey(bk, i));
-			}
-		}
 		else if (bk == TwilightForestHandler.BlockEntry.NAGASTONE.getBlock()) {
 			for (int i = 0; i < 16; i++) {
 				set.add(new BlockKey(bk, i));
@@ -146,6 +136,11 @@ public class ItemExcavationWand extends ItemBlockChangingWand {
 			for (int i = 0; i < 16; i++) {
 				set.add(new BlockKey(bk, i));
 			}
+		}
+		else if (bk instanceof CustomExcavationStarBehavior) {
+			Collection<BlockKey> c = ((CustomExcavationStarBehavior)bk).getSpreadBlocks(world, x, y, z);
+			if (c != null && !c.isEmpty())
+				set.addAll(c);
 		}
 		ReikaTreeHelper tree = ReikaTreeHelper.getTree(bk, world.getBlockMetadata(x, y, z));
 		if (tree != null) {
@@ -175,8 +170,13 @@ public class ItemExcavationWand extends ItemBlockChangingWand {
 	}
 
 	@Override
-	public int getDepth(EntityPlayer ep) {
-		return canUseBoostedEffect(ep) ? MAX_DEPTH_BOOST : MAX_DEPTH;
+	public int getDepth(EntityPlayer ep, World world, int x, int y, int z) {
+		int base = canUseBoostedEffect(ep) ? MAX_DEPTH_BOOST : MAX_DEPTH;
+		Block b = world.getBlock(x, y, z);
+		if (b instanceof CustomExcavationStarBehavior) {
+			base = Math.max(base, ((CustomExcavationStarBehavior)b).getRange(world, x, y, z, ep));
+		}
+		return base;
 	}
 
 	@Override

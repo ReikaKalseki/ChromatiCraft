@@ -92,7 +92,7 @@ public class ItemTransitionWand extends ItemBlockChangingWand {
 					if (!this.setOrGetBlockBox(is, x, y, z))
 						return false;
 				}
-				int depth = mode == TransitionMode.VOLUMETRIC || mode == TransitionMode.COLUMN ? Integer.MAX_VALUE : this.getDepth(ep);
+				int depth = mode == TransitionMode.VOLUMETRIC || mode == TransitionMode.COLUMN ? Integer.MAX_VALUE : this.getDepth(ep, world, x, y, z);
 				ProgressiveBreaker br = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, depth);
 				br.call = this;
 				br.drops = false;
@@ -134,7 +134,7 @@ public class ItemTransitionWand extends ItemBlockChangingWand {
 	}
 
 	@Override
-	public int getDepth(EntityPlayer ep) {
+	public int getDepth(EntityPlayer ep, World world, int x, int y, int z) {
 		return canUseBoostedEffect(ep) ? MAX_DEPTH_BOOST : MAX_DEPTH;
 	}
 

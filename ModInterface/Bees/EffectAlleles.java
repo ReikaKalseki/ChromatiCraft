@@ -72,6 +72,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.Note;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.Bees.BasicGene;
+import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.relauncher.Side;
@@ -138,7 +139,7 @@ public class EffectAlleles {
 				ChunkCoordinates c = ibh.getCoordinates();
 				long time = world.getTotalWorldTime();
 				if (this.canApplyEffect(world, c.posX, c.posY, c.posZ)) {
-					int[] r = ChromaBeeHelpers.getEffectiveTerritory(ibh, c, ibg, time);
+					int[] r = ReikaBeeHelper.getEffectiveTerritory(ibh, c, ibg, time);
 					AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(c.posX, c.posY, c.posZ).expand(r[0], r[1], r[2]);
 					IEntitySelector s = null;
 					TileEntityLumenAlveary te = ChromaBeeHelpers.getLumenAlvearyController(ibh, world, c);
@@ -219,7 +220,7 @@ public class EffectAlleles {
 					int delay = 12;
 					ImmutablePair<CrystalElement, Integer> p = this.getActiveFXColor(world, delay);
 					if (p.left == color) {
-						int[] r = ChromaBeeHelpers.getEffectiveTerritory(ibh, c, ibg, time);
+						int[] r = ReikaBeeHelper.getEffectiveTerritory(ibh, c, ibg, time);
 						AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(c.posX, c.posY, c.posZ).expand(r[0], r[1], r[2]);
 						int n = (int)(0.625*Math.sqrt(ReikaAABBHelper.getVolume(box)/480D)/2D);
 						for (int i = 0; i < n; i++) {
@@ -368,7 +369,7 @@ public class EffectAlleles {
 				World world = ibh.getWorld();
 				long time = world.getTotalWorldTime();
 				ChunkCoordinates c = ibh.getCoordinates();
-				int[] r = ChromaBeeHelpers.getEffectiveTerritory(ibh, c, ibg, time);
+				int[] r = ReikaBeeHelper.getEffectiveTerritory(ibh, c, ibg, time);
 				RainbowTreeEffects.instance.doRainbowTreeEffects(world, c.posX, c.posY, c.posZ, 1, r[0]/16F, CrystalBees.rand, false);
 				CrystalElement e = CrystalElement.randomElement();
 				CrystalEffect.spawnBallLightnings = false;
@@ -436,7 +437,7 @@ public class EffectAlleles {
 					//int chord = (int)((tick/steps)%chords.length);
 					//int sound = (int)(tick%steps);
 
-					int[] r = ChromaBeeHelpers.getEffectiveTerritory(ibh, c, ibg, wtime);
+					int[] r = ReikaBeeHelper.getEffectiveTerritory(ibh, c, ibg, wtime);
 					AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(c.posX, c.posY, c.posZ).expand(r[0], r[1], r[2]);
 					int n = (int)(Math.sqrt(ReikaAABBHelper.getVolume(box)/480D)/2D);
 					int n2 = (int)(Math.pow(n*1.5, 1.5)/4D);
@@ -533,7 +534,7 @@ public class EffectAlleles {
 			if (this.isValidBeeForEffect(ibg.getPrimary()) && this.isValidBeeForEffect(ibg.getSecondary())) {
 				World world = ibh.getWorld();
 				ChunkCoordinates c = ibh.getCoordinates();
-				int[] r = ChromaBeeHelpers.getEffectiveTerritory(ibh, c, ibg, world.getTotalWorldTime());
+				int[] r = ReikaBeeHelper.getEffectiveTerritory(ibh, c, ibg, world.getTotalWorldTime());
 				AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(c.posX, c.posY, c.posZ).expand(r[0], r[1], r[2]);
 				List<WeakReference<EntityLivingBase>> li = ChromaBeeHelpers.getEntityList(box, world.getTotalWorldTime(), world, c, EntityPlayer.class, null);
 				TileEntityLumenAlveary te = ChromaBeeHelpers.getLumenAlvearyController(ibh, world, c);
@@ -637,7 +638,7 @@ public class EffectAlleles {
 			if (this.isValidBeeForEffect(ibg.getPrimary()) && this.isValidBeeForEffect(ibg.getSecondary())) {
 				World world = ibh.getWorld();
 				ChunkCoordinates c = ibh.getCoordinates();
-				int[] r = ChromaBeeHelpers.getEffectiveTerritory(ibh, c, ibg, world.getTotalWorldTime());
+				int[] r = ReikaBeeHelper.getEffectiveTerritory(ibh, c, ibg, world.getTotalWorldTime());
 				ArrayList<TileEntityCrystalPylon> li = CrystalNetworker.instance.getAllNearbyPylons(world, c.posX, c.posY, c.posZ, r[0], true);
 				if (li != null && !li.isEmpty()) {
 					li.get(CrystalBees.rand.nextInt(li.size())).speedRegenShortly(8);
@@ -707,7 +708,7 @@ public class EffectAlleles {
 				World world = ibh.getWorld();
 				ChunkCoordinates c = ibh.getCoordinates();
 				if (world.rand.nextInt(200) == 0) {
-					int[] r = ChromaBeeHelpers.getEffectiveTerritory(ibh, c, ibg, world.getTotalWorldTime());
+					int[] r = ReikaBeeHelper.getEffectiveTerritory(ibh, c, ibg, world.getTotalWorldTime());
 
 					AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(c.posX, c.posY, c.posZ).expand(r[0], r[1], r[2]);
 					List<WeakReference<EntityLivingBase>> li = ChromaBeeHelpers.getEntityList(box, world.getTotalWorldTime(), world, c, EntityPlayer.class, null);
@@ -783,7 +784,7 @@ public class EffectAlleles {
 				World world = ibh.getWorld();
 				ChunkCoordinates c = ibh.getCoordinates();
 				if (world.rand.nextInt(500) == 0) {
-					int[] r = ChromaBeeHelpers.getEffectiveTerritory(ibh, c, ibg, world.getTotalWorldTime());
+					int[] r = ReikaBeeHelper.getEffectiveTerritory(ibh, c, ibg, world.getTotalWorldTime());
 					TileEntityLumenAlveary te = ChromaBeeHelpers.getLumenAlvearyController(ibh, world, c);
 					AxisAlignedBB box = ReikaAABBHelper.getBlockAABB(c.posX, c.posY, c.posZ).expand(r[0], r[1], r[2]);
 					List<WeakReference<EntityLivingBase>> li = ChromaBeeHelpers.getEntityList(box, world.getTotalWorldTime(), world, c, EntityPlayer.class, null);
@@ -859,7 +860,7 @@ public class EffectAlleles {
 				World world = ibh.getWorld();
 				ChunkCoordinates c = ibh.getCoordinates();
 				if (world.rand.nextInt(200) == 0) {
-					int[] r = ChromaBeeHelpers.getEffectiveTerritory(ibh, c, ibg, world.getTotalWorldTime());
+					int[] r = ReikaBeeHelper.getEffectiveTerritory(ibh, c, ibg, world.getTotalWorldTime());
 					BlockBox box = BlockBox.block(c).expand(r[0], r[1], r[2]);
 					Coordinate loc = box.getRandomContainedCoordinate(world.rand);
 					if (this.canSparklify(world, loc)) {

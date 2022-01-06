@@ -40,7 +40,7 @@ public class BlockChangeCache {
 		if (overlay == null) {
 			ItemBlockChangingWand i = (ItemBlockChangingWand)is.getItem();
 			overlay = new BlockArray();
-			overlay.maxDepth = i.getDepth(ep)-1;
+			overlay.maxDepth = i.getDepth(ep, world, x, y, z)-1;
 			i.getSpreadBlocks(world, x, y, z, overlay, ep, is);
 		}
 		return overlay;

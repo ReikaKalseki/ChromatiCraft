@@ -16,7 +16,7 @@ public abstract class ItemBlockChangingWand extends ItemWandBase implements Brea
 		this.addEnergyCost(CrystalElement.BROWN, 1);
 	}
 
-	public abstract int getDepth(EntityPlayer ep);
+	public abstract int getDepth(EntityPlayer ep, World world, int x, int y, int z);
 
 	public abstract void getSpreadBlocks(World world, int x, int y, int z, BlockArray arr, EntityPlayer ep, ItemStack is);
 

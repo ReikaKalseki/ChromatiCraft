@@ -73,7 +73,6 @@ import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.Bees.BeeAlleleRegistry.Effect;
@@ -91,6 +90,7 @@ import Reika.DragonAPI.ModInteract.Bees.BeeTraits;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ForestryHandler.Combs;
+import Reika.DragonAPI.ModInteract.ItemHandlers.MagicBeesHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.OreBerryBushHandler.BerryTypes;
 
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -417,10 +417,10 @@ public class CrystalBees {
 		aura.otherChecks.add(new AuraLocusCheck());
 
 		if (ModList.MAGICBEES.isLoaded()) {
-			tower.addProduct(ReikaItemHelper.lookupItem("MagicBees:comb:8"), 4);
-			tower.addProduct(ReikaItemHelper.lookupItem("MagicBees:comb:10"), 4);
-			precursor.addProduct(ReikaItemHelper.lookupItem("MagicBees:comb:8"), 10);
-			precursor.addProduct(ReikaItemHelper.lookupItem("MagicBees:comb:10"), 10);
+			tower.addProduct(MagicBeesHandler.Combs.MEMORY.getItem(), 4);
+			tower.addProduct(MagicBeesHandler.Combs.FORGOTTEN.getItem(), 4);
+			precursor.addProduct(MagicBeesHandler.Combs.MEMORY.getItem(), 10);
+			precursor.addProduct(MagicBeesHandler.Combs.FORGOTTEN.getItem(), 10);
 		}
 		else {
 			tower.addProduct(Combs.HONEY.getItem(), 8);
