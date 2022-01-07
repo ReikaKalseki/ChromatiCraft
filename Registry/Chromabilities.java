@@ -705,5 +705,9 @@ public enum Chromabilities implements Ability {
 		to.getEntityData().setTag(NBT_TAG, data);
 	}
 
+	public ChromaResearch getFragment() {
+		return ChromaResearch.getPageFor(this);
+	}
+
 
 }

@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.ChromaTeleporter;
 import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -198,7 +199,7 @@ public class BlockChromaPortal extends Block {
 		return ChunkProviderChroma.areGeneratorsReady() && ChromatiCraft.instance.isDimensionLoadable();
 	}
 
-	public static class TileEntityCrystalPortal extends TileEntity {
+	public static class TileEntityCrystalPortal extends TileEntity implements MultiBlockChromaTile {
 
 		private boolean complete;
 		private int charge;
@@ -535,6 +536,30 @@ public class BlockChromaPortal extends Block {
 
 		public int getTuning() {
 			return tuning;
+		}
+
+		@Override
+		public void validateStructure() {
+			this.validateStructure(worldObj, xCoord, yCoord, zCoord);
+		}
+
+		@Override
+		public ChromaStructures getPrimaryStructure() {
+			return ChromaStructures.PORTAL;
+		}
+
+		@Override
+		public Coordinate getStructureOffset() {
+			return null;
+		}
+
+		@Override
+		public boolean canStructureBeInspected() {
+			return true;
+		}
+
+		public final boolean hasStructure() {
+			return complete;
 		}
 
 	}

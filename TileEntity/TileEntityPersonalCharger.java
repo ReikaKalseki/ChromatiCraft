@@ -276,6 +276,10 @@ public class TileEntityPersonalCharger extends CrystalReceiverBase implements Ch
 		return true;
 	}
 
+	public final boolean hasStructure() {
+		return hasMultiblock;
+	}
+
 	@Override
 	public float getHeldToolChargingPower(EntityPlayer ep, CrystalElement e, ItemStack is) {
 		return 0;

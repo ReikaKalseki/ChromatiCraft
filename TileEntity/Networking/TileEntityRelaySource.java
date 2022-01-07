@@ -282,4 +282,8 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 		return true;
 	}
 
+	public final boolean hasStructure() {
+		return hasEnhancedStructure;
+	}
+
 }

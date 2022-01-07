@@ -42,6 +42,7 @@ import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.Instantiable.BasicModEntry;
 import Reika.DragonAPI.Instantiable.MusicScore.Note;
 import Reika.DragonAPI.Instantiable.MusicScore.ScoreTrack;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray.BlockMatchFailCallback;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Effects.EntityFluidFX;
@@ -306,7 +307,7 @@ public class CrystalMusicTemple {
 			this.onSongComplete(world);
 		}
 		ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.MUSICTEMPLEEND.ordinal(), world, tileLocation, 256);
-		this.checkStructure(world);
+		this.checkStructure(world, null);
 	}
 
 	private void onSongComplete(World world) {
@@ -378,8 +379,8 @@ public class CrystalMusicTemple {
 		}
 	}
 
-	public void checkStructure(World world) {
-		isStructureComplete = tileLocation != null && structure.validate();
+	public void checkStructure(World world, BlockMatchFailCallback call) {
+		isStructureComplete = tileLocation != null && structure.validate(call);
 	}
 
 	public boolean isComplete() {

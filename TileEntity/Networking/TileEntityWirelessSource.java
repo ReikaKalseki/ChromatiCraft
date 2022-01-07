@@ -298,4 +298,8 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 		return true;
 	}
 
+	public final boolean hasStructure() {
+		return broadcasting;
+	}
+
 }

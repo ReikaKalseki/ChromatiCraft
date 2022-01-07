@@ -523,11 +523,11 @@ public enum ChromaItems implements ItemEnum {
 		return itemClass == null;
 	}
 
-	private boolean hasPrerequisite() {
+	public boolean hasPrerequisite() {
 		return condition != null;
 	}
 
-	private ModList getPrerequisite() {
+	public ModList getPrerequisite() {
 		return condition;
 	}
 
@@ -664,5 +664,9 @@ public enum ChromaItems implements ItemEnum {
 
 	public boolean isConfigDisabled() {
 		return false;
+	}
+
+	public ChromaResearch getFragment() {
+		return ChromaResearch.getPageFor(this.getStackOf());
 	}
 }

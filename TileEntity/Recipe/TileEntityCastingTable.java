@@ -1418,6 +1418,19 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		return null;
 	}
 
+	public boolean hasStructure() {
+		switch(this.getTier()) {
+			case TEMPLE:
+				return hasStructure;
+			case MULTIBLOCK:
+				return hasStructure2;
+			case PYLON:
+				return hasPylonConnections;
+			default:
+				return false;
+		}
+	}
+
 	@Override
 	public Coordinate getStructureOffset() {
 		return new Coordinate(0, -1, 0);

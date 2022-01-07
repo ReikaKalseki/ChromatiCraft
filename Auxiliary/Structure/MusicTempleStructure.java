@@ -17,6 +17,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray.BlockMatchFailCallback;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
@@ -135,8 +136,8 @@ public class MusicTempleStructure extends ChromaStructureBase {
 		return Collections.unmodifiableMap(pillars[idx]);
 	}
 
-	public boolean validate() {
-		return array.matchInWorld();
+	public boolean validate(BlockMatchFailCallback call) {
+		return array.matchInWorld(call);
 	}
 
 	@Override
@@ -190,7 +191,7 @@ public class MusicTempleStructure extends ChromaStructureBase {
 		world.setBlock(x + 2, y + 1, z + 13, crystalstone);
 		world.setBlock(x + 2, y + 1, z + 14, cliff, cliffm);
 		world.setBlock(x + 2, y + 1, z + 15, cliff, cliffm);
-		world.setBlock(x + 2, y + 7, z + 11, crystalstone);
+		world.setBlock(x + 2, y + 7, z + 11, crystalstone, 1);
 		world.setBlock(x + 3, y + 0, z + 2, cliff, cliffm);
 		world.setBlock(x + 3, y + 0, z + 3, cliff, cliffm);
 		world.setBlock(x + 3, y + 0, z + 9, crystalstone);
@@ -218,9 +219,9 @@ public class MusicTempleStructure extends ChromaStructureBase {
 		world.setBlock(x + 3, y + 4, z + 11, crystalstone, 2);
 		world.setBlock(x + 3, y + 5, z + 11, crystalstone, 2);
 		world.setBlock(x + 3, y + 6, z + 11, crystalstone, 2);
-		world.setBlock(x + 3, y + 7, z + 10, crystalstone);
+		world.setBlock(x + 3, y + 7, z + 10, crystalstone, 1);
 		world.setBlock(x + 3, y + 7, z + 11, crystalstone, 7);
-		world.setBlock(x + 3, y + 7, z + 12, crystalstone);
+		world.setBlock(x + 3, y + 7, z + 12, crystalstone, 1);
 		world.setBlock(x + 4, y + 0, z + 2, cliff, cliffm);
 		world.setBlock(x + 4, y + 0, z + 4, crystalstone, 6);
 		world.setBlock(x + 4, y + 0, z + 5, crystalstone, 11);

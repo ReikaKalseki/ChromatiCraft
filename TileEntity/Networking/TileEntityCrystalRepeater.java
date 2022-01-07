@@ -704,4 +704,8 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		return true;
 	}
 
+	public final boolean hasStructure() {
+		return hasMultiblock;
+	}
+
 }

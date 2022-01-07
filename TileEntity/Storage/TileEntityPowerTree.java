@@ -875,6 +875,10 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 		return true;
 	}
 
+	public final boolean hasStructure() {
+		return hasMultiblock;
+	}
+
 	@Override
 	public double getMaximumBeamRadius() {
 		return TileEntityCrystalBase.DEFAULT_BEAM_RADIUS;

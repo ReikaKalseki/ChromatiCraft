@@ -22,4 +22,6 @@ public interface MultiBlockChromaTile {
 
 	public boolean canStructureBeInspected();
 
+	public boolean hasStructure();
+
 }

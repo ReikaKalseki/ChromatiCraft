@@ -28,7 +28,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.TemporaryCrystalReceiver;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaSound;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.SpecialStructureTile;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Magic.CrystalMusicTemple;
@@ -49,6 +49,7 @@ import Reika.DragonAPI.Instantiable.MusicScore;
 import Reika.DragonAPI.Instantiable.MusicScore.Note;
 import Reika.DragonAPI.Instantiable.MusicScore.NoteData;
 import Reika.DragonAPI.Instantiable.MusicScore.ScoreTrack;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray.BlockMatchFailCallback;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.MIDIInterface;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
@@ -65,7 +66,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityCrystalMusic extends TileEntityChromaticBase implements MultiBlockChromaTile, GuiController, TriggerableAction, BreakAction {
+public class TileEntityCrystalMusic extends TileEntityChromaticBase implements SpecialStructureTile, GuiController, TriggerableAction, BreakAction {
 
 	private static final int BROADCAST_RANGE = 96;
 
@@ -206,7 +207,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 			this.calcPaths(world, x, y, z);
 
 			temple.setCore(this);
-			temple.checkStructure(world);
+			temple.checkStructure(world, null);
 		}
 	}
 
@@ -555,7 +556,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 	public void validateStructure() {
 		if (isPlaying)
 			return;
-		temple.checkStructure(worldObj);
+		temple.checkStructure(worldObj, null);
 
 		this.syncAllData(false);
 	}
@@ -572,7 +573,16 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements M
 
 	@Override
 	public boolean canStructureBeInspected() {
-		return false;
+		return true;
+	}
+
+	@Override
+	public void inspectStructure(BlockMatchFailCallback call) {
+		temple.checkStructure(worldObj, call);
+	}
+
+	public final boolean hasStructure() {
+		return this.hasTemple();
 	}
 
 	@Override

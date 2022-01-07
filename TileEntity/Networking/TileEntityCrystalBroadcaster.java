@@ -378,4 +378,9 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 		return false;
 	}
 
+	@Override
+	public boolean canStructureBeInspected() {
+		return true;
+	}
+
 }

@@ -238,4 +238,8 @@ public class TileEntityCloakingTower extends TileEntityChromaticBase implements 
 		return true;
 	}
 
+	public boolean hasStructure() {
+		return active;
+	}
+
 }

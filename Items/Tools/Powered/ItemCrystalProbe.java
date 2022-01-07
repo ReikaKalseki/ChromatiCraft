@@ -21,6 +21,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ColoredMultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.SpecialStructureTile;
 import Reika.ChromatiCraft.Auxiliary.Render.ProbeInfoOverlayRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
 import Reika.ChromatiCraft.Auxiliary.Structure.RitualStructure;
@@ -31,12 +32,16 @@ import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Base.BlockMultiBlock;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
+import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledSoundEvent;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -271,10 +276,22 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 							}
 							CrystalElement e = str.requiresColor ? ((ColoredMultiBlockChromaTile)te).getColor() : null;
 							FilledBlockArray arr = str.requiresColor ? str.getArray(world, x, y, z, e) : str.getArray(world, x+c.xCoord, y+c.yCoord, z+c.zCoord);
-							if (!arr.matchInWorld(StructureErrorOverlays.instance)) {
-
+							if (arr.matchInWorld(StructureErrorOverlays.instance)) {
+								ChromaSounds.CAST.playSoundAtBlock(world, x, y, z, 1, (float)MusicKey.G4.getRatio(MusicKey.C5));
+								TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledSoundEvent(ChromaSounds.CAST, world, x+0.5, y+0.5, z+0.5, 1, 1)), 5);
+								TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledSoundEvent(ChromaSounds.CAST, world, x+0.5, y+0.5, z+0.5, 1, (float)MusicKey.G5.getRatio(MusicKey.C5))), 10);
 							}
 							return true;
+						}
+						else if (te instanceof SpecialStructureTile) {
+							te.validateStructure();
+							if (te.hasStructure()) {
+								ChromaSounds.CAST.playSoundAtBlock(world, x, y, z, 1, (float)MusicKey.G4.getRatio(MusicKey.C5));
+								TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledSoundEvent(ChromaSounds.CAST, world, x+0.5, y+0.5, z+0.5, 1, 1)), 5);
+								TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(new ScheduledSoundEvent(ChromaSounds.CAST, world, x+0.5, y+0.5, z+0.5, 1, (float)MusicKey.G5.getRatio(MusicKey.C5))), 10);
+							}
+							else
+								((SpecialStructureTile)te).inspectStructure(StructureErrorOverlays.instance);
 						}
 					}
 					return false;

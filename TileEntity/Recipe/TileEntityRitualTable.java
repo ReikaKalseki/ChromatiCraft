@@ -513,6 +513,10 @@ OperationInterval, MultiBlockChromaTile, VariableTexture {
 		return true;
 	}
 
+	public final boolean hasStructure() {
+		return hasStructure;
+	}
+
 	@Override
 	public boolean hasWork() {
 		return this.getState() == OperationState.RUNNING;
