@@ -170,10 +170,10 @@ public class EntityBallLightningFX extends EntityFX implements CustomRenderFX {
 	public boolean rendersOverLimit() {
 		return false;
 	}
-
+	/*
 	@Override
 	public double getRenderRange() {
 		return 60;
 	}
-
+	 */
 }

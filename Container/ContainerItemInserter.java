@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -27,10 +27,15 @@ public class ContainerItemInserter extends CoreContainer {
 	public ContainerItemInserter(EntityPlayer player, TileEntityItemInserter te) {
 		super(player, te);
 
-		for (int i = 0; i < te.getSizeInventory(); i++) {
+		for (int i = 0; i < TileEntityItemInserter.TARGETS; i++) {
 			int x = 8;
-			int y = 15;
+			int y = 8;
 			this.addSlot(i, x+0, y+i*20);
+		}
+
+		for (int i = 0; i < 9; i++) {
+			int dx = 8+18*(8-i);
+			this.addSlot(TileEntityItemInserter.TARGETS+i, 8+dx, 128);
 		}
 
 		this.addPlayerInventoryWithOffset(player, 0, 64);

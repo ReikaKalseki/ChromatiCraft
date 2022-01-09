@@ -162,10 +162,10 @@ public class EntityRelayPathFX extends EntityFX implements CustomRenderFX {
 	public boolean rendersOverLimit() {
 		return true;
 	}
-
+	/*
 	@Override
 	public double getRenderRange() {
 		return 120;
 	}
-
+	 */
 }

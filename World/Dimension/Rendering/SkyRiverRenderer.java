@@ -29,8 +29,8 @@ import Reika.DragonAPI.Instantiable.ParticleController.CollectingPositionControl
 import Reika.DragonAPI.Interfaces.PositionController;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -184,7 +184,7 @@ public class SkyRiverRenderer {
 		if (rendered) {
 			EntityPlayer pl = Minecraft.getMinecraft().thePlayer;
 			SkyRiverGenerator.RiverPoint closest = SkyRiverGenerator.getClosestPoint(pl, 16, true);
-			if (closest != null && SkyRiverGenerator.isWithinSkyRiver(pl, closest)) {
+			if (closest != null/* && SkyRiverGenerator.isWithinSkyRiver(pl, closest)*/) {
 				ChromaShaders.INSKYRIVER.rampUpIntensity(0.02F, 1.06F);
 				ChromaShaders.INSKYRIVER.refresh();
 				ChromaShaders.INSKYRIVER.lingerTime = 20;

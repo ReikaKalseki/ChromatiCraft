@@ -40,6 +40,7 @@ public class GuiItemInserter extends GuiChromaBase {
 	public GuiItemInserter(EntityPlayer ep, TileEntityItemInserter te) {
 		super(new ContainerItemInserter(ep, te), ep, te);
 		tile = te;
+		xSize = 180;
 		ySize = 230;
 	}
 
@@ -50,7 +51,7 @@ public class GuiItemInserter extends GuiChromaBase {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 
-		for (int i = 0; i < tile.getSizeInventory(); i++) {
+		for (int i = 0; i < TileEntityItemInserter.TARGETS; i++) {
 			InsertionType type = tile.getInsertionType(i);
 			if (type != null) {
 				int x = j+138;
@@ -60,10 +61,10 @@ public class GuiItemInserter extends GuiChromaBase {
 			}
 
 			if (tile.getStackInSlot(i) != null) {
-				for (int f = 0; f < tile.getSizeInventory(); f++) {
+				for (int f = 0; f < TileEntityItemInserter.TARGETS; f++) {
 					Coordinate c = tile.getLink(f);
 					if (c != null) {
-						int id = 100+i*tile.getSizeInventory()+f;
+						int id = 100+i*TileEntityItemInserter.TARGETS+f;
 						int dx = j+51+i*16-1;
 						int dy = k+14+f*20+i*3-1;
 						int u = tile.isLinkEnabled(i, f) ? 177 : 183;
@@ -79,13 +80,13 @@ public class GuiItemInserter extends GuiChromaBase {
 	protected void actionPerformed(GuiButton b) {
 		super.actionPerformed(b);
 
-		if (b.id < tile.getSizeInventory()) {
+		if (b.id < TileEntityItemInserter.TARGETS) {
 			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.INSERTERMODE.ordinal(), tile, b.id);
 			tile.setInsertionType(b.id, tile.getInsertionType(b.id).next());
 		}
-		else if (b.id >= 100 && b.id < 100+(tile.getSizeInventory()*tile.getSizeInventory())) {
-			int i = (b.id-100)/tile.getSizeInventory();
-			int k = (b.id-100)%tile.getSizeInventory();
+		else if (b.id >= 100 && b.id < 100+(TileEntityItemInserter.TARGETS*TileEntityItemInserter.TARGETS)) {
+			int i = (b.id-100)/TileEntityItemInserter.TARGETS;
+			int k = (b.id-100)%TileEntityItemInserter.TARGETS;
 			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.INSERTERCONNECTION.ordinal(), tile, i, k);
 			//tile.toggleConnection(i, k);
 		}
@@ -140,7 +141,7 @@ public class GuiItemInserter extends GuiChromaBase {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 
-		for (int i = 0; i < tile.getSizeInventory(); i++) {
+		for (int i = 0; i < TileEntityItemInserter.TARGETS; i++) {
 			Coordinate c = tile.getLink(i);
 			if (c != null) {
 				Block b = c.getBlock(tile.worldObj);
@@ -179,7 +180,7 @@ public class GuiItemInserter extends GuiChromaBase {
 
 	@Override
 	public String getGuiTexture() {
-		return "inserter3";
+		return "inserter4";
 	}
 
 }

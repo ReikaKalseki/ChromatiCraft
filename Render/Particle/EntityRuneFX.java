@@ -135,10 +135,10 @@ public class EntityRuneFX extends EntityFX implements CustomRenderFX {
 	public boolean rendersOverLimit() {
 		return false;
 	}
-
+	/*
 	@Override
 	public double getRenderRange() {
 		return particleScale*96;
 	}
-
+	 */
 }

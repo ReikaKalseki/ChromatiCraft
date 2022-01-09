@@ -606,6 +606,7 @@ public class CrystalMusicTemple {
 				fx.setLife(80);
 				fx.noClip = true;
 				fx.setMotionController(new AttractiveMotionController(tx, tileLocation.yCoord-1.5, tz, 0.0625/24D, vy, dmp));
+				fx.forceIgnoreLimits();
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}
@@ -868,6 +869,7 @@ public class CrystalMusicTemple {
 			float g = -(float)ReikaRandomHelper.getRandomBetween(0.075, 0.2);
 			fx.setIcon(type.getIcon()).setLife((int)(fxLife*lscale)).setGravity(g*gscale).setScale(2.5F*size);
 			fx.setAlphaFading().setRapidExpand().setColorController(this);
+			fx.forceIgnoreLimits();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 

@@ -230,7 +230,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements S
 
 	private boolean playRepeaters(World world, int x, int y, int z) {
 		Block b = world.getBlock(x, y-1, z);
-		return b == Blocks.quartz_block || b == ChromaBlocks.PYLONSTRUCT.getBlockInstance();
+		return b == Blocks.quartz_block || b == ChromaBlocks.PYLONSTRUCT.getBlockInstance() || this.hasTemple();
 	}
 
 	private void play(World world, int x, int y, int z) {

@@ -18,8 +18,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBucket;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -28,6 +30,8 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidStack;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LinkerCallback;
@@ -37,18 +41,21 @@ import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
+import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -58,29 +65,68 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityItemInserter extends InventoriedChromaticBase implements LinkerCallback {
+public class TileEntityItemInserter extends InventoriedChromaticBase implements LinkerCallback, BreakAction {
 
 	public static final String DROP_TAG = "item_inserter_dropped";
 
-	private final Coordinate[] targets = new Coordinate[this.getSizeInventory()];
+	public static final int TARGETS = 6;
+	public static final int EXPORT_SLOTS = 9;
+
+	private final Coordinate[] targets = new Coordinate[TARGETS];
 	private final HashMap<Coordinate, InsertionType> locations = new HashMap();
 	private final ItemHashMap<ArrayList<Coordinate>> routing = new ItemHashMap();
 	private boolean[][] connections = new boolean[6][6];
 	private int maxCoord = 0;
 	public boolean omniMode = false;
+	private ItemStack pendingOutput;
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (world.isRemote)
+		if (!world.isRemote && pendingOutput != null && inv[inv.length-1] == null) {
+			inv[inv.length-1] = pendingOutput;
+			pendingOutput = null;
+		}
+		if (pendingOutput != null) {
+			if (world.isRemote)
+				this.doJammedFX(world, x, y, z);
 			return;
-		int slot = this.getTicksExisted()%this.getSizeInventory();
-		if (inv[slot] != null && (omniMode || inv[slot].stackSize > 1) && !ReikaRedstoneHelper.isPoweredOnSide(world, x, y, z, dirs[slot])) {
+		}
+		int slot = this.getTicksExisted()%targets.length;
+		if (!world.isRemote && inv[slot] != null && (omniMode || inv[slot].stackSize > 1) && !ReikaRedstoneHelper.isPoweredOnSide(world, x, y, z, dirs[slot])) {
 			Coordinate c = this.sendItem(slot);
 			if (c != null) {
 				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.INSERTERACTION.ordinal(), this, 64, Item.getIdFromItem(inv[slot].getItem()), inv[slot].getItemDamage(), c.xCoord, c.yCoord, c.zCoord);
 				ReikaInventoryHelper.decrStack(slot, inv);
 			}
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doJammedFX(World world, int x, int y, int z) {
+		double px = ReikaRandomHelper.getRandomBetween(x, x+1D);
+		double pz = ReikaRandomHelper.getRandomBetween(z, z+1D);
+		int l = ReikaRandomHelper.getRandomBetween(5, 9);
+		if (rand.nextInt(3) > 0) {
+			l = ReikaRandomHelper.getRandomBetween(8, 12);
+			switch(rand.nextInt(4)) {
+				case 0:
+					px = x;
+					break;
+				case 1:
+					px = x+1;
+					break;
+				case 2:
+					pz = z;
+					break;
+				case 3:
+					pz = z+1;
+					break;
+			}
+		}
+		double py = y+1;
+		EntityCCBlurFX fx = new EntityCCBlurFX(world, px, py, pz);
+		fx.setIcon(ChromaIcons.FADE_RAY).setRapidExpand().setColor(0xff0000).setLife(l).setScale(0.9F).setGravity(-(float)ReikaRandomHelper.getRandomBetween(0.125, 0.375));
+		Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -245,12 +291,12 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 
 	@Override
 	public boolean canExtractItem(int slot, ItemStack is, int side) {
-		return false;
+		return slot == this.getSizeInventory()-1;
 	}
 
 	@Override
 	public int getSizeInventory() {
-		return 6;
+		return TARGETS+EXPORT_SLOTS;
 	}
 
 	@Override
@@ -260,6 +306,11 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 
 	@Override
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
+		if (slot >= targets.length)
+			return false;
+		if (FluidContainerRegistry.getFluidForFilledItem(is) != null)
+			if (is.stackSize > 1 || inv[slot] != null)
+				return false;
 		return omniMode ? targets[slot] != null : ReikaItemHelper.matchStacks(inv[slot], is);
 	}
 
@@ -284,14 +335,32 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 				}
 			}
 		}
-		return c != null ? (locations.get(c).send(worldObj, c, ReikaItemHelper.getSizedItemStack(is, 1), this.getPlacer()) ? c : null) : null;
+		if (c == null)
+			return null;
+		ItemStack put = ReikaItemHelper.getSizedItemStack(is, 1);
+		ItemStack left = locations.get(c).send(worldObj, c, put, this.getPlacer());
+		if (left == null || left.stackSize < put.stackSize || ReikaItemHelper.matchStacks(left, is.getItem().getContainerItem(is))) {
+			if (left != null) {
+				if (ReikaInventoryHelper.addOrSetStack(left, inv, inv.length-1)) {
+					inv[slot] = left.copy();
+				}
+				else {
+					//ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+1.25, zCoord+0.5, left);
+					pendingOutput = left.copy();
+				}
+			}
+			return c;
+		}
+		else {
+			return null;
+		}
 	}
 
 	@Override
 	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
-		for (int i = 0; i < this.getSizeInventory(); i++) {
+		for (int i = 0; i < targets.length; i++) {
 			Coordinate c = targets[i];
 			if (c != null) {
 				c.writeToNBT("loc_"+i, NBT);
@@ -316,13 +385,19 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 		NBT.setInteger("maxc", maxCoord);
 
 		NBT.setBoolean("uselast", omniMode);
+
+		if (pendingOutput != null) {
+			NBTTagCompound tag = new NBTTagCompound();
+			pendingOutput.writeToNBT(tag);
+			NBT.setTag("pending", tag);
+		}
 	}
 
 	@Override
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
-		for (int i = 0; i < this.getSizeInventory(); i++) {
+		for (int i = 0; i < targets.length; i++) {
 			if (NBT.hasKey("loc_"+i)) {
 				targets[i] = Coordinate.readFromNBT("loc_"+i, NBT);
 			}
@@ -347,6 +422,14 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 		maxCoord = NBT.getInteger("maxc");
 
 		omniMode = NBT.getBoolean("uselast");
+
+		pendingOutput = NBT.hasKey("pending") ? ItemStack.loadItemStackFromNBT(NBT.getCompoundTag("pending")) : null;
+	}
+
+	@Override
+	public void breakBlock() {
+		if (pendingOutput != null)
+			ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, pendingOutput);
 	}
 
 	public static enum InsertionType {
@@ -363,31 +446,45 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 			displayName = s;
 		}
 
-		private boolean send(World world, Coordinate c, ItemStack is, EntityPlayer ep) {
+		private ItemStack send(World world, Coordinate c, ItemStack is, EntityPlayer ep) {
 			switch(this) {
 				case INVENTORY:
 					TileEntity te = c.getTileEntity(world);
 					if (te instanceof IInventory) {
-						return ReikaInventoryHelper.addToIInv(is, (IInventory)te);
+						if (ReikaInventoryHelper.addToIInv(is, (IInventory)te))
+							return null;
 					}
-					return false;
+					return is;
 				case RIGHTCLICK: {
-					int orig = is.stackSize;
+					ItemStack orig = is.copy();
 					ItemStack hold = ep.getCurrentEquippedItem();
+					FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(is);
 					ep.setCurrentItemOrArmor(0, is);
-					boolean flag = c.getBlock(world).onBlockActivated(world, c.xCoord, c.yCoord, c.zCoord, ep, 1, 0, 0, 0);
+					boolean flag = false;
+					if (is.getItem() instanceof ItemBucket && c.offset(0, 1, 0).isEmpty(world) && is.stackSize == 1) {
+						flag = ((ItemBucket)is.getItem()).tryPlaceContainedLiquid(world, c.xCoord, c.yCoord+1, c.zCoord);
+						if (flag) {
+							ep.setCurrentItemOrArmor(0, new ItemStack(Items.bucket, is.stackSize, 1));
+						}
+					}
+					else if (fs != null && fs.getFluid().canBePlacedInWorld() && c.offset(0, 1, 0).isEmpty(world) && is.stackSize == 1) {
+						flag = is.getItem().onItemUse(is, ep, world, c.xCoord, c.yCoord+1, c.zCoord, 1, 0, 0, 0);
+					}
+					else {
+						flag = c.getBlock(world).onBlockActivated(world, c.xCoord, c.yCoord, c.zCoord, ep, 1, 0, 0, 0);
+					}
 					ItemStack ret = ep.getCurrentEquippedItem();
 					ep.setCurrentItemOrArmor(0, hold);
-					return /*flag && */(ret == null || ret.stackSize < orig);
+					return /*flag ? */ret;
 				}
 				case LEFTCLICK: {
 					ItemStack hold = ep.getCurrentEquippedItem();
-					int orig = is.stackSize;
+					ItemStack orig = is.copy();
 					ep.setCurrentItemOrArmor(0, is);
 					c.getBlock(world).onBlockClicked(world, c.xCoord, c.yCoord, c.zCoord, ep);
 					ItemStack ret = ep.getCurrentEquippedItem();
 					ep.setCurrentItemOrArmor(0, hold);
-					return ret == null || ret.stackSize < orig;
+					return ret;
 				}
 				case ENTITY:
 					TileEntityItemCollector.haltCollection = true;
@@ -398,14 +495,15 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 					ei.getEntityData().setBoolean(DROP_TAG, true);
 					MinecraftForge.EVENT_BUS.post(new ItemTossEvent(ei, ep));
 					TileEntityItemCollector.haltCollection = false;
-					return true;
+					return null;
 			}
-			return false;
+			return is;
 		}
 
 		public InsertionType next() {
 			return this.ordinal() != list.length-1 ? list[this.ordinal()+1] : list[0];
 		}
 	}
+
 
 }

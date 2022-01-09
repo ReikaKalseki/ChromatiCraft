@@ -69,6 +69,17 @@ public class ItemConnector extends ItemChromaTool {
 			is.stackTagCompound.setTag("callback", tag);
 			return true;
 		}
+		else if (is.stackTagCompound != null && is.stackTagCompound.hasKey("callback")) {
+			WorldLocation loc = WorldLocation.readTag(is.stackTagCompound.getCompoundTag("callback"));
+			if (loc != null) {
+				TileEntity tile = loc.getTileEntity();
+				if (tile instanceof LinkerCallback) {
+					((LinkerCallback)tile).linkTo(world, x, y, z);
+					is.stackTagCompound = null;
+					return true;
+				}
+			}
+		}
 		else if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment() && ep.capabilities.isCreativeMode) {
 			if (is.stackTagCompound != null && is.stackTagCompound.getBoolean("noneuclid")) {
 
@@ -97,17 +108,6 @@ public class ItemConnector extends ItemChromaTool {
 				is.stackTagCompound.setBoolean("noneuclid", true);
 				ReikaJavaLibrary.pConsole(is.stackTagCompound);
 				return true;
-			}
-		}
-		else if (is.stackTagCompound != null && is.stackTagCompound.hasKey("callback")) {
-			WorldLocation loc = WorldLocation.readTag(is.stackTagCompound.getCompoundTag("callback"));
-			if (loc != null) {
-				TileEntity tile = loc.getTileEntity();
-				if (tile instanceof LinkerCallback) {
-					((LinkerCallback)tile).linkTo(world, x, y, z);
-					is.stackTagCompound = null;
-					return true;
-				}
 			}
 		}
 

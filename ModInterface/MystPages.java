@@ -24,7 +24,6 @@ import com.xcompwiz.mystcraft.api.world.AgeDirector;
 
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.World.Nether.LavaRiverGenerator;
 import Reika.DragonAPI.IO.DirectResourceManager;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
@@ -57,10 +56,10 @@ public class MystPages implements MystcraftPageRegistry {
 
 		for (int i = 0; i < Pages.list.length; i++) {
 			Pages p = Pages.list[i];
-			ReikaMystcraftHelper.setPageRank(p, p.itemRank);
-			ReikaMystcraftHelper.setRandomAgeWeight(p, p.randomWeight);
 			ReikaMystcraftHelper.registerAgeSymbol(p);
-			ChromatiCraft.logger.log("Registering custom MystCraft page '"+p.name+"'");
+			ReikaMystcraftHelper.setPageRank(p, p.itemRank);
+			ReikaMystcraftHelper.setRandomAgeWeight(p, p.randomRank);
+			//ChromatiCraft.logger.log("Registering custom MystCraft page '"+p.name+"'");
 		}
 
 		SymbolValuesAPI api = ReikaMystcraftHelper.getAPI(APISegment.SYMBOLVALUES);
@@ -74,27 +73,27 @@ public class MystPages implements MystcraftPageRegistry {
 
 	public static enum Pages implements IAgeSymbol {
 
-		PYLONS("Crystal Pylons", 				50, 	4, 0.25F,		Symbols.STRUCTURE, Symbols.ENERGY),
-		STRUCTURES("Buried Structures", 		500, 	4, 0.125F,		Symbols.STRUCTURE, Symbols.CIVILIZATION),
-		PLANTS("Chroma Plants", 				20, 	3, 0.75F,		Symbols.MATERIAL, Symbols.HERBAL),
-		ORES("Chroma Ores", 					10, 	3, 0.75F,		Symbols.MATERIAL, Symbols.MINERAL),
-		CRYSTALS("Cave Crystals", 				80, 	2, 0.5F,		Symbols.MATERIAL, Symbols.MINERAL, Symbols.ENERGY),
-		TREES("Dye Trees", 						5, 		1, 1F,			Symbols.HERBAL, Symbols.ENERGY),
-		DENSE("Dense Generation", 				1200, 	6, 0.03125F,	Symbols.UPGRADE),
-		LOSSY("Lumen Loss",						-200,	4, 0.0625F,		Symbols.ENERGY, Symbols.CIVILIZATION, Symbols.UPGRADE, Symbols.INVERSION),
-		BUFFERDRAIN("Energy Drain",				-400,	4, 0.125F,		Symbols.ENERGY, Symbols.PLAYER, Symbols.UPGRADE, Symbols.INVERSION),
-		HOSTILE("Hostile Aura",					-50,	5, 0.03125F,	Symbols.ENERGY, Symbols.PLAYER, Symbols.MINERAL, Symbols.INVERSION),
-		CORRUPTED("Corrupted Aura",				-200,	5, 0.03125F,	Symbols.MATERIAL, Symbols.UPGRADE, Symbols.INVERSION),
-		LAVARIVER("Sky Rivers",					2,		4, 0.0625F,		Symbols.STRUCTURE, Symbols.MATERIAL, Symbols.MINERAL),
-		VIOLENTPYLONS("Excessive Discharge",	-100,	4, 0.0625F,		Symbols.STRUCTURE, Symbols.PLAYER, Symbols.UPGRADE, Symbols.INVERSION),
-		UNSTABLEPYLONS("Pylon Destabilization",	-200,	5, 0.015625F,	Symbols.ENERGY, Symbols.UPGRADE, Symbols.INVERSION),
-		ABILITYBLOCK("Disabled",				-750,	5, 0.005F,		Symbols.CIVILIZATION, Symbols.PLAYER, Symbols.UPGRADE, Symbols.INVERSION);
+		PYLONS("Crystal Pylons", 				50, 	4, 1,		Symbols.STRUCTURE, Symbols.ENERGY),
+		STRUCTURES("Buried Structures", 		500, 	4, 2,		Symbols.STRUCTURE, Symbols.CIVILIZATION),
+		PLANTS("Chroma Plants", 				20, 	3, 0,		Symbols.MATERIAL, Symbols.HERBAL),
+		ORES("Chroma Ores", 					10, 	3, 1,		Symbols.MATERIAL, Symbols.MINERAL),
+		CRYSTALS("Cave Crystals", 				80, 	2, 0,		Symbols.MATERIAL, Symbols.MINERAL, Symbols.ENERGY),
+		TREES("Dye Trees", 						5, 		1, 0,		Symbols.HERBAL, Symbols.ENERGY),
+		DENSE("Dense Generation", 				1200, 	6, 3,		Symbols.UPGRADE),
+		LOSSY("Lumen Loss",						-200,	4, 2,		Symbols.ENERGY, Symbols.CIVILIZATION, Symbols.UPGRADE, Symbols.INVERSION),
+		BUFFERDRAIN("Energy Drain",				-400,	4, 3,		Symbols.ENERGY, Symbols.PLAYER, Symbols.UPGRADE, Symbols.INVERSION),
+		HOSTILE("Hostile Aura",					-50,	5, 1,		Symbols.ENERGY, Symbols.PLAYER, Symbols.MINERAL, Symbols.INVERSION),
+		CORRUPTED("Corrupted Aura",				-200,	5, 2,		Symbols.MATERIAL, Symbols.UPGRADE, Symbols.INVERSION),
+		LAVARIVER("Sky Rivers",					2,		4, 2,		Symbols.STRUCTURE, Symbols.MATERIAL, Symbols.MINERAL),
+		VIOLENTPYLONS("Excessive Discharge",	-100,	4, 2,		Symbols.STRUCTURE, Symbols.PLAYER, Symbols.UPGRADE, Symbols.INVERSION),
+		UNSTABLEPYLONS("Pylon Destabilization",	-200,	5, 3,		Symbols.ENERGY, Symbols.UPGRADE, Symbols.INVERSION),
+		ABILITYBLOCK("Disabled",				-750,	5, 3,		Symbols.CIVILIZATION, Symbols.PLAYER, Symbols.UPGRADE, Symbols.INVERSION);
 
 		public final String name;
 		public final int instability;
 
 		private final int itemRank;
-		private final float randomWeight;
+		private final int randomRank;
 
 		private final HashMap<Integer, Boolean> dimCache = new HashMap();
 
@@ -102,12 +101,12 @@ public class MystPages implements MystcraftPageRegistry {
 
 		private static final Pages[] list = values();
 
-		private Pages(String s, int ins, int r, float w, Symbols... icons) {
+		private Pages(String s, int ins, int r, int w, Symbols... icons) {
 			name = s;
 			instability = ins;
 
 			itemRank = r;
-			randomWeight = w;
+			randomRank = w;
 
 			this.icons = ReikaJavaLibrary.makeListFromArray(icons);
 			this.icons.add(0, Symbols.BASE);

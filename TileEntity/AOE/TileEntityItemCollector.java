@@ -163,7 +163,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	}
 
 	public static boolean absorbItem(World world, Entity e) {
-		if (TileEntityItemCollector.haltCollection)
+		if (haltCollection)
 			return false;
 		return cache.lookForMatch(world, true, (WorldLocation loc, TileEntity te) -> {
 			return ((TileEntityItemCollector)te).checkAbsorb(e);

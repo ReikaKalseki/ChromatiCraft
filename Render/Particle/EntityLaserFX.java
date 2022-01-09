@@ -133,11 +133,11 @@ public class EntityLaserFX extends EntityFX implements CustomRenderFX {
 	@Override
 	public boolean rendersOverLimit() {
 		return false;
-	}
+	}/*
 
 	@Override
 	public double getRenderRange() {
 		return particleScale*96;
 	}
-
+	 */
 }

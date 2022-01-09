@@ -62,8 +62,6 @@ public class FragmentCategorizationSystem {
 		this.addMapping(ChromaTiles.GLOWFIRE, FragmentCategory.CRAFTING, 40);
 		this.addMapping(ChromaTiles.REPROGRAMMER, FragmentCategory.AUTOMATION, 30);
 
-		this.addMapping(ChromaTiles.REPROGRAMMER, FragmentCategory.AUTOMATION, 30);
-
 		this.addMapping(ChromaTiles.AUTOMATOR, FragmentCategory.AUTOMATION, 40);
 		this.addMapping(ChromaTiles.PLAYERINFUSER, FragmentCategory.LUMENS, 30);
 		this.addMapping(ChromaTiles.RITUAL, FragmentCategory.ABILITY, 30);

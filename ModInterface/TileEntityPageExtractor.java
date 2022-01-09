@@ -87,8 +87,9 @@ public class TileEntityPageExtractor extends InventoriedRelayPowered implements 
 		if (is != null && this.isBook(is)) {
 			ArrayList<IAgeSymbol> li = ReikaMystcraftHelper.getPagesInBook(is, false);
 			for (IAgeSymbol ia : li) {
-				int rank = ReikaMystcraftHelper.getSymbolRank(ia);
-				double weight = Math.exp(-rank/2D);
+				double weight = ReikaMystcraftHelper.getPageWeight(ia);
+				if (weight <= 0)
+					weight = 1;//Math.exp(-rank/2D);
 				symbolMap.addEntry(ia, weight);
 			}
 		}
@@ -99,12 +100,13 @@ public class TileEntityPageExtractor extends InventoriedRelayPowered implements 
 	}
 
 	private double getConsumptionChance(IAgeSymbol ia) {
-		int rank = ReikaMystcraftHelper.getSymbolRank(ia);
+		//int rank = ReikaMystcraftHelper.getSymbolRank(ia);
 		//ReikaJavaLibrary.pConsole(ia.identifier()+" > "+rank+" > "+(100-98*Math.exp(-rank/1.75)));
 		boolean boost = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PURPLE) > 1;
-		double f = boost ? 99.5 : 98;
+		//double f = boost ? 99.5 : 98;
 		double p = boost ? 5 : 3;
-		return 100-f*Math.exp(-rank/p);
+		//return 100-f*Math.exp(-rank/p);
+		return Math.min(100, 1D/(p*ReikaMystcraftHelper.getPageWeight(ia)));
 	}
 
 	@Override
