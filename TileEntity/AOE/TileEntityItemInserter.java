@@ -48,7 +48,6 @@ import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
-import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
@@ -65,7 +64,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public class TileEntityItemInserter extends InventoriedChromaticBase implements LinkerCallback, BreakAction {
+public class TileEntityItemInserter extends InventoriedChromaticBase implements LinkerCallback {
 
 	public static final String DROP_TAG = "item_inserter_dropped";
 
@@ -78,15 +77,23 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 	private boolean[][] connections = new boolean[6][6];
 	private int maxCoord = 0;
 	public boolean omniMode = false;
-	private ItemStack pendingOutput;
+	//private ItemStack pendingOutput;
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (!world.isRemote && pendingOutput != null && inv[inv.length-1] == null) {
-			inv[inv.length-1] = pendingOutput;
-			pendingOutput = null;
+		if (!world.isRemote) {
+			for (int i = this.getSizeInventory()-1; i >= TARGETS; i--) {
+				if (inv[i] == null && inv[i-1] != null) {
+					inv[i] = inv[i-1];
+					inv[i-1] = null;
+				}
+				else if (inv[i] != null && inv[i-1] != null && ReikaItemHelper.areStacksCombinable(inv[i], inv[i-1], inv[i].getMaxStackSize())) {
+					inv[i].stackSize = inv[i].stackSize+inv[i-1].stackSize;
+					inv[i-1] = null;
+				}
+			}
 		}
-		if (pendingOutput != null) {
+		if (inv[TARGETS] != null) {
 			if (world.isRemote)
 				this.doJammedFX(world, x, y, z);
 			return;
@@ -341,12 +348,11 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 		ItemStack left = locations.get(c).send(worldObj, c, put, this.getPlacer());
 		if (left == null || left.stackSize < put.stackSize || ReikaItemHelper.matchStacks(left, is.getItem().getContainerItem(is))) {
 			if (left != null) {
-				if (ReikaInventoryHelper.addOrSetStack(left, inv, inv.length-1)) {
+				if (ReikaInventoryHelper.addOrSetStack(left, inv, TARGETS)) {
 					inv[slot] = left.copy();
 				}
 				else {
-					//ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+1.25, zCoord+0.5, left);
-					pendingOutput = left.copy();
+					ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+1.25, zCoord+0.5, left);
 				}
 			}
 			return c;
@@ -385,12 +391,6 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 		NBT.setInteger("maxc", maxCoord);
 
 		NBT.setBoolean("uselast", omniMode);
-
-		if (pendingOutput != null) {
-			NBTTagCompound tag = new NBTTagCompound();
-			pendingOutput.writeToNBT(tag);
-			NBT.setTag("pending", tag);
-		}
 	}
 
 	@Override
@@ -422,14 +422,6 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 		maxCoord = NBT.getInteger("maxc");
 
 		omniMode = NBT.getBoolean("uselast");
-
-		pendingOutput = NBT.hasKey("pending") ? ItemStack.loadItemStackFromNBT(NBT.getCompoundTag("pending")) : null;
-	}
-
-	@Override
-	public void breakBlock() {
-		if (pendingOutput != null)
-			ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, pendingOutput);
 	}
 
 	public static enum InsertionType {
@@ -464,7 +456,7 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 					if (is.getItem() instanceof ItemBucket && c.offset(0, 1, 0).isEmpty(world) && is.stackSize == 1) {
 						flag = ((ItemBucket)is.getItem()).tryPlaceContainedLiquid(world, c.xCoord, c.yCoord+1, c.zCoord);
 						if (flag) {
-							ep.setCurrentItemOrArmor(0, new ItemStack(Items.bucket, is.stackSize, 1));
+							ep.setCurrentItemOrArmor(0, new ItemStack(Items.bucket, is.stackSize, 0));
 						}
 					}
 					else if (fs != null && fs.getFluid().canBePlacedInWorld() && c.offset(0, 1, 0).isEmpty(world) && is.stackSize == 1) {

@@ -35,7 +35,7 @@ public class ContainerItemInserter extends CoreContainer {
 
 		for (int i = 0; i < 9; i++) {
 			int dx = 8+18*(8-i);
-			this.addSlot(TileEntityItemInserter.TARGETS+i, 8+dx, 128);
+			this.addSlotNoClick(TileEntityItemInserter.TARGETS+i, dx, 128, false, true);
 		}
 
 		this.addPlayerInventoryWithOffset(player, 0, 64);

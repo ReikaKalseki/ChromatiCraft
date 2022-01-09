@@ -862,7 +862,7 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 				//ChromatiCraft.logger.debug("Checking render pass of "+b+":"+meta+" @ "+evt.xCoord+"."+evt.yCoord+","+evt.zCoord+" for pass "+evt.renderPass+": "+b.canRenderInPass(evt.renderPass));
 				if (b.canRenderInPass(evt.renderPass)) {
 					int type = b.getRenderType();
-					if (type == 0 || type == ChromaISBRH.ore.getRenderID() || ReikaBlockHelper.isOre(b, meta) || b.renderAsNormalBlock() || b.isOpaqueCube()) {
+					if (type == 0 || type == ChromaISBRH.ore.getRenderID() || ReikaBlockHelper.isOre(b, meta) || b.renderAsNormalBlock() || b.isOpaqueCube() || ReikaBlockHelper.isLiquid(b)) {
 						//ChromatiCraft.logger.debug("Rendering "+b+":"+meta+" @ "+evt.xCoord+"."+evt.yCoord+","+evt.zCoord);
 						evt.render.enableAO = false;
 						Tessellator.instance.setBrightness(240);
@@ -871,7 +871,10 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 							ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 							Tessellator.instance.setBrightness(240);
 							IIcon ico = evt.render.getIconSafe(b.getIcon(evt.access, evt.xCoord, evt.yCoord, evt.zCoord, i));
-							boolean side = b.shouldSideBeRendered(evt.access, evt.xCoord+dir.offsetX, evt.yCoord+dir.offsetY, evt.zCoord+dir.offsetZ, i);
+							int dx = evt.xCoord+dir.offsetX;
+							int dy = evt.yCoord+dir.offsetY;
+							int dz = evt.zCoord+dir.offsetZ;
+							boolean side = ReikaBlockHelper.isLiquid(b) ? evt.access.getBlock(dx, dy, dz) != b : b.shouldSideBeRendered(evt.access, dx, dy, dz, i);
 							double o = side ? 0.001 : 0;
 							if ((side || (dir == ForgeDirection.UP && evt.yCoord == 0)) || b != Blocks.bedrock) {
 								//ChromatiCraft.logger.debug("Rendering side "+dir);

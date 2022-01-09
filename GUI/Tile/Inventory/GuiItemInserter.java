@@ -30,6 +30,7 @@ import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
 import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.World.ReikaRedstoneHelper;
 
 
@@ -55,8 +56,8 @@ public class GuiItemInserter extends GuiChromaBase {
 			InsertionType type = tile.getInsertionType(i);
 			if (type != null) {
 				int x = j+138;
-				int y = k+15;
-				int u = 177+7*type.ordinal();
+				int y = k+8;
+				int u = 181+7*type.ordinal();
 				buttonList.add(new ImagedGuiButton(i, x+0, y+i*20, 6, 16, u, 31, this.getFullTexturePath(), ChromatiCraft.class));
 			}
 
@@ -66,8 +67,8 @@ public class GuiItemInserter extends GuiChromaBase {
 					if (c != null) {
 						int id = 100+i*TileEntityItemInserter.TARGETS+f;
 						int dx = j+51+i*16-1;
-						int dy = k+14+f*20+i*3-1;
-						int u = tile.isLinkEnabled(i, f) ? 177 : 183;
+						int dy = k+7+f*20+i*3-1;
+						int u = tile.isLinkEnabled(i, f) ? 181 : 187;
 						//ReikaJavaLibrary.pConsole(i+","+f+">"+tile.isLinkEnabled(i, f)+" @ "+dx+","+dy);
 						buttonList.add(new ImagedGuiButton(id, dx, dy, 5+2, 3+2, u-1, 170-1, this.getFullTexturePath(), ChromatiCraft.class));
 					}
@@ -128,8 +129,8 @@ public class GuiItemInserter extends GuiChromaBase {
 		for (int i = 0; i < 6; i++) {
 			if (ReikaRedstoneHelper.isPoweredOnSide(tile.worldObj, tile.xCoord, tile.yCoord, tile.zCoord, ForgeDirection.VALID_DIRECTIONS[i])) {
 				int x = j+44+i*16;
-				int u = 177+i*8;
-				api.drawTexturedModalRect(x, k+13, u, 49, 8, 120);
+				int u = 181+i*8;
+				api.drawTexturedModalRect(x, k+6, u, 49, 8, 120);
 			}
 		}
 	}
@@ -147,10 +148,10 @@ public class GuiItemInserter extends GuiChromaBase {
 				Block b = c.getBlock(tile.worldObj);
 				if (b != Blocks.air) {
 					ItemStack is = b instanceof MachineRegistryBlock ? ((MachineRegistryBlock)b).getMachine(tile.worldObj, c.xCoord, c.yCoord, c.zCoord).getCraftedProduct() : new ItemStack(b, 1, c.getBlockMetadata(tile.worldObj));
-					api.drawItemStack(itemRender, fontRendererObj, is, 152, 15+20*i);
+					api.drawItemStack(itemRender, fontRendererObj, is, 152, 8+20*i);
 
 					int x = j+137;
-					int y = k+14+i*20;
+					int y = k+7+i*20;
 					if (api.isMouseInBox(x, x+8, y, y+18)) {
 						String s = tile.getInsertionType(i).displayName;
 						api.drawTooltipAt(fontRendererObj, s, api.getMouseRealX()-j, api.getMouseRealY()-k);
@@ -165,17 +166,25 @@ public class GuiItemInserter extends GuiChromaBase {
 			}
 		}
 
+		GL11.glEnable(GL11.GL_BLEND);
+		BlendMode.DEFAULT.apply();
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, this.getFullTexturePath());
-		this.drawTexturedModalRect(31, 14, 227, 49, 8, 120);
 		float f = (float)(0.875+0.125*Math.sin(System.currentTimeMillis()/400D));
 		GL11.glColor4f(f, f, f, f);
 		int u = tile.omniMode ? 227+8 : 227;
-		this.drawTexturedModalRect(31, 14, u+8, 49, 8, 120);
+		this.drawTexturedModalRect(31, 6, u+12, 49, 8, 120);
+		GL11.glColor4f(1, 1, 1, 1);
+		this.drawTexturedModalRect(31, 6, 231, 49, 8, 120);
 	}
 
 	@Override
-	protected int getTitlePosition() {
-		return 4;
+	protected boolean drawTitle() {
+		return false;
+	}
+
+	@Override
+	protected boolean labelInventory() {
+		return false;
 	}
 
 	@Override
