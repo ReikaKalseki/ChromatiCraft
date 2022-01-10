@@ -450,6 +450,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	static final MultiMap<ResearchLevel, ChromaResearch> levelMap = new MultiMap(CollectionType.HASHSET);
 	private static final ItemHashMap<ChromaResearch> itemMap = new ItemHashMap();
 	private static final EnumMap<ChromaTiles, ChromaResearch> tileMap = new EnumMap(ChromaTiles.class);
+	private static final EnumMap<ChromaStructures, ChromaResearch> structureMap = new EnumMap(ChromaStructures.class);
 	private static final HashMap<Ability, ChromaResearch> abilityMap = new HashMap();
 	private static final List<ChromaResearch> parents = new ArrayList();
 	private static final List<ChromaResearch> nonParents = new ArrayList();
@@ -1654,6 +1655,8 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 						abilityMap.put(r.ability, r);
 					if (r.machine != null)
 						tileMap.put(r.machine, r);
+					if (r.struct != null)
+						structureMap.put(r.struct, r);
 				}
 				catch (Exception e) {
 					Dependency dep = r.getDependency();

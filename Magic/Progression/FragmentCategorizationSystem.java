@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
 import Reika.ChromatiCraft.Registry.ChromaItems;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -72,6 +73,7 @@ public class FragmentCategorizationSystem {
 		this.addMapping(ChromaTiles.PLAYERINFUSER, FragmentCategory.LUMENS, 40);
 		this.addMapping(ChromaTiles.PLAYERINFUSER, FragmentCategory.IMPROVEMENT, 40);
 		this.addMapping(ChromaTiles.RITUAL, FragmentCategory.ABILITY, 30);
+		this.addMapping(ChromaTiles.STAND, FragmentCategory.CRAFTING, 20);
 
 		this.addMapping(ChromaTiles.POWERTREE, FragmentCategory.LUMENS, 50);
 
@@ -188,13 +190,13 @@ public class FragmentCategorizationSystem {
 		this.addMapping(ChromaStructures.RITUAL2, FragmentCategory.IMPROVEMENT, 40);
 		this.addMapping(ChromaStructures.INFUSION, FragmentCategory.CRAFTING, 40);
 		this.addMapping(ChromaStructures.PLAYERINFUSION, FragmentCategory.LUMENS, 40);
-		this.addMapping(ChromaStructures.PLAYERINFUSION, FragmentCategory.IMPROVEMENT, 40);
+		this.addMapping(ChromaStructures.PLAYERINFUSION, FragmentCategory.IMPROVEMENT, 40);/*
 		this.addMapping(ChromaStructures.BURROW, FragmentCategory.ARTIFACT, 40);
 		this.addMapping(ChromaStructures.CAVERN, FragmentCategory.ARTIFACT, 40);
 		this.addMapping(ChromaStructures.OCEAN, FragmentCategory.ARTIFACT, 40);
 		this.addMapping(ChromaStructures.DESERT, FragmentCategory.ARTIFACT, 40);
 		this.addMapping(ChromaStructures.SNOWSTRUCT, FragmentCategory.ARTIFACT, 40);
-		this.addMapping(ChromaStructures.BIOMEFRAG, FragmentCategory.ARTIFACT, 40);
+		this.addMapping(ChromaStructures.BIOMEFRAG, FragmentCategory.ARTIFACT, 40);*/
 		this.addMapping(ChromaStructures.OPTIMIZER, FragmentCategory.LUMENS, 40);
 		this.addMapping(ChromaStructures.OPTIMIZER, FragmentCategory.IMPROVEMENT, 40);
 		this.addMapping(ChromaStructures.TREE, FragmentCategory.LUMENS, 40);
@@ -263,18 +265,18 @@ public class FragmentCategorizationSystem {
 		this.addMapping(ChromaResearch.DIMENSION, FragmentCategory.ARTIFACT, 40);
 		this.addMapping(ChromaResearch.DIMENSION2, FragmentCategory.ARTIFACT, 40);
 		this.addMapping(ChromaResearch.DIMENSION3, FragmentCategory.ARTIFACT, 40);
-		this.addMapping(ChromaResearch.NODENET, FragmentCategory.MODINTERFACE, 40);
+		//this.addMapping(ChromaResearch.NODENET, FragmentCategory.MODINTERFACE, 40);
 		this.addMapping(ChromaResearch.NODENET, FragmentCategory.LUMENS, 30);
 		this.addMapping(ChromaResearch.NODENET, FragmentCategory.IMPROVEMENT, 30);
 		this.addMapping(ChromaResearch.DIMTUNING, FragmentCategory.IMPROVEMENT, 30);
 		this.addMapping(ChromaResearch.SELFCHARGE, FragmentCategory.LUMENS, 40);
-		this.addMapping(ChromaResearch.MYSTPAGE, FragmentCategory.MODINTERFACE, 40);
+		//this.addMapping(ChromaResearch.MYSTPAGE, FragmentCategory.MODINTERFACE, 40);
 		this.addMapping(ChromaResearch.ENCHANTING, FragmentCategory.CRAFTING, 30);
 		this.addMapping(ChromaResearch.ENCHANTING, FragmentCategory.TOOLARMOR, 30);
-		this.addMapping(ChromaResearch.ENCHANTING, FragmentCategory.IMPROVEMENT, 20);
+		this.addMapping(ChromaResearch.ENCHANTING, FragmentCategory.IMPROVEMENT, 40);
 		this.addMapping(ChromaResearch.ABILITIES, FragmentCategory.ABILITY, 40);
 		this.addMapping(ChromaResearch.CASTTUNING, FragmentCategory.CRAFTING, 40);
-		this.addMapping(ChromaResearch.ENCHANTING, FragmentCategory.IMPROVEMENT, 30);
+		this.addMapping(ChromaResearch.CASTTUNING, FragmentCategory.IMPROVEMENT, 30);
 		this.addMapping(ChromaResearch.MULTIBLOCKS, FragmentCategory.CRAFTING, 30);
 		this.addMapping(ChromaResearch.MULTIBLOCKS, FragmentCategory.STRUCTURE, 30);
 		this.addMapping(ChromaResearch.PYLONLINK, FragmentCategory.LUMENS, 40);
@@ -283,19 +285,27 @@ public class FragmentCategorizationSystem {
 	}
 
 	private void addMapping(ChromaTiles r, FragmentCategory fc, int amt) {
-		this.addMapping(r.getFragment(), fc, amt);
+		ChromaResearch f = r.getFragment();
+		if (f != null && f.getMachine() != null)
+			this.addMapping(r.getFragment(), fc, amt);
 	}
 
 	private void addMapping(ChromaItems r, FragmentCategory fc, int amt) {
-		this.addMapping(r.getFragment(), fc, amt);
+		ChromaResearch f = r.getFragment();
+		if (f != null && f.getItem() != null)
+			this.addMapping(r.getFragment(), fc, amt);
 	}
 
 	private void addMapping(Chromabilities r, FragmentCategory fc, int amt) {
-		this.addMapping(r.getFragment(), fc, amt);
+		ChromaResearch f = r.getFragment();
+		if (f != null && f.getAbility() != null)
+			this.addMapping(r.getFragment(), fc, amt);
 	}
 
 	private void addMapping(ChromaStructures r, FragmentCategory fc, int amt) {
-		this.addMapping(r.getFragment(), fc, amt);
+		ChromaResearch f = r.getFragment();
+		if (f != null && f.getStructure() != null)
+			this.addMapping(f, fc, amt);
 	}
 
 	private void addMapping(ChromaResearch r, FragmentCategory fc, int amt) {
@@ -306,6 +316,8 @@ public class FragmentCategorizationSystem {
 			map = new CountMap();
 			mappings.put(r, map);
 		}
+		if (map.get(fc) > 0)
+			throw new RegistrationException(ChromatiCraft.instance, "Duplicate category ("+fc+") mapping for "+r);
 		map.increment(fc, amt);
 	}
 
@@ -374,7 +386,7 @@ public class FragmentCategorizationSystem {
 			ret.add(FragmentCategory.MODINTERFACE, 30);
 		else if (r.getAbility() != null && r.getAbility().getModDependency() != null)
 			ret.add(FragmentCategory.MODINTERFACE, 30);
-		else if (r.getDependency() != null)
+		else if (r.getDependency() != null && !(r.getDependency() instanceof ChromaOptions))
 			ret.add(FragmentCategory.MODINTERFACE, 30);
 		return ret;
 	}
@@ -382,11 +394,11 @@ public class FragmentCategorizationSystem {
 	public void dumpData() {
 		for (ChromaResearch r : ChromaResearch.getAllObtainableFragments()) {
 			FragmentCategorization c = this.getCategories(r);
-			ReikaJavaLibrary.pConsole("Fragment "+r.getTitle()+" ("+r.name()+") = "+c.weights);
+			ReikaJavaLibrary.pConsole("Fragment "+r.getTitle()+" ("+r.name()+") = "+c.weights.size()+":"+c.weights);
 		}
 		for (FragmentCategory c : FragmentCategory.values()) {
 			FragmentTable t = this.getFragments(c);
-			ReikaJavaLibrary.pConsole("Category "+c+" = "+t.weights);
+			ReikaJavaLibrary.pConsole("Category "+c+" = "+t.weights.size()+": "+t.weights);
 		}
 	}
 
