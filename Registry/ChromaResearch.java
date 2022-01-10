@@ -66,6 +66,7 @@ import Reika.ChromatiCraft.Magic.ToolChargingSystem;
 import Reika.ChromatiCraft.Magic.Interfaces.PoweredItem;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager.ProgressElement;
+import Reika.ChromatiCraft.Magic.Progression.FragmentCategorizationSystem;
 import Reika.ChromatiCraft.Magic.Progression.ProgressAccess;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
@@ -90,6 +91,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
@@ -1514,6 +1516,8 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	}
 
 	public boolean isDummiedOut() {
+		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
+			return false;
 		if (machine != null)
 			return machine.isDummiedOut();
 		if (item != null)
@@ -1663,6 +1667,9 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 				}
 			}
 		}
+
+		FragmentCategorizationSystem.instance.calculate();
+		FragmentCategorizationSystem.instance.dumpData();
 	}
 
 	public static ArrayList<ChromaResearch> getInfoTabs() {
@@ -1715,6 +1722,10 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 
 	public static ChromaResearch getPageFor(ChromaTiles c) {
 		return tileMap.get(c);
+	}
+
+	public static ChromaResearch getPageFor(ChromaStructures s) {
+		return structureMap.get(s);
 	}
 
 	public static Collection<ChromaResearch> getPagesFor(ResearchLevel l) {

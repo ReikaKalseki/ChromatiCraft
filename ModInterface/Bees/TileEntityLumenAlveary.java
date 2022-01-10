@@ -1027,6 +1027,10 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 	public boolean isIgnoble() {
 		return cachedQueen != null && !cachedQueen.isNatural();
 	}
+
+	public boolean isJubilant() {
+		return cachedQueen != null && this.getSpecies().isJubilant(cachedQueen.getGenome(), this.getBeeHousing());
+	}
 	/*
 	public boolean hasIntensification() {
 		return this.isEffectSelectedAndActive(intensification);

@@ -286,6 +286,44 @@ public class RenderAlveary extends ChromaRenderBase {
 
 				GL11.glTranslated(-f.getStringWidth(sg)/32D/s2, 0.1875D/s2-ei.hoverStart*0.375/s2-0.125/s2, 0);
 				f.drawString(sg, 0, 0, 0xffffff);
+
+				if (te.isJubilant()) {
+					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+					BlendMode.DEFAULT.apply();
+					ReikaTextureHelper.bindTerrainTexture();
+
+					GL11.glPushMatrix();
+					GL11.glDisable(GL11.GL_CULL_FACE);
+
+					double sc = 5;
+					//GL11.glTranslated(0, 0.75, 0);
+					GL11.glScaled(sc, sc, sc);
+					RenderManager rm = RenderManager.instance;
+					//GL11.glRotatef(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
+					//GL11.glRotatef(rm.playerViewX, 1.0F, 0.0F, 0.0F);
+
+					IIcon ico = ChromaIcons.CHECK.getIcon();
+					float u = ico.getMinU();
+					float v = ico.getMinV();
+					float du = ico.getMaxU();
+					float dv = ico.getMaxV();
+					float uu = du-u;
+					float vv = dv-v;
+
+					GL11.glPushMatrix();
+					GL11.glTranslated(16.5, 0.75, 0);
+					v5.startDrawingQuads();
+					v5.setColorOpaque_I(((BeeSpecies)bee).getOutlineColor());
+					v5.addVertexWithUV(-1, -1, 0, u, v);
+					v5.addVertexWithUV(1, -1, 0, du, v);
+					v5.addVertexWithUV(1, 1, 0, du, dv);
+					v5.addVertexWithUV(-1, 1, 0, u, dv);
+					v5.draw();
+					GL11.glPopMatrix();
+
+					GL11.glPopMatrix();
+					GL11.glPopAttrib();
+				}
 			}
 			GL11.glPopAttrib();
 			GL11.glPopMatrix();

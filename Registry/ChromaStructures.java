@@ -219,4 +219,8 @@ public enum ChromaStructures implements StructureEnum<ChromaStructureBase> {
 		return items;
 	}
 
+	public ChromaResearch getFragment() {
+		return ChromaResearch.getPageFor(this);
+	}
+
 }
