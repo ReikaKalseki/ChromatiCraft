@@ -45,7 +45,7 @@ public class TankExpandingRecipe extends PylonCastingRecipe {
 	@Override
 	protected void getRequiredProgress(Collection<ProgressStage> c) {
 		super.getRequiredProgress(c);
-		c.add(ProgressStage.CTM);
+		c.add(ProgressStage.FARLANDS);
 	}
 
 	@Override

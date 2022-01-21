@@ -41,7 +41,7 @@ public class LumenCoreRecipe extends PylonCastingRecipe implements ShardGrouping
 
 	@Override
 	public boolean canGiveDoubleOutput() {
-		return false;
+		return true;
 	}
 
 }

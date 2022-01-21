@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -31,6 +31,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
+import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -56,7 +57,7 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 			if (world.getTotalWorldTime()%n == slot%n) {
 				ChromaResearch r = getResearch(is);
 				if (r == null) {
-					this.programShardAndGiveData(is, ep);
+					//this.programShardAndGiveData(is, ep);
 				}
 				else {
 					if (r.canPlayerProgressTo(ep) && ChromaResearchManager.instance.getNextResearchesFor(ep).contains(r))
@@ -64,6 +65,13 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 				}
 			}
 		}
+	}
+
+	@Override
+	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
+		if (!ChromaResearchManager.instance.getNextResearchesFor(ep).isEmpty())
+			ep.openGui(ChromatiCraft.instance, ChromaGuis.FRAGSELECT.ordinal(), world, 0, 0, 0);
+		return is;
 	}
 
 	@Override

@@ -164,7 +164,7 @@ public class EfficientFlowerCache extends HasFlowersCache {
 	}
 
 	private boolean isStillValid(World world, long time) {
-		return flowerCoord != null && (time%128 == id || (cachedTerritory.isBlockInside(flowerCoord) && checkFlowerAcceptance(cachedFlowerType, world, flowerCoord.xCoord, flowerCoord.yCoord, flowerCoord.zCoord)));
+		return flowerCoord != null && (time%128 != id || (cachedTerritory.isBlockInside(flowerCoord) && checkFlowerAcceptance(cachedFlowerType, world, flowerCoord.xCoord, flowerCoord.yCoord, flowerCoord.zCoord)));
 	}
 
 	private void findFlower(World world, boolean runFullScan) {
@@ -177,6 +177,7 @@ public class EfficientFlowerCache extends HasFlowersCache {
 			//ReikaJavaLibrary.pConsole("Took "+t2+" us to check "+cachedTerritory+" for flower "+cachedFlowerType+"; coord = "+flowerCoord);
 		}
 		else {
+			flowerCoord = null;
 			if (search == null) {
 				search = new FlowerSearch();
 			}
@@ -201,7 +202,7 @@ public class EfficientFlowerCache extends HasFlowersCache {
 		if (FlowerManager.flowerRegistry.isAcceptedFlower(type, world, x, y, z)) {
 			if (!blacklistedAcceptanceCaching.contains(type)) {
 				blockKey.read(world, x, y, z);
-				if (blockKey.block.hasTileEntity(blockKey.metadata)) { //since cannot check TE data, skip any bees that have TE-type flowers
+				if (y < 0 || blockKey.block.hasTileEntity(blockKey.metadata)) { //since cannot check TE data, skip any bees that have TE-type flowers
 					blacklistedAcceptanceCaching.add(type);
 				}
 				else {

@@ -59,6 +59,7 @@ public enum ChromaIcons implements IconEnum {
 	CHROMA("chroma_particle"),
 	NOENTER("noentry"),
 	CHECK("check"),
+	MARKER("marker"),
 	X("x"),
 	DIAMOND("diamond"),
 	QUESTION("question"),

@@ -223,6 +223,8 @@ public enum CrystalElement implements IconEnum, OverlayColor, ProgressAccess, Cr
 	}
 
 	public static int getBlendedColor(int tick, int mod) {
+		if (tick < 0)
+			tick = -tick;
 		CrystalElement e = CrystalElement.elements[(tick/mod)%16];
 		CrystalElement e2 = CrystalElement.elements[(tick/mod+1)%16];
 		float mix = tick%mod/(float)mod;

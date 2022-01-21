@@ -306,7 +306,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	private boolean dimensionLoadable = true;
 
 	public boolean isDimensionLoadable() {
-		return dimensionLoadable;
+		return dimensionLoadable && !this.isLocked();
 	}
 
 	public final boolean isLocked() {

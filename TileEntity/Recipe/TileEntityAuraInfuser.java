@@ -57,6 +57,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Collections.ThreadSafeSet;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Interfaces.TileEntity.ConditionBreakDropsInventory;
 import Reika.DragonAPI.Interfaces.TileEntity.InertIInv;
 import Reika.DragonAPI.Interfaces.TileEntity.LocationCached;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -71,7 +72,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 @Strippable(value={"buildcraft.api.transport.IPipeConnection"})
 public abstract class TileEntityAuraInfuser extends InventoriedChromaticBase implements ItemOnRightClick, ItemCollision, OwnedTile, InertIInv,
-IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, LocationCached, IFluidHandler {
+IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, LocationCached, IFluidHandler, ConditionBreakDropsInventory {
 
 	private InertItem item;
 
@@ -394,8 +395,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, Lo
 		this.validateStructure();
 		if (!hasStructure) {
 			if (inv[0] != null && item == null) {
-				ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, inv[0]);
-				inv[0] = null;
+				this.dropItem();
 			}
 			return item;
 		}
@@ -412,8 +412,7 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, Lo
 			}
 		}
 		else if (inv[0] != null) {
-			ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, inv[0]);
-			inv[0] = null;
+			this.dropItem();
 		}
 
 		if (item != null && inv[0] == null) {
@@ -430,6 +429,12 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, Lo
 		craftingPlayer = ep;
 		this.syncAllData(true);
 		return item;
+	}
+
+	protected EntityItem dropItem() {
+		EntityItem ret = ReikaItemHelper.dropItem(worldObj, xCoord+0.5, yCoord+0.5, zCoord+0.5, inv[0]);
+		inv[0] = null;
+		return ret;
 	}
 
 	public final boolean onItemCollision(EntityItem ei) {
@@ -522,7 +527,13 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, Lo
 	}
 
 	public final void breakBlock() {
+		if (inv[0] != null)
+			this.dropItem();
 		cache.remove(new WorldLocation(this));
+	}
+
+	public final boolean dropsInventoryOnBroken() {
+		return false;
 	}
 
 	public static void clearCache() {

@@ -98,6 +98,7 @@ import Reika.ChromatiCraft.Magic.Lore.Towers;
 import Reika.ChromatiCraft.Magic.Network.PylonLinkNetwork;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Magic.Progression.ProgressionChoiceSystem;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionLinking;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionLinking.LinkFailure;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
@@ -1227,6 +1228,10 @@ public class ChromatiPackets implements PacketHandler {
 				}
 				case AURORACLEAR: {
 					AuroraHandler.instance.clear();
+					break;
+				}
+				case FRAGSELECT: {
+					ProgressionChoiceSystem.Selection.giveToPlayer(ep, ChromaResearch.researchList[data[0]]);
 					break;
 				}
 			}

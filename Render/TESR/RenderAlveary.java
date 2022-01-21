@@ -287,7 +287,7 @@ public class RenderAlveary extends ChromaRenderBase {
 				GL11.glTranslated(-f.getStringWidth(sg)/32D/s2, 0.1875D/s2-ei.hoverStart*0.375/s2-0.125/s2, 0);
 				f.drawString(sg, 0, 0, 0xffffff);
 
-				if (te.isJubilant()) {
+				if (te.isJubilant() | true) {
 					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 					BlendMode.DEFAULT.apply();
 					ReikaTextureHelper.bindTerrainTexture();
@@ -311,9 +311,9 @@ public class RenderAlveary extends ChromaRenderBase {
 					float vv = dv-v;
 
 					GL11.glPushMatrix();
-					GL11.glTranslated(16.5, 0.75, 0);
+					GL11.glTranslated(0.875+0.2*f.getStringWidth(sg), 0.75, 0);
 					v5.startDrawingQuads();
-					v5.setColorOpaque_I(((BeeSpecies)bee).getOutlineColor());
+					v5.setColorOpaque_I(0xffffff);
 					v5.addVertexWithUV(-1, -1, 0, u, v);
 					v5.addVertexWithUV(1, -1, 0, du, v);
 					v5.addVertexWithUV(1, 1, 0, du, dv);

@@ -12,16 +12,17 @@ package Reika.ChromatiCraft.Auxiliary.Render;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
@@ -40,6 +41,7 @@ import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
 import Reika.ChromatiCraft.API.Interfaces.OrePings.OrePingDelegate;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
@@ -63,6 +65,7 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
 import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
+import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -89,9 +92,9 @@ public class ChromaOverlays {
 
 	private final RemoteSourcedAsset crosshair = ChromaClient.dynamicAssets.createAsset("Textures/crosshair.png");
 
-	private final EnumMap<CrystalElement, Integer> pings = new EnumMap(CrystalElement.class);
-	private final EnumMap<CrystalElement, Integer> pingAng = new EnumMap(CrystalElement.class);
-	private final EnumMap<CrystalElement, Integer> pingDist = new EnumMap(CrystalElement.class);
+	private final HashMap<Ping, Integer> pings = new HashMap(17, 0.99F);
+	private final HashMap<Ping, Integer> pingAng = new HashMap(17, 0.99F);
+	private final HashMap<Ping, Integer> pingDist = new HashMap(17, 0.99F);
 
 	private final ArrayList<FlareMessage> flareMessages = new ArrayList();
 
@@ -99,6 +102,8 @@ public class ChromaOverlays {
 	private long structureTextTick = -1;
 
 	static final double FRONT_TRANSLATE = 930;
+
+	private static final ColorBlendList chromaColor = new ColorBlendList(8F, ChromaFX.getChromaColorTiles());
 
 	private ChromaOverlays() {
 
@@ -268,18 +273,17 @@ public class ChromaOverlays {
 
 	private void renderPingOverlays(EntityPlayer ep, int gsc) {
 		GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-		HashMap<CrystalElement, Integer> map = new HashMap();
+		HashMap<Ping, Integer> map = new HashMap();
 		int i = 0;
 		int k = 0;
 
 
 		boolean renderCircle = false;
 
-		for (int c = 0; c < 16; c++) {
-			CrystalElement e = CrystalElement.elements[c];
-
-			Integer tick = pings.get(e);
+		for (Entry<Ping, Integer> e : pings.entrySet()) {
+			Integer tick = e.getValue();
 			if (tick != null) {
+				Ping p = e.getKey();
 				float alpha = tick >= (PING_LENGTH-FADEIN) ? (PING_LENGTH-tick)/(float)FADEIN : tick < FADEOUT ? tick/(float)FADEOUT : 1;
 				GL11.glColor4f(alpha, alpha, alpha, alpha);
 				GL11.glDisable(GL11.GL_LIGHTING);
@@ -355,8 +359,8 @@ public class ChromaOverlays {
 
 				ReikaTextureHelper.bindTerrainTexture();
 
-				double ang = pingAng.get(e);
-				double dist = pingDist.get(e);
+				double ang = pingAng.get(p);
+				double dist = pingDist.get(p);
 
 				double dr = MathHelper.clamp_double(r*Math.pow(dist, 1.5)/1000000D, 2, r);
 
@@ -366,9 +370,15 @@ public class ChromaOverlays {
 				int dx = x+(int)ax;
 				int dy = y+(int)ay;
 
-				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(dx, dy, e.getGlowRune(), s, s);
+				if (p.color == null) {
+					int c = chromaColor.getColor(System.currentTimeMillis()/20D);
+					c = ReikaColorAPI.mixColors(c, 0xffffff, 0.5F);
+					GL11.glColor4f(ReikaColorAPI.getRed(c)/255F, ReikaColorAPI.getGreen(c)/255F, ReikaColorAPI.getBlue(c)/255F, 1);
+				}
+				ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(dx, dy, p.icon, s, s);
+				GL11.glColor4f(1, 1, 1, 1);
 
-				if (ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, e)) {
+				if (p.color != null && ProgressionManager.instance.hasPlayerCompletedStructureColor(ep, p.color)) {
 					ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(dx+8, dy+10, ChromaIcons.CHECK.getIcon(), s/2, s/2);
 				}
 
@@ -378,7 +388,7 @@ public class ChromaOverlays {
 				int oy = dy+s/2;
 
 				if (tick > 1) {
-					map.put(e, tick-1);
+					map.put(p, tick-1);
 				}
 				else {
 					pingDist.remove(e);
@@ -394,16 +404,27 @@ public class ChromaOverlays {
 		}
 		GL11.glPopAttrib();
 		pings.clear();
-		pings.putAll(map);
+		if (!GuiScreen.isCtrlKeyDown())
+			pings.putAll(map);
 	}
 
-	public void addPingOverlay(CrystalElement e, int dist, int ang) {
-		pings.put(e, PING_LENGTH);
-		pingDist.put(e, dist);
-		pingAng.put(e, ang);
+	public void addPingOverlay(int idx, int dist, int ang) {
+		Ping p = null;
+		if (idx >= 0) {
+			CrystalElement e = CrystalElement.elements[idx];
+			p = new Ping(e);
+		}
+		else if (idx == -1) {
+			p = new Ping(ChromaIcons.MARKER.getIcon());
+		}
+		if (p != null) {
+			pings.put(p, PING_LENGTH);
+			pingDist.put(p, dist);
+			pingAng.put(p, ang);
+		}
 
 		if (true) { //refresh all others
-			for (CrystalElement key : pings.keySet())
+			for (Ping key : pings.keySet())
 				pings.put(key, Math.max(pings.get(key), PING_LENGTH-FADEIN));
 		}
 	}
@@ -957,6 +978,23 @@ public class ChromaOverlays {
 
 	public void addBottleneckWarning(int dim, int x, int y, int z, int level, boolean isThroughput, CrystalElement e) {
 		PylonFinderOverlay.instance.addBottleneckWarning(new WorldLocation(dim, x, y, z), e, WarningLevels.list[level], isThroughput);
+	}
+
+	private static class Ping {
+
+		private final IIcon icon;
+
+		private CrystalElement color;
+
+		private Ping(CrystalElement e) {
+			this(e.getGlowRune());
+			color = e;
+		}
+
+		private Ping(IIcon ico) {
+			icon = ico;
+		}
+
 	}
 
 	private static class FlareMessage {

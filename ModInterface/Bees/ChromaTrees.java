@@ -1,7 +1,9 @@
 package Reika.ChromatiCraft.ModInterface.Bees;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Locale;
 import java.util.Random;
 
@@ -125,6 +127,8 @@ public class ChromaTrees {
 		//superFertility = Saplings.createNew("extreme", 0.25F, false);
 
 		dyeBranch = new TreeBranch("branch.ccdye", "Dye", "Pigmentum", "These leaves shimmer one or more colors, and seem to be associated with crystal energy.");
+
+		dyeFlyBranch = new ButterflyBranch("branch.ccdyefly", "Dye", "Pigmentum", "These vibrantly hued butterflies are primarily found in a similarly colored forest.");
 
 		rainbowEffect = new RainbowEffect();
 
@@ -327,7 +331,7 @@ public class ChromaTrees {
 		}
 
 		@Override
-		protected BlockKey getLogBlock(ITreeGenome genes, World world, int x, int y, int z, Random rand, ITreeGenData data) {
+		protected BlockKey getLogBlock(ITreeGenome genes, World world, int x, int y, int z, Random rand, ITreeGenData data, ForgeDirection dir) {
 			return ReikaTreeHelper.OAK.getLog();
 		}
 
@@ -458,7 +462,81 @@ public class ChromaTrees {
 
 		@Override
 		protected void placeTree(World world, int x, int y, int z, GameProfile owner, ITreeGenData data) {
-			TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, rand, ReikaDyeHelper.dyes[color.ordinal()], true, 0, 0);
+			int girth = data.getGirth(world, x, y, z);
+			FilledBlockArray array = new FilledBlockArray(world);
+			float h = MathHelper.clamp_float((float)Math.sqrt(data.getHeightModifier()), 0.3F, 2F);
+			TreeShaper.getInstance().generateRandomWeightedTree(world, x, y, z, rand, ReikaDyeHelper.dyes[color.ordinal()], true, 0, 0, array, h);
+			if (girth == 1) {
+				this.place(array, world, owner, data, null, null);
+			}
+			else {
+				ArrayList<Coordinate> logs = new ArrayList();
+				HashSet<Integer> leafY = new HashSet();
+				FilledBlockArray cache = (FilledBlockArray)array.copy();
+				array.cutToQuarter();
+				this.place(array, world, owner, data, leafY, logs);
+				array.offset(-x, -y, -z);
+				FilledBlockArray cp = (FilledBlockArray)array.flipX();
+				cp.offset(x, y, z);
+				cp.offset(girth-1, 0, 0);
+				this.place(cp, world, owner, data, leafY, logs);
+				cp = (FilledBlockArray)array.flipZ();
+				cp.offset(x, y, z);
+				cp.offset(0, 0, girth-1);
+				this.place(cp, world, owner, data, leafY, logs);
+				cp = (FilledBlockArray)array.flipZ();
+				cp = (FilledBlockArray)cp.flipX();
+				cp.offset(x, y, z);
+				cp.offset(girth-1, 0, girth-1);
+				this.place(cp, world, owner, data, leafY, logs);
+				if (girth > 2) {
+					array = (FilledBlockArray)cache.copy();
+					array.cutToCenter();
+					for (int i = 0; i < girth; i++) {
+						for (int k = 0; k < girth; k++) {
+							if ((i == 0 || i == girth-1) && (k == 0 || k == girth-1))
+								continue;
+							cp = (FilledBlockArray)array.copy();
+							cp.offset(i, 0, k);
+							this.place(cp, world, owner, data, leafY, logs);
+						}
+					}/*
+					for (int i = 1; i < girth; i++) {
+						array = (FilledBlockArray)cache.copy();
+						array.cutTo(c -> c.xCoord == cache.getMinX()+2 && c.zCoord <= cache.getMinZ()+1);
+						array.offset(i, 0, 0);
+						this.place(array, world, owner, data);
+						array = (FilledBlockArray)cache.copy();
+						array.cutTo(c -> c.xCoord == cache.getMinX()+2 && c.zCoord >= cache.getMaxZ()-1);
+						array.offset(i, 0, 0);
+						this.place(array, world, owner, data);
+					}*/
+					for (Coordinate c : logs) {
+						for (Coordinate c2 : c.getAdjacentCoordinates()) {
+							if (c2.isEmpty(world) && (leafY.contains(c2.yCoord) || girth >= 4 && leafY.contains(c2.yCoord+1)))
+								data.setLeaves(world, owner, c2.xCoord, c2.yCoord, c2.zCoord);
+						}
+					}
+				}
+			}
+		}
+
+		private void place(FilledBlockArray array, World world, GameProfile owner, ITreeGenData data, HashSet<Integer> leafY, ArrayList<Coordinate> logs) {
+			for (Coordinate c : array.keySet()) {
+				BlockKey bk = array.getBlockKeyAt(c.xCoord, c.yCoord, c.zCoord);
+				if (bk.blockID == ChromaBlocks.DECAY.getBlockInstance()) {
+					if (TreeShaper.canGenerateLeavesAt(world, c.xCoord, c.yCoord, c.zCoord)) {
+						data.setLeaves(world, owner, c.xCoord, c.yCoord, c.zCoord);
+						if (leafY != null)
+							leafY.add(c.yCoord);
+					}
+				}
+				else {
+					data.setLogBlock(world, c.xCoord, c.yCoord, c.zCoord, ForgeDirection.UP);
+					if (logs != null)
+						logs.add(c);
+				}
+			}
 		}
 
 		@Override
@@ -524,7 +602,7 @@ public class ChromaTrees {
 		}
 
 		@Override
-		protected final BlockKey getLogBlock(ITreeGenome genes, World world, int x, int y, int z, Random rand, ITreeGenData data) {
+		protected final BlockKey getLogBlock(ITreeGenome genes, World world, int x, int y, int z, Random rand, ITreeGenData data, ForgeDirection dir) {
 			return ReikaTreeHelper.OAK.getLog();
 		}
 
@@ -625,7 +703,7 @@ public class ChromaTrees {
 				return 0xffffff;
 			else if (f >= 1)
 				return c;
-			return ReikaColorAPI.mixColors(c, 0xffffff, (f-0.625F)/0.375F);
+			return ReikaColorAPI.mixColors(c, 0x000000, (f-0.625F)/0.375F);
 		}
 
 		@Override
@@ -650,10 +728,10 @@ public class ChromaTrees {
 
 		@Override
 		public ItemStack[] getFruits(ITreeGenome genome, World world, int x, int y, int z, int ripeningTime) {
-			float f = ripeningTime/(float)this.getRipeningPeriod();
+			float f = ripeningTime/(float)this.getRipeningPeriod()*genome.getYield();
 			if (f >= 1)
 				f += 0.05;
-			double fnum = Math.min(12, Math.pow(f, 2)+ReikaRandomHelper.getRandomBetween(0, 5));
+			double fnum = Math.min(12*genome.getYield(), Math.pow(f, 2)+ReikaRandomHelper.getRandomBetween(0, Math.max(1, 5*genome.getYield())));
 			int num = 0;
 			while (fnum > 0) {
 				if (fnum >= 1) {
@@ -925,6 +1003,10 @@ public class ChromaTrees {
 			return Life.SHORT;
 		}
 
+	}
+
+	public static CrystalElement getDyeTreeColor(IAlleleTreeSpecies ia) {
+		return ((DyeTreeBase)ia).color;
 	}
 
 }

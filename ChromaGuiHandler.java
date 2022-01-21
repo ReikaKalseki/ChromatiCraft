@@ -36,6 +36,7 @@ import Reika.ChromatiCraft.Container.ContainerCrystalFurnace;
 import Reika.ChromatiCraft.Container.ContainerCrystalTank;
 import Reika.ChromatiCraft.Container.ContainerEnchantDecomposer;
 import Reika.ChromatiCraft.Container.ContainerFluidRelay;
+import Reika.ChromatiCraft.Container.ContainerFragmentSelect;
 import Reika.ChromatiCraft.Container.ContainerInventoryTicker;
 import Reika.ChromatiCraft.Container.ContainerItemBurner;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
@@ -53,6 +54,7 @@ import Reika.ChromatiCraft.GUI.GuiAuraPouch;
 import Reika.ChromatiCraft.GUI.GuiBulkMover;
 import Reika.ChromatiCraft.GUI.GuiEnderBucket;
 import Reika.ChromatiCraft.GUI.GuiFlightWand;
+import Reika.ChromatiCraft.GUI.GuiFragmentSelect;
 import Reika.ChromatiCraft.GUI.GuiItemBurner;
 import Reika.ChromatiCraft.GUI.GuiItemWithFilter;
 import Reika.ChromatiCraft.GUI.GuiLoreKeyAssembly;
@@ -241,6 +243,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new ContainerItemBurner(player);
 			case STRUCTUREPASS:
 				return new ContainerStructurePassword(player, (TileEntityStructurePassword)world.getTileEntity(x, y, z));
+			case FRAGSELECT:
+				return new ContainerFragmentSelect(player);
 			default:
 				return null;
 		}
@@ -399,6 +403,8 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiStructurePassword(player, (TileEntityStructurePassword)world.getTileEntity(x, y, z));
 			case ENDERBUCKET:
 				return new GuiEnderBucket(player);
+			case FRAGSELECT:
+				return new GuiFragmentSelect(player);
 		}
 		return null;
 	}

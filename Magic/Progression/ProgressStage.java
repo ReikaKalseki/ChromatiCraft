@@ -28,6 +28,7 @@ import net.minecraft.world.WorldServer;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
+import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager.ProgressElement;
@@ -127,6 +128,7 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 	DEEPCAVE(		Shareability.PROXIMITY,	Reloadability.NEVER,	Blocks.lava),
 	HARVEST(		Shareability.PROXIMITY,	Reloadability.NEVER,	Items.wheat),
 	MYST(			Shareability.PROXIMITY,	Reloadability.NEVER,	ModList.MYSTCRAFT.isLoaded() ? MystCraftHandler.getInstance().bookID : null, ModList.MYSTCRAFT.isLoaded()),
+	FARLANDS(		Shareability.PROXIMITY,	Reloadability.NEVER,	DimDecoTypes.CLIFFGLASS.getItem()),
 	NEVER(			Shareability.SELFONLY,	Reloadability.NEVER,	(ItemStack)null, false), //used as a no-trigger placeholder
 	;
 

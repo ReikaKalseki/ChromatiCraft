@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -26,26 +26,46 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class DimensionPingEvent extends ScheduledSoundEvent {
 
-	public final CrystalElement color;
 	private final double distance;
 	private final double angle;
 
-	public DimensionPingEvent(CrystalElement e, EntityPlayer ep, double dist, double ang) {
-		super(ChromaSounds.DING, ep, 1, (float)CrystalMusicManager.instance.getDingPitchScale(e));
+	public DimensionPingEvent(ChromaSounds s, float p, EntityPlayer ep, double dist, double ang) {
+		super(s, ep, 1, p);
 		distance = dist;
 		angle = ang;
-		color = e;
 	}
 
 	@Override
-	public void fire() {
+	public final void fire() {
 		super.fire();
-		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.DIMPING.ordinal(), (EntityPlayerMP)this.getEntity(), color.ordinal(), (int)distance, (int)angle);
+		ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.DIMPING.ordinal(), (EntityPlayerMP)this.getEntity(), this.getDataInt(), (int)distance, (int)angle);
+	}
+
+	protected int getDataInt() {
+		return -1;
+	}
+
+	public static class StructurePingEvent extends DimensionPingEvent {
+
+		public final CrystalElement color;
+
+		public StructurePingEvent(CrystalElement e, EntityPlayer ep, double dist, double ang) {
+			super(ChromaSounds.DING, (float)CrystalMusicManager.instance.getDingPitchScale(e), ep, dist, ang);
+			color = e;
+		}
+
+		@Override
+		protected int getDataInt() {
+			return color.ordinal();
+		}
+
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void addPing(int color, int dist, int ang) {
-		ChromaOverlays.instance.addPingOverlay(CrystalElement.elements[color], dist, ang);
+	public static void addPing(int idx, int dist, int ang) {
+		ChromaOverlays.instance.addPingOverlay(idx, dist, ang);
 	}
 
 }
+
+

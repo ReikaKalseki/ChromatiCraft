@@ -130,14 +130,15 @@ public final class ChromaResearchManager implements ResearchRegistry {
 
 	public HashSet<ChromaResearch> getResearchLevelMissingFragments(EntityPlayer ep) {
 		Collection<ChromaResearch> cp = ChromaResearchManager.instance.getFragments(ep);
-		HashSet<ChromaResearch> missing = new HashSet(ChromaResearchManager.instance.getResearchForLevel(this.getPlayerResearchLevel(ep)));
+		ResearchLevel lvl = this.getPlayerResearchLevel(ep);
+		HashSet<ChromaResearch> missing = new HashSet(ChromaResearchManager.instance.getResearchForLevel(lvl));
 		//ReikaJavaLibrary.pConsole(missing+" - "+cp+" = ");
 		missing.removeAll(cp);
 		this.removeAllDummiedFragments(missing);
 		Iterator<ChromaResearch> it = missing.iterator();
 		while (it.hasNext()) {
 			ChromaResearch r = it.next();
-			if (!r.isGating())
+			if (!r.isGating(lvl))
 				it.remove();
 		}
 		return missing;
@@ -304,8 +305,9 @@ public final class ChromaResearchManager implements ResearchRegistry {
 
 	public Collection<ChromaResearch> getMissingResearch(EntityPlayer ep, ProgressStage req) {
 		Collection<ChromaResearch> ret = new ArrayList();
-		for (ChromaResearch r : ChromaResearch.getPagesFor(this.getPlayerResearchLevel(ep))) {
-			if (!r.isGating())
+		ResearchLevel lvl = this.getPlayerResearchLevel(ep);
+		for (ChromaResearch r : ChromaResearch.getPagesFor(lvl)) {
+			if (!r.isGating(lvl))
 				continue;
 			if (this.playerHasFragment(ep, r))
 				continue;
@@ -317,8 +319,9 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	}
 
 	private boolean playerHasAllFragmentsThatMatter(EntityPlayer ep, Collection<ChromaResearch> li) {
+		ResearchLevel lvl = this.getPlayerResearchLevel(ep);
 		for (ChromaResearch r : li)
-			if (r.isGating() && !this.playerHasFragment(ep, r))
+			if (r.isGating(lvl) && !this.playerHasFragment(ep, r))
 				return false;
 		return true;
 	}
@@ -628,7 +631,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		ResearchLevel min = ProgressionManager.instance.getEarliestAllowedGate(p);
 		ResearchLevel rl = null;
 		for (ChromaResearch r : ChromaResearch.getAllObtainableFragments()) {
-			if (r.isGating() && r.requiresProgress(p)) {
+			if (r.isGating(r.level) && r.requiresProgress(p)) {
 				if (rl == null || rl.isAtLeast(r.level))
 					rl = r.level;
 			}

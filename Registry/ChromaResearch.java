@@ -91,7 +91,6 @@ import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
-import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
@@ -113,7 +112,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	INTRO("Introduction", ""),
 	START("Getting Started",				new ItemStack(Blocks.dirt),								ResearchLevel.ENTRY),
 	LEXICON("The Lexicon",					ChromaItems.HELP.getStackOf(),							ResearchLevel.ENTRY),
-	ENERGY("Crystal Energy", 				new ItemStack(Blocks.dirt),								ResearchLevel.ENERGY,	ProgressStage.ALLCOLORS, ProgressStage.CHARGE),
+	ENERGY("Crystal Energy", 				new ItemStack(Blocks.dirt),								ResearchLevel.ENERGY,		ProgressStage.ALLCOLORS, ProgressStage.CHARGE),
 	ELEMENTS("Crystal Elements", 			ChromaItems.ELEMENTAL.getStackOf(CrystalElement.BLUE),	ResearchLevel.BASICCRAFT,	ProgressStage.ALLCOLORS),
 	CRYSTALS("Crystals", 					ChromaBlocks.CRYSTAL.getStackOfMetadata(4), 			ResearchLevel.ENTRY, 		ProgressStage.CRYSTALS),
 	PYLONS("Pylons", 						ChromaTiles.PYLON.getCraftedProduct(), 					ResearchLevel.ENTRY, 		ProgressStage.PYLON),
@@ -122,28 +121,29 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	CRAFTING("Casting",						ChromaTiles.TABLE.getCraftedProduct(),					ResearchLevel.BASICCRAFT),
 	ENCHANTS("Enchantments",				ChromaTiles.ENCHANTER.getCraftedProduct(),				ResearchLevel.BASICCRAFT),
 	CRAFTING2("Casting II",					ChromaTiles.TABLE.getCraftedProduct(),					ResearchLevel.RUNECRAFT,	ProgressStage.RUNEUSE),
-	BALLLIGHTNING("Ball Lightning",			ChromaStacks.auraDust,									ResearchLevel.ENERGY,ProgressStage.BALLLIGHTNING),
+	BALLLIGHTNING("Ball Lightning",			ChromaStacks.auraDust,									ResearchLevel.ENERGY,		ProgressStage.BALLLIGHTNING),
 	APIRECIPES("Other Recipes",				new ItemStack(Blocks.dirt),								ResearchLevel.BASICCRAFT),
 	LEYLINES("Ley Lines",					ChromaTiles.REPEATER.getCraftedProduct(),				ResearchLevel.NETWORKING,	ProgressStage.REPEATER),
 	USINGRUNES("Crafting With Runes",		ChromaBlocks.RUNE.getStackOfMetadata(1),				ResearchLevel.RUNECRAFT, 	ProgressStage.RUNEUSE),
 	DIMENSION("Another World",				ChromaBlocks.PORTAL.getStackOf(),						ResearchLevel.ENDGAME,		ProgressionManager.instance.getPrereqsArray(ProgressStage.DIMENSION)),
 	DIMENSION2("A Volatile World",			ChromaBlocks.GLOWSAPLING.getStackOf(),					ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
-	DIMENSION3("The Far Regions",			ChromaBlocks.DIMGEN.getStackOfMetadata(DimDecoTypes.FLOATSTONE.ordinal()),	ResearchLevel.ENDGAME,	ProgressStage.STRUCTCOMPLETE),
+	FARLANDS("The Far Regions",				DimDecoTypes.FLOATSTONE.getItem(),						ResearchLevel.ENDGAME,		ProgressStage.FARLANDS),
 	TURBO("Turbocharging",					ChromaStacks.elementUnit,								ResearchLevel.ENDGAME, 		ProgressionManager.instance.getPrereqsArray(ProgressStage.TURBOCHARGE)),
 	TURBOREPEATER("Repeater Turbocharging", ChromaStacks.turboRepeater,								ResearchLevel.ENDGAME,		ProgressStage.TURBOCHARGE),
-	TURBOREPEATER2("Maximized Networking",	ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.RESORING.ordinal()),		ResearchLevel.CTM,		ProgressStage.TURBOCHARGE),
+	TURBOREPEATER2("Maximized Networking",	StoneTypes.RESORING.getItem(),							ResearchLevel.CTM,			ProgressStage.TURBOCHARGE),
 	PACKCHANGES("Modpack Changes",			new ItemStack(Blocks.dirt),								ResearchLevel.ENTRY),
 	NODENET("Networking Aura Nodes",		new ItemStack(Blocks.dirt),								ResearchLevel.CTM,			ProgressStage.CTM),
-	SELFCHARGE("Energy Internalization",	ChromaItems.TOOL.getStackOf(),							ResearchLevel.ENERGY,	ProgressStage.CHARGE),
+	SELFCHARGE("Energy Internalization",	ChromaItems.TOOL.getStackOf(),							ResearchLevel.ENERGY,		ProgressStage.CHARGE),
 	MYSTPAGE("World Authoring",				new ItemStack(Items.map),								ResearchLevel.RAWEXPLORE),
 	ENCHANTING("Crystal Enchanting",		new ItemStack(Items.enchanted_book),					ResearchLevel.MULTICRAFT,	ProgressStage.MULTIBLOCK),
 	STRUCTUREPASSWORDS("Structure Keys",	ChromaBlocks.DIMDATA.getStackOfMetadata(1),				ResearchLevel.ENDGAME,		ProgressStage.STRUCTCOMPLETE),
 	DIMTUNING("Portal Tuning",				ChromaStacks.bedrockloot2,								ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
 	ABILITIES("Abilities",					ChromaTiles.RITUAL.getCraftedProduct(),					ResearchLevel.ENERGY),
 	CASTTUNING("Personalized Casting",		new ItemStack(Blocks.skull, 1, 3),						ResearchLevel.NETWORKING,	ProgressionManager.instance.getPrereqsArray(ProgressStage.TUNECAST)),
-	MULTIBLOCKS("Functional Construction",	ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(StoneTypes.COLUMN.ordinal()),	ResearchLevel.BASICCRAFT),
-	PYLONLINK("Interconnected Energy",		ChromaTiles.PYLONLINK.getCraftedProduct(),				ResearchLevel.ENERGY, ProgressStage.PYLONLINK),
-	ITEMBURNER("Item Decomposition",		new ItemStack(Blocks.dirt),								ResearchLevel.ENERGY, ProgressStage.CHARGE, ProgressStage.ALLCOLORS),
+	MULTIBLOCKS("Functional Construction",	StoneTypes.COLUMN.getItem(),							ResearchLevel.BASICCRAFT),
+	PYLONLINK("Interconnected Energy",		ChromaTiles.PYLONLINK.getCraftedProduct(),				ResearchLevel.ENERGY,		ProgressStage.PYLONLINK),
+	ITEMBURNER("Item Decomposition",		new ItemStack(Blocks.dirt),								ResearchLevel.ENERGY,		ProgressStage.CHARGE, ProgressStage.ALLCOLORS),
+	MONUMENT("Construction Restoration",	ChromaTiles.AURAPOINT.getCraftedProduct(),				ResearchLevel.CTM,			ProgressStage.CTM),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING,		ProgressStage.BLOWREPEATER),
@@ -159,7 +159,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	FENCE(			ChromaTiles.FENCE, 			ResearchLevel.MULTICRAFT),
 	FURNACE(		ChromaTiles.FURNACE, 		ResearchLevel.PYLONCRAFT,		ProgressStage.MINE),
 	TELEPUMP(		ChromaTiles.TELEPUMP, 		ResearchLevel.PYLONCRAFT),
-	MINER(			ChromaTiles.MINER, 			ResearchLevel.CTM,				ProgressStage.MINE),
+	MINER(			ChromaTiles.MINER, 			ResearchLevel.CTM,				ProgressStage.MINE, ProgressStage.FARLANDS),
 	ITEMSTAND(		ChromaTiles.STAND,			ResearchLevel.RUNECRAFT),
 	LASER(			ChromaTiles.LASER, 			ResearchLevel.PYLONCRAFT),
 	ITEMRIFT(		ChromaTiles.ITEMRIFT, 		ResearchLevel.ENERGY),
@@ -266,6 +266,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	FAKESKY(		ChromaBlocks.FAKESKY,											ResearchLevel.RUNECRAFT),
 	CHUNKLOADER(	ChromaBlocks.CHUNKLOADER,										ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
 	LUMA(			ChromaBlocks.LUMA,												ResearchLevel.RAWEXPLORE,	ProgressStage.LUMA),
+	ENDER(			ChromaBlocks.ENDER,												ResearchLevel.RAWEXPLORE),
 	//SPAWNERCONTROL(	ChromaBlocks.SPAWNERCONTROL,									ResearchLevel.RAWEXPLORE,	ProgressStage.BREAKSPAWNER),
 	TRAPFLOOR(		ChromaBlocks.TRAPFLOOR,											ResearchLevel.RAWEXPLORE,	ProgressStage.SNOWSTRUCT),
 	WARPNODE(		ChromaBlocks.WARPNODE,											ResearchLevel.RAWEXPLORE,	ProgressStage.WARPNODE),
@@ -327,6 +328,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	NETHERKEY(			ChromaItems.NETHERKEY,		ResearchLevel.RUNECRAFT,		ProgressStage.NETHER, ProgressStage.ANYSTRUCT),
 	RECIPECACHE(		ChromaItems.RECIPECACHE,	ResearchLevel.MULTICRAFT,		ProgressStage.MULTIBLOCK),
 	ETHERPENDANT(		ChromaItems.ETHERPENDANT,	ResearchLevel.MULTICRAFT,		ProgressStage.LUMA, ProgressStage.END),
+	STRUCTMAP(			ChromaItems.STRUCTMAP,		ResearchLevel.RAWEXPLORE,		ProgressStage.ANYSTRUCT, ProgressStage.TOWER, ProgressStage.ARTEFACT),
 
 	RESOURCEDESC("Resources", ""),
 	BERRIES("Berries",				ChromaItems.BERRY.getStackOf(CrystalElement.ORANGE),	ResearchLevel.RAWEXPLORE,	ProgressStage.DYETREE),
@@ -667,6 +669,35 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 			GL11.glPopAttrib();
 			return;
 		}
+		else if (this == MONUMENT) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glShadeModel(GL11.GL_SMOOTH);
+			BlendMode.ADDITIVEDARK.apply();
+			String var4 = "Textures/monument_lines_big.png";
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, var4);
+			int c1 = CrystalElement.getBlendedColor(ReikaRenderHelper.getSystemTimeAsInt()/50, 20);
+			int c2 = CrystalElement.getBlendedColor(ReikaRenderHelper.getSystemTimeAsInt()/32, 20);
+			int c3 = CrystalElement.getBlendedColor(ReikaRenderHelper.getSystemTimeAsInt()/71, 20);
+			int c4 = CrystalElement.getBlendedColor(ReikaRenderHelper.getSystemTimeAsInt()/44, 20);
+			int w = 16;
+			int h = 16;
+			int d = 0;
+			Tessellator tessellator = Tessellator.instance;
+			tessellator.startDrawingQuads();
+			tessellator.setColorOpaque_I(c1);
+			tessellator.addVertexWithUV((x + 0 - d), (y + h + d), 0, 0, 1);
+			tessellator.setColorOpaque_I(c2);
+			tessellator.addVertexWithUV((x + w + d), (y + h + d), 0, 1, 1);
+			tessellator.setColorOpaque_I(c3);
+			tessellator.addVertexWithUV((x + w + d), (y + 0 - d), 0, 1, 0);
+			tessellator.setColorOpaque_I(c4);
+			tessellator.addVertexWithUV((x + 0 - d), (y + 0 - d), 0, 0, 0);
+			tessellator.draw();
+			GL11.glPopAttrib();
+			return;
+		}
 		else if (this == BALLLIGHTNING) {
 			EntityBallLightning eb = new EntityBallLightning(Minecraft.getMinecraft().theWorld);
 			eb.isDead = true;
@@ -902,7 +933,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 		ReikaGuiAPI.instance.drawItemStack(ri, ico, x, y);
 
 		ri.zLevel = zp;
-		if (this == DIMENSION3) {
+		if (this == FARLANDS) {
 			GL11.glPushMatrix();
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glDisable(GL11.GL_LIGHTING);
@@ -957,7 +988,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 		return false;
 	}
 
-	public boolean isGating() {
+	public boolean isGating(ResearchLevel at) {
 		if (this.isDummiedOut())
 			return false;
 		if (this.isMachine() && this.getMachine().isIncomplete())
@@ -967,7 +998,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 		if (this == TRAPFLOOR)
 			return false;
 		for (ProgressStage p : progress) {
-			if (!p.isGating(level))
+			if (!p.isGating(at))
 				return false;
 		}
 		return struct == null || !struct.isNatural();
@@ -1517,8 +1548,8 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	}
 
 	public boolean isDummiedOut() {
-		if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
-			return false;
+		//if (DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
+		//	return false;
 		if (machine != null)
 			return machine.isDummiedOut();
 		if (item != null)
@@ -1661,8 +1692,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 				catch (Exception e) {
 					Dependency dep = r.getDependency();
 					if (dep != null && !(dep instanceof ConfigList)) {
-						e.printStackTrace();
-						throw new InstallationException(ChromatiCraft.instance, "Another mod/API, '"+dep.getDisplayName()+"' is an incompatible version. Update both mods if possible, or if updating "+dep.getDisplayName()+" caused this, revert to the previous version.");
+						throw new InstallationException(ChromatiCraft.instance, "Another mod/API, '"+dep.getDisplayName()+"' is an incompatible version. Update both mods if possible, or if updating "+dep.getDisplayName()+" caused this, revert to the previous version.", e);
 					}
 					else {
 						throw new RegistrationException(ChromatiCraft.instance, "Could not initialize Info Fragment '"+r+"'!", e);
@@ -1672,7 +1702,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 		}
 
 		FragmentCategorizationSystem.instance.calculate();
-		FragmentCategorizationSystem.instance.dumpData();
+		//FragmentCategorizationSystem.instance.dumpData();
 	}
 
 	public static ArrayList<ChromaResearch> getInfoTabs() {

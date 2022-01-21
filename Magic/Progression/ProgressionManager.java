@@ -243,6 +243,8 @@ public class ProgressionManager implements ProgressRegistry {
 
 		this.addProgressPrereq(ProgressStage.CTM,		ProgressStage.ALLCORES);
 
+		this.addProgressPrereq(ProgressStage.FARLANDS,	ProgressStage.DIMENSION);
+
 		this.addProgressPrereq(ProgressStage.PYLONLINK, 	ProgressStage.TOWER);
 
 		for (int i = 0; i < ProgressStage.list.length; i++) {

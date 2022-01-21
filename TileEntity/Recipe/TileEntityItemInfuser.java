@@ -1,8 +1,10 @@
 package Reika.ChromatiCraft.TileEntity.Recipe;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
@@ -23,6 +25,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityItemInfuser extends TileEntityAuraInfuser {
+
+	private static final String EXTRA_DROP = "requiredExtra";
 
 	@Override
 	public ChromaTiles getTile() {
@@ -57,12 +61,42 @@ public class TileEntityItemInfuser extends TileEntityAuraInfuser {
 	}
 
 	@Override
+	protected EntityItem dropItem() {
+		EntityItem ei = super.dropItem();
+		if (ei == null)
+			return ei;
+		ItemStack is = ei.getEntityItem();
+		if (ReikaItemHelper.matchStacks(is, ChromaStacks.iridCrystal)) {
+			if (is.stackTagCompound != null) {
+				int extra = is.stackTagCompound.getInteger(EXTRA_DROP);
+				if (extra > 0) {
+					is.stackTagCompound.removeTag(EXTRA_DROP);
+					if (is.stackTagCompound.hasNoTags())
+						is.stackTagCompound = null;
+					ReikaItemHelper.dropItem(ei, ReikaItemHelper.getSizedItemStack(is, extra));
+					ei.setEntityItemStack(is);
+				}
+			}
+		}
+		return ei;
+	}
+
+	@Override
 	protected void onCraft() {
 		int n = inv[0].stackSize;
 		EntityPlayer ep = this.getCraftingPlayer();
 		if (!ReikaPlayerAPI.isFake(ep) && Chromabilities.DOUBLECRAFT.enabledOn(ep))
 			n *= 2;
+		int left = 0;
+		if (n > ChromaStacks.iridCrystal.getMaxStackSize()) {
+			left = n-ChromaStacks.iridCrystal.getMaxStackSize();
+			n = ChromaStacks.iridCrystal.getMaxStackSize();
+		}
 		inv[0] = ReikaItemHelper.getSizedItemStack(ChromaStacks.iridCrystal, n);
+		if (left > 0) {
+			inv[0].stackTagCompound = new NBTTagCompound();
+			inv[0].stackTagCompound.setInteger(EXTRA_DROP, left);
+		}
 		ProgressStage.INFUSE.stepPlayerTo(ep);
 	}
 

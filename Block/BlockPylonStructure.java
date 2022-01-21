@@ -18,6 +18,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.Explosion;
@@ -83,6 +84,10 @@ public class BlockPylonStructure extends BlockProtectedByStructure implements Co
 
 		public BlockKey getBlock() {
 			return new BlockKey(ChromaBlocks.PYLONSTRUCT.getBlockInstance(), this.ordinal());
+		}
+
+		public ItemStack getItem() {
+			return ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(this.ordinal());
 		}
 
 		public boolean needsSilkTouch() {

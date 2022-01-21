@@ -19,9 +19,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.API.Interfaces.LinkerCallback;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.Linkable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.LinkedTile;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.LinkerCallback;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.Dimension.Structure.NonEuclid.BlockTeleport.TileEntityTeleport;
 import Reika.ChromatiCraft.Registry.ChromaSounds;

@@ -749,4 +749,8 @@ public enum ChromaBlocks implements BlockEnum {
 		return true;
 	}
 
+	public ChromaResearch getFragment() {
+		return ChromaResearch.getPageFor(this.getStackOf());
+	}
+
 }

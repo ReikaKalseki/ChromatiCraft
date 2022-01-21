@@ -56,6 +56,7 @@ import net.minecraftforge.fluids.BlockFluidBase;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
+import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent.StructurePingEvent;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
@@ -67,6 +68,7 @@ import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.ChromatiCraft.Magic.RainbowTreeEffects;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -82,6 +84,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityCenterBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFireFX;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
+import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonAPIInit;
@@ -1017,8 +1020,6 @@ public class AbilityCalls {
 
 	public static void doDimensionPing(EntityPlayer ep) {
 		if (ep.worldObj.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
-			int x = MathHelper.floor_double(ep.posX);
-			int z = MathHelper.floor_double(ep.posZ);
 
 			long seed = ep.worldObj.getSeed() ^ ep.getUniqueID().hashCode();
 			Random rand = new Random(seed);
@@ -1028,26 +1029,36 @@ public class AbilityCalls {
 			for (StructurePair s : ChunkProviderChroma.getStructures()) {
 				if (s.generator.isComplete()) {
 					ChunkCoordIntPair loc = s.generator.getEntryLocation();
-					int px = loc.chunkXPos << 4;
-					int pz = loc.chunkZPos << 4;
-					double dx = px-x;
-					double dz = pz-z;
-					double dist = ReikaMathLibrary.py3d(dx, 0, dz);
-					double ang = ReikaDirectionHelper.getCompassHeading(dx, dz);
-					double pow = 1.45+0.3*rand.nextDouble();//1.6
-					double factor = Math.pow(dist, pow);
-					double fac = 18000+2000*rand.nextDouble();//20000D;
-					factor = factor/fac;
-					int delay = Math.max(1, (int)factor);
-					//ReikaJavaLibrary.pConsole(s.color+": DD="+dist+", ang="+ang+", pow="+pow+", fac="+fac+", factor="+factor+", delay="+delay);
-					ScheduledSoundEvent evt = new DimensionPingEvent(s.color, ep, dist, ang);
-					TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(evt), delay);
+					ping(loc.chunkXPos << 4, loc.chunkZPos << 4, s.color, ep, rand);
 				}
+			}
+			if (ProgressStage.CTM.isPlayerAtStage(ep)) {
+				MonumentGenerator gen = ChunkProviderChroma.getMonumentGenerator();
+				ping(gen.getPosX(), gen.getPosZ(), null, ep, rand);
 			}
 		}
 		else {
 			ChromaSounds.ERROR.playSound(ep);
 		}
+	}
+
+	private static void ping(int px, int pz, CrystalElement color, EntityPlayer ep, Random rand) {
+		int x = MathHelper.floor_double(ep.posX);
+		int z = MathHelper.floor_double(ep.posZ);
+		double dx = px-x;
+		double dz = pz-z;
+		double dist = ReikaMathLibrary.py3d(dx, 0, dz);
+		double ang = ReikaDirectionHelper.getCompassHeading(dx, dz);
+		double pow = 1.45+0.3*rand.nextDouble();//1.6
+		double factor = Math.pow(dist, pow);
+		double fac = 18000+2000*rand.nextDouble();//20000D;
+		factor = factor/fac;
+		int delay = Math.max(1, (int)factor);
+		//ReikaJavaLibrary.pConsole(s.color+": DD="+dist+", ang="+ang+", pow="+pow+", fac="+fac+", factor="+factor+", delay="+delay);
+		DimensionPingEvent evt = new DimensionPingEvent(ChromaSounds.ORB, 1, ep, dist, ang);
+		if (color != null)
+			evt = new StructurePingEvent(color, ep, dist, ang);
+		TickScheduler.instance.scheduleEvent(new ScheduledTickEvent(evt), delay);
 	}
 
 	private static boolean isValidWaterBlocks(Block id, Block idbelow) {

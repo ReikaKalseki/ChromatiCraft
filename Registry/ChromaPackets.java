@@ -227,6 +227,7 @@ public enum ChromaPackets {
 	ABILITYFOCUS(1, PacketTypes.STRINGINT),
 	DOGGOSONAR(3),
 	AURORACLEAR(),
+	FRAGSELECT(1),
 	;
 
 	public final int numInts;

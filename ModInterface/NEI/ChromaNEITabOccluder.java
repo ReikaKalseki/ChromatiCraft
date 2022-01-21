@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.ModInterface.NEI;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
 import Reika.ChromatiCraft.Base.GuiChromaBase;
+import Reika.ChromatiCraft.GUI.GuiFragmentSelect;
 import Reika.ChromatiCraft.GUI.Tile.Inventory.GuiCastingTable;
 
 import codechicken.lib.vec.Rectangle4i;
@@ -23,7 +24,7 @@ public class ChromaNEITabOccluder extends INEIGuiAdapter {
 	@Override
 	public VisiblityData modifyVisiblity(GuiContainer gui, VisiblityData data)
 	{
-		if (gui instanceof GuiCastingTable) {
+		if (gui instanceof GuiCastingTable || gui instanceof GuiFragmentSelect) {
 			data.showItemSection = false;
 		}
 		return data;
