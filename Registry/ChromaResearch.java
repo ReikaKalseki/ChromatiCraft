@@ -926,6 +926,10 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 		GL11.glTranslated(0, 0, -50);
 		//}
 
+		if (this.getTabIcon() == null) {
+			ReikaChatHelper.write("Error rendering fragment "+this+": no icon to draw");
+			return;
+		}
 		ItemStack ico = this.getTabIcon().copy();
 		if (ico.stackTagCompound == null)
 			ico.stackTagCompound = new NBTTagCompound();

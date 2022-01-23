@@ -69,7 +69,7 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
-		if (!ChromaResearchManager.instance.getNextResearchesFor(ep).isEmpty())
+		if (isBlank(is) && !ChromaResearchManager.instance.getNextResearchesFor(ep).isEmpty())
 			ep.openGui(ChromatiCraft.instance, ChromaGuis.FRAGSELECT.ordinal(), world, 0, 0, 0);
 		return is;
 	}
@@ -141,7 +141,7 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 		return is;
 	}
 
-	private static void setResearch(ItemStack is, ChromaResearch r) {
+	public static void setResearch(ItemStack is, ChromaResearch r) {
 		if (ChromaItems.FRAGMENT.matchWith(is)) {
 			is.stackTagCompound = new NBTTagCompound();
 			is.stackTagCompound.setString("page", r.name());

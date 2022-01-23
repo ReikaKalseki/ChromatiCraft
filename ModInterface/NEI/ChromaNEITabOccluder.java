@@ -26,6 +26,7 @@ public class ChromaNEITabOccluder extends INEIGuiAdapter {
 	{
 		if (gui instanceof GuiCastingTable || gui instanceof GuiFragmentSelect) {
 			data.showItemSection = false;
+			data.showNEI = false;
 		}
 		return data;
 	}

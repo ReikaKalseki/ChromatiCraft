@@ -69,20 +69,25 @@ public class ContainerFragmentSelect extends Container {
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
 
-		ItemStack is = inventory.getStackInSlot(0);
-		if (ChromaItems.FRAGMENT.matchWith(is)) {
-			hasFragment = true;
-		}
-		else {
-			hasFragment = false;
-		}
-		for (int i = 0; i < crafters.size(); ++i) {
-			ICrafting icrafting = (ICrafting)crafters.get(i);
-			icrafting.sendProgressBarUpdate(this, 0, hasFragment ? 1 : 0);
-			for (int k = 0; k < 3; k++) {
-				//icrafting.sendProgressBarUpdate(this, k*2+1, options[k] != null ? options[k].category.ordinal() : -1);
-				//icrafting.sendProgressBarUpdate(this, k*2+2, options[k] != null ? options[k].fragment.ordinal() : -1);
-				icrafting.sendProgressBarUpdate(this, k+1, options[k] != null ? options[k].fragment.ordinal() | (options[k].category.ordinal() << 8) : -1);
+		if (!player.worldObj.isRemote) {
+			ItemStack is = inventory.getStackInSlot(0);
+			if (ChromaItems.FRAGMENT.matchWith(is) && ItemInfoFragment.isBlank(is)) {
+				hasFragment = true;
+			}
+			else {
+				hasFragment = false;
+			}
+			for (int i = 0; i < crafters.size(); ++i) {
+				ICrafting icrafting = (ICrafting)crafters.get(i);
+				icrafting.sendProgressBarUpdate(this, 0, hasFragment ? 1 : 0);
+				for (int k = 0; k < 3; k++) {
+					//icrafting.sendProgressBarUpdate(this, k*2+1, options[k] != null ? options[k].category.ordinal() : -1);
+					//icrafting.sendProgressBarUpdate(this, k*2+2, options[k] != null ? options[k].fragment.ordinal() : -1);
+					int bits = options[k] != null ? options[k].fragment.ordinal() | (options[k].category.ordinal() << 11) : -1;
+					//if (options[k] != null)
+					//	ReikaJavaLibrary.pConsole(options[k].fragment+"@"+options[k].fragment.ordinal()+" > "+bits+"="+Integer.toBinaryString(bits));
+					icrafting.sendProgressBarUpdate(this, k+1, bits);
+				}
 			}
 		}
 	}
@@ -108,8 +113,8 @@ public class ContainerFragmentSelect extends Container {
 				options[slot] = null;
 			}
 			else {
-				int r = val & 255;
-				int f = (val >> 8) & 255;
+				int r = val & 2047;
+				int f = (val >> 11) & 31;
 				options[slot] = new Selection(FragmentCategory.list[f], ChromaResearch.researchList[r]);
 			}
 		}
@@ -121,10 +126,12 @@ public class ContainerFragmentSelect extends Container {
 	@Override
 	public void onCraftMatrixChanged(IInventory ii) {
 		super.onCraftMatrixChanged(ii);
-		ArrayList<Selection> li = choice.pickThreeCategories();
-		options[0] = li.get(0);
-		options[1] = li.get(1);
-		options[2] = li.get(2);
+		if (!player.worldObj.isRemote) {
+			ArrayList<Selection> li = choice.pickThreeCategories();
+			options[0] = li.get(0);
+			options[1] = li.get(1);
+			options[2] = li.get(2);
+		}
 	}
 
 	public Selection getOption(int i) {
@@ -172,17 +179,22 @@ public class ContainerFragmentSelect extends Container {
 
 	public boolean selectSlot(int slot) {
 		if (player.worldObj.isRemote) {
-			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.FRAGSELECT.ordinal(), options[slot].fragment.ordinal());
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.FRAGSELECT.ordinal(), slot);
 			return true;
 		}
 		else {
-			return options[slot].giveToPlayer(player);
+			ItemStack in = inventory.getStackInSlot(0);
+			if (ChromaItems.FRAGMENT.matchWith(in) && options[slot].giveToPlayer(player)) {
+				ItemInfoFragment.setResearch(in, options[slot].fragment);
+				return true;
+			}
+			return false;
 		}
 	}
 
 	private static void selectRandom(ItemStack is, EntityPlayer ep) {
 		if (!ep.worldObj.isRemote)
-			ItemInfoFragment.programShardAndGiveData(is, ep);
+			;//ItemInfoFragment.programShardAndGiveData(is, ep);
 	}
 
 	private static class SlotFragmentSelect extends Slot {

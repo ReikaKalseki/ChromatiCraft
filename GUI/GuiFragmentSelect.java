@@ -15,17 +15,25 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IIcon;
+import net.minecraft.util.MathHelper;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Container.ContainerFragmentSelect;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionChoiceSystem.Selection;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundGui;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 
 public class GuiFragmentSelect extends GuiContainer implements CustomSoundGui {
@@ -104,7 +112,7 @@ public class GuiFragmentSelect extends GuiContainer implements CustomSoundGui {
 				SelectionButton sb = (SelectionButton)b;
 				b.enabled = b.visible = frag;
 				Selection s = frag ? this.getContainer().getOption(b.id) : null;
-				int idx = s != null ? s.fragment.ordinal()*SelectionButton.SIZE : -1;
+				int idx = s != null ? s.category.ordinal() : -1;
 				sb.textureU = (idx%SelectionButton.ROWCOLS)*SelectionButton.SIZE;
 				sb.textureV = (idx/SelectionButton.ROWCOLS)*SelectionButton.SIZE;
 			}
@@ -112,10 +120,40 @@ public class GuiFragmentSelect extends GuiContainer implements CustomSoundGui {
 
 		if (selectionIndex >= 0) {
 			long time = System.currentTimeMillis();
-			float frac = 1F-(selectionCountdown-time)/(float)DURATION;
-			draw unroll or flip
-			if (time >= selectionCountdown)
+			SelectionButton b = (SelectionButton)buttonList.get(selectionIndex);
+			float frac = MathHelper.clamp_float(1F-(selectionCountdown-time)/(float)DURATION, 0, 1);
+			if (frac > 0) {
+				//int dy = (int)(b.yPosition+(1-frac)*b.SIZE);
+				//ReikaGuiAPI.instance.drawLine(b.xPosition, dy, b.xPosition+b.SIZE, dy, 0xffffffff);
+				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+				IIcon ico = ChromaIcons.RINGS.getIcon();
+				double x0 = b.xPosition+b.SIZE/2D;
+				double y0 = b.yPosition+b.SIZE/2D;
+				Tessellator v5 = Tessellator.instance;
+				ReikaRenderHelper.disableLighting();
+				GL11.glEnable(GL11.GL_BLEND);
+				BlendMode.ADDITIVEDARK.apply();
+				GL11.glEnable(GL11.GL_TEXTURE_2D);
+				ReikaTextureHelper.bindTerrainTexture();
+				v5.startDrawing(GL11.GL_TRIANGLE_FAN);
+				v5.setColorOpaque_I(0xffffff);
+				v5.setBrightness(240);
+				v5.addVertexWithUV(x0, y0, 0, ico.getInterpolatedU(8), ico.getInterpolatedV(8));
+				double r = b.SIZE*0.5;
+				for (int i = 0; i <= 360*frac; i += 2) {
+					double ang = Math.toRadians(i-90);
+					double dx = -Math.cos(ang);
+					double dy = Math.sin(ang);
+					v5.addVertexWithUV(x0+dx*r, y0+dy*r, 0, ico.getInterpolatedU(8+8*dx), ico.getInterpolatedV(8+8*dy));
+				}
+				b.rollout = 1-frac;
+				v5.draw();
+				GL11.glPopAttrib();
+			}
+			if (time >= selectionCountdown) {
 				this.getContainer().selectSlot(selectionIndex);
+				selectionIndex = -1;
+			}
 		}
 	}
 
@@ -145,11 +183,14 @@ public class GuiFragmentSelect extends GuiContainer implements CustomSoundGui {
 		private static final int TEX_SIZE = 256;
 		private static final int ROWCOLS = TEX_SIZE/SIZE;
 
-		private int textureU = 0;
-		private int textureV = 0;
+		private int textureU = TEX_SIZE-SIZE;
+		private int textureV = TEX_SIZE-SIZE;
+
+		private float rollout = 1;
 
 		public SelectionButton(int id, int x, int y) {
-			super(id, x, y, SIZE, SIZE, 0, 0, "Textures/fragmentcategories.png", ChromatiCraft.class, GuiFragmentSelect.this);
+			super(id, x, y, SIZE, SIZE, TEX_SIZE-SIZE, TEX_SIZE-SIZE, "Textures/fragmentcategories.png", ChromatiCraft.class, GuiFragmentSelect.this);
+			visible = enabled = false;
 		}
 
 		@Override
@@ -157,10 +198,51 @@ public class GuiFragmentSelect extends GuiContainer implements CustomSoundGui {
 			u = textureU;
 			v = textureV;
 		}
-		
-		public void draw() {
-			super.draw()
-			glowing border like my steam profile
+
+		@Override
+		protected void renderButton() {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glDisable(GL11.GL_ALPHA_TEST);
+			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glDepthMask(false);
+			BlendMode.DEFAULT.apply();
+			ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/squarefog.png");
+			float f = 48F/256F;
+			Tessellator v5 = Tessellator.instance;
+			v5.startDrawingQuads();
+			v5.setColorOpaque_I(0xffffff);
+			v5.setBrightness(240);
+			v5.addVertexWithUV(xPosition-4, yPosition-4+height+8, zLevel, 0, 1);
+			v5.addVertexWithUV(xPosition-4+width+8, yPosition-4+height+8, zLevel, 1, 1);
+			v5.addVertexWithUV(xPosition-4+width+8, yPosition-4, zLevel, 1, 0);
+			v5.addVertexWithUV(xPosition-4, yPosition-4, zLevel, 0, 0);
+			v5.draw();
+			int d = 3;
+			int hash = System.identityHashCode(this);
+			int c = CrystalElement.getBlendedColor(ReikaRenderHelper.getSystemTimeAsInt()/48+17*hash, 30);
+			int br = ReikaColorAPI.GStoHex((int)(192+64*Math.sin(System.currentTimeMillis()/271D+hash)));
+			float mix = (float)(0.5+0.5*Math.sin(System.currentTimeMillis()/443D-13*hash));
+			c = ReikaColorAPI.mixColors(c, br, mix);
+			GL11.glColor4f(ReikaColorAPI.getRed(c)/255F, ReikaColorAPI.getGreen(c)/255F, ReikaColorAPI.getBlue(c)/255F, 1);
+			BlendMode.ADDITIVEDARK.apply();
+			ReikaTextureHelper.bindTerrainTexture();
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(xPosition-d, yPosition-d, ChromaIcons.LATTICE.getIcon(), width+d*2, height+d*2);
+			BlendMode.DEFAULT.apply();
+			super.renderButton();
+			GL11.glPushMatrix();
+			double sc = SIZE/16D;
+			GL11.glScaled(sc, sc, sc);
+			int h = height;
+			height *= rollout;
+			Selection s = GuiFragmentSelect.this.getContainer().getOption(id);
+			GL11.glDepthMask(true);
+			double dx = id == 0 ? -0.5 : id%2 == 0 ? -1 : 0;
+			s.fragment.drawTabIcon(itemRender, (int)Math.round(xPosition/sc+dx), (int)Math.round(yPosition/sc));
+			GL11.glDepthMask(false);
+			GL11.glPopMatrix();
+			super.renderButton();
+			GL11.glPopAttrib();
+			height = h;
 		}
 
 	}

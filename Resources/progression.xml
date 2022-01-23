@@ -1003,7 +1003,7 @@
 			Constructed by a story
 		</desc>
 	</myst>
-	<biomefrag>
+	<biomestruct>
 		<title>
 			An Abandoned Puzzle
 		</title>
@@ -1016,7 +1016,7 @@
 		<desc>
 			A structure in a magic forest, locked down behind tests of skill
 		</desc>
-	</biomefrag>
+	</biomestruct>
 	<name>
 		<title>
 			
