@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.DragonAPI.Instantiable.BasicInventory;
+import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
@@ -173,6 +174,7 @@ public class ContainerFragmentSelect extends Container {
 		ItemStack is = inventory.getStackInSlot(0);
 		if (is != null) {
 			selectRandom(is, ep);
+			ReikaPlayerAPI.addOrDropItem(is, ep);
 		}
 		super.onContainerClosed(ep);
 	}
@@ -193,8 +195,8 @@ public class ContainerFragmentSelect extends Container {
 	}
 
 	private static void selectRandom(ItemStack is, EntityPlayer ep) {
-		if (!ep.worldObj.isRemote)
-			;//ItemInfoFragment.programShardAndGiveData(is, ep);
+		if (!ep.worldObj.isRemote && ItemInfoFragment.isBlank(is))
+			ItemInfoFragment.programShardAndGiveData(is, ep);
 	}
 
 	private static class SlotFragmentSelect extends Slot {

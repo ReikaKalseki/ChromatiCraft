@@ -96,6 +96,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.GUI.GuiAuraPouch;
+import Reika.ChromatiCraft.GUI.GuiFragmentSelect;
 import Reika.ChromatiCraft.GUI.GuiItemBurner.ButtonItemBurner;
 import Reika.ChromatiCraft.GUI.GuiItemWithFilter;
 import Reika.ChromatiCraft.Items.Tools.ItemFloatstoneBoots;
@@ -669,6 +670,12 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 		else if (b instanceof BiomeRainbowForest) {
 			evt.color = ((BiomeRainbowForest)b).getWaterColor(evt.access, evt.xCoord, evt.yCoord, evt.zCoord, evt.getLightLevel());
 		}
+	}
+
+	@SubscribeEvent
+	public void cancelBeeGlintForBookRender(ItemEffectRenderEvent evt) {
+		if (Minecraft.getMinecraft().currentScreen instanceof GuiFragmentSelect || Minecraft.getMinecraft().currentScreen instanceof ChromaBookGui)
+			evt.setResult(Result.DENY);
 	}
 
 	@SubscribeEvent

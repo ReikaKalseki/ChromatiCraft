@@ -202,9 +202,9 @@
 	<etherpendant>
 		Your recent experiments with luma have proven revealing...in a very literal sense. Something about this fluid allows you to see through the material of reality itself, one use of which is to examine the form and content of cave systems from afar, even the surface (especially of value when searching for buried ruins or oil deposits). However, carting around a bucket of the stuff is annoying to do, even before you consider the inventory space that requires. Given your ability to fashion crystals into wearable versions, you could do that with luma as well, though you obviously cannot just put liquid on a string...right?
 	</etherpendant>
-	<name>
-		
-	</name>
+	<structmap>
+		The artifact you recently found is probably the closest yet you have come to decoding the thoughts of those who built these structures. Perhaps you can pursue that even further, gaining the ability to predict where they might have placed yet other findings.
+	</structmap>
 	<name>
 		
 	</name>
