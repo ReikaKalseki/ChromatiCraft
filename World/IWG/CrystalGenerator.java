@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -47,7 +47,8 @@ public class CrystalGenerator implements RetroactiveGenerator, ChromaDecorator {
 	public void generate(Random random, int chunkX, int chunkZ, World world, IChunkProvider chunkGenerator, IChunkProvider chunkProvider) {
 		chunkX *= 16;
 		chunkZ *= 16;
-		for (int i = 0; i < PER_CHUNK*this.getDensityFactor(world, chunkX, chunkZ); i++) {
+		int amt = (int)(PER_CHUNK*this.getDensityFactor(world, chunkX, chunkZ));
+		for (int i = 0; i < amt; i++) {
 			int posX = chunkX + random.nextInt(16);
 			int posZ = chunkZ + random.nextInt(16);
 			int maxy = 64;

@@ -1673,6 +1673,12 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	public static void loadPostCache() {
 		for (int i = 0; i < researchList.length; i++) {
 			ChromaResearch r = researchList[i];
+			if (r.ability != null)
+				abilityMap.put(r.ability, r);
+			if (r.machine != null)
+				tileMap.put(r.machine, r);
+			if (r.struct != null)
+				structureMap.put(r.struct, r);
 			if (!r.isDummiedOut()) {
 				try {
 					Collection<ItemStack> c = r.getItemStacks();
@@ -1686,12 +1692,6 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 					for (CastingRecipe cr : crc) {
 						cr.setFragment(r);
 					}
-					if (r.ability != null)
-						abilityMap.put(r.ability, r);
-					if (r.machine != null)
-						tileMap.put(r.machine, r);
-					if (r.struct != null)
-						structureMap.put(r.struct, r);
 				}
 				catch (Exception e) {
 					Dependency dep = r.getDependency();

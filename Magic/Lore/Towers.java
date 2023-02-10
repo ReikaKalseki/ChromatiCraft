@@ -80,11 +80,12 @@ public enum Towers {
 		towerChunkCache.clear();
 		towerCache.clear();
 
-		double r = radius*MathHelper.clamp_double(DragonOptions.WORLDSIZE.getValue()/5000D, 0.5, 5);
+		double r = radius*MathHelper.clamp_double(DragonOptions.WORLDSIZE.getValue()/6000D, 0.5, 5);
 		HexGrid grid = new HexGrid(9, r, true, MapShape.HEXAGON).flower();
 
-		Random rand = new Random(world.getSeed()); // ^ world.getSaveHandler().getWorldDirectory().getCanonicalPath().toString().hashCode()
-
+		Random rand = new Random(world.getSeed() ^ world.getSaveHandler().getWorldDirectory().getCanonicalPath().toString().hashCode());
+		rand.nextBoolean();
+		rand.nextBoolean();
 		double a = rand.nextDouble()*360;
 		double dx = -TOWER_OFFSET_RADIUS+rand.nextDouble()*TOWER_OFFSET_RADIUS*2+DragonOptions.WORLDCENTERX.getValue();
 		double dz = -TOWER_OFFSET_RADIUS+rand.nextDouble()*TOWER_OFFSET_RADIUS*2+DragonOptions.WORLDCENTERZ.getValue();

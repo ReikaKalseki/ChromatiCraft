@@ -219,7 +219,7 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 				int m = BlockPistonTapeBit.getMetaFor(bitColors[i], true);
 				world.setBlock(c.xCoord, c.yCoord, c.zCoord, ChromaBlocks.PISTONBIT.getBlockInstance(), m);
 				if (bitColors[i] != null && !bitColors[i].isWhite()) {
-					ReikaJavaLibrary.pConsole("Slice "+busIndex+" @ "+i+": "+bitColors[i]+" > "+m);
+					//ReikaJavaLibrary.pConsole("Slice "+busIndex+" @ "+i+": "+bitColors[i]+" > "+m);
 				}
 			}
 		}

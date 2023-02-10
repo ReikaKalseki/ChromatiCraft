@@ -745,11 +745,11 @@ public class DungeonGenerator implements RetroactiveGenerator {
 		if (ModList.SATISFORESTRY.isLoaded())
 			y = Math.min(y, SFAPI.biomeHandler.getTrueTopAt(world, x, z));
 		Block b = world.getBlock(x, y, z);
-		while (b.isAir(world, x, y, z) || b.isWood(world, x, y, z) || b.isLeaves(world, x, y, z)) {
+		while (y >= 0 && (b.isAir(world, x, y, z) || b.isWood(world, x, y, z) || b.isLeaves(world, x, y, z))) {
 			y--;
 			b = world.getBlock(x, y, z);
 		}
-		return y+1;
+		return y < 0 ? 0 : y+1;
 	}
 
 	private void logErrors(World world, int x, int y, int z, ChromaStructures s, TileEntityStructControl te) {
