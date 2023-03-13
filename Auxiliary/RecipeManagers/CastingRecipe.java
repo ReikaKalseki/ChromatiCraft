@@ -537,6 +537,10 @@ public class CastingRecipe implements APICastingRecipe {
 			return runeRing.get(e.ordinal());
 		}
 
+		public static boolean isRuneRing(Coordinate c) {
+			return runeRing.contains(c);
+		}
+
 		private final RuneShape runes = new RuneShape();
 
 		public TempleCastingRecipe(ItemStack out, IRecipe recipe) {

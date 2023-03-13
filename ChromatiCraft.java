@@ -713,8 +713,8 @@ public class ChromatiCraft extends DragonAPIMod {
 		}
 
 		SensitiveFluidRegistry.instance.registerFluid("chroma");
-		SensitiveFluidRegistry.instance.registerFluid("ender");
-		SensitiveFluidRegistry.instance.registerFluid("potion crystal");
+		//SensitiveFluidRegistry.instance.registerFluid("ender");
+		//SensitiveFluidRegistry.instance.registerFluid("potion crystal");
 		SensitiveFluidRegistry.instance.registerFluid("luma");
 		SensitiveFluidRegistry.instance.registerFluid("lumen");
 

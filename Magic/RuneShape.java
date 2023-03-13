@@ -17,11 +17,15 @@ import java.util.Set;
 import net.minecraft.block.Block;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingInjector;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper.WorldIDBase;
 
 public final class RuneShape {
 
@@ -57,6 +61,7 @@ public final class RuneShape {
 	public boolean matchAt(World world, int x, int y, int z) {
 		Set<Coordinate> foci = TileEntityCastingInjector.getFoci();
 		for (Coordinate c : runes.keySet()) {
+			c = modifyRuneBySeed(c, world);
 			int dx = x+c.xCoord;
 			int dy = y+c.yCoord;
 			int dz = z+c.zCoord;
@@ -83,6 +88,33 @@ public final class RuneShape {
 			}
 		}
 		return true;
+	}
+
+	public static Coordinate modifyRuneBySeed(Coordinate c, World world) {
+		if (TempleCastingRecipe.isRuneRing(c))
+			return c;
+		WorldIDBase id = world == null ? ReikaWorldHelper.clientWorldID : ReikaWorldHelper.getCurrentWorldID(world);
+		if (id == null)
+			return c;
+		long hash = id.getUniqueHash();
+		if (hash < 0)
+			c = c.setX(-c.xCoord);
+		if (hash%2 == 0)
+			c = c.setZ(-c.zCoord);
+		switch(ReikaMathLibrary.sumDigits(hash)%4) {
+			case 0:
+				break;
+			case 1:
+				c = c.rotate90About(0, 0, false);
+				break;
+			case 2:
+				c = c.rotate180About(0, 0);
+				break;
+			case 3:
+				c = c.rotate90About(0, 0, true);
+				break;
+		}
+		return c;
 	}
 
 	public int getMinX() {

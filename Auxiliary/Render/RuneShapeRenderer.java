@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -85,7 +85,8 @@ public class RuneShapeRenderer {
 		for (int x = -5; x <= 5; x++) {
 			for (int z = -5; z <= 5; z++) {
 				IIcon ico = ChromaBlocks.PYLONSTRUCT.getBlockInstance().getIcon(0, 0);
-				CrystalElement e = map.get(new Coordinate(x, y, z));
+				Coordinate c = RuneShape.modifyRuneBySeed(new Coordinate(x, y, z), null);
+				CrystalElement e = map.get(c);
 				if (e != null)
 					ico = e.getBlockRune();
 

@@ -87,6 +87,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	private boolean rainable = false;
 	private boolean isRainLossy = false;
+	private boolean tableGrouped = false;
 
 	private CrystalElement surgeColor;
 	private int surgeTicks = 0;
@@ -293,6 +294,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		isTurbo = NBT.getBoolean("turbo");
 		enhancedStructure = NBT.getBoolean("enhance");
 		isRainLossy = NBT.getBoolean("rainy");
+		tableGrouped = NBT.getBoolean("grouped");
 
 		surgeTicks = NBT.getInteger("surge");
 		surgeColor = CrystalElement.elements[NBT.getInteger("surge_c")];
@@ -314,6 +316,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		NBT.setBoolean("turbo", isTurbo);
 		NBT.setBoolean("enhance", enhancedStructure);
 		NBT.setBoolean("rainy", isRainLossy);
+		NBT.setBoolean("grouped", tableGrouped);
 
 		NBT.setInteger("surge", surgeTicks);
 		if (surgeColor != null)
@@ -335,12 +338,20 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public int maxThroughput() {
-		return this.isTurbocharged() ? (this.isEnhancedStructure() ? 18000 :  9000) : 1000;
+		int ret = this.isTurbocharged() ? (this.isEnhancedStructure() ? 18000 :  9000) : 1000;
+		if (tableGrouped)
+			ret *= 3/2;
+		return ret;
 	}
 
 	@Override
 	public int getSignalDegradation(boolean point) {
-		return this.isTurbocharged() ? 0 : 10;
+		int ret = this.isTurbocharged() ? 0 : 10;
+		if (this.isRainAffected())
+			ret += 5+ret/2;
+		if (this.isTableGrouped())
+			ret /= 2;
+		return ret;
 	}
 
 	@Override
@@ -706,6 +717,14 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	public final boolean hasStructure() {
 		return hasMultiblock;
+	}
+
+	public void markAsTableGrouped(boolean group) {
+		tableGrouped = group;
+	}
+
+	public boolean isTableGrouped() {
+		return tableGrouped;
 	}
 
 }

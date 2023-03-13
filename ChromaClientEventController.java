@@ -37,6 +37,7 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -57,6 +58,7 @@ import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.EnumSkyBlock;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -135,7 +137,6 @@ import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
-import Reika.ChromatiCraft.World.Dimension.DimensionTuningManager;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
 import Reika.ChromatiCraft.World.Dimension.Rendering.ChromaCloudRenderer;
 import Reika.ChromatiCraft.World.Dimension.Rendering.SkyRiverRenderer;
@@ -161,6 +162,7 @@ import Reika.DragonAPI.Instantiable.Event.Client.ClientLogoutEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.CloudRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.CreativeTabGuiRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderEvent.EntityRenderWatcher;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.FarClippingPlaneEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.GetMouseoverEvent;
@@ -170,10 +172,12 @@ import Reika.DragonAPI.Instantiable.Event.Client.LightmapEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.NightVisionBrightnessEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.PlayMusicEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderBlockAtPosEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.RenderBlockAtPosEvent.BlockRenderWatcher;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderFirstPersonItemEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderItemInSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.TileEntityRenderEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.TileEntityRenderEvent.TileRenderWatcher;
 import Reika.DragonAPI.Instantiable.Event.Client.WaterColorEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.WeatherSkyStrengthEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.WinterColorsEvent.WinterFogColorsEvent;
@@ -216,7 +220,7 @@ import pneumaticCraft.api.client.pneumaticHelmet.InventoryTrackEvent;
 import thaumcraft.api.research.ResearchItem;
 
 @SideOnly(Side.CLIENT)
-public class ChromaClientEventController implements ProfileEventWatcher, ChunkWorldRenderWatcher {
+public class ChromaClientEventController implements ProfileEventWatcher, ChunkWorldRenderWatcher, BlockRenderWatcher, EntityRenderWatcher, TileRenderWatcher {
 
 	public static final ChromaClientEventController instance = new ChromaClientEventController();
 
@@ -248,6 +252,9 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 		 */
 		ProfileEvent.registerHandler("gui", this);
 		ChunkWorldRenderEvent.addHandler(this);
+		RenderBlockAtPosEvent.addListener(this);
+		EntityRenderEvent.addListener(this);
+		TileEntityRenderEvent.addListener(this);
 
 		snowColors.add(0xffffff);
 		snowColors.add(0xFFD800);
@@ -392,14 +399,6 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 		}
 	}
 
-	@ModDependent(ModList.VOIDMONSTER)
-	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void setShaderFoci(EntityRenderEvent evt) {
-		if (VoidMonsterDestructionRitual.isFocusOfActiveRitual(evt.entity)) {
-			VoidMonsterRitualClientEffects.instance.setShaderFoci(evt.entity);
-		}
-	}
-
 	//@ModDependent(ModList.VOIDMONSTER)
 	public boolean interceptChunkRender(WorldRenderer wr, int renderPass, int GLListID) {
 		WorldRenderIntercept.instance.mapChunkRenderList(GLListID, wr);
@@ -424,80 +423,84 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 		}
 	}
 
-	@SubscribeEvent
-	public void updateRedstoneTorchIcons(RenderBlockAtPosEvent evt) {
-		if (ChromaticEventManager.instance.isCrystallineRedstoneTorch(evt.access, evt.xCoord, evt.yCoord, evt.zCoord, evt.block, evt.getMetadata())) {
-			Tessellator.instance.setBrightness(evt.block.getMixedBrightnessForBlock(evt.access, evt.xCoord, evt.yCoord, evt.zCoord));
-			Tessellator.instance.setColorOpaque_I(0xffffff);
-			evt.continueRendering = true;
-			evt.setCanceled(true);
-			ReikaRenderHelper.renderTorch(evt.access, evt.xCoord, evt.yCoord, evt.zCoord, BlockPylonStructure.getIconOverride(evt.block), Tessellator.instance, evt.render, 0.625, 0.0625);
-		}
-	}
-
-	//@SubscribeEvent
-	public void handleUntunedDimension(RenderBlockAtPosEvent evt) {
-		if (true)
-			return;
-		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-		float f = 1;
-		/*
-		int tuning = DimensionTuningManager.instance.getPlayerTuning(ep);
-		if (tuning == 0) {
-			f = 0.7F;
-			if (evt.block instanceof BlockDimensionDeco) {
-				f = 0.5F;
+	public boolean onBlockTriedRender(Block b, int xCoord, int yCoord, int zCoord, WorldRenderer wr, RenderBlocks render, int renderPass) {
+		if (b == Blocks.snow_layer) {
+			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
+			if (ep != null && VoidGazeLevels.FACEFLIP.isActiveOnPlayer(ep)) {
+				return true;
 			}
 		}
-		 */
-		if (ChromaDimensionManager.isStructureBiome(evt.getBiome())) {
-			f = Math.max(0.005F, DimensionTuningManager.TuningThresholds.STRUCTUREBIOMES.getTuningFraction(ep));
+		IBlockAccess access = render.blockAccess;
+		int meta = access.getBlockMetadata(xCoord, yCoord, zCoord);
+		if (ChromaticEventManager.instance.isCrystallineRedstoneTorch(access, xCoord, yCoord, zCoord, b, meta)) {
+			Tessellator.instance.setBrightness(b.getMixedBrightnessForBlock(access, xCoord, yCoord, zCoord));
+			Tessellator.instance.setColorOpaque_I(0xffffff);
+			RenderBlockAtPosEvent.continueRendering = true;
+			ReikaRenderHelper.renderTorch(access, xCoord, yCoord, zCoord, BlockPylonStructure.getIconOverride(b), Tessellator.instance, render, 0.625, 0.0625);
+			return true;
 		}
-		Random r = new Random(new Coordinate(evt.xCoord, evt.yCoord, evt.zCoord).hashCode());
-		r.nextBoolean();
-		if (r.nextFloat() > f) {
-			evt.setCanceled(true);
-			Block b = evt.block;
-			for (int i = 0; i < 6; i++) {
-				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-				IIcon ico = evt.render.getIconSafe(ChromaIcons.BLANK.getIcon());
-				Tessellator.instance.setColorOpaque_I(0xffffff);
-				Tessellator.instance.setBrightness(evt.block.getMixedBrightnessForBlock(evt.access, evt.xCoord, evt.yCoord, evt.zCoord));
-				boolean side = b.shouldSideBeRendered(evt.access, evt.xCoord+dir.offsetX, evt.yCoord+dir.offsetY, evt.zCoord+dir.offsetZ, i);
-				if (side) {
-					evt.continueRendering = true;
-					//ChromatiCraft.logger.debug("Rendering side "+dir);
-					switch(dir) {
-						case DOWN:
-							Tessellator.instance.setColorOpaque_F(0.5F, 0.5F, 0.5F);
-							evt.render.renderFaceYNeg(b, evt.xCoord, evt.yCoord, evt.zCoord, ico);
-							break;
-						case UP:
-							Tessellator.instance.setColorOpaque_F(1, 1, 1);
-							evt.render.renderFaceYPos(b, evt.xCoord, evt.yCoord, evt.zCoord, ico);
-							break;
-						case WEST:
-							Tessellator.instance.setColorOpaque_F(0.65F, 0.65F, 0.65F);
-							evt.render.renderFaceXNeg(b, evt.xCoord, evt.yCoord, evt.zCoord, ico);
-							break;
-						case EAST:
-							Tessellator.instance.setColorOpaque_F(0.65F, 0.65F, 0.65F);
-							evt.render.renderFaceXPos(b, evt.xCoord, evt.yCoord, evt.zCoord, ico);
-							break;
-						case NORTH:
-							Tessellator.instance.setColorOpaque_F(0.8F, 0.8F, 0.8F);
-							evt.render.renderFaceZNeg(b, evt.xCoord, evt.yCoord, evt.zCoord, ico);
-							break;
-						case SOUTH:
-							Tessellator.instance.setColorOpaque_F(0.8F, 0.8F, 0.8F);
-							evt.render.renderFaceZPos(b, evt.xCoord, evt.yCoord, evt.zCoord, ico);
-							break;
-						default:
-							break;
+		//ReikaJavaLibrary.pConsole("CLIENT RENDER NOCLIP "+AbilityHelper.instance.isNoClipEnabled);
+		if (AbilityHelper.instance.isNoClipEnabled) {
+			//ChromatiCraft.logger.debug("Checking render of "+b+":"+meta+" @ "+xCoord+"."+yCoord+","+zCoord);
+			if (!AbilityHelper.instance.isBlockOreclippable(Minecraft.getMinecraft().theWorld, xCoord, yCoord, zCoord, b, meta)) {
+				return true;
+			}
+			else {
+				//render.setRenderAllFaces(true);
+				//ChromatiCraft.logger.debug("Checking render pass of "+b+":"+meta+" @ "+xCoord+"."+yCoord+","+zCoord+" for pass "+renderPass+": "+b.canRenderInPass(renderPass));
+				if (b.canRenderInPass(renderPass)) {
+					int type = b.getRenderType();
+					if (type == 0 || type == ChromaISBRH.ore.getRenderID() || ReikaBlockHelper.isOre(b, meta) || b.renderAsNormalBlock() || b.isOpaqueCube() || ReikaBlockHelper.isLiquid(b)) {
+						//ChromatiCraft.logger.debug("Rendering "+b+":"+meta+" @ "+xCoord+"."+yCoord+","+zCoord);
+						render.enableAO = false;
+						Tessellator.instance.setBrightness(240);
+						Tessellator.instance.setColorRGBA_I(0xffffff, 255);
+						for (int i = 0; i < 6; i++) {
+							ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+							Tessellator.instance.setBrightness(240);
+							IIcon ico = render.getIconSafe(b.getIcon(access, xCoord, yCoord, zCoord, i));
+							int dx = xCoord+dir.offsetX;
+							int dy = yCoord+dir.offsetY;
+							int dz = zCoord+dir.offsetZ;
+							boolean side = ReikaBlockHelper.isLiquid(b) ? access.getBlock(dx, dy, dz) != b : b.shouldSideBeRendered(access, dx, dy, dz, i);
+							double o = side ? 0.001 : 0;
+							if ((side || (dir == ForgeDirection.UP && yCoord == 0)) || b != Blocks.bedrock) {
+								//ChromatiCraft.logger.debug("Rendering side "+dir);
+								switch(dir) {
+									case DOWN:
+										Tessellator.instance.setColorOpaque_F(0.5F, 0.5F, 0.5F);
+										render.renderFaceYNeg(b, xCoord, yCoord-o, zCoord, ico);
+										break;
+									case UP:
+										Tessellator.instance.setColorOpaque_F(1, 1, 1);
+										render.renderFaceYPos(b, xCoord, yCoord+o, zCoord, ico);
+										break;
+									case WEST:
+										Tessellator.instance.setColorOpaque_F(0.65F, 0.65F, 0.65F);
+										render.renderFaceXNeg(b, xCoord-o, yCoord, zCoord, ico);
+										break;
+									case EAST:
+										Tessellator.instance.setColorOpaque_F(0.65F, 0.65F, 0.65F);
+										render.renderFaceXPos(b, xCoord+o, yCoord, zCoord, ico);
+										break;
+									case NORTH:
+										Tessellator.instance.setColorOpaque_F(0.8F, 0.8F, 0.8F);
+										render.renderFaceZNeg(b, xCoord, yCoord, zCoord-o, ico);
+										break;
+									case SOUTH:
+										Tessellator.instance.setColorOpaque_F(0.8F, 0.8F, 0.8F);
+										render.renderFaceZPos(b, xCoord, yCoord, zCoord+o, ico);
+										break;
+									default:
+										break;
+								}
+							}
+						}
 					}
 				}
 			}
 		}
+		return false;
 	}
 
 	@SubscribeEvent
@@ -716,16 +719,6 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 		}
 	}
 
-	@SubscribeEvent
-	public void hideVoidGazeSnow(RenderBlockAtPosEvent evt) {
-		if (evt.block == Blocks.snow_layer) {
-			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-			if (ep != null && VoidGazeLevels.FACEFLIP.isActiveOnPlayer(ep)) {
-				evt.setCanceled(true);
-			}
-		}
-	}
-
 	/*
 	@SubscribeEvent
 	public void makeSomeBlocksOpaque(ClientLoginEvent evt) {
@@ -822,106 +815,6 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 		}
 	}
 
-	@SubscribeEvent
-	public void applyOreXRay(RenderBlockAtPosEvent evt) {
-		//ReikaJavaLibrary.pConsole("CLIENT RENDER NOCLIP "+AbilityHelper.instance.isNoClipEnabled);
-		if (AbilityHelper.instance.isNoClipEnabled) {
-			Block b = evt.block;
-			int meta = evt.getMetadata();
-			//ChromatiCraft.logger.debug("Checking render of "+b+":"+meta+" @ "+evt.xCoord+"."+evt.yCoord+","+evt.zCoord);
-			if (!AbilityHelper.instance.isBlockOreclippable(Minecraft.getMinecraft().theWorld, evt.xCoord, evt.yCoord, evt.zCoord, b, meta)) {
-				//Tessellator.instance.setColorRGBA_I(b.colorMultiplier(evt.world, evt.xCoord, evt.yCoord, evt.zCoord), 96);
-				/*
-					for (int i = 0; i < 6; i++) {
-						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-						Tessellator.instance.setBrightness(240);
-						IIcon ico = b.getIcon(i, meta);
-						if (b.shouldSideBeRendered(evt.world, evt.xCoord+dir.offsetX, evt.yCoord+dir.offsetY, evt.zCoord+dir.offsetZ, i)) {
-							switch(dir) {
-								case DOWN:
-									evt.render.renderFaceYNeg(evt.block, evt.xCoord, evt.yCoord, evt.zCoord, ico);
-									break;
-								case UP:
-									evt.render.renderFaceYPos(evt.block, evt.xCoord, evt.yCoord, evt.zCoord, ico);
-									break;
-								case WEST:
-									evt.render.renderFaceXNeg(evt.block, evt.xCoord, evt.yCoord, evt.zCoord, ico);
-									break;
-								case EAST:
-									evt.render.renderFaceXPos(evt.block, evt.xCoord, evt.yCoord, evt.zCoord, ico);
-									break;
-								case NORTH:
-									evt.render.renderFaceZNeg(evt.block, evt.xCoord, evt.yCoord, evt.zCoord, ico);
-									break;
-								case SOUTH:
-									evt.render.renderFaceZPos(evt.block, evt.xCoord, evt.yCoord, evt.zCoord, ico);
-									break;
-								default:
-									break;
-							}
-						}
-					}
-				 */
-				evt.setCanceled(true);
-			}
-			else {
-				//evt.render.setRenderAllFaces(true);
-				//ChromatiCraft.logger.debug("Checking render pass of "+b+":"+meta+" @ "+evt.xCoord+"."+evt.yCoord+","+evt.zCoord+" for pass "+evt.renderPass+": "+b.canRenderInPass(evt.renderPass));
-				if (b.canRenderInPass(evt.renderPass)) {
-					int type = b.getRenderType();
-					if (type == 0 || type == ChromaISBRH.ore.getRenderID() || ReikaBlockHelper.isOre(b, meta) || b.renderAsNormalBlock() || b.isOpaqueCube() || ReikaBlockHelper.isLiquid(b)) {
-						//ChromatiCraft.logger.debug("Rendering "+b+":"+meta+" @ "+evt.xCoord+"."+evt.yCoord+","+evt.zCoord);
-						evt.render.enableAO = false;
-						Tessellator.instance.setBrightness(240);
-						Tessellator.instance.setColorRGBA_I(0xffffff, 255);
-						for (int i = 0; i < 6; i++) {
-							ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-							Tessellator.instance.setBrightness(240);
-							IIcon ico = evt.render.getIconSafe(b.getIcon(evt.access, evt.xCoord, evt.yCoord, evt.zCoord, i));
-							int dx = evt.xCoord+dir.offsetX;
-							int dy = evt.yCoord+dir.offsetY;
-							int dz = evt.zCoord+dir.offsetZ;
-							boolean side = ReikaBlockHelper.isLiquid(b) ? evt.access.getBlock(dx, dy, dz) != b : b.shouldSideBeRendered(evt.access, dx, dy, dz, i);
-							double o = side ? 0.001 : 0;
-							if ((side || (dir == ForgeDirection.UP && evt.yCoord == 0)) || b != Blocks.bedrock) {
-								//ChromatiCraft.logger.debug("Rendering side "+dir);
-								switch(dir) {
-									case DOWN:
-										Tessellator.instance.setColorOpaque_F(0.5F, 0.5F, 0.5F);
-										evt.render.renderFaceYNeg(b, evt.xCoord, evt.yCoord-o, evt.zCoord, ico);
-										break;
-									case UP:
-										Tessellator.instance.setColorOpaque_F(1, 1, 1);
-										evt.render.renderFaceYPos(b, evt.xCoord, evt.yCoord+o, evt.zCoord, ico);
-										break;
-									case WEST:
-										Tessellator.instance.setColorOpaque_F(0.65F, 0.65F, 0.65F);
-										evt.render.renderFaceXNeg(b, evt.xCoord-o, evt.yCoord, evt.zCoord, ico);
-										break;
-									case EAST:
-										Tessellator.instance.setColorOpaque_F(0.65F, 0.65F, 0.65F);
-										evt.render.renderFaceXPos(b, evt.xCoord+o, evt.yCoord, evt.zCoord, ico);
-										break;
-									case NORTH:
-										Tessellator.instance.setColorOpaque_F(0.8F, 0.8F, 0.8F);
-										evt.render.renderFaceZNeg(b, evt.xCoord, evt.yCoord, evt.zCoord-o, ico);
-										break;
-									case SOUTH:
-										Tessellator.instance.setColorOpaque_F(0.8F, 0.8F, 0.8F);
-										evt.render.renderFaceZPos(b, evt.xCoord, evt.yCoord, evt.zCoord+o, ico);
-										break;
-									default:
-										break;
-								}
-							}
-						}
-					}
-				}
-				//evt.setCanceled(true);
-				//evt.setResult(Result.ALLOW);
-			}
-		}
-	}
 	/*
 	@SubscribeEvent
 	public void makeWorldTranslucentA(RenderWorldEvent.Pre evt) {
@@ -1128,22 +1021,26 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 		AbilityHelper.instance.renderPath(Minecraft.getMinecraft().thePlayer);
 	}
 
-	@SubscribeEvent
-	public void renderChestCollectionFX(EntityRenderEvent evt) {
-		if (evt.entity.worldObj != null && evt.entity instanceof EntityPlayer) {
-			EntityPlayer ep = (EntityPlayer)evt.entity;
+	@ModDependent(ModList.VOIDMONSTER)
+	private void setShaderFoci(Entity e) {
+		if (VoidMonsterDestructionRitual.isFocusOfActiveRitual(e)) {
+			VoidMonsterRitualClientEffects.instance.setShaderFoci(e);
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public boolean tryRenderEntity(Render r, Entity e, double renderPosX, double renderPosY, double renderPosZ, float par8, float par9) {
+		if (ModList.VOIDMONSTER.isLoaded())
+			this.setShaderFoci(e);
+		if (e.worldObj != null && e instanceof EntityPlayer) {
+			EntityPlayer ep = (EntityPlayer)e;
 			if (Chromabilities.CHESTCLEAR.enabledOn(ep)) {
 				AbilityHelper.instance.renderChestCollectionFX(ep, ReikaRenderHelper.getPartialTickTime());
 			}
 		}
-	}
-
-	@SubscribeEvent
-	public void renderMobsThroughWalls(EntityRenderEvent evt) {
 		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-		if (evt.entity.worldObj != null && Chromabilities.MOBSEEK.enabledOn(ep)) {
-			if (AbilityHelper.instance.canRenderEntityXRay(evt.entity)) {
-				Entity te = evt.entity;
+		if (e.worldObj != null && Chromabilities.MOBSEEK.enabledOn(ep)) {
+			if (AbilityHelper.instance.canRenderEntityXRay(e)) {
 				GL11.glPushMatrix();
 				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
@@ -1152,32 +1049,32 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 				GL11.glEnable(GL11.GL_BLEND);
 				BlendMode.DEFAULT.apply();
 				GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
-				GL11.glTranslated(evt.renderPosX, evt.renderPosY, evt.renderPosZ);
+				GL11.glTranslated(renderPosX, renderPosY, renderPosZ);
 
 				Tessellator v5 = Tessellator.instance;
 
-				RenderManager.instance.getEntityRenderObject(te).doRender(te, 0, 0, 0, evt.partialTickTime, 0);
+				RenderManager.instance.getEntityRenderObject(e).doRender(e, 0, 0, 0, par8, 0);
 
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
 				GL11.glDisable(GL11.GL_LIGHTING);
 				ReikaRenderHelper.disableEntityLighting();
 				GL11.glEnable(GL11.GL_BLEND);
 				BlendMode.DEFAULT.apply();
-				int a = (int)(96+64*Math.sin(System.currentTimeMillis()/400D+te.getEntityId()));
+				int a = (int)(96+64*Math.sin(System.currentTimeMillis()/400D+e.getEntityId()));
 
-				if (ReikaEntityHelper.isInWorld(te)) {
+				if (ReikaEntityHelper.isInWorld(e)) {
 					if (visualLOS == null) //lazyload
 						visualLOS = RayTracer.getVisualLOS();
-					visualLOS.setOrigins(ep.posX, ep.posY, ep.posZ, te.posX, te.posY+te.height/2, te.posZ);
+					visualLOS.setOrigins(ep.posX, ep.posY, ep.posZ, e.posX, e.posY+e.height/2, e.posZ);
 					int c = visualLOS.isClearLineOfSight(ep.worldObj) ? 0x00ff00 : 0xff0000;//ReikaEntityHelper.mobToColor((EntityLivingBase)evt.entity);
 
-					AxisAlignedBB box = te.boundingBox.copy().offset(-te.posX, -te.posY, -te.posZ);//AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).expand(te.width/4, te.height/4, te.width/4).offset(-te.width/2, -te.height/2, -te.width/2);
-					box.maxY = Math.min(box.maxY, box.minY+te.height);
-					if (te instanceof EntityGlowCloud) {
+					AxisAlignedBB box = e.boundingBox.copy().offset(-e.posX, -e.posY, -e.posZ);//AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).expand(te.width/4, te.height/4, te.width/4).offset(-te.width/2, -te.height/2, -te.width/2);
+					box.maxY = Math.min(box.maxY, box.minY+e.height);
+					if (e instanceof EntityGlowCloud) {
 						box = AxisAlignedBB.getBoundingBox(0, 0, 0, 0, 0, 0).expand(0.75, 0.75, 0.75);
 					}
-					else if (te instanceof EntitySilverfish) {
-						box = box.expand(te.width/2, 0, te.width/2);
+					else if (e instanceof EntitySilverfish) {
+						box = box.expand(e.width/2, 0, e.width/2);
 						box.maxY = box.minY+(box.maxY-box.minY)/2;
 					}
 
@@ -1233,14 +1130,9 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 				GL11.glPopMatrix();
 			}
 		}
-	}
-
-	@SubscribeEvent
-	public void renderSpawners(EntityRenderEvent evt) {
-		if (evt.entity.worldObj != null && Chromabilities.SPAWNERSEE.enabledOn(Minecraft.getMinecraft().thePlayer)) {
-			AbilityXRays tx = AbilityHelper.instance.getAbilityXRay(evt.entity); //minecarts
+		if (e.worldObj != null && Chromabilities.SPAWNERSEE.enabledOn(ep)) {
+			AbilityXRays tx = AbilityHelper.instance.getAbilityXRay(e); //minecarts
 			if (tx != null) {
-				Entity te = evt.entity;
 				GL11.glPushMatrix();
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				GL11.glDisable(GL11.GL_LIGHTING);
@@ -1248,17 +1140,17 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 				GL11.glEnable(GL11.GL_BLEND);
 				BlendMode.DEFAULT.apply();
 				GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
-				GL11.glTranslated(evt.renderPosX, evt.renderPosY, evt.renderPosZ);
+				GL11.glTranslated(renderPosX, renderPosY, renderPosZ);
 
 				Tessellator v5 = Tessellator.instance;
 
-				RenderManager.instance.getEntityRenderObject(te).doRender(te, 0, 0, 0, evt.partialTickTime, 0);
+				RenderManager.instance.getEntityRenderObject(e).doRender(e, 0, 0, 0, par8, 0);
 
 				GL11.glDisable(GL11.GL_TEXTURE_2D);
 				int a = (int)(192+64*Math.sin(System.currentTimeMillis()/400D));
 				int c = tx.highlightColor;//0xffffff;
 
-				AxisAlignedBB box = AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).expand(te.width/4, te.height/4, te.width/4).offset(-te.width/2, -te.height/2, -te.width/2);
+				AxisAlignedBB box = AxisAlignedBB.getBoundingBox(0, 0, 0, 1, 1, 1).expand(e.width/4, e.height/4, e.width/4).offset(-e.width/2, -e.height/2, -e.width/2);
 
 				double mx = box.minX;
 				double px = box.maxX;
@@ -1316,14 +1208,14 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 				GL11.glPopMatrix();
 			}
 		}
+		return false;
 	}
 
-	@SubscribeEvent
-	public void renderSpawners(TileEntityRenderEvent.Post evt) {
-		if (evt.tileEntity.worldObj != null && Chromabilities.SPAWNERSEE.enabledOn(Minecraft.getMinecraft().thePlayer)) {
-			AbilityXRays tx = AbilityHelper.instance.getAbilityXRay(evt.tileEntity);
+	@SideOnly(Side.CLIENT)
+	public void postTileRender(TileEntitySpecialRenderer tesr, TileEntity te, double par2, double par4, double par6, float par8) {
+		if (te.worldObj != null && Chromabilities.SPAWNERSEE.enabledOn(Minecraft.getMinecraft().thePlayer)) {
+			AbilityXRays tx = AbilityHelper.instance.getAbilityXRay(te);
 			if (tx != null) {
-				TileEntity te = evt.tileEntity;
 				GL11.glPushMatrix();
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				GL11.glDisable(GL11.GL_LIGHTING);
@@ -1331,11 +1223,11 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 				GL11.glEnable(GL11.GL_BLEND);
 				BlendMode.DEFAULT.apply();
 				GL11.glAlphaFunc(GL11.GL_GREATER, 1/255F);
-				GL11.glTranslated(evt.renderPosX, evt.renderPosY, evt.renderPosZ);
+				GL11.glTranslated(par2, par4, par6);
 
 				Tessellator v5 = Tessellator.instance;
 
-				TileEntityRendererDispatcher.instance.getSpecialRenderer(te).renderTileEntityAt(te, 0, 0, 0, evt.partialTickTime);
+				TileEntityRendererDispatcher.instance.getSpecialRenderer(te).renderTileEntityAt(te, 0, 0, 0, par8);
 
 				IIcon ico = tx.getTexture();
 				if (ico != null) {
@@ -1433,6 +1325,10 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 				GL11.glPopMatrix();
 			}
 		}
+	}
+
+	public boolean preTileRender(TileEntitySpecialRenderer tesr, TileEntity te, double par2, double par4, double par6, float par8) {
+		return false;
 	}
 
 	@SubscribeEvent
@@ -2231,5 +2127,10 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 			fx.noClip = false;
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
+	}
+
+	@Override
+	public int watcherSortIndex() {
+		return 0;
 	}
 }

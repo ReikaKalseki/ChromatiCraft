@@ -17,7 +17,9 @@ import net.minecraftforge.common.ChestGenHooks;
 
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
+import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 
 
 public enum NetherStructures {
@@ -93,6 +95,7 @@ public enum NetherStructures {
 				world.setBlock(x, y, z, ChromaBlocks.LOOTCHEST.getBlockInstance());
 				TileEntityLootChest te = (TileEntityLootChest)world.getTileEntity(x, y, z);
 				te.populateChest(ChestGenHooks.DUNGEON_CHEST, null, 0, rand, false);
+				ReikaInventoryHelper.removeFromInventory(te, ChromaItems.FRAGMENT.getAnyMetaStack());
 				world.setBlock(x, y+1, z, Blocks.lava);
 				break;
 			case TEMPLE:

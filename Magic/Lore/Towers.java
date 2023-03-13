@@ -24,6 +24,7 @@ import Reika.DragonAPI.Instantiable.Math.HexGrid.Hex;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.MapShape;
 import Reika.DragonAPI.Instantiable.Math.HexGrid.Point;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -83,7 +84,7 @@ public enum Towers {
 		double r = radius*MathHelper.clamp_double(DragonOptions.WORLDSIZE.getValue()/6000D, 0.5, 5);
 		HexGrid grid = new HexGrid(9, r, true, MapShape.HEXAGON).flower();
 
-		Random rand = new Random(world.getSeed() ^ world.getSaveHandler().getWorldDirectory().getCanonicalPath().toString().hashCode());
+		Random rand = new Random(world.getSeed() ^ ReikaWorldHelper.getCurrentWorldID(world).worldCreationTime);
 		rand.nextBoolean();
 		rand.nextBoolean();
 		double a = rand.nextDouble()*360;

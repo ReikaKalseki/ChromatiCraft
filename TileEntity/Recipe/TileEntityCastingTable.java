@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.TileEntity.Recipe;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -29,6 +30,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -46,6 +48,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRe
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.CrystalGroupRecipe;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -74,6 +77,7 @@ import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.FocusLocation;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
@@ -94,6 +98,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.ConditionalUnbreakability;
 import Reika.DragonAPI.Interfaces.TileEntity.TriggerableAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
@@ -129,6 +134,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	private boolean isEnhanced;
 	private boolean isTuned;
 	private boolean hasRunes;
+
+	private float throughputBonus = 0;
 
 	private final HashSet<KeyedItemStack> completedRecipes = new HashSet();
 	private final ItemHashMap<Integer> craftedItems = new ItemHashMap();
@@ -540,6 +547,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	}
 
 	public void validateStructure() {
+		throughputBonus = 0;
 		World world = worldObj;
 		int x = xCoord;
 		int y = yCoord-1;
@@ -626,7 +634,49 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 				}
 			}
 		}
+		if (hasPylonConnections)
+			this.applyRepeaterGroupingBonus(b3);
 		this.syncAllData(true);
+	}
+
+	private void applyRepeaterGroupingBonus(FilledBlockArray arr) {
+		EnumMap<ForgeDirection, ArrayList<CrystalElement>> map = new EnumMap(ForgeDirection.class);
+		EnumMap<CrystalElement, Coordinate> locations = new EnumMap(CrystalElement.class);
+		for (Coordinate c : arr.getAllLocationsOf(new BlockKey(ChromaTiles.REPEATER))) {
+			ForgeDirection dir = ReikaDirectionHelper.getApproximateDirection(xCoord, yCoord, zCoord, c.xCoord, c.yCoord, c.zCoord, false);
+			ArrayList<CrystalElement> li = map.get(dir);
+			if (li == null) {
+				li = new ArrayList();
+				map.put(dir, li);
+			}
+			TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)c.getTileEntity(worldObj);
+			te.markAsTableGrouped(false);
+			CrystalElement e = te.getActiveColor();
+			if (e != null) {
+				li.add(e);
+				locations.put(e, c);
+			}
+		}
+		for (ArrayList<CrystalElement> li : map.values()) {
+			int idx = CrystalGroupRecipe.getGroupIndex(li.get(0));
+			boolean matched = true;
+			for (int i = 1; i < li.size(); i++) {
+				if (CrystalGroupRecipe.getGroupIndex(li.get(i)) != idx) {
+					matched = false;
+					break;
+				}
+			}
+			if (matched) {
+				throughputBonus += 0.25F;
+				for (CrystalElement e : li) {
+					Coordinate c = locations.get(e);
+					if (c != null) {
+						TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)c.getTileEntity(worldObj);
+						te.markAsTableGrouped(true);
+					}
+				}
+			}
+		}
 	}
 
 	public boolean triggerCrafting(EntityPlayer ep) {
@@ -733,6 +783,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			UUID uid = UUID.fromString(NBT.getString("crafter"));
 			craftingPlayer = worldObj.func_152378_a(uid);
 		}
+
+		throughputBonus = NBT.getFloat("throughputBonus");
 	}
 
 	@Override
@@ -743,6 +795,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 		if (craftingPlayer != null)
 			NBT.setString("crafter", craftingPlayer.getUniqueID().toString());
+
+		NBT.setFloat("throughputBonus", throughputBonus);
 	}
 
 	private void writeRecipes(NBTTagCompound NBT) {
@@ -1201,7 +1255,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			PylonCastingRecipe pr = (PylonCastingRecipe)activeRecipe;
 			base = Math.min(2500, Math.max(base, pr.getRequiredAura().getAverageValue()*craftingAmount/40));
 		}
-		return base;
+		return (int)(base*throughputBonus);
 	}
 
 	@Override

@@ -101,9 +101,10 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 			this.doAuxRendering(te, par8);
 
 			if (te.canConduct()) {
-				if (te.isRainAffected()) {
-					this.renderRainHalo(te, par8);
-				}
+				if (te.isRainAffected())
+					this.renderIconHalo(te, ChromaIcons.RAINFLARE.getIcon(), par8);
+				if (te.isTableGrouped())
+					this.renderIconHalo(te, ChromaIcons.SUNFLARE.getIcon(), par8);
 				float f = HoldingChecks.MANIPULATOR.getFade();
 				if (f > 0) {
 					UUID uid = te.getCaster();
@@ -172,11 +173,10 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 		CastingTuningManager.instance.getTuningKey(te.worldObj, uid).drawIcon(Tessellator.instance, s, clr);
 	}
 
-	private void renderRainHalo(TileEntityCrystalRepeater te, float par8) {
+	private void renderIconHalo(TileEntityCrystalRepeater te, IIcon ico, float par8) {
 		//GL11.glDisable(GL11.GL_DEPTH_TEST);
 		Tessellator v5 = Tessellator.instance;
 		GL11.glDepthMask(false);
-		IIcon ico = ChromaIcons.RAINFLARE.getIcon();
 		float u = ico.getMinU();
 		float v = ico.getMinV();
 		float du = ico.getMaxU();

@@ -90,7 +90,7 @@ public class ExplorationMonitor implements TickHandler {
 				else if (b == Blocks.mob_spawner) {
 					ProgressStage.FINDSPAWNER.stepPlayerTo(ep);
 				}
-				else if (ModList.THAUMCRAFT.isLoaded() && b == ThaumItemHelper.BlockEntry.NODE.getBlock()) {
+				else if (ModList.THAUMCRAFT.isLoaded() && b == ThaumItemHelper.BlockEntry.NODE.getBlock() && world.getBlockMetadata(x, y, z) == ThaumItemHelper.BlockEntry.NODE.metadata) {
 					ProgressStage.NODE.stepPlayerTo(ep);
 				}
 			}
