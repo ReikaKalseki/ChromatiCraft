@@ -523,13 +523,6 @@ public class BlockPylonStructure extends BlockProtectedByStructure implements Co
 			}
 		}
 
-		for (int i = 0; i <= 23; i++) {
-			TileEntity te = world.getTileEntity(mx, my+i, mz);
-			if (te instanceof MultiBlockChromaTile) {
-				((MultiBlockChromaTile)te).validateStructure();
-			}
-		}
-
 		for (int k = 0; k < 6; k++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[k];
 			for (int i = 1; i <= 5; i++) {
@@ -537,6 +530,13 @@ public class BlockPylonStructure extends BlockProtectedByStructure implements Co
 				if (te instanceof TileEntityCrystalRepeater) {
 					((TileEntityCrystalRepeater)te).validateStructure();
 				}
+			}
+		}
+
+		for (int i = 0; i <= 23; i++) {
+			TileEntity te = world.getTileEntity(mx, my+i, mz);
+			if (te instanceof MultiBlockChromaTile) {
+				((MultiBlockChromaTile)te).validateStructure();
 			}
 		}
 

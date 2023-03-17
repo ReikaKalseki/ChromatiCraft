@@ -44,6 +44,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.NotifiedNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.PylonConnector;
+import Reika.ChromatiCraft.Magic.Interfaces.RegionalSensitiveRepeater;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworkException.InvalidLocationException;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCompoundRepeater;
@@ -394,6 +395,13 @@ public class CrystalNetworker implements TickHandler {
 				tile.onTileNetworkTopologyChange(te, false);
 			}
 
+			for (RegionalSensitiveRepeater tile : this.getNearTilesOfType(te, RegionalSensitiveRepeater.class, 32)) {
+				double dist = te.getDistanceSqTo(tile.getX(), tile.getY(), tile.getZ());
+				if (dist <= tile.getSensitivityRadius()*tile.getSensitivityRadius()) {
+					tile.onRegionUpdated();
+				}
+			}
+
 			if (te instanceof NotifiedNetworkTile) {
 				notifyCache.add((NotifiedNetworkTile)te);
 			}
@@ -526,6 +534,12 @@ public class CrystalNetworker implements TickHandler {
 		}
 		for (NotifiedNetworkTile tile : notifyCache) {
 			tile.onTileNetworkTopologyChange(te, true);
+		}
+		for (RegionalSensitiveRepeater tile : this.getNearTilesOfType(te, RegionalSensitiveRepeater.class, 32)) {
+			double dist = te.getDistanceSqTo(tile.getX(), tile.getY(), tile.getZ());
+			if (dist <= tile.getSensitivityRadius()*tile.getSensitivityRadius()) {
+				tile.onRegionUpdated();
+			}
 		}
 
 		/*
@@ -726,6 +740,7 @@ public class CrystalNetworker implements TickHandler {
 		return ret;
 	}
 
+	/** The return value includes self! */
 	public <T extends CrystalNetworkTile> Collection<T> getNearTilesOfType(CrystalNetworkTile te, Class<T> type, int range) {
 		return this.getNearTilesOfType(te.getWorld(), te.getX(), te.getY(), te.getZ(), type, range);
 	}

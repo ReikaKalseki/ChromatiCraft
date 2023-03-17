@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
 import Reika.ChromatiCraft.Magic.Interfaces.LinkWatchingRepeater;
 import Reika.ChromatiCraft.Magic.Interfaces.NaturalCrystalSource;
+import Reika.ChromatiCraft.Magic.Interfaces.RegionalSensitiveRepeater;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
 import Reika.ChromatiCraft.Magic.Network.CrystalLink;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
@@ -75,19 +76,30 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements LinkWatchingRepeater, CrystalFuse, NBTTile, SneakPop, OwnedTile, MultiBlockChromaTile {
+public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements LinkWatchingRepeater, RegionalSensitiveRepeater, CrystalFuse, NBTTile, SneakPop, OwnedTile, MultiBlockChromaTile {
 
 	public static final int RANGE = 32;
 
 	protected ForgeDirection facing = ForgeDirection.DOWN;
-	protected boolean hasMultiblock;
 	private int depth = -1;
-	private boolean isTurbo = false;
-	private boolean enhancedStructure = false;
 
-	private boolean rainable = false;
-	private boolean isRainLossy = false;
-	private boolean tableGrouped = false;
+	private int states;
+
+	private static enum StateFlags {
+		STRUCTURE,
+		TURBO,
+		ENHANCEDSTRUCT,
+		RAINABLE,
+		RAINLOSS,
+		TABLEGROUPED,
+		CLUSTERED;
+
+		public final int bitflag;
+
+		private StateFlags() {
+			bitflag = 1 << this.ordinal();
+		}
+	}
 
 	private CrystalElement surgeColor;
 	private int surgeTicks = 0;
@@ -104,6 +116,17 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		return ChromaTiles.REPEATER;
 	}
 
+	public boolean hasState(StateFlags flag) {
+		return (states & flag.bitflag) != 0;
+	}
+
+	public void setState(StateFlags flag, boolean enable) {
+		if (enable)
+			states |= flag.bitflag;
+		else
+			states &= ~flag.bitflag;
+	}
+
 	@Override
 	public void onAdjacentBlockUpdate() {
 		redstoneCache = worldObj.isBlockIndirectlyGettingPowered(xCoord+facing.offsetX, yCoord+facing.offsetY, zCoord+facing.offsetZ);
@@ -118,7 +141,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		}
 
 		if (!world.isRemote)
-			isRainLossy = rainable && world.isRaining();
+			this.setState(StateFlags.RAINLOSS, this.hasState(StateFlags.RAINABLE) && world.isRaining());
 
 		if (world.isRemote && this.canConduct()) {
 			if (this.isRainAffected())
@@ -229,13 +252,17 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	@Override
 	public boolean canConduct() {
-		return hasMultiblock && !redstoneCache;
+		return this.hasStructure() && !redstoneCache;
+	}
+
+	public boolean hasStructure() {
+		return this.hasState(StateFlags.STRUCTURE);
 	}
 
 	public final void validateStructure() {
-		hasMultiblock = this.checkForStructure();
-		enhancedStructure = hasMultiblock && this.isTurbocharged() && this.checkEnhancedStructure();
-		if (!hasMultiblock) {
+		this.setState(StateFlags.STRUCTURE, this.checkForStructure());
+		this.setState(StateFlags.ENHANCEDSTRUCT, this.hasStructure() && this.isTurbocharged() && this.checkEnhancedStructure());
+		if (!this.hasStructure()) {
 			CrystalNetworker.instance.breakPaths(this);
 		}
 		this.syncAllData(false);
@@ -278,7 +305,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		for (int i = 0; i < 6; i++) {
 			facing = dirs[i];
 			this.validateStructure();
-			if (hasMultiblock)
+			if (this.hasStructure())
 				return true;
 		}
 		return false;
@@ -289,12 +316,9 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		super.readSyncTag(NBT);
 
 		facing = dirs[NBT.getInteger("face")];
-		hasMultiblock = NBT.getBoolean("multi");
 		depth = NBT.getInteger("depth");
-		isTurbo = NBT.getBoolean("turbo");
-		enhancedStructure = NBT.getBoolean("enhance");
-		isRainLossy = NBT.getBoolean("rainy");
-		tableGrouped = NBT.getBoolean("grouped");
+
+		states = NBT.getInteger("states");
 
 		surgeTicks = NBT.getInteger("surge");
 		surgeColor = CrystalElement.elements[NBT.getInteger("surge_c")];
@@ -311,12 +335,8 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		if (facing != null)
 			NBT.setInteger("face", facing.ordinal());
 
-		NBT.setBoolean("multi", hasMultiblock);
 		NBT.setInteger("depth", depth);
-		NBT.setBoolean("turbo", isTurbo);
-		NBT.setBoolean("enhance", enhancedStructure);
-		NBT.setBoolean("rainy", isRainLossy);
-		NBT.setBoolean("grouped", tableGrouped);
+		NBT.setInteger("states", states);
 
 		NBT.setInteger("surge", surgeTicks);
 		if (surgeColor != null)
@@ -329,18 +349,25 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	public final boolean isTurbocharged() {
-		return isTurbo;
+		return this.hasState(StateFlags.TURBO);
 	}
 
 	public final boolean isEnhancedStructure() {
-		return enhancedStructure;
+		return this.hasState(StateFlags.ENHANCEDSTRUCT);
 	}
 
 	@Override
 	public int maxThroughput() {
-		int ret = this.isTurbocharged() ? (this.isEnhancedStructure() ? 18000 :  9000) : 1000;
-		if (tableGrouped)
-			ret *= 3/2;
+		int ret = 1000;
+		if (this.isTurbocharged()) {
+			ret *= 9;
+			if (this.isEnhancedStructure())
+				ret *= 2;
+		}
+		if (this.isTableGrouped())
+			ret *= 2;
+		else if (this.isClustered())
+			ret *= 1.5;
 		return ret;
 	}
 
@@ -350,6 +377,10 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		if (this.isRainAffected())
 			ret += 5+ret/2;
 		if (this.isTableGrouped())
+			ret *= 0.75;
+		else if (this.isClustered())
+			ret /= 2;
+		if (this.isEnhancedStructure())
 			ret /= 2;
 		return ret;
 	}
@@ -416,7 +447,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@Override
 	public void getTagsToWriteToStack(NBTTagCompound NBT) {
 		//this.writeOwnerData(NBT);
-		NBT.setBoolean("boosted", isTurbo);
+		NBT.setBoolean("boosted", this.isTurbocharged());
 		if (casterID != null)
 			NBT.setString("caster", casterID.toString());
 	}
@@ -424,7 +455,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		//this.readOwnerData(is);
-		isTurbo = ReikaItemHelper.matchStacks(is, this.getTile().getCraftedProduct()) && is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted");
+		this.setState(StateFlags.TURBO, ReikaItemHelper.matchStacks(is, this.getTile().getCraftedProduct()) && is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted"));
 		casterID = ReikaItemHelper.matchStacks(is, this.getTile().getCraftedProduct()) && is.stackTagCompound != null && is.stackTagCompound.hasKey("caster") ? UUID.fromString(is.stackTagCompound.getString("caster")) : null;
 	}
 
@@ -557,7 +588,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		if (connectionRenderTick > 0 || rangeSphereAlpha > 0) {
 			return INFINITE_EXTENT_AABB;
 		}
-		else if (isTurbo) {
+		else if (this.isTurbocharged()) {
 			return ReikaAABBHelper.getBlockAABB(xCoord, yCoord, zCoord).expand(2, 2, 2);
 		}
 		else {
@@ -678,12 +709,12 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	}
 
 	public final boolean isRainAffected() {
-		return isRainLossy;
+		return this.hasState(StateFlags.RAINLOSS);
 	}
 
 	@Override
 	public final void onLinkRecalculated(CrystalLink l) {
-		rainable = this.canBeRainAffected(l) && l.isRainable() && PylonFinder.isRainableBiome(worldObj.getBiomeGenForCoords(xCoord, zCoord));
+		this.setState(StateFlags.RAINABLE, this.canBeRainAffected(l) && l.isRainable() && PylonFinder.isRainableBiome(worldObj.getBiomeGenForCoords(xCoord, zCoord)));
 	}
 
 	protected boolean canBeRainAffected(CrystalLink l) {
@@ -715,16 +746,26 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		return true;
 	}
 
-	public final boolean hasStructure() {
-		return hasMultiblock;
-	}
-
 	public void markAsTableGrouped(boolean group) {
-		tableGrouped = group;
+		this.setState(StateFlags.TABLEGROUPED, group);
 	}
 
 	public boolean isTableGrouped() {
-		return tableGrouped;
+		return this.hasState(StateFlags.TABLEGROUPED);
+	}
+
+	public boolean isClustered() {
+		return this.hasState(StateFlags.CLUSTERED);
+	}
+
+	@Override
+	public void onRegionUpdated() {
+		this.setState(StateFlags.CLUSTERED, CrystalNetworker.instance.getNearTilesOfType(this, TileEntityCrystalRepeater.class, this.getSensitivityRadius()).size() > 3); //>=3 others
+	}
+
+	@Override
+	public int getSensitivityRadius() {
+		return 5;
 	}
 
 }

@@ -547,7 +547,6 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 	}
 
 	public void validateStructure() {
-		throughputBonus = 0;
 		World world = worldObj;
 		int x = xCoord;
 		int y = yCoord-1;
@@ -633,13 +632,13 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 					}
 				}
 			}
-		}
-		if (hasPylonConnections)
 			this.applyRepeaterGroupingBonus(b3);
+		}
 		this.syncAllData(true);
 	}
 
 	private void applyRepeaterGroupingBonus(FilledBlockArray arr) {
+		throughputBonus = 0;
 		EnumMap<ForgeDirection, ArrayList<CrystalElement>> map = new EnumMap(ForgeDirection.class);
 		EnumMap<CrystalElement, Coordinate> locations = new EnumMap(CrystalElement.class);
 		for (Coordinate c : arr.getAllLocationsOf(new BlockKey(ChromaTiles.REPEATER))) {
@@ -652,11 +651,13 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)c.getTileEntity(worldObj);
 			te.markAsTableGrouped(false);
 			CrystalElement e = te.getActiveColor();
-			if (e != null) {
+			if (e != null && hasPylonConnections) {
 				li.add(e);
 				locations.put(e, c);
 			}
 		}
+		if (!hasPylonConnections || locations.size() != CrystalElement.elements.length) //fail if any duplicates
+			return;
 		for (ArrayList<CrystalElement> li : map.values()) {
 			int idx = CrystalGroupRecipe.getGroupIndex(li.get(0));
 			boolean matched = true;

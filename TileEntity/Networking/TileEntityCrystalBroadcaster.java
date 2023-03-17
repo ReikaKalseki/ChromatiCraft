@@ -327,7 +327,7 @@ public class TileEntityCrystalBroadcaster extends TileEntityCrystalRepeater impl
 			ReikaSoundHelper.playClientSound(ChromaSounds.REPEATERRING, xCoord+0.5, yCoord+0.5, zCoord+0.5, f, (float)CrystalMusicManager.instance.getDingPitchScale(e), false);
 		}
 
-		for (int i = 0; i < 128; i++) {
+		for (int i = 0; i < 128-32*Minecraft.getMinecraft().gameSettings.particleSetting; i++) {
 			double r = ReikaRandomHelper.getRandomBetween(4D, 8D);
 			double v = ReikaRandomHelper.getRandomBetween(0.03125, 0.75);
 			double ang = rand.nextDouble()*360;

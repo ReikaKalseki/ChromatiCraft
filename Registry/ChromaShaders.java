@@ -84,7 +84,7 @@ public enum ChromaShaders implements ShaderHook {
 			String path = "Shaders/";
 			id = this.name().toLowerCase(Locale.ENGLISH);
 			if (this == GAINPROGRESS && ChromaOptions.PROGSHADER.getState()) {
-				id = "gainprogress2";
+				id = id+"_alt";
 			}
 			int idx = id.indexOf('$');
 			if (idx >= 0) {

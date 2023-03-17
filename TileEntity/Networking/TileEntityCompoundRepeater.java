@@ -97,7 +97,7 @@ public class TileEntityCompoundRepeater extends TileEntityCrystalRepeater implem
 	}
 
 	@Override
-	public int maxThroughput() {
+	public int maxThroughput() { //no clustering bonuses
 		return this.isTurbocharged() ? (this.isEnhancedStructure() ? 20000 : 12000) : 1000;
 	}
 
