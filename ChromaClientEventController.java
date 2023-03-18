@@ -903,7 +903,7 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
-	public void ensureMusic(CloudRenderEvent evt) {
+	public void ensureClouds(CloudRenderEvent evt) {
 		if (Minecraft.getMinecraft().theWorld.provider.dimensionId == ExtraChromaIDs.DIMID.getValue()) {
 			evt.setResult(Result.ALLOW);
 		}

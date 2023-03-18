@@ -18,7 +18,6 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
@@ -138,21 +137,9 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 					}
 					case REACHDIST: {
 						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_78757_d", "getBlockReachDistance", "()F");
-						m.instructions.insert(new InsnNode(Opcodes.I2F));
-						m.instructions.insert(new FieldInsnNode(Opcodes.GETFIELD, "Reika/ChromatiCraft/Auxiliary/Ability/AbilityHelper", "playerReach", "I"));
-						m.instructions.insert(new FieldInsnNode(Opcodes.GETSTATIC, "Reika/ChromatiCraft/Auxiliary/Ability/AbilityHelper", "instance", "LReika/ChromatiCraft/Auxiliary/Ability/AbilityHelper;"));
-						AbstractInsnNode index = null;
-						for (int i = 0; i < m.instructions.size(); i++) {
-							AbstractInsnNode ain = m.instructions.get(i);
-							if (ain.getOpcode() == Opcodes.FRETURN) {
-								index = ain;
-								break;
-							}
-						}
-						if (index != null) {
-							m.instructions.insertBefore(index, new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Math", "max", "(FF)F", false));
-							ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");
-						}
+						AbstractInsnNode ret = ReikaASMHelper.getLastOpcode(m.instructions, Opcodes.FRETURN);
+						m.instructions.insertBefore(ret, new VarInsnNode(Opcodes.ALOAD, 0));
+						m.instructions.insertBefore(ret, new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/Auxiliary/ChromaAux", "getReachDistanceClient", "(FLnet/minecraft/client/multiplayer/PlayerControllerMP;)F", false));
 						break;
 					}/*
 				case CHARWIDTH: { //[I to [F

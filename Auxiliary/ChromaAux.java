@@ -23,6 +23,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLeavesBase;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.multiplayer.ChunkProviderClient;
+import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.Entity;
@@ -765,6 +766,11 @@ public class ChromaAux {
 		if (loc.getBlock(world) == tile.getBlock() && loc.getBlockMetadata(world) == tile.getBlockMetadata()) {
 			ChromatiCraft.logger.logError("Correct block and meta but no TileEntity!?!?");
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static float getReachDistanceClient(float orig, PlayerControllerMP mp) {
+		return Math.max(orig, AbilityHelper.instance.playerReach);
 	}
 	/*
 	@SideOnly(Side.CLIENT)
