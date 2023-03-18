@@ -4,13 +4,12 @@ import java.nio.IntBuffer;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.WorldRenderer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.MonumentCompletionRitual;
-import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterDestructionRitual;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects.EffectVisual;
@@ -19,6 +18,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.IO.Shaders.ShaderRegistry;
 import Reika.DragonAPI.IO.Shaders.ShaderRegistry.WorldShaderSystem;
+import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -80,14 +80,10 @@ public class WorldRenderIntercept implements WorldShaderSystem {
 		}
 		else {
 			s = ChromaShaders.UAZONE;
-			ChromaShaders.UAZONE.refresh();
-			if (ArtefactSpawner.isShaderActive(Minecraft.getMinecraft().theWorld))
-				ChromaShaders.UAZONE.rampUpIntensity(0.04F, 1.05F);
-			ChromaShaders.UAZONE.lingerTime = 0;
-			ChromaShaders.UAZONE.rampDownAmount = 0.004F;
-			ChromaShaders.UAZONE.rampDownFactor = 0.997F;
 			f = ChromaShaders.UAZONE.getIntensity();
 		}
+		if (GuiScreen.isCtrlKeyDown())
+			ReikaJavaLibrary.pConsole(s+" > "+f);
 		while (lists.remaining() > 0) {
 			int id = lists.get();
 			if (f > 0) {

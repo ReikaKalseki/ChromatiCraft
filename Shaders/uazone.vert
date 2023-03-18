@@ -2,6 +2,7 @@
 
 varying vec4 vLightMapColor;
 varying vec3 worldCoord;
+//varying vec3 varyingNormalDirection; 
 
 uniform sampler2D bgl_LightMapTexture;
 
@@ -19,6 +20,7 @@ void main() {
 	//lightMapCoords += 1.0/32.0;
 	lightMapCoords /= 256.0;
     vLightMapColor = min(texture2D(bgl_LightMapTexture, lightMapCoords)*1.5+vec4(0.25), vec4(1.0));
+	//varyingNormalDirection = normalize(vec3(vec4(gl_Normal, 0.0) * inverse(gl_ModelViewProjectionMatrix)));
 	
 	gl_FrontColor = gl_Color;
 }
