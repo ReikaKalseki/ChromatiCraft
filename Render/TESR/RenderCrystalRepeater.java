@@ -105,7 +105,7 @@ public class RenderCrystalRepeater extends CrystalTransmitterRender {
 					this.renderIconHalo(te, ChromaIcons.RAINFLARE.getIcon(), 1, par8);
 				if (te.isTableGrouped())
 					this.renderIconHalo(te, ChromaIcons.SUNFLARE.getIcon(), 1, par8);
-				else if (te.isClustered())
+				else if (te.hasClusterRender())
 					this.renderIconHalo(te, ChromaIcons.CELLFLARE.getIcon(), 1.25, par8);
 				float f = HoldingChecks.MANIPULATOR.getFade();
 				if (f > 0) {

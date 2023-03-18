@@ -93,6 +93,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand.TransitionMode;
 import Reika.ChromatiCraft.Magic.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
+import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
 import Reika.ChromatiCraft.Magic.Artefact.ArtefactWithDataCrystalAlloyingEffect;
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
@@ -1233,6 +1234,11 @@ public class ChromatiPackets implements PacketHandler {
 				case FRAGSELECT: {
 					//ProgressionChoiceSystem.Selection.giveToPlayer(ep, ChromaResearch.researchList[data[0]]);
 					((ContainerFragmentSelect)ep.openContainer).selectSlot(data[0]);
+					break;
+				}
+				case ARTEZONEPARTICLES: {
+					//ProgressionChoiceSystem.Selection.giveToPlayer(ep, ChromaResearch.researchList[data[0]]);
+					ArtefactSpawner.refreshShader(ep);
 					break;
 				}
 			}

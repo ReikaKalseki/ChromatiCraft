@@ -156,8 +156,9 @@ public class ItemMagicRegistry {
 		this.addElement(new ItemStack(Items.skull, 1, 4), CrystalElement.PINK, 4);
 		this.addElement(new ItemStack(Items.skull, 1, 4), CrystalElement.YELLOW, 2);
 
-		this.addElement(Items.nether_star, CrystalElement.PINK, 8);
+		this.addElement(Items.nether_star, CrystalElement.PINK, 9);
 		this.addElement(Items.nether_star, CrystalElement.BLACK, 4);
+		this.addElement(Items.nether_star, CrystalElement.GREEN, 1);
 
 		this.addElement(Items.golden_apple, CrystalElement.MAGENTA, 8);
 		this.addElement(Items.golden_apple, CrystalElement.BROWN, 2);

@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.API.Interfaces.ManipulatorInteraction;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SneakPop;
+import Reika.ChromatiCraft.Base.CrystalTypeBlock;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.BlockCrystalFence.CrystalFenceAuxTile;
 import Reika.ChromatiCraft.Block.BlockDummyAux.TileEntityDummyAux;
@@ -467,6 +468,10 @@ public class ItemManipulator extends ItemChromaTool implements IScribeTools {
 		if (!world.isRemote && tile instanceof ManipulatorInteraction) {
 			if (((ManipulatorInteraction)tile).onManipulatorInteract(ep, s))
 				return true;
+		}
+
+		if (!world.isRemote && world.getBlock(x, y, z) instanceof CrystalTypeBlock && world.getBlock(x, y-1, z) == ChromaBlocks.RAYBLEND.getBlockInstance()) {
+			ChromaBlocks.RAYBLEND.getBlockInstance().onNeighborBlockChange(world, x, y-1, z, world.getBlock(x, y, z));
 		}
 
 		return false;

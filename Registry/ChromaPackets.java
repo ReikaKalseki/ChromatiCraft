@@ -228,6 +228,7 @@ public enum ChromaPackets {
 	DOGGOSONAR(3),
 	AURORACLEAR(),
 	FRAGSELECT(1),
+	ARTEZONEPARTICLES(),
 	;
 
 	public final int numInts;

@@ -372,6 +372,8 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 			tag.scale(0.25F);
 		if (sc)
 			tag.scale(1.2F);
+		if (is.getItem() == Items.nether_star)
+			tag.scale(1.5F);
 		if (ChromaItems.SHARD.matchWith(is))
 			tag.scale(is.getItemDamage() >= 16 ? 5 : 2);
 		if (ReikaItemHelper.isInOreTag(is, "flower")) {

@@ -91,8 +91,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		ENHANCEDSTRUCT,
 		RAINABLE,
 		RAINLOSS,
-		TABLEGROUPED,
-		CLUSTERED;
+		TABLEGROUPED;
 
 		public final int bitflag;
 
@@ -103,6 +102,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 	private CrystalElement surgeColor;
 	private int surgeTicks = 0;
+	private int clusterCount;
 
 	protected int connectionRenderTick = 0;
 	protected int rangeSphereAlpha = -256;
@@ -317,6 +317,7 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 
 		facing = dirs[NBT.getInteger("face")];
 		depth = NBT.getInteger("depth");
+		clusterCount = NBT.getInteger("cluster");
 
 		states = NBT.getInteger("states");
 
@@ -336,6 +337,8 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 			NBT.setInteger("face", facing.ordinal());
 
 		NBT.setInteger("depth", depth);
+		NBT.setInteger("cluster", clusterCount);
+
 		NBT.setInteger("states", states);
 
 		NBT.setInteger("surge", surgeTicks);
@@ -366,8 +369,8 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		}
 		if (this.isTableGrouped())
 			ret *= 2;
-		else if (this.isClustered())
-			ret *= 1.5;
+		else if (clusterCount > 0)
+			ret *= 1+Math.min(0.5, clusterCount*0.5/6D); //25% bonus with >= 4 repeaters in a group
 		return ret;
 	}
 
@@ -378,8 +381,8 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 			ret += 5+ret/2;
 		if (this.isTableGrouped())
 			ret *= 0.75;
-		else if (this.isClustered())
-			ret /= 2;
+		else if (clusterCount > 0)
+			ret *= Math.max(0.5, 1-clusterCount*0.5/3D); //50% reduction with >= 4 repeaters in a group
 		if (this.isEnhancedStructure())
 			ret /= 2;
 		return ret;
@@ -754,13 +757,15 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 		return this.hasState(StateFlags.TABLEGROUPED);
 	}
 
-	public boolean isClustered() {
-		return this.hasState(StateFlags.CLUSTERED);
+	public boolean hasClusterRender() {
+		return clusterCount >= 3;
 	}
 
+	//I actually had an idea for the 'lumen road bonus' - have each beam's attenuation come from a sort of 'punch through' cost like how trucks have to push air aside
+	//then have each punch 'weaken' the air in a 5x5 centered on itself - meaning that the more you have together, the more they 'share' the punch-through cost
 	@Override
 	public void onRegionUpdated() {
-		this.setState(StateFlags.CLUSTERED, CrystalNetworker.instance.getNearTilesOfType(this, TileEntityCrystalRepeater.class, this.getSensitivityRadius()).size() > 3); //>=3 others
+		clusterCount = CrystalNetworker.instance.getNearTilesOfType(this, TileEntityCrystalRepeater.class, this.getSensitivityRadius()).size()-1;
 	}
 
 	@Override

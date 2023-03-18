@@ -25,9 +25,8 @@ import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
+import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.World.IWG.UnknownArtefactGenerator;
-import Reika.DragonAPI.APIPacketHandler.PacketIDs;
-import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -35,12 +34,12 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
-import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class ArtefactSpawner implements TickHandler {
@@ -55,6 +54,8 @@ public class ArtefactSpawner implements TickHandler {
 
 	private final ArrayList<SpawnedArtefact> artefacts = new ArrayList();
 
+	private static long lastShaderTime = -1;
+
 	public static final ArtefactSpawner instance = new ArtefactSpawner();
 
 	private ArtefactSpawner() {
@@ -64,16 +65,19 @@ public class ArtefactSpawner implements TickHandler {
 	@Override
 	public void tick(TickType type, Object... tickData) {
 		EntityPlayer pl = (EntityPlayer)tickData[0];
-		if (pl.worldObj.isRemote)
+		if (pl.worldObj.isRemote) {
+			this.updateShader(pl.worldObj);
 			return;
+		}
 		if (!UnknownArtefactGenerator.instance.canGenerateIn(pl.worldObj)) {
 			artefacts.clear();
 			return;
 		}
 		EntityPlayerMP ep = (EntityPlayerMP)pl;
-		if (rand.nextInt(2) == 0 && this.canSpawnArtefactNearPlayer(ep))
-			ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.PARTICLE.ordinal(), ep.worldObj, MathHelper.floor_double(ep.posX), (int)ep.posY+1, MathHelper.floor_double(ep.posZ), new PacketTarget.PlayerTarget(ep), ReikaJavaLibrary.makeListFrom(ReikaParticleHelper.PORTAL.ordinal(), 1));
-		if (artefacts.size() < SPAWN_LIMIT && rand.nextInt(1000) == 0 && this.canSpawnArtefactNearPlayer(ep)) {
+		boolean canSpawn = this.canSpawnArtefactNearPlayer(ep);
+		if (canSpawn && rand.nextInt(2) == 0)
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.ARTEZONEPARTICLES.ordinal(), ep);
+		if (canSpawn && artefacts.size() < SPAWN_LIMIT && rand.nextInt(1000) == 0) {
 			double a = Math.toRadians(rand.nextDouble()*360);
 			double dx = ep.posX+SPAWN_DISTANCE*Math.cos(a);
 			double dz = ep.posZ+SPAWN_DISTANCE*Math.sin(a);
@@ -167,6 +171,23 @@ public class ArtefactSpawner implements TickHandler {
 	@Override
 	public String getLabel() {
 		return "UA Spawner";
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static void refreshShader(EntityPlayer ep) {
+		//double ang = rand.nextDouble()*360;
+		lastShaderTime = ep.worldObj.getTotalWorldTime();
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void updateShader(World world) {
+		if (world.getTotalWorldTime()-lastShaderTime <= 10) {
+			ChromaShaders.UAZONE.refresh();
+			ChromaShaders.UAZONE.rampUpIntensity(0.04F, 1.05F);*
+			ChromaShaders.UAZONE.lingerTime = 0;
+			ChromaShaders.UAZONE.rampDownAmount = 0.004F;
+			ChromaShaders.UAZONE.rampDownFactor = 0.997F;
+		}
 	}
 
 	public static class SpawnedArtefact {
