@@ -4,11 +4,13 @@ import java.nio.IntBuffer;
 
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.WorldRenderer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Magic.MonumentCompletionRitual;
+import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterDestructionRitual;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects;
 import Reika.ChromatiCraft.ModInterface.VoidRitual.VoidMonsterRitualClientEffects.EffectVisual;
@@ -75,6 +77,16 @@ public class WorldRenderIntercept implements WorldShaderSystem {
 			f = 1;
 			s = ChromaShaders.MONUMENT$CHORDS;
 			MonumentCompletionRitual.addShaderData(s.getShader());
+		}
+		else {
+			s = ChromaShaders.UAZONE;
+			ChromaShaders.UAZONE.refresh();
+			if (ArtefactSpawner.isShaderActive(Minecraft.getMinecraft().theWorld))
+				ChromaShaders.UAZONE.rampUpIntensity(0.04F, 1.05F);
+			ChromaShaders.UAZONE.lingerTime = 0;
+			ChromaShaders.UAZONE.rampDownAmount = 0.004F;
+			ChromaShaders.UAZONE.rampDownFactor = 0.997F;
+			f = ChromaShaders.UAZONE.getIntensity();
 		}
 		while (lists.remaining() > 0) {
 			int id = lists.get();

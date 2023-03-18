@@ -25,7 +25,6 @@ import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
-import Reika.ChromatiCraft.Registry.ChromaShaders;
 import Reika.ChromatiCraft.World.IWG.UnknownArtefactGenerator;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
@@ -180,14 +179,14 @@ public class ArtefactSpawner implements TickHandler {
 	}
 
 	@SideOnly(Side.CLIENT)
-	private void updateShader(World world) {
-		if (world.getTotalWorldTime()-lastShaderTime <= 10) {
-			ChromaShaders.UAZONE.refresh();
-			ChromaShaders.UAZONE.rampUpIntensity(0.04F, 1.05F);*
-			ChromaShaders.UAZONE.lingerTime = 0;
-			ChromaShaders.UAZONE.rampDownAmount = 0.004F;
-			ChromaShaders.UAZONE.rampDownFactor = 0.997F;
+	private static void updateShader(World world) {
+		if (isShaderActive(world)) {
+
 		}
+	}
+
+	public static boolean isShaderActive(World world) {
+		return world.getTotalWorldTime()-lastShaderTime <= 10;
 	}
 
 	public static class SpawnedArtefact {

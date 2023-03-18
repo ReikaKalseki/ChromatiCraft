@@ -35,7 +35,7 @@ public enum ChromaShaders implements ShaderHook {
 	DIMFLOOR(),
 	GAINPROGRESS(),
 	PYLONAURA(),
-	UAZONE(),
+	UAZONE(ShaderDomain.WORLD),
 
 	//Ritual-related
 	PYLONTURBO$OVERBRIGHT(),
