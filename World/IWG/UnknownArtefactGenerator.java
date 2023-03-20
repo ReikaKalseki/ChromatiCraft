@@ -23,8 +23,6 @@ import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.BiomeGenOcean;
 import net.minecraft.world.chunk.IChunkProvider;
-import net.minecraftforge.common.BiomeDictionary;
-import net.minecraftforge.common.BiomeDictionary.Type;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Magic.Lore.LoreManager;
@@ -122,8 +120,8 @@ public class UnknownArtefactGenerator implements RetroactiveGenerator {
 		//ReikaJavaLibrary.pConsole("Attempting @ "+x+", "+y+", "+z);
 		Block b = world.getBlock(x, y, z);
 		BiomeGenBase biome = world.getBiomeGenForCoords(x, z);
-		if (biome instanceof BiomeGenOcean || BiomeDictionary.isBiomeOfType(biome, Type.WATER))
-			return false;
+		//if (biome instanceof BiomeGenOcean || BiomeDictionary.isBiomeOfType(biome, Type.WATER))
+		//	return false;
 		if (b != biome.topBlock && b != biome.fillerBlock) {
 			//ReikaJavaLibrary.pConsole("Invalid surface block");
 			return false;
@@ -132,7 +130,7 @@ public class UnknownArtefactGenerator implements RetroactiveGenerator {
 			//ReikaJavaLibrary.pConsole("Invalid cover block");
 			return false;
 		}
-		if (world.getBlock(x, y-1, z) != biome.fillerBlock) {
+		if (!(biome instanceof BiomeGenOcean) && world.getBlock(x, y-1, z) != biome.fillerBlock) {
 			//ReikaJavaLibrary.pConsole("Not dirt");
 			return false;
 		}
@@ -169,6 +167,8 @@ public class UnknownArtefactGenerator implements RetroactiveGenerator {
 		if (ReikaWorldHelper.softBlocks(world, x, y, z))
 			return true;
 		if (b instanceof BlockBush)
+			return true;
+		if (b == Blocks.water && world.getBiomeGenForCoords(x, z) instanceof BiomeGenOcean)
 			return true;
 		return false;
 	}

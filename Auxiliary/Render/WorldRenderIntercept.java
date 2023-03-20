@@ -4,7 +4,6 @@ import java.nio.IntBuffer;
 
 import org.lwjgl.opengl.GL11;
 
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.WorldRenderer;
 
@@ -18,7 +17,6 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.IO.Shaders.ShaderRegistry;
 import Reika.DragonAPI.IO.Shaders.ShaderRegistry.WorldShaderSystem;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -79,11 +77,9 @@ public class WorldRenderIntercept implements WorldShaderSystem {
 			MonumentCompletionRitual.addShaderData(s.getShader());
 		}
 		else {
-			s = ChromaShaders.UAZONE;
-			f = ChromaShaders.UAZONE.getIntensity();
+			//s = ChromaShaders.UAZONE;
+			//f = ChromaShaders.UAZONE.getIntensity();
 		}
-		if (GuiScreen.isCtrlKeyDown())
-			ReikaJavaLibrary.pConsole(s+" > "+f);
 		while (lists.remaining() > 0) {
 			int id = lists.get();
 			if (f > 0) {

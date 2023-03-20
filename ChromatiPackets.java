@@ -1238,7 +1238,7 @@ public class ChromatiPackets implements PacketHandler {
 				}
 				case ARTEZONEPARTICLES: {
 					//ProgressionChoiceSystem.Selection.giveToPlayer(ep, ChromaResearch.researchList[data[0]]);
-					ArtefactSpawner.refreshShader(ep);
+					ArtefactSpawner.instance.refreshShader(ep);
 					break;
 				}
 			}

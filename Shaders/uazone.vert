@@ -1,26 +1,16 @@
-#import chunk
-
-varying vec4 vLightMapColor;
-varying vec3 worldCoord;
-//varying vec3 varyingNormalDirection; 
-
-uniform sampler2D bgl_LightMapTexture;
+uniform int pylonRed;
+uniform int pylonGreen;
+uniform int pylonBlue;
 
 void main() {
     vec4 vert = gl_Vertex;
 	
-	vec3 real = getReal(vert);
-	worldCoord = real;
-	
-	gl_Position = gl_ModelViewProjectionMatrix * vert;
-	
+	/*
+    vert.x = vert.x*1.1;
+    vert.y = vert.y*1.0;
+    vert.z = vert.z*1.1;
+	*/
+    
+    gl_Position = gl_ModelViewProjectionMatrix * vert;
     texcoord = vec2(gl_MultiTexCoord0);
-    vec2 lightMapCoords = vec2(gl_MultiTexCoord1);
-	//lightMapCoords *= 15.0/16.0;
-	//lightMapCoords += 1.0/32.0;
-	lightMapCoords /= 256.0;
-    vLightMapColor = min(texture2D(bgl_LightMapTexture, lightMapCoords)*1.5+vec4(0.25), vec4(1.0));
-	//varyingNormalDirection = normalize(vec3(vec4(gl_Normal, 0.0) * inverse(gl_ModelViewProjectionMatrix)));
-	
-	gl_FrontColor = gl_Color;
 }

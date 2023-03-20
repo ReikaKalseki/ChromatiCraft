@@ -15,10 +15,15 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.UUID;
 
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.BiomeGenOcean;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.BlockEvent.BreakEvent;
 
@@ -35,6 +40,7 @@ import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent.Phase;
@@ -97,11 +103,28 @@ public class ArtefactSpawner implements TickHandler {
 		if (artefacts.size() < FORCED_SPAWN_LIMIT) {
 			int x = MathHelper.floor_double(dx);
 			int z = MathHelper.floor_double(dz);
-			int y = ep.worldObj.getTopSolidOrLiquidBlock(x, z)-1;
-			if (UnknownArtefactGenerator.canGenerateArtefactAt(ep.worldObj, x, y, z)) {
+			int y = this.getY(ep.worldObj, x, z);
+			if (y > 0 && UnknownArtefactGenerator.canGenerateArtefactAt(ep.worldObj, x, y, z)) {
 				double dy = y-0.5;
 				artefacts.add(new SpawnedArtefact(dx, dy, dz, ep, life));
 			}
+		}
+	}
+
+	private int getY(World world, int x, int z) {
+		BiomeGenBase b = world.getBiomeGenForCoords(x, z);
+		if (b instanceof BiomeGenOcean) {
+			int y = world.getTopSolidOrLiquidBlock(x, z);
+			while (y >= 4 && (world.getBlock(x, y, z) == Blocks.water || world.getBlock(x, y, z) == Blocks.air)) {
+				y--;
+			}
+			Block at = world.getBlock(x, y, z);
+			if (at == Blocks.gravel || at == Blocks.sand || at == Blocks.dirt || at == Blocks.clay)
+				return y;
+			return -1;
+		}
+		else {
+			return world.getTopSolidOrLiquidBlock(x, z)-1;
 		}
 	}
 
@@ -174,24 +197,27 @@ public class ArtefactSpawner implements TickHandler {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public static void refreshShader(EntityPlayer ep) {
+	public void refreshShader(EntityPlayer ep) {
 		//double ang = rand.nextDouble()*360;
 		lastShaderTime = ep.worldObj.getTotalWorldTime();
 	}
 
 	@SideOnly(Side.CLIENT)
-	private static void updateShader(World world) {
-		if (isShaderActive(world)) {
+	private void updateShader(World world) {
+		if (this.isShaderActive(world)) {
 			ChromaShaders.UAZONE.refresh();
 			ChromaShaders.UAZONE.rampUpIntensity(0.008F, 1.005F);
 			ChromaShaders.UAZONE.lingerTime = 0;
+			ChromaShaders.UAZONE.getShader().setField("skyBright", world.provider.getSunBrightness(ReikaRenderHelper.getPartialTickTime()));
+			ChromaShaders.UAZONE.getShader().setField("headYaw", RenderManager.instance.playerViewX);
+			ChromaShaders.UAZONE.getShader().setField("headPitch", RenderManager.instance.playerViewY);
 		}
 		else {
 			ChromaShaders.UAZONE.rampDownIntensity(0.06F, 0.994F);
 		}
 	}
 
-	public static boolean isShaderActive(World world) {
+	public boolean isShaderActive(World world) {
 		return world.getTotalWorldTime()-lastShaderTime <= 10;
 	}
 
