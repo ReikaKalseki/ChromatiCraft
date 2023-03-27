@@ -70,7 +70,7 @@ public class AdjacencyRecipe extends PylonCastingRecipe {
 	}
 
 	@Override
-	protected void getRequiredProgress(Collection<ProgressStage> c) {
+	public void getRequiredProgress(Collection<ProgressStage> c) {
 		switch(tier) {
 			case TileEntityAdjacencyUpgrade.MAX_TIER-1:
 				c.add(ProgressStage.CTM);

@@ -20,6 +20,7 @@ import net.minecraft.client.particle.EntityFX;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
@@ -30,6 +31,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.TieredItem;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Magic.ElementMixer;
@@ -584,12 +586,37 @@ public class TileEntityGlowFire extends InventoriedChromaticBase implements Lume
 			this.dropItem(inv[0]);
 			inv[0] = null;
 		}
-		if (item != null && this.getCost(item) != null) {
-			inv[0] = ReikaItemHelper.getSizedItemStack(item, 1);
-			item.stackSize--;
-			return item.stackSize > 0 ? item : null;
+		if (item != null) {
+			if (this.canMake(item, ep) && this.getCost(item) != null) {
+				inv[0] = ReikaItemHelper.getSizedItemStack(item, 1);
+				item.stackSize--;
+				return item.stackSize > 0 ? item : null;
+			}
+			else {
+				ChromaSounds.ERROR.playSoundAtBlock(this);
+				return item;
+			}
 		}
 		return item;
+	}
+
+	private boolean canMake(ItemStack item, EntityPlayer ep) {
+		Item i = item.getItem();
+		if (i == null)
+			return false;
+		if (i instanceof TieredItem) {
+			TieredItem ti = (TieredItem)i;
+			if (ti.isTiered(item)) {
+				if (!ti.getDiscoveryTier(item).isPlayerAtStage(ep))
+					return false;
+				EntityPlayer ep2 = this.getPlacer();
+				if (ep2 != null && ep2 != ep && !ReikaPlayerAPI.isFake(ep2)) {
+					if (!ti.getDiscoveryTier(item).isPlayerAtStage(ep))
+						return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	private void dropItem(ItemStack is) {

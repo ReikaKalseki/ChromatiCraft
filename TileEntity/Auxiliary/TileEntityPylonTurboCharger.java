@@ -55,6 +55,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -426,7 +427,7 @@ public class TileEntityPylonTurboCharger extends TileEntityPylonEnhancer {
 
 	@SideOnly(Side.CLIENT)
 	public void doFailParticlesClient(World world, int x, int y, int z, boolean hasPylon) {
-		this.rockScreenClient(15);
+		ReikaRenderHelper.rockScreen(15);
 		int n = 12;
 		int da = 360/n;
 		double r = 16;
@@ -521,7 +522,7 @@ public class TileEntityPylonTurboCharger extends TileEntityPylonEnhancer {
 		TileEntityCrystalPylon te = this.getPylon(world, x, y, z);
 		switch(evt) {
 			case FLASH: {
-				this.rockScreenClient(40);
+				ReikaRenderHelper.rockScreen(40);
 				ReikaSoundHelper.playClientSound(ChromaSounds.PYLONFLASH, x+0.5, y+0.5, z+0.5, 1, 1, false); //play sound here to ensure sync
 				ChromaOverlays.instance.triggerWashout(CrystalElement.elements[data]);
 				for (int i = 0; i < 6; i++) {
@@ -543,7 +544,7 @@ public class TileEntityPylonTurboCharger extends TileEntityPylonEnhancer {
 				break;
 			}
 			case PARTICLEBURST: {
-				this.rockScreenClient(6);
+				ReikaRenderHelper.rockScreen(6);
 				ReikaSoundHelper.playClientSound(ChromaSounds.CAST, x+0.5, y+0.5, z+0.5, 1, 1, false); //play sound here to ensure sync
 				for (int a = 0; a < 360; a += 2) {
 					int n = 1;//1+rand.nextInt(3);
@@ -625,11 +626,11 @@ public class TileEntityPylonTurboCharger extends TileEntityPylonEnhancer {
 				break;
 			}
 			case LIGHTNING:
-				this.rockScreenClient(20);
+				ReikaRenderHelper.rockScreen(20);
 				ReikaSoundHelper.playClientSound(ChromaSounds.DISCHARGE, x+0.5, y+0.5, z+0.5, 1, 1, false); //play sound here to ensure sync
 				break;
 			case POTIONS:
-				this.rockScreenClient(16);
+				ReikaRenderHelper.rockScreen(16);
 				ReikaSoundHelper.playClientSound(ChromaSounds.POWERDOWN, x+0.5, y+0.5, z+0.5, 1, 1, false); //play sound here to ensure sync
 				int r = 16;
 				int n = 16+rand.nextInt(32);
@@ -675,11 +676,6 @@ public class TileEntityPylonTurboCharger extends TileEntityPylonEnhancer {
 	public void doStartFXClient(World world, int x, int y, int z) {
 		ReikaSoundHelper.playClientSound(ChromaSounds.PYLONBOOSTSTART, x+0.5, y+0.5, z+0.5, 2, 1, false); //play sound here to ensure sync
 		ReikaSoundHelper.playClientSound(ChromaSounds.PYLONBOOSTSTART, x+0.5, y+0.5, z+0.5, 2, 1, false); //play sound here to ensure sync
-	}
-
-	@SideOnly(Side.CLIENT)
-	private void rockScreenClient(int ticks) {
-		Minecraft.getMinecraft().renderViewEntity.hurtTime = Math.max(Minecraft.getMinecraft().renderViewEntity.hurtTime, ticks);
 	}
 
 	public int getSkyTick() {

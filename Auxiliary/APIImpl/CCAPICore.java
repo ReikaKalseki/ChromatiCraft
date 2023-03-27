@@ -2,6 +2,9 @@ package Reika.ChromatiCraft.Auxiliary.APIImpl;
 
 import java.lang.reflect.Field;
 
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AbilityAPI;
 import Reika.ChromatiCraft.API.AdjacencyUpgradeAPI;
@@ -15,6 +18,8 @@ import Reika.ChromatiCraft.API.PlayerBufferAPI;
 import Reika.ChromatiCraft.API.ProgressionAPI;
 import Reika.ChromatiCraft.API.RitualAPI;
 import Reika.ChromatiCraft.API.RuneAPI;
+import Reika.ChromatiCraft.API.WorldgenAPI;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.AbilityRituals;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
@@ -23,7 +28,7 @@ import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
 import Reika.DragonAPI.Exception.RegistrationException;
 
-public class CCAPICore extends ChromatiAPI {
+public class CCAPICore extends ChromatiAPI implements WorldgenAPI {
 
 	private final AuraLocusAPIImpl aura = new AuraLocusAPIImpl();
 	private final AdjacencyUpgradeAPIImpl adjacency = new AdjacencyUpgradeAPIImpl();
@@ -93,6 +98,19 @@ public class CCAPICore extends ChromatiAPI {
 	@Override
 	public DyeTreeAPI trees() {
 		return trees;
+	}
+
+	@Override
+	public WorldgenAPI worldgen() {
+		return this;
+	}
+
+	@Override
+	public float getEndIslandBias(World world, int chunkX, int chunkZ) {
+		int f = chunkX*2;
+		int f1 = chunkZ*2;
+		float orig = 100.0F - MathHelper.sqrt_float(f * f + f1 * f1) * 8.0F;
+		return ChromaAux.getIslandBias(world, orig, f, f1, f, f1);
 	}
 
 }

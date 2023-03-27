@@ -391,9 +391,30 @@ public class ChromaAux {
 		}
 	}
 
-	public static float getIslandBias(float originalBias, float dx, float dz) {
+	public static float getIslandBias(World world, float originalBias, float dx, float dz, int chunkX, int chunkZ) { //chunkX and Z are actually /8
+		/*
 		float dist = MathHelper.sqrt_double(dx*dx+dz*dz);
-		return 50+50*MathHelper.sin(dist*0.0625F); //is 100 at spawn
+		return 50+50*MathHelper.sin(dist*0.0625F); //is 100 at spawn*/
+		dx *= 0.5F;
+		dz *= 0.5F;
+		float distsq = dx * dx + dz * dz;
+		//ReikaJavaLibrary.pConsole(distsq+" @ "+chunkX*8+","+chunkZ*8+" > "+dx*16+","+dz*16);
+		if (distsq < 2000) {
+			//ReikaJavaLibrary.pConsole(" > "+originalBias);
+			return originalBias-MathHelper.sqrt_float(Math.max(0, distsq-100)) * 4.0F;
+		}
+		else if (distsq < 3000) {
+			double ang = Math.toDegrees(Math.atan2(dz, dx))+world.getSeed()%10000;
+			ang = (ang%360+360)%360;
+			double da = Math.min(ang%12, 12-(ang%12)); //0-6
+			double df = (distsq <= 2500 ? distsq-2000 : 3000-distsq)/500D;
+			//ReikaJavaLibrary.pConsole(" > "+ang+" > "+da+" > "+df+" > "+(60*df-da*30));
+			return (float)(30-da*10/df);
+		}
+		else {
+			//ReikaJavaLibrary.pConsole(" = 0");
+			return 8*MathHelper.sin(distsq*0.04F)-6;
+		}
 	}
 
 	public static MultiMap<TargetData, CrystalElement> getBeamColorMixes(Collection<CrystalTarget> c) {

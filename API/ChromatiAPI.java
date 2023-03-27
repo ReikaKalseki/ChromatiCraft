@@ -25,5 +25,7 @@ public abstract class ChromatiAPI {
 	public abstract RuneAPI runes();
 	public abstract DyeTreeAPI trees();
 
+	public abstract WorldgenAPI worldgen();
+
 
 }

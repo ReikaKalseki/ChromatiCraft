@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary.Render;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.lwjgl.opengl.GL11;
 
@@ -85,10 +86,7 @@ public class RuneShapeRenderer {
 		for (int x = -5; x <= 5; x++) {
 			for (int z = -5; z <= 5; z++) {
 				IIcon ico = ChromaBlocks.PYLONSTRUCT.getBlockInstance().getIcon(0, 0);
-				Coordinate c = RuneShape.modifyRuneBySeed(new Coordinate(x, y, z), null);
-				CrystalElement e = map.get(c);
-				if (e != null)
-					ico = e.getBlockRune();
+				Coordinate c = new Coordinate(x, y, z);
 
 				if (x == 0 && z == 0) {
 					ico = ChromaTiles.TABLE.getBlock().getIcon(1, ChromaTiles.TABLE.getBlockMetadata());
@@ -108,18 +106,31 @@ public class RuneShapeRenderer {
 
 		GL11.glEnable(GL11.GL_BLEND);
 
-		for (Coordinate c : map.keySet()) {
+		for (Entry<Coordinate, CrystalElement> e : map.entrySet()) {
+			Coordinate c = e.getKey();
 			if (c.yCoord == y) {
-				CrystalElement e = map.get(c);
-				IIcon ico = e.getFaceRune();
+
+				c = RuneShape.modifyRuneBySeed(c, null);
 
 				int x = c.xCoord;
 				int z = c.zCoord;
 
+				IIcon ico = e.getValue().getBlockRune();
 				float u = ico.getMinU();
 				float v = ico.getMinV();
 				float du = ico.getMaxU();
 				float dv = ico.getMaxV();
+
+				v5.addVertexWithUV(dx+x*w, dy+(z+1)*w, 0, u, dv);
+				v5.addVertexWithUV(dx+(x+1)*w, dy+(z+1)*w, 0, du, dv);
+				v5.addVertexWithUV(dx+(x+1)*w, dy+z*w, 0, du, v);
+				v5.addVertexWithUV(dx+x*w, dy+z*w, 0, u, v);
+
+				ico = e.getValue().getFaceRune();
+				u = ico.getMinU();
+				v = ico.getMinV();
+				du = ico.getMaxU();
+				dv = ico.getMaxV();
 
 				v5.addVertexWithUV(dx+x*w, dy+(z+1)*w, 0, u, dv);
 				v5.addVertexWithUV(dx+(x+1)*w, dy+(z+1)*w, 0, du, dv);

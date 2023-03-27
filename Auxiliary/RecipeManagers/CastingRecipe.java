@@ -255,7 +255,7 @@ public class CastingRecipe implements APICastingRecipe {
 		return recipe.matches(ic, null);
 	}
 
-	protected void getRequiredProgress(Collection<ProgressStage> c) {
+	public void getRequiredProgress(Collection<ProgressStage> c) {
 		c.add(ProgressStage.CRYSTALS);
 	}
 
@@ -662,7 +662,7 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		@Override
-		protected void getRequiredProgress(Collection<ProgressStage> c) {
+		public void getRequiredProgress(Collection<ProgressStage> c) {
 			super.getRequiredProgress(c);
 			c.add(ProgressStage.RUNEUSE);
 		}
@@ -867,7 +867,7 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		@Override
-		protected void getRequiredProgress(Collection<ProgressStage> c) {
+		public void getRequiredProgress(Collection<ProgressStage> c) {
 			super.getRequiredProgress(c);
 			c.add(ProgressStage.MULTIBLOCK);
 		}
@@ -979,7 +979,7 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 
 		@Override
-		protected void getRequiredProgress(Collection<ProgressStage> c) {
+		public void getRequiredProgress(Collection<ProgressStage> c) {
 			super.getRequiredProgress(c);
 			c.add(ProgressStage.PYLON);
 			c.add(ProgressStage.REPEATER);

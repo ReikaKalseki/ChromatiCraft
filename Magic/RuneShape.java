@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.Magic;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import net.minecraft.block.Block;
@@ -60,15 +61,13 @@ public final class RuneShape {
 
 	public boolean matchAt(World world, int x, int y, int z) {
 		Set<Coordinate> foci = TileEntityCastingInjector.getFoci();
-		for (Coordinate c : runes.keySet()) {
-			c = modifyRuneBySeed(c, world);
-			int dx = x+c.xCoord;
-			int dy = y+c.yCoord;
-			int dz = z+c.zCoord;
-			Block b = world.getBlock(dx, dy, dz);
+		for (Entry<Coordinate, CrystalElement> e : runes.entrySet()) {
+			Coordinate c = e.getKey();
+			Coordinate c2 = modifyRuneBySeed(c, world).offset(x, y, z);
+			Block b = c2.getBlock(world);
 			if (b == ChromaBlocks.RUNE.getBlockInstance()) {
-				int meta = world.getBlockMetadata(dx, dy, dz);
-				if (meta == runes.get(c).ordinal()) {
+				int meta = c2.getBlockMetadata(world);
+				if (meta == e.getValue().ordinal()) {
 
 				}
 				else {
@@ -84,6 +83,7 @@ public final class RuneShape {
 				}
 			}
 			else {
+				//ReikaJavaLibrary.pConsole("Mismatch, found "+b+" instead of "+e.getValue()+" on "+world+" @ "+c+">"+c2);
 				return false;
 			}
 		}
@@ -93,7 +93,7 @@ public final class RuneShape {
 	public static Coordinate modifyRuneBySeed(Coordinate c, World world) {
 		if (TempleCastingRecipe.isRuneRing(c))
 			return c;
-		WorldIDBase id = world == null ? ReikaWorldHelper.clientWorldID : ReikaWorldHelper.getCurrentWorldID(world);
+		WorldIDBase id = world == null || world.isRemote ? ReikaWorldHelper.clientWorldID : ReikaWorldHelper.getCurrentWorldID(world);
 		if (id == null)
 			return c;
 		long hash = id.getUniqueHash();

@@ -29,7 +29,7 @@ public class EnhancedRuneRecipe extends TempleCastingRecipe implements CoreRecip
 	}
 
 	@Override
-	protected void getRequiredProgress(Collection<ProgressStage> c) {
+	public void getRequiredProgress(Collection<ProgressStage> c) {
 		super.getRequiredProgress(c);
 		c.add(ProgressStage.ALLCOLORS);
 	}

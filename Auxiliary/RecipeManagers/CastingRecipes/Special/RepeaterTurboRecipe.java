@@ -94,7 +94,7 @@ public class RepeaterTurboRecipe extends PylonCastingRecipe implements EnergyLin
 	}
 
 	@Override
-	protected void getRequiredProgress(Collection<ProgressStage> c) {
+	public void getRequiredProgress(Collection<ProgressStage> c) {
 		c.add(ProgressStage.TURBOCHARGE);
 	}
 

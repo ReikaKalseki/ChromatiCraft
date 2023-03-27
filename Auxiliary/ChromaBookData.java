@@ -19,7 +19,9 @@ import org.lwjgl.opengl.GL11;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.oredict.OreDictionary;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -33,6 +35,9 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.RuneShapeRenderer;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager.ProgressElement;
+import Reika.ChromatiCraft.Magic.Progression.ProgressAccess;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -210,6 +215,35 @@ public class ChromaBookData {
 			ReikaGuiAPI.instance.drawTexturedModalRect(dx-(int)Math.ceil(r), dy-(int)Math.ceil(r), 0, 0, (int)(r*2), (int)(r*2));
 
 			ReikaGuiAPI.instance.drawTexturedModalRect(px+1, py+108-frac, 0, 118, 36, 7);
+		}
+	}
+
+	public static void drawRecipeMissingProgress(CastingRecipe r, EntityPlayer player, RenderItem itemRender, FontRenderer fontRendererObj, int x0, int y0) {
+		ArrayList<ProgressElement> li = new ArrayList();
+		ArrayList<ProgressStage> temp = new ArrayList();
+		r.getRequiredProgress(temp);
+		li.addAll(temp);
+		ChromaResearch frag = r.getFragment();
+		if (frag != null) {
+			li.add(0, frag);
+		}
+		li.removeIf(e -> e instanceof ProgressAccess && ((ProgressAccess)e).playerHas(player));
+		if (!li.isEmpty()) {
+			int idx = 0;
+			int count = li.size();
+			int gap = 2;
+			int cols = 3;//4;
+			int w = (16+gap)*Math.min(cols, count);
+			int h = (16+gap)*MathHelper.ceiling_float_int(count/(float)cols);
+			int dx = x0-w/2;
+			ReikaGuiAPI.instance.drawRect(dx-gap, y0-gap, w+gap, h+gap, 0x000000, false);
+			ReikaGuiAPI.instance.drawRectFrame(dx-gap, y0-gap, w+gap, h+gap, 0x22aaff);
+			for (ProgressElement e : li) {
+				int x = dx+(idx%cols)*(16+gap);
+				int y = y0+(idx/cols)*(16+gap);
+				e.renderIcon(itemRender, fontRendererObj, x, y);
+				idx++;
+			}
 		}
 	}
 

@@ -124,7 +124,7 @@ public class PortalRecipe extends PylonCastingRecipe implements CoreRecipe {
 	}
 
 	@Override
-	protected void getRequiredProgress(Collection<ProgressStage> c) {
+	public void getRequiredProgress(Collection<ProgressStage> c) {
 		c.addAll(ProgressionManager.instance.getPrereqs(ProgressStage.DIMENSION));
 	}
 

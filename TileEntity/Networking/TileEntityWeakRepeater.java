@@ -411,7 +411,7 @@ public class TileEntityWeakRepeater extends TileEntityCrystalRepeater implements
 					for (int i = 0; i < 6; i++) {
 						ReikaWorldHelper.ignite(world, x+te.dirs[i].offsetX, y+te.dirs[i].offsetY, z+te.dirs[i].offsetZ);
 					}
-					world.setBlock(x, y, z, ChromaBlocks.CHROMA.getBlockInstance());
+					world.setBlock(x, y, z, ChromaBlocks.CHROMA.getBlockInstance(), 1, 3);
 					ReikaSoundHelper.playSoundAtBlock(world, x, y, z, "random.fizz", 2, 0.5F);
 					break;
 				case EXPLOSION:

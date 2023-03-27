@@ -69,7 +69,7 @@ public class CrystalStoneRecipe extends CastingRecipe implements CoreRecipe {
 	}
 
 	@Override
-	protected final void getRequiredProgress(Collection<ProgressStage> c) {
+	public final void getRequiredProgress(Collection<ProgressStage> c) {
 		super.getRequiredProgress(c);
 		c.addAll(requiredProgress);
 	}

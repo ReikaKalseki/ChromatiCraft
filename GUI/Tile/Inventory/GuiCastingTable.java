@@ -19,6 +19,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
 
+import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.PylonCastingRecipe;
@@ -143,6 +144,11 @@ public class GuiCastingTable extends GuiChromaBase {
 				GL11.glColor4f(1, 1, 1, 0.5F);
 				this.drawTexturedModelRectFromIcon(189, 12, ico, 16, 16);
 				GL11.glDisable(GL11.GL_BLEND);
+				if (api.isMouseInBox(189+a, 189+16+a, 12+b, 28+b)) {
+					int x0 = /*api.getMouseRealX()-a*/193+5;
+					int y0 = 40-b;//api.getMouseRealY()+20-b;
+					ChromaBookData.drawRecipeMissingProgress(r, player, itemRender, fontRendererObj, x0, y0);
+				}
 			}
 			zLevel = 0;
 			//this.drawRect(188, 11, 188+18, 29, 0xffABABAB);

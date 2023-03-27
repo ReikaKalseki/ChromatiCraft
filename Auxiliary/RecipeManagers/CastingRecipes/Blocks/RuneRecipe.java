@@ -43,7 +43,7 @@ public class RuneRecipe extends CastingRecipe implements CoreRecipe {
 	}
 
 	@Override
-	protected void getRequiredProgress(Collection<ProgressStage> c) {
+	public void getRequiredProgress(Collection<ProgressStage> c) {
 		super.getRequiredProgress(c);
 		c.add(ProgressStage.ALLCOLORS);
 	}

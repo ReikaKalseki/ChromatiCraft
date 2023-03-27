@@ -18,6 +18,7 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
@@ -126,10 +127,14 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 							loc = loc.getNext();
 						}
 						InsnList call = new InsnList();
+						call.add(new VarInsnNode(Opcodes.ALOAD, 0));
+						call.add(new FieldInsnNode(Opcodes.GETFIELD, ReikaASMHelper.convertClassName(cn, false), FMLForgePlugin.RUNTIME_DEOBF ? "field_73200_m" : "endWorld", "Lnet/minecraft/world/World;"));
 						call.add(new VarInsnNode(Opcodes.FLOAD, 23)); //+1 to all the arguments because of double_2nd somewhere lower on stack
 						call.add(new VarInsnNode(Opcodes.FLOAD, 21));
 						call.add(new VarInsnNode(Opcodes.FLOAD, 22));
-						call.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/Auxiliary/ChromaAux", "getIslandBias", "(FFF)F", false));
+						call.add(new VarInsnNode(Opcodes.ILOAD, 2));
+						call.add(new VarInsnNode(Opcodes.ILOAD, 4));
+						call.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/ChromatiCraft/Auxiliary/ChromaAux", "getIslandBias", "(Lnet/minecraft/world/World;FFFII)F", false));
 						call.add(new VarInsnNode(Opcodes.FSTORE, 23));
 						m.instructions.insert(loc, call);
 						ReikaASMHelper.log("Successfully applied "+this+" ASM handler!");

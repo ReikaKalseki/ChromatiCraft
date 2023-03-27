@@ -252,6 +252,9 @@ public class GuiCastingRecipe extends GuiBookSection {
 			GL11.glColor4f(1, 1, 1, 0.5F);
 			api.drawTexturedModelRectFromIcon(posX+9, posY+13, ChromaIcons.NOENTER.getIcon(), 16, 16);
 			GL11.glPopAttrib();
+			if (api.isMouseInBox(posX+9, posX+25, posY+13, posY+29)) {
+				ChromaBookData.drawRecipeMissingProgress(this.getActiveRecipe(), player, itemRender, fontRendererObj, posX+145, posY+18+4);
+			}
 		}
 	}
 
