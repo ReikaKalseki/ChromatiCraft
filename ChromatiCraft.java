@@ -139,7 +139,7 @@ import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.World.BiomeEnderForest;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
-import Reika.ChromatiCraft.World.EndTendrilGenerator;
+import Reika.ChromatiCraft.World.EndOverhaulManager;
 import Reika.ChromatiCraft.World.GlowingCliffsEdge;
 import Reika.ChromatiCraft.World.RainbowRiver;
 import Reika.ChromatiCraft.World.VillagersFailChromatiCraft;
@@ -560,7 +560,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		RetroGenController.instance.addHybridGenerator(DataTowerGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(DataTowerGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(NetherStructureGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
-		RetroGenController.instance.addHybridGenerator(EndTendrilGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
+		RetroGenController.instance.addHybridGenerator(EndOverhaulManager.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(GlowingCliffsAuxGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
 		RetroGenController.instance.addHybridGenerator(SkypeaterGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
 		//RetroGenController.instance.addHybridGenerator(UnknownArtefactGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());

@@ -17,11 +17,11 @@ import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
+import Reika.DragonAPI.Instantiable.Worldgen.LootController.Location;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 
@@ -1326,7 +1326,7 @@ public class NetherMaze {
 		lgc.maxNearbyEntities = c2 == EntityPigZombie.class ? 24 : 8;
 		lgc.activatingRangeFromPlayer = 12;
 
-		ChromaAux.generateLootChest(world, i + 11, j + 1, k + 14, BlockLootChest.getMeta(ForgeDirection.WEST), rand, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 1);
+		ChromaAux.generateLootChest(world, i + 11, j + 1, k + 14, BlockLootChest.getMeta(ForgeDirection.WEST), rand, Location.JUNGLE_PUZZLE, 1);
 	}
 
 }

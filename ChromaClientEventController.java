@@ -136,6 +136,7 @@ import Reika.ChromatiCraft.Render.TESR.RenderAlveary;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
+import Reika.ChromatiCraft.World.EndOverhaulManager;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
 import Reika.ChromatiCraft.World.Dimension.Rendering.ChromaCloudRenderer;
@@ -165,6 +166,7 @@ import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderEvent.EntityRenderWatcher;
 import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.FarClippingPlaneEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.FogDistanceEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.GetMouseoverEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.HotbarKeyEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.ItemEffectRenderEvent;
@@ -550,6 +552,36 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void updateGlowCliffRendering(ClientTickEvent evt) {
 		BiomeGlowingCliffs.updateRenderFactor(Minecraft.getMinecraft().thePlayer);
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void updateEndFX(ClientTickEvent evt) {
+		EndOverhaulManager.instance.updateRenderer(Minecraft.getMinecraft().thePlayer);
+	}
+
+	@SubscribeEvent
+	public void dynamicFog(FogDistanceEvent evt) {
+		evt.fogDistance = Math.min(evt.fogDistance, EndOverhaulManager.instance.rampFog(evt.fogDistance));
+	}
+
+	@SubscribeEvent
+	public void dynamicFog(EntityViewRenderEvent.FogColors evt) {
+		//if (MonsterFX.isMonsterVisible()) {
+		//	evt.red = evt.green = evt.blue = 0.03125F*1.5F;
+		//}
+		int c0 = ReikaColorAPI.RGBtoHex((int)(evt.red*255), (int)(evt.green*255), (int)(evt.blue*255));
+
+		int c = ReikaColorAPI.mixColors(0xA2A59B, c0, EndOverhaulManager.instance.getRenderFactor());
+
+		evt.red = ReikaColorAPI.getRed(c)/255F;
+		evt.green = ReikaColorAPI.getGreen(c)/255F;
+		evt.blue = ReikaColorAPI.getBlue(c)/255F;
+	}
+
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void dynamicFog(FarClippingPlaneEvent evt) {
+		evt.farClippingPlaneDistance = Math.min(evt.farClippingPlaneDistance, EndOverhaulManager.instance.rampFog(evt.farClippingPlaneDistance));
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

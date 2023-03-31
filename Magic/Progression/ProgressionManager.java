@@ -749,7 +749,7 @@ public class ProgressionManager implements ProgressRegistry {
 
 		@Override
 		public String toString() {
-			return "Discover_"+color.name();
+			return this.name();
 		}
 
 		@Override
@@ -770,6 +770,11 @@ public class ProgressionManager implements ProgressRegistry {
 		@Override
 		public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
 			return instance.setPlayerDiscoveredColor(ep, color, true, notify);
+		}
+
+		@Override
+		public String name() {
+			return "Discover_"+color.name();
 		}
 
 	}
@@ -805,7 +810,7 @@ public class ProgressionManager implements ProgressRegistry {
 
 		@Override
 		public String toString() {
-			return "Structure_"+color.name();
+			return this.name();
 		}
 
 		@Override
@@ -826,6 +831,11 @@ public class ProgressionManager implements ProgressRegistry {
 		@Override
 		public boolean giveToPlayer(EntityPlayer ep, boolean notify) {
 			return instance.markPlayerCompletedStructureColor(ep, null, color, true, notify);
+		}
+
+		@Override
+		public String name() {
+			return "Structure_"+color.name();
 		}
 
 	}

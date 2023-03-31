@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
@@ -73,6 +74,7 @@ public final class ChromaResearchManager implements ResearchRegistry {
 	//public final Comparator progressComparator = new ProgressComparator();
 
 	private final HashBiMap<Integer, ProgressElement> progressIDs = HashBiMap.create();
+	private final HashMap<String, ProgressElement> byName = new HashMap();
 
 	private ChromaResearchManager() {
 		ProgressionAPI.instance.researchManager = this;
@@ -561,10 +563,13 @@ public final class ChromaResearchManager implements ResearchRegistry {
 
 		public boolean giveToPlayer(EntityPlayer ep, boolean notify);
 
+		public String name();
+
 	}
 
 	public void register(ProgressElement p) {
 		progressIDs.put(progressIDs.size(), p);
+		byName.put(p.name(), p);
 	}
 
 	public ProgressElement getProgressForID(int id) {
@@ -573,6 +578,10 @@ public final class ChromaResearchManager implements ResearchRegistry {
 
 	public int getID(ProgressElement e) {
 		return progressIDs.inverse().get(e);
+	}
+
+	public ProgressElement getProgressForString(String id) {
+		return byName.get(id);
 	}
 
 	@Override

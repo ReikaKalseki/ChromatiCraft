@@ -17,11 +17,11 @@ import net.minecraft.entity.monster.EntityMagmaCube;
 import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.MobSpawnerBaseLogic;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ChestGenHooks;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.DragonAPI.Instantiable.Worldgen.LootController.Location;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
 
@@ -9222,7 +9222,7 @@ public class NetherDiorama {
 
 		generateSpawner(world, i + 12, j + 1, k + 17, EntityMagmaCube.class);
 
-		TileEntityLootChest te = ChromaAux.generateLootChest(world, i + 27, j + 5, k + 19, 2, rand, ChestGenHooks.PYRAMID_DESERT_CHEST, 4);
+		TileEntityLootChest te = ChromaAux.generateLootChest(world, i + 27, j + 5, k + 19, 2, rand, Location.PYRAMID, 4);
 		te.addProgress(ProgressStage.NETHERSTRUCT);
 	}
 

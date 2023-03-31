@@ -187,6 +187,7 @@ import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs.GlowingTreeGen;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
+import Reika.ChromatiCraft.World.EndOverhaulManager;
 import Reika.ChromatiCraft.World.Dimension.CheatingPreventionSystem;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager.Biomes;
@@ -768,6 +769,7 @@ public class ChromaticEventManager {
 		MonumentCompletionRitual.clearRituals();
 		LoreManager.instance.clearOnLogout();
 		WarpNetwork.instance.clear();
+		EndOverhaulManager.instance.clear();
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
@@ -786,6 +788,7 @@ public class ChromaticEventManager {
 		BlockFakeSky.clearCache();
 		LoreManager.instance.clearOnLogout();
 		WarpNetwork.instance.clear();
+		EndOverhaulManager.instance.clear();
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

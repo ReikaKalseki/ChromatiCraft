@@ -99,6 +99,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 			ROSETTAHANDLER("Reika.ChromatiCraft.Magic.Lore.RosettaStone"),
 			STOPLIGHTUPDATES("net.minecraft.client.multiplayer.WorldClient", "bjf"),
 			//F3COORDS("net.minecraftforge.client.GuiIngameForge"),
+			//ENDSKY("net.minecraft.world.WorldProviderEnd", "aqr"),
 			;
 
 			private final String obfName;
@@ -478,6 +479,16 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 								break;
 						}
 						ReikaASMHelper.log(ReikaASMHelper.clearString(m.instructions));
+						break;
+					}*//*
+					case ENDSKY: {
+						MethodNode m = ReikaASMHelper.addMethod(cn, li, obfName, deobfName, 0);
+						String func = FMLForgePlugin.RUNTIME_DEOBF ? "func_73156_b" : "unloadQueuedChunks"; //contrary to name all this does is update light
+						MethodInsnNode min = ReikaASMHelper.getFirstMethodCallByName(cn, m, func);
+						min.owner = "Reika/ChromatiCraft/Auxiliary/ChromaAux";
+						min.name = "interceptClientChunkUpdates";
+						min.desc = "(Lnet/minecraft/client/multiplayer/ChunkProviderClient;)Z";
+						min.setOpcode(Opcodes.INVOKESTATIC);
 						break;
 					}*/
 				}

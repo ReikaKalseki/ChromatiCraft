@@ -14,7 +14,6 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
@@ -23,6 +22,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Instantiable.Worldgen.LootController.Location;
 
 
 public class NetherTemple {
@@ -7491,10 +7491,10 @@ public class NetherTemple {
 		world.setBlock(i + 12, j + 6, k + 6, Blocks.portal, 1, 2);
 		world.setBlock(i + 13, j + 4, k + 6, Blocks.portal, 1, 2);
 
-		TileEntityLootChest te = ChromaAux.generateLootChest(world, i + 12, j + 0, k + 14, mc, rand, ChestGenHooks.PYRAMID_DESERT_CHEST, 2);
+		TileEntityLootChest te = ChromaAux.generateLootChest(world, i + 12, j + 0, k + 14, mc, rand, Location.PYRAMID, 2);
 		te.addProgress(ProgressStage.NETHERSTRUCT);
 
-		te = ChromaAux.generateLootChest(world, i + 13, j + 0, k + 14, mc, rand, ChestGenHooks.PYRAMID_DESERT_CHEST, 2);
+		te = ChromaAux.generateLootChest(world, i + 13, j + 0, k + 14, mc, rand, Location.PYRAMID, 2);
 		te.addProgress(ProgressStage.NETHERSTRUCT);
 	}
 

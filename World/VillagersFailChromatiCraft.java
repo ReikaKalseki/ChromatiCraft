@@ -26,7 +26,6 @@ import net.minecraft.world.gen.structure.StructureVillagePieces;
 import net.minecraft.world.gen.structure.StructureVillagePieces.Start;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
-import net.minecraftforge.common.ChestGenHooks;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
@@ -35,6 +34,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
+import Reika.DragonAPI.Instantiable.Worldgen.LootController.Location;
 import Reika.DragonAPI.Instantiable.Worldgen.VillageBuilding.PerVillageStructureEntry;
 import Reika.DragonAPI.Instantiable.Worldgen.VillageBuilding.StructureEntry;
 import Reika.DragonAPI.Instantiable.Worldgen.VillageBuilding.VillagePiece;
@@ -82,11 +82,11 @@ public class VillagersFailChromatiCraft {
 			super(start, par2, rand, bb, par5, x, y, z);
 		}
 
-		protected final TileEntityLootChest generateLootChest(World world, int i, int j, int k, String s, int bonus, int dir, Random rand) {
+		protected final TileEntityLootChest generateLootChest(World world, int i, int j, int k, Location s, int bonus, int dir, Random rand) {
 			return ChromaAux.generateLootChest(world, this.getXWithOffset(i, k), this.getYWithOffset(j), this.getZWithOffset(i, k), dir, rand, s, bonus);
 		}
 
-		protected final TileEntityLootChest generateLootChestFixed(World world, int i, int j, int k, String s, int bonus, int dir, Random rand) {
+		protected final TileEntityLootChest generateLootChestFixed(World world, int i, int j, int k, Location s, int bonus, int dir, Random rand) {
 			return ChromaAux.generateLootChest(world, i+boundingBox.minX, j+boundingBox.minY, k+boundingBox.minZ, dir, rand, s, bonus);
 		}
 
@@ -794,7 +794,7 @@ public class VillagersFailChromatiCraft {
 			if (ts != null)
 				ts.signText = new String[]{"Your thingy was", "weird. It's my", "house now", "--Villager 19"};
 
-			TileEntityLootChest te = this.generateLootChestFixed(world, 7, 0, 7, ChestGenHooks.VILLAGE_BLACKSMITH, 1, 0, rand);
+			TileEntityLootChest te = this.generateLootChestFixed(world, 7, 0, 7, Location.VILLAGE, 1, 0, rand);
 			if (te != null)
 				te.addProgress(ProgressStage.VILLAGECASTING);
 
@@ -1117,7 +1117,7 @@ public class VillagersFailChromatiCraft {
 			this.placeBlockAtCurrentPosition(world, 8, 0, 3, Blocks.gravel);
 			this.placeBlockAtCurrentPosition(world, 8, 1, 2, Blocks.gravel);
 
-			TileEntityLootChest te = this.generateLootChest(world, 7, 0, 10, ChestGenHooks.VILLAGE_BLACKSMITH, 1, 0, rand);
+			TileEntityLootChest te = this.generateLootChest(world, 7, 0, 10, Location.VILLAGE, 1, 0, rand);
 			if (te != null)
 				te.addProgress(ProgressStage.VILLAGECASTING);
 

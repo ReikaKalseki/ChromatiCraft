@@ -55,6 +55,7 @@ import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
@@ -72,6 +73,7 @@ import Reika.DragonAPI.Libraries.World.ReikaBiomeHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumIDHandler;
+import Reika.Satisforestry.API.SFAPI;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -334,7 +336,7 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 				case RESOCLOVER:
 					return b == ChromatiCraft.enderforest;
 				case LUMALILY:
-					return ReikaBiomeHelper.isSnowBiome(b) && !(b instanceof BiomeGenHills) && b.topBlock == Blocks.grass;
+					return ReikaBiomeHelper.isSnowBiome(b) && !(b instanceof BiomeGenHills) && b.topBlock == Blocks.grass && !SFAPI.biomeHandler.isPinkForest(b);
 				case SANOBLOOM:
 					return BiomeDictionary.isBiomeOfType(b, Type.JUNGLE);
 				case VOIDREED:
@@ -394,6 +396,8 @@ public class BlockDecoFlower extends Block implements IShearable, LoadRegistry {
 		}
 
 		public Coordinate grow(World world, int x, int y, int z, Block b, Random rand) {
+			if (ModList.SATISFORESTRY.isLoaded() && SFAPI.biomeHandler.isPinkForest(world.getBiomeGenForCoords(x, z)))
+				return null;
 			boolean active = this.onActiveGrass(world, x, y, z);
 			switch(this) {
 				case ENDERFLOWER:

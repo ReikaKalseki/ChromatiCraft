@@ -87,6 +87,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
+import Reika.ChromatiCraft.World.EndOverhaulManager;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
 import Reika.DragonAPI.DragonAPICore;
@@ -99,6 +100,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Worldgen.LootController.ChestGenLootLocation;
 import Reika.DragonAPI.Interfaces.Entity.CustomProjectile;
 import Reika.DragonAPI.Interfaces.Item.ActivatedInventoryItem;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -399,15 +401,16 @@ public class ChromaAux {
 		dz *= 0.5F;
 		float distsq = dx * dx + dz * dz;
 		//ReikaJavaLibrary.pConsole(distsq+" @ "+chunkX*8+","+chunkZ*8+" > "+dx*16+","+dz*16);
-		if (distsq < 2000) {
+		if (distsq < EndOverhaulManager.MIN_DIST_SQ_CH) {
 			//ReikaJavaLibrary.pConsole(" > "+originalBias);
 			return originalBias-MathHelper.sqrt_float(Math.max(0, distsq-100)) * 4.0F;
 		}
-		else if (distsq < 3000) {
-			double ang = Math.toDegrees(Math.atan2(dz, dx))+world.getSeed()%10000;
+		else if (distsq < EndOverhaulManager.MAX_DIST_SQ_CH) {
+			double ang = Math.toDegrees(Math.atan2(dz, dx))+EndOverhaulManager.getAngleOffset(world);
 			ang = (ang%360+360)%360;
-			double da = Math.min(ang%12, 12-(ang%12)); //0-6
-			double df = (distsq <= 2500 ? distsq-2000 : 3000-distsq)/500D;
+			double da = Math.min(ang%EndOverhaulManager.DEGREE_SEPARATION, EndOverhaulManager.DEGREE_SEPARATION-(ang%EndOverhaulManager.DEGREE_SEPARATION)); //0-6
+			double diff = (EndOverhaulManager.MAX_DIST_SQ_CH-EndOverhaulManager.MIN_DIST_SQ_CH)*0.5;
+			double df = (distsq <= EndOverhaulManager.MIN_DIST_SQ_CH+diff ? distsq-EndOverhaulManager.MIN_DIST_SQ_CH : EndOverhaulManager.MAX_DIST_SQ_CH-distsq)/diff;
 			//ReikaJavaLibrary.pConsole(" > "+ang+" > "+da+" > "+df+" > "+(60*df-da*30));
 			return (float)(30-da*10/df);
 		}
@@ -729,14 +732,15 @@ public class ChromaAux {
 		return def;
 	}
 
-	public static TileEntityLootChest generateLootChest(World world, int x, int y, int z, int m, Random rand, String s, int bonus) {
+	public static TileEntityLootChest generateLootChest(World world, int x, int y, int z, int m, Random rand, ChestGenLootLocation loc, int bonus) {
 		if (y < 0 || y > 256) {
 			ChromatiCraft.logger.logError("Tried to generate a loot chest outside the map!");
 			return null;
 		}
 		world.setBlock(x, y, z, ChromaBlocks.LOOTCHEST.getBlockInstance(), m, 3);
 		TileEntityLootChest te = (TileEntityLootChest)world.getTileEntity(x, y, z);
-		te.populateChest(s, null, bonus, rand);
+		if (loc != null)
+			te.populateChest(loc.getTag(), null, bonus, rand);
 		return te;
 	}
 

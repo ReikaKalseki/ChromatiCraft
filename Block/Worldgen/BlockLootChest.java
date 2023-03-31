@@ -31,6 +31,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
@@ -445,9 +446,9 @@ public class BlockLootChest extends BlockContainer {
 
 			li = new NBTTagList();
 			for (ProgressElement e : triggers) {
-				li.appendTag(new NBTTagInt(ChromaResearchManager.instance.getID(e)));
+				li.appendTag(new NBTTagString(e.name()));
 			}
-			NBT.setTag("flags", li);
+			NBT.setTag("triggers", li);
 
 			if (placer != null)
 				NBT.setString("placer", placer.toString());
@@ -481,9 +482,17 @@ public class BlockLootChest extends BlockContainer {
 			maxReachAccess = NBT.getDouble("maxreach");
 
 			triggers.clear();
-			li = NBT.getTagList("flags", NBTTypes.INT.ID);
-			for (NBTTagInt tag : ((List<NBTTagInt>)li.tagList)) {
-				triggers.add(ChromaResearchManager.instance.getProgressForID(tag.func_150287_d()));
+			if (NBT.hasKey("triggers")) {
+				li = NBT.getTagList("triggers", NBTTypes.STRING.ID);
+				for (NBTTagString tag : ((List<NBTTagString>)li.tagList)) {
+					triggers.add(ChromaResearchManager.instance.getProgressForString(tag.func_150285_a_()));
+				}
+			}
+			else if (NBT.hasKey("flags")) {
+				li = NBT.getTagList("flags", NBTTypes.INT.ID);
+				for (NBTTagInt tag : ((List<NBTTagInt>)li.tagList)) {
+					triggers.add(ChromaResearchManager.instance.getProgressForID(tag.func_150287_d()));
+				}
 			}
 
 			if (NBT.hasKey("placer"))

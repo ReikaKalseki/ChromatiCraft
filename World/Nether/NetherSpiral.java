@@ -14,11 +14,11 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ChestGenHooks;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Instantiable.Worldgen.LootController.Location;
 
 
 public class NetherSpiral {
@@ -438,12 +438,12 @@ public class NetherSpiral {
 		world.setBlock(i + 5, j+y, k + 8, Blocks.tnt, 0, 2);
 
 		if (j == 1) {
-			ChromaAux.generateLootChest(world, i + 9, j+y, k + 9, 3, rand, ChestGenHooks.PYRAMID_JUNGLE_DISPENSER, 0);
+			ChromaAux.generateLootChest(world, i + 9, j+y, k + 9, 3, rand, Location.JUNGLE_DISPENSER, 0);
 
-			ChromaAux.generateLootChest(world, i + 1, j+y, k + 5, 3, rand, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 2);
-			ChromaAux.generateLootChest(world, i + 5, j+y, k + 17, 1, rand, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 2);
-			ChromaAux.generateLootChest(world, i + 13, j+y, k + 1, 0, rand, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 2);
-			ChromaAux.generateLootChest(world, i + 17, j+y, k + 13, 2, rand, ChestGenHooks.PYRAMID_JUNGLE_CHEST, 2);
+			ChromaAux.generateLootChest(world, i + 1, j+y, k + 5, 3, rand, Location.JUNGLE_PUZZLE, 2);
+			ChromaAux.generateLootChest(world, i + 5, j+y, k + 17, 1, rand, Location.JUNGLE_PUZZLE, 2);
+			ChromaAux.generateLootChest(world, i + 13, j+y, k + 1, 0, rand, Location.JUNGLE_PUZZLE, 2);
+			ChromaAux.generateLootChest(world, i + 17, j+y, k + 13, 2, rand, Location.JUNGLE_PUZZLE, 2);
 		}
 	}
 
