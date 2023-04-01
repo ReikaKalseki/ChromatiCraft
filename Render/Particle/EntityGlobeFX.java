@@ -27,7 +27,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class EntityGlobeFX extends EntityFX implements CustomRenderFX {
 
 	private static final TextureMode texture = new CustomTextureMode(ChromatiCraft.class, "Textures/Particle/16x.png");
-	private static final RenderMode render = new RenderMode().setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.ALPHACLIP, false).setFlag(RenderModeFlags.LIGHT, false);
+	private static final RenderMode render = new RenderMode().setFlag(RenderModeFlags.FOG, false).setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.ALPHACLIP, false).setFlag(RenderModeFlags.LIGHT, false);
 
 	public EntityGlobeFX(World world, double x, double y, double z) {
 		this(CrystalElement.WHITE, world, x, y, z, 0, 0, 0);

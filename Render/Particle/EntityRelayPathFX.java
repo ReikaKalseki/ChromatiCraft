@@ -28,7 +28,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 /** Traverses the relay path */
 public class EntityRelayPathFX extends EntityFX implements CustomRenderFX {
 
-	private static final RenderMode renderMode = new RenderMode().setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.DEPTH, true).setFlag(RenderModeFlags.LIGHT, false).setFlag(RenderModeFlags.ALPHACLIP, false);
+	private static final RenderMode renderMode = new RenderMode().setFlag(RenderModeFlags.FOG, false).setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.DEPTH, true).setFlag(RenderModeFlags.LIGHT, false).setFlag(RenderModeFlags.ALPHACLIP, false);
 
 	private ArrayList<Coordinate> targets;
 	private int index = 0;

@@ -28,7 +28,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class EntityCenterBlurFX extends EntityFX implements CustomRenderFX {
 
 	private static final TextureMode texture = new CustomTextureMode(ChromatiCraft.class, "Textures/Particle/64x.png");
-	private static final RenderMode render = new RenderMode().setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.ALPHACLIP, false).setFlag(RenderModeFlags.LIGHT, false);
+	private static final RenderMode render = new RenderMode().setFlag(RenderModeFlags.FOG, false).setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.ALPHACLIP, false).setFlag(RenderModeFlags.LIGHT, false);
 
 	private float scale;
 	private float cyclescale;

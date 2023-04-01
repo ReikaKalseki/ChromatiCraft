@@ -28,7 +28,7 @@ public class EntityRuneFX extends EntityFX implements CustomRenderFX {
 	private boolean fade = false;
 	private final CrystalElement color;
 
-	private static final RenderMode render = new RenderMode().setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.ALPHACLIP, false).setFlag(RenderModeFlags.LIGHT, false);
+	private static final RenderMode render = new RenderMode().setFlag(RenderModeFlags.FOG, false).setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.ALPHACLIP, false).setFlag(RenderModeFlags.LIGHT, false);
 
 	public EntityRuneFX(World world, double x, double y, double z, CrystalElement e) {
 		this(world, x, y, z, 0, 0, 0, e);

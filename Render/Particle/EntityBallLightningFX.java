@@ -25,7 +25,7 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 public class EntityBallLightningFX extends EntityFX implements CustomRenderFX {
 
-	private static final RenderMode renderMode = new RenderMode().setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.DEPTH, true).setFlag(RenderModeFlags.LIGHT, false).setFlag(RenderModeFlags.ALPHACLIP, false);
+	private static final RenderMode renderMode = new RenderMode().setFlag(RenderModeFlags.FOG, false).setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.DEPTH, true).setFlag(RenderModeFlags.LIGHT, false).setFlag(RenderModeFlags.ALPHACLIP, false);
 
 	public double jitterX;
 	public double jitterY;

@@ -130,6 +130,8 @@ public enum ChromaIcons implements IconEnum {
 	STATIC("static"),
 	BLASTFLARE("blastflare"),
 	ROSEFLARE("roseflare"),
+	ANGLER("anglerlight"),
+	ANGLER_BASIC("anglerlight_basic"),
 	;
 
 	private IIcon icon;

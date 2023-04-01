@@ -30,7 +30,7 @@ public class EntityFlareFX extends EntityFX implements CustomRenderFX {
 
 	private final CrystalElement color;
 
-	private static final RenderMode rm = new RenderMode().setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.LIGHT, false).setFlag(RenderModeFlags.ALPHACLIP, false);
+	private static final RenderMode rm = new RenderMode().setFlag(RenderModeFlags.FOG, false).setFlag(RenderModeFlags.ADDITIVE, true).setFlag(RenderModeFlags.LIGHT, false).setFlag(RenderModeFlags.ALPHACLIP, false);
 
 	public EntityFlareFX(CrystalElement e, World world, double x, double y, double z) {
 		this(e, world, x, y, z, 0.6F);

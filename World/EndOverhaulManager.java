@@ -25,6 +25,7 @@ import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
@@ -35,9 +36,11 @@ import net.minecraftforge.client.IRenderHandler;
 
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaShaders;
+import Reika.ChromatiCraft.Render.CCParticleEngine;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry;
+import Reika.DragonAPI.Extras.ThrottleableEffectRenderer;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.AbstractSearch.PropagationCondition;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.IterativeRecurser;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
@@ -57,6 +60,7 @@ import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
 
 import cpw.mods.fml.relauncher.Side;
@@ -214,7 +218,7 @@ public class EndOverhaulManager extends IRenderHandler implements RetroactiveGen
 		float spf = 1;
 		float fogTarget = 999;
 		if (distChSq > 60) {
-			if (distChSq < MIN_DIST_SQ_CH+240) {
+			if (distChSq < MIN_DIST_SQ_CH+120) {
 				target = lim;
 				fogTarget = 80;
 			}
@@ -241,14 +245,51 @@ public class EndOverhaulManager extends IRenderHandler implements RetroactiveGen
 			fogDistance = Math.min(fogTarget, fogDistance+18F*spf);
 		}
 		ChromaShaders.ENDRING.setIntensity(renderFactor*0);
-		if (renderFactor > 0.2 && !Minecraft.getMinecraft().isGamePaused() && ReikaRandomHelper.doWithChance(renderFactor*0.04)) {
-			double px = ReikaRandomHelper.getRandomPlusMinus(ep.posX, 32);
-			double py = ReikaRandomHelper.getRandomPlusMinus(ep.posY, 32);
-			double pz = ReikaRandomHelper.getRandomPlusMinus(ep.posZ, 32);
-			EntityCCBlurFX fx = new EntityCCBlurFX(ep.worldObj, px, py, pz);
-			fx.setIcon(ChromaIcons.FADE_BASICBLEND).setBasicBlend().setAlphaFading().setRapidExpand().setLife(600).setScale(20).setColor(DragonAPICore.rand.nextInt(5) == 0 ? 0xE57042 : 0xffffff);
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		if (renderFactor > 0.2 && !Minecraft.getMinecraft().isGamePaused() && ReikaRandomHelper.doWithChance(renderFactor*0.01)) {
+			ThrottleableEffectRenderer.getRegisteredInstance().registerDelegateRenderer(EntityAnglerLight.class, CCParticleEngine.instance);
+			double[] xyz = ReikaPhysicsHelper.polarToCartesian(80, ReikaRandomHelper.getRandomPlusMinus(0D, 30D), DragonAPICore.rand.nextDouble()*360);
+			xyz[0] += ep.posX;
+			xyz[1] += ep.posY;
+			xyz[2] += ep.posZ;
+			int x = MathHelper.floor_double(xyz[0]);
+			int y = MathHelper.floor_double(xyz[1]);
+			int z = MathHelper.floor_double(xyz[2]);
+			if (ep.worldObj.getBlock(x, y, z).isAir(ep.worldObj, x, y, z)) {
+				EntityAnglerLight fx = new EntityAnglerLight(ep, xyz);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			}
 		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	private class EntityAnglerLight extends EntityCCBlurFX {
+
+		private float maxAlpha;
+
+		private EntityAnglerLight(EntityPlayer ep, double[] xyz) {
+			super(ep.worldObj, xyz[0], xyz[1], xyz[2]);
+			this.setIcon(ChromaIcons.ANGLER_BASIC).setBasicBlend().setAlphaFading().setRapidExpand();
+			this.setLife(900).setScale(180).setColor(DragonAPICore.rand.nextInt(5) == 0 ? 0xE57042 : 0xffffff);
+		}
+
+		@Override
+		public void onUpdate() {
+			super.onUpdate();
+			double dq = this.getDistanceSqToEntity(Minecraft.getMinecraft().thePlayer);
+			if (renderFactor < 0.33 || dq < 512) {
+				//particleAge += 256;
+				maxAlpha = Math.max(0, maxAlpha-0.1F);
+			}
+			else if (renderFactor < 0.67 || dq < 2048) {
+				//particleAge += 16;
+				maxAlpha = Math.max(0, maxAlpha-0.03F);
+			}
+			else {
+				maxAlpha = Math.min(1, maxAlpha+0.05F);
+			}
+			particleAlpha = Math.min(particleAlpha, maxAlpha);
+		}
+
 	}
 
 	@SideOnly(Side.CLIENT)
