@@ -64,11 +64,7 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 
 	@Override
 	public final boolean canUpdate() {
-		return this.isTickingTE() && !ChromatiCraft.instance.isLocked();
-	}
-
-	protected boolean isTickingTE() {
-		return true;
+		return !ChromatiCraft.instance.isLocked();
 	}
 
 	@Override

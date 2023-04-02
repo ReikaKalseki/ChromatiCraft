@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -55,12 +55,16 @@ public class ItemBlockCrystalGlow extends ItemBlockDyeTypes {
 
 		if (world.getBlock(x, y, z) == field_150939_a) {
 			((BlockCrystalGlow)field_150939_a).setSide(world, x, y, z, ForgeDirection.VALID_DIRECTIONS[side]);
-			((TileEntityCrystalGlow)world.getTileEntity(x, y, z)).base = Bases.baseList[stack.getItemDamage()/16];
+			((TileEntityCrystalGlow)world.getTileEntity(x, y, z)).base = getBase(stack);
 			field_150939_a.onBlockPlacedBy(world, x, y, z, ep, stack);
 			field_150939_a.onPostBlockPlaced(world, x, y, z, metadata);
 		}
 
 		return true;
+	}
+
+	public static Bases getBase(ItemStack stack) {
+		return Bases.baseList[stack.getItemDamage()/16];
 	}
 
 }

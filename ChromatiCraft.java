@@ -31,12 +31,16 @@ import net.minecraft.potion.Potion;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.WorldProvider;
+import net.minecraft.world.WorldServer;
+import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeManager;
 import net.minecraftforge.common.BiomeManager.BiomeEntry;
 import net.minecraftforge.common.BiomeManager.BiomeType;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.fluids.Fluid;
@@ -967,6 +971,15 @@ public class ChromatiCraft extends DragonAPIMod {
 	public void overrideRecipes(FMLServerStartedEvent evt) {
 		if (!this.isLocked()) {
 			RecipesCastingTable.instance.reload();
+
+			if (ModList.BOP.isLoaded()) {
+				WorldServer over = DimensionManager.getWorld(0);
+				WorldType type = over.getWorldInfo().getTerrainType();
+				WorldProvider p = over.provider;
+				if (type.getWorldTypeName().equals("BIOMESOP")/* || p.getClass().getSimpleName().equals("WorldProviderSurfaceBOP")*/) {
+					PopupWriter.instance.addMessage("BoP world types prevent some of the ChromatiCraft biomes from spawning and makes progression IMPOSSIBLE. Change your world type if you want to be able to complete the mod.");
+				}
+			}
 		}
 	}
 

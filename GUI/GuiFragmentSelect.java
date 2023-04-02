@@ -243,7 +243,8 @@ public class GuiFragmentSelect extends GuiContainer implements CustomSoundGui {
 				GL11.glTranslated(0.375, 0, 0);
 			if (id == 2)
 				GL11.glTranslated(0.25, 0, 0);
-			s.fragment.drawTabIcon(itemRender, (int)(xPosition/sc), (int)(yPosition/sc));
+			if (s != null && s.fragment != null)
+				s.fragment.drawTabIcon(itemRender, (int)(xPosition/sc), (int)(yPosition/sc));
 			GL11.glDepthMask(false);
 			GL11.glPopMatrix();
 			c = ReikaColorAPI.mixColors(c, 0xffffff, 0.5F);

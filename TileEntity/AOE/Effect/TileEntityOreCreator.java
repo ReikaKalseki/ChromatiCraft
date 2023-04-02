@@ -35,6 +35,7 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaOreHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
+import Reika.DragonAPI.ModInteract.ItemHandlers.AppEngHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.RailcraftHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.TinkerBlockHandler;
 import Reika.DragonAPI.ModRegistry.ModOreList;
@@ -91,6 +92,8 @@ public class TileEntityOreCreator extends TileEntityAdjacencyUpgrade {
 		if (b.getClass().getName().startsWith("shukaro.artifice")) //artifice ore variants
 			return false;
 		if (ModList.RAILCRAFT.isLoaded() && RailcraftHandler.getInstance().isDarkOre(b, is.getItemDamage()))
+			return false;
+		if (ModList.APPENG.isLoaded() && ReikaItemHelper.matchStackWithBlock(is, AppEngHandler.getInstance().chargedCertusOre))
 			return false;
 		String mod = ReikaItemHelper.getRegistrantMod(is);
 		if (mod == null || mod.equalsIgnoreCase("gregtech") || mod.equalsIgnoreCase("gt"))

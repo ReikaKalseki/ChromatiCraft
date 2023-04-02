@@ -14,6 +14,7 @@ import net.minecraft.item.crafting.IRecipe;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
+import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalGlow;
 
 public class CrystalGlowRecipe extends CastingRecipe implements CoreRecipe {
 
@@ -44,5 +45,10 @@ public class CrystalGlowRecipe extends CastingRecipe implements CoreRecipe {
 	@Override
 	public boolean canGiveDoubleOutput() {
 		return true;
+	}
+
+	@Override
+	public boolean shouldGroupAsRecipe(ItemStack is1, ItemStack is2) {
+		return ItemBlockCrystalGlow.getBase(is1) == ItemBlockCrystalGlow.getBase(is2);
 	}
 }

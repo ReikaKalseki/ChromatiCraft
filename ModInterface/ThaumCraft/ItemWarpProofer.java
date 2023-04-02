@@ -44,8 +44,8 @@ public class ItemWarpProofer extends ItemChromaTool {
 			}
 			if (world.getTotalWorldTime()-e.getEntityData().getLong(ACTIVITY_TAG) >= 240) {
 				ReikaThaumHelper.removeWarp(ep, 1);
+				e.getEntityData().setLong(ACTIVITY_TAG, world.getTotalWorldTime());
 			}
-			e.getEntityData().setLong(ACTIVITY_TAG, world.getTotalWorldTime());
 		}
 	}
 

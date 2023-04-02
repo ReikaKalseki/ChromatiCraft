@@ -208,7 +208,7 @@ public class ItemSplineAttack extends ItemChromaTool {
 		int i = 0;
 		for (DecimalPosition pos : trail) {
 			EntityBlurFX fx = new EntityCCBlurFX(world, pos.xCoord, pos.yCoord, pos.zCoord).setLife(15).setScale(2).setAlphaFading();
-			fx.setColorController(clr).freezeLife(i/64);
+			fx.setColorController(clr).freezeLife(i/64).forceIgnoreLimits();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			i++;
 		}

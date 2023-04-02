@@ -131,9 +131,10 @@ public class GuiCastingRecipe extends GuiBookSection {
 				subpage = Math.min(subpage, this.getMaxSubpage());
 			}
 			else if (button.id == 1 && index < recipes.size()-1) {
-				ItemStack is = this.getActiveRecipe().getOutput();
+				CastingRecipe cr = this.getActiveRecipe();
+				ItemStack is1 = cr.getOutput();
 				index++;
-				while (GuiScreen.isShiftKeyDown() && index < recipes.size()-1 && ReikaItemHelper.matchStacks(is, this.getActiveRecipe().getOutput())) {
+				while (GuiScreen.isShiftKeyDown() && index < recipes.size()-1 && cr.shouldGroupAsRecipe(is1, this.getActiveRecipe().getOutput())) {
 					index++;
 				}
 				recipeTextOffset = 0;

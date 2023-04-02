@@ -509,6 +509,10 @@ public class CastingRecipe implements APICastingRecipe {
 		return this.getOutputForDisplay().getDisplayName();
 	}
 
+	public boolean shouldGroupAsRecipe(ItemStack is1, ItemStack is2) {
+		return ReikaItemHelper.matchStacks(is1, is2);
+	}
+
 	public static class TempleCastingRecipe extends CastingRecipe implements RuneTempleRecipe {
 
 		private static final ArrayList<Coordinate> runeRing = new ArrayList();

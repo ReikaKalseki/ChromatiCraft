@@ -33,11 +33,6 @@ public class TileEntityChromaFlower extends TileEntityChromaticBase {
 	}
 
 	@Override
-	protected boolean isTickingTE() {
-		return false;
-	}
-
-	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 		if (!this.isInWorld() && System.currentTimeMillis()%10 == 0) {
 			hueBaseOffset++;
