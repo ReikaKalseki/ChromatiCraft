@@ -362,7 +362,7 @@ public class ProgressModifyCommand extends DragonCommandBase {
 					Collection<ChromaResearch> cp = ChromaResearchManager.instance.getFragments(ep);
 					sendChatToSender(ics, "Player research: ");
 					sendChatToSender(ics, "Level "+pl);
-					sendChatToSender(ics, "Fragments: "+cp);
+					sendChatToSender(ics, "Fragments: "+cp.size()+":"+cp.toString());
 					Collection<ChromaResearch> missing = ChromaResearchManager.instance.getResearchLevelMissingFragments(ep);
 					//ReikaJavaLibrary.pConsole(missing);
 					sendChatToSender(ics, "Can step to "+pl.post()+": F="+pl.post().canProgressTo(ep)+" && R="+missing.isEmpty());
@@ -371,8 +371,8 @@ public class ProgressModifyCommand extends DragonCommandBase {
 				if (args[1].equals("all") || args[1].equals("progress") || args[1].equals("progression")) {
 					Collection<ProgressStage> c = ProgressionManager.instance.getStagesFor(ep);
 					Collection<CrystalElement> c2 = ProgressionManager.instance.getColorsFor(ep);
-					sendChatToSender(ics, "Progress for "+ep.getCommandSenderName()+":\n"+c.toString());
-					sendChatToSender(ics, "Elements for "+ep.getCommandSenderName()+":\n"+c2.toString());
+					sendChatToSender(ics, "Progress for "+ep.getCommandSenderName()+":\n"+c.size()+":"+c.toString());
+					sendChatToSender(ics, "Elements for "+ep.getCommandSenderName()+":\n"+c2.size()+":"+c2.toString());
 				}
 				if (args[1].equals("all") || args[1].equals("dimstruct")) {
 					Collection<CrystalElement> c3 = ProgressionManager.instance.getStructuresFor(ep);

@@ -125,6 +125,19 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 			scanTimer.update();
 			if (scanTimer.checkCap()) {
 				this.doScan(world, x, y, z);
+
+				for (int s = 0; s < 6; s++) {
+					ForgeDirection dir = dirs[s];
+					TileEntity te = this.getAdjacentTileEntity(dir);
+					if (te instanceof IInventory && !te.isInvalid()) {
+						for (int i = 0; i < inv.length; i++) {
+							ItemStack is = inv[i];
+							if (is != null && ReikaInventoryHelper.addToIInv(is, (IInventory)te)) {
+								inv[i] = null;
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -226,15 +239,6 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	private boolean absorbItem(World world, int x, int y, int z, EntityItem ent) {
 		ItemStack is = ent.getEntityItem();
-
-		for (int i = 0; i < 6; i++) {
-			ForgeDirection dir = dirs[i];
-			TileEntity te = this.getAdjacentTileEntity(dir);
-			if (te instanceof IInventory) {
-				if (ReikaInventoryHelper.addToIInv(is, (IInventory)te))
-					return true;
-			}
-		}
 
 		int targetslot = this.checkForStack(is);
 		if (targetslot != -1) {

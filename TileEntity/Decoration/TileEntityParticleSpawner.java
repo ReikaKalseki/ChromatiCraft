@@ -122,9 +122,9 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 
 		public int particleColor = 0xffffff;
 
-		public VariableValue<Double> particlePositionX = new VariableValue(-8D, 8D).setStep(0.03125);
-		public VariableValue<Double> particlePositionY = new VariableValue(-8D, 8D).setStep(0.03125);
-		public VariableValue<Double> particlePositionZ = new VariableValue(-8D, 8D).setStep(0.03125);
+		public VariableValue<Double> particlePositionX = new VariableValue(-16D, 16D).setStep(0.03125);
+		public VariableValue<Double> particlePositionY = new VariableValue(-16D, 16D).setStep(0.03125);
+		public VariableValue<Double> particlePositionZ = new VariableValue(-16D, 16D).setStep(0.03125);
 
 		public VariableValue<Double> particleVelocityX = new VariableValue(-2D, 2D).setStep(0.03125);
 		public VariableValue<Double> particleVelocityY = new VariableValue(-2D, 2D).setStep(0.03125);

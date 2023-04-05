@@ -28,7 +28,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 
@@ -44,7 +43,6 @@ import Reika.ChromatiCraft.Render.GlowKnot;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Collections.FastPlayerCache;
-import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.Registry.CropType;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -488,17 +486,7 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 	}*/
 
 	public static Collection<TileEntityAuraPoint> getPoints(EntityPlayer ep) {
-		Collection<WorldLocation> c = TileEntityLocusPoint.getCache(TileEntityAuraPoint.class, ep);
-		Collection<TileEntityAuraPoint> ret = new ArrayList();
-		if (c == null || c.isEmpty())
-			return ret;
-		for (WorldLocation loc : c) {
-			TileEntity te = loc.getTileEntity();
-			if (te instanceof TileEntityAuraPoint) {
-				ret.add((TileEntityAuraPoint)te);
-			}
-		}
-		return ret;
+		return TileEntityLocusPoint.getTiles(TileEntityAuraPoint.class, ep.getUniqueID());
 	}
 
 	public static boolean hasAuraPoints(EntityPlayer ep) {
@@ -508,17 +496,11 @@ public class TileEntityAuraPoint extends TileEntityLocusPoint {
 	public static boolean hasAuraPoints(UUID uid) {
 		if (uid == null)
 			return false;
-		Collection<WorldLocation> c = TileEntityLocusPoint.getCache(TileEntityAuraPoint.class, uid);
-		return c != null && !c.isEmpty();
+		return TileEntityLocusPoint.hasLoci(TileEntityAuraPoint.class, uid);
 	}
 
 	public static boolean isPointWithin(World world, int x, int y, int z, int r) {
-		Collection<WorldLocation> c = TileEntityLocusPoint.getCaches(TileEntityAuraPoint.class);
-		for (WorldLocation loc : c) {
-			if (loc.getDistanceTo(x, y, z) <= r)
-				return true;
-		}
-		return false;
+		return TileEntityLocusPoint.isPointWithin(TileEntityAuraPoint.class, world, x, y, z, r);
 	}
 
 	private static class SugarCaneCrop implements CropType {

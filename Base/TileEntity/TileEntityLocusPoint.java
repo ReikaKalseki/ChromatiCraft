@@ -11,14 +11,13 @@ package Reika.ChromatiCraft.Base.TileEntity;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -115,21 +114,21 @@ public abstract class TileEntityLocusPoint extends TileEntityChromaticBase imple
 		}
 		c.add(loc);
 	}
-
+	/*
 	public static Collection<WorldLocation> getCache(Class<? extends TileEntityLocusPoint> cl, EntityPlayer ep) {
 		return getCache(cl, ep.getUniqueID());
 	}
-
+	 */
 	public static boolean hasLoci(Class<? extends TileEntityLocusPoint> cl, UUID uid) {
 		ThreadSafeTileCache c = cache.get(cl, uid);
 		return c != null && !c.isEmpty();
 	}
-
+	/*
 	public static Collection<WorldLocation> getCache(Class<? extends TileEntityLocusPoint> cl, UUID uid) {
 		Collection<WorldLocation> c = cache.get(cl, uid);
 		return c != null ? Collections.unmodifiableCollection(c) : null;
 	}
-
+	 */
 	public static WorldLocation getMatchFromCache(Class<? extends TileEntityLocusPoint> cl, UUID uid, Function<WorldLocation, Boolean> check) {
 		ThreadSafeTileCache c = cache.get(cl, uid);
 		if (c == null || c.isEmpty())
@@ -137,6 +136,33 @@ public abstract class TileEntityLocusPoint extends TileEntityChromaticBase imple
 		return c.iterateAsSearch(check);
 	}
 
+	public static void forEach(Class<? extends TileEntityLocusPoint> cl, UUID uid, Consumer<WorldLocation> check) {
+		ThreadSafeTileCache c = cache.get(cl, uid);
+		if (c == null || c.isEmpty())
+			return;
+		c.simpleIterate(check);
+	}
+
+	public static <T extends TileEntityLocusPoint> Collection<T> getTiles(Class<T> cl, UUID uid) {
+		ArrayList<T> li = new ArrayList();
+		ThreadSafeTileCache c = cache.get(cl, uid);
+		if (c == null || c.isEmpty())
+			return li;
+		c.simpleIterate(w -> li.add((T)w.getTileEntity()));
+		return li;
+	}
+
+	public static boolean isPointWithin(Class<? extends TileEntityLocusPoint> cl, World world, int x, int y, int z, int r) {
+		Map<UUID, ThreadSafeTileCache> map = cache.getMap(cl);
+		if (map != null) {
+			for (ThreadSafeTileCache c : map.values()) {
+				if (c.iterateAsSearch(loc -> loc.getDistanceTo(x, y, z) <= r) != null)
+					return true;
+			}
+		}
+		return false;
+	}
+	/*
 	public static Collection<WorldLocation> getCaches(Class<? extends TileEntityLocusPoint> cl) {
 		Map<UUID, ThreadSafeTileCache> map = cache.getMap(cl);
 		Collection<WorldLocation> ret = new ArrayList();
@@ -147,7 +173,7 @@ public abstract class TileEntityLocusPoint extends TileEntityChromaticBase imple
 		}
 		return ret;
 	}
-
+	 */
 	@Override
 	@SideOnly(Side.CLIENT)
 	public final double getMaxRenderDistanceSquared() {

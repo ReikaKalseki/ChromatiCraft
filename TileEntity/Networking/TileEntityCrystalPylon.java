@@ -90,6 +90,7 @@ import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
@@ -367,6 +368,16 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 			if (world.isRemote) {
 				this.spawnParticle(world, x, y, z);
+			}
+
+			if (!world.isRemote && hasMultiblock && structure != null) {
+				Coordinate c = structure.getRandomBlock();
+				BlockKey bk = c.getBlockKey(world);
+				if (bk.blockID == ChromaBlocks.PYLONSTRUCT.getBlockInstance() || bk.blockID == ChromaBlocks.RUNE.getBlockInstance()) {
+					c = c.offset(0, 1, 0);
+					if (c.getBlock(world) == Blocks.snow_layer)
+						c.setBlock(world, Blocks.air);
+				}
 			}
 
 			if (!world.isRemote && ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world) && MystPages.Pages.UNSTABLEPYLONS.existsInWorld(world) && rand.nextInt(2000) == 0)
