@@ -104,7 +104,8 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	PROGSHADER("Use Alternate Progress Shader", false),
 	POWEREDPENDANTS("Enhanced Pendants Require Charging", false),
 	ABILITYSHOWONLY("Ability Selection GUI only shows abilities you have", false),
-	RECURSIVEPOUCH("Allow Recursive Aura Pouches", true)
+	RECURSIVEPOUCH("Allow Recursive Aura Pouches", true),
+	LUMCLIFFSEEDSHIFT("Luminous Cliffs Terrain Shape Seed Shift", 0),
 	;
 
 	private String label;

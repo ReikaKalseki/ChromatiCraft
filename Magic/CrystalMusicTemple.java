@@ -373,7 +373,7 @@ public class CrystalMusicTemple {
 				int dz = tileLocation.zCoord+k;
 				BiomeGenBase b = world.getBiomeGenForCoords(dx, dz);
 				if (b.biomeID == ThaumIDHandler.Biomes.EERIE.getID() || b.biomeID == ThaumIDHandler.Biomes.TAINT.getID()) {
-					ReikaWorldHelper.convertBiomeRegionFrom(world, dx, dz, b, null, BiomeGenBase.forest, 2048);
+					ReikaWorldHelper.convertBiomeRegionFrom(world, dx, dz, b, null, BiomeGenBase.forest, 2048, true);
 				}
 			}
 		}

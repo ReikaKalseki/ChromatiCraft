@@ -1266,7 +1266,7 @@ public class ChromaticEventManager {
 					if (id >= 0)
 						b2 = BiomeGenBase.biomeList[id];
 				}
-				evt.setBiome(b2);
+				evt.setBiome(b2, true);
 			}
 		}
 	}

@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower.Flowers;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredPlant.TieredPlants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Interpolation;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -32,6 +33,7 @@ import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.TerrainShaper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.Satisforestry.API.SFAPI;
 
 
 public class GlowingCliffsColumnShaper extends TerrainShaper {
@@ -93,7 +95,7 @@ public class GlowingCliffsColumnShaper extends TerrainShaper {
 
 	private static final Interpolation EDGE_BLENDING = new Interpolation(false).addPoint(0, 1).addPoint(0.05, 0.925).addPoint(0.1, 0.85).addPoint(0.3, 0.8).addPoint(0.33, 0.6).addPoint(0.55, 0.5).addPoint(0.7, 0.35).addPoint(0.75, 0.2).addPoint(0.85, 0.075).addPoint(1, 0);
 
-	private static final double ANGLE_SEARCH_STEP = 15;
+	private static final double ANGLE_SEARCH_STEP = 7.5;
 
 	private static final BlockKey STONE = new BlockKey(Blocks.stone, 0);
 	private static final BlockKey DIRT = new BlockKey(Blocks.dirt, 0);
@@ -104,6 +106,7 @@ public class GlowingCliffsColumnShaper extends TerrainShaper {
 	private static final BlockKey BIOME_GRASS = GRASS;//new BlockKey(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.GRASS.getMeta(false, false));
 
 	public GlowingCliffsColumnShaper(long seed) {
+		seed += ChromaOptions.LUMCLIFFSEEDSHIFT.getValue();
 		landmassControl = new SimplexNoiseGenerator(seed).setFrequency(1D/*/128D*//*/192D*//*/160D*//144D).addOctave(2.5, 0.5).addOctave(6, 0.125);
 		landmassControl.clampEdge = true;
 
@@ -240,7 +243,7 @@ public class GlowingCliffsColumnShaper extends TerrainShaper {
 		if (f != null) {
 			//double dh = SHORELINE_THRESHOLD+0.125*(MIDDLE_MIN_THRESHOLD-SHORELINE_THRESHOLD);
 			//hval = (hval-dh)*f+dh;
-			double dm = f.biome == ChromatiCraft.glowingcliffsEdge ? /*HVAL_LIMIT_EDGE*/this.calcHval(world, f.xCoord, f.zCoord, f.biome/*, hval*/) : (ChromaOptions.BIOMEBLEND.getState() ? (this.isBiomeOceanic(f.biome) ? SHORELINE_THRESHOLD*0.25 : SHORELINE_THRESHOLD) : SHORELINE_THRESHOLD*0.75);
+			double dm = f.biome == ChromatiCraft.glowingcliffsEdge ? /*HVAL_LIMIT_EDGE*/this.calcHval(world, f.xCoord, f.zCoord, f.biome/*, hval*/) : this.getBlendedBiomeHeight(f);
 			double dh = hval-dm;
 			//double ds = 0.5;
 			hval = dm+dh*f.distanceFraction;//(f.distanceFraction*ds+(1-ds));
@@ -259,6 +262,19 @@ public class GlowingCliffsColumnShaper extends TerrainShaper {
 		 */
 
 		return hval;
+	}
+
+	private double getBlendedBiomeHeight(BlendPoint f) {
+		if (ChromaOptions.BIOMEBLEND.getState()) {
+			if (this.isBiomeOceanic(f.biome))
+				return SHORELINE_THRESHOLD*0.25;
+			else if (ModList.SATISFORESTRY.isLoaded() && SFAPI.biomeHandler.isPinkForest(f.biome))
+				return MIDDLE_MAX_THRESHOLD+0.1;//this.calcMiddleThresh(f.xCoord, f.zCoord);
+			return SHORELINE_THRESHOLD;
+		}
+		else {
+			return SHORELINE_THRESHOLD*0.75;
+		}
 	}
 
 	private double getHvalLimit(World world, int x, int z, BiomeGenBase b) {

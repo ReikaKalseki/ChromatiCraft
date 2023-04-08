@@ -560,15 +560,12 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	}
 
 	@SubscribeEvent
-	public void dynamicFog(FogDistanceEvent evt) {
+	public void endFog(FogDistanceEvent evt) {
 		evt.fogDistance = Math.min(evt.fogDistance, EndOverhaulManager.instance.rampFog(evt.fogDistance));
 	}
 
 	@SubscribeEvent
-	public void dynamicFog(EntityViewRenderEvent.FogColors evt) {
-		//if (MonsterFX.isMonsterVisible()) {
-		//	evt.red = evt.green = evt.blue = 0.03125F*1.5F;
-		//}
+	public void endFog(EntityViewRenderEvent.FogColors evt) {
 		int c0 = ReikaColorAPI.RGBtoHex((int)(evt.red*255), (int)(evt.green*255), (int)(evt.blue*255));
 
 		int c = ReikaColorAPI.mixColors(0xA2A59B, c0, EndOverhaulManager.instance.getRenderFactor());

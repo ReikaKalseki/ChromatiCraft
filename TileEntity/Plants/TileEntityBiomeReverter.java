@@ -95,7 +95,7 @@ public class TileEntityBiomeReverter extends TileEntityMagicPlant/* implements L
 		BiomeGenBase b = c.getBiome(world);
 		BiomeGenBase nat = ReikaWorldHelper.getNaturalGennedBiomeAt(world, c.xCoord, c.zCoord);
 		if (b != nat && nat != null) {
-			ReikaWorldHelper.setBiomeForXZ(world, c.xCoord, c.zCoord, nat);
+			ReikaWorldHelper.setBiomeForXZ(world, c.xCoord, c.zCoord, nat, true);
 		}
 	}
 

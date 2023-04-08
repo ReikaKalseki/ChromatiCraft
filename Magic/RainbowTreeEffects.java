@@ -234,7 +234,7 @@ public class RainbowTreeEffects {
 					if (id == ThaumIDHandler.Biomes.MAGICFOREST.getID()) {
 						BiomeGenBase natural = ReikaWorldHelper.getNaturalGennedBiomeAt(world, dx, dz);
 						if (natural != null && ChromatiCraft.isRainbowForest(natural)) {
-							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, natural);
+							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, natural, true);
 						}
 					}
 				}
@@ -258,7 +258,7 @@ public class RainbowTreeEffects {
 					if (id == ThaumIDHandler.Biomes.EERIE.getID()) {
 						BiomeGenBase natural = ReikaWorldHelper.getNaturalGennedBiomeAt(world, dx, dz);
 						if (natural != null) {
-							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, natural);
+							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, natural, true);
 						}
 					}
 				}
@@ -286,7 +286,7 @@ public class RainbowTreeEffects {
 							if (natural.biomeID == id) {
 								natural = BiomeGenBase.forest;//ChromatiCraft.recoveredBiome;//BiomeGenBase.forest;
 							}
-							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, natural);
+							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, natural, true);
 						}
 					}
 				}
@@ -308,7 +308,7 @@ public class RainbowTreeEffects {
 					if (!TileEntityBiomeReverter.stopConversion(world, dx, dz)) {
 						BiomeGenBase biome = world.getBiomeGenForCoords(dx, dz);
 						if (biome != ChromatiCraft.rainbowforest && !BiomeGlowingCliffs.isGlowingCliffs(biome) && !(biome instanceof NonconvertibleBiome)) {
-							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, ChromatiCraft.rainbowforest);
+							ReikaWorldHelper.setBiomeForXZ(world, dx, dz, ChromatiCraft.rainbowforest, true);
 						}
 					}
 				}
