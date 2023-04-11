@@ -702,7 +702,7 @@ public class ProgressionManager implements ProgressRegistry {
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 			ReikaRenderHelper.rerenderAllChunksLazily();
 		else
-			ReikaPacketHelper.sendUpdatePacket(DragonAPIInit.packetChannel, PacketIDs.RERENDER.ordinal(), 0, 0, 0, new PacketTarget.PlayerTarget((EntityPlayerMP)ep));
+			ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.RERENDER.ordinal(), new PacketTarget.PlayerTarget((EntityPlayerMP)ep), 1);
 	}
 
 	public boolean hasPlayerDiscoveredColor(EntityPlayer ep, CrystalElement e) {

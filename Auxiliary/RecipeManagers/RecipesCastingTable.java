@@ -1131,14 +1131,11 @@ public class RecipesCastingTable implements CastingAPI {
 
 	public ArrayList<CastingRecipe> getAllRecipesMaking(ItemStack result) {
 		ArrayList<CastingRecipe> li = new ArrayList();
-		for (RecipeType type : recipes.keySet()) {
-			ArrayList<CastingRecipe> ir = recipes.get(type);
-			if (ir != null) {
-				for (CastingRecipe r : ir) {
-					if (!(r instanceof EnchantmentRecipe)) {
-						if (ReikaItemHelper.matchStacks(result, r.getOutput()) && (result.stackTagCompound == null || ItemStack.areItemStackTagsEqual(result, r.getOutput())))
-							li.add(r);
-					}
+		for (ArrayList<CastingRecipe> ir : recipes.values()) {
+			for (CastingRecipe r : ir) {
+				if (!(r instanceof EnchantmentRecipe)) {
+					if (ReikaItemHelper.matchStacks(result, r.getOutput()) && (result.stackTagCompound == null || ItemStack.areItemStackTagsEqual(result, r.getOutput())))
+						li.add(r);
 				}
 			}
 		}

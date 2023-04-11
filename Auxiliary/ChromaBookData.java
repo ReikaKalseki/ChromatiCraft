@@ -216,6 +216,7 @@ public class ChromaBookData {
 
 			ReikaGuiAPI.instance.drawTexturedModalRect(px+1, py+108-frac, 0, 118, 36, 7);
 		}
+		c.drawAdditionalBookData(fr, ri, posX+9, posY+80, subpage);
 	}
 
 	public static void drawRecipeMissingProgress(CastingRecipe r, EntityPlayer player, RenderItem itemRender, FontRenderer fontRendererObj, int x0, int y0) {

@@ -22,6 +22,8 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -511,6 +513,10 @@ public class CastingRecipe implements APICastingRecipe {
 
 	public boolean shouldGroupAsRecipe(ItemStack is1, ItemStack is2) {
 		return ReikaItemHelper.matchStacks(is1, is2);
+	}
+
+	public void drawAdditionalBookData(FontRenderer fr, RenderItem ri, int posX, int posY, int subpage) {
+
 	}
 
 	public static class TempleCastingRecipe extends CastingRecipe implements RuneTempleRecipe {

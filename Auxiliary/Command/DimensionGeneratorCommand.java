@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -86,7 +86,7 @@ public class DimensionGeneratorCommand extends DragonCommandBase {
 					}
 				}
 			}
-			ReikaPacketHelper.sendUpdatePacket(DragonAPIInit.packetChannel, PacketIDs.RERENDER.ordinal(), 0, 0, 0, new PacketTarget.PlayerTarget((EntityPlayerMP)ep));
+			ReikaPacketHelper.sendDataPacket(DragonAPIInit.packetChannel, PacketIDs.RERENDER.ordinal(), new PacketTarget.PlayerTarget((EntityPlayerMP)ep), 0);
 			ReikaChatHelper.sendChatToPlayer(ep, "Generation complete.");
 		}
 	}
