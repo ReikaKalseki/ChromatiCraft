@@ -58,7 +58,9 @@ public class BiomeDistributor extends ThreadedGenerator {
 	private static final double MIN_STRUCTURE_RADIUS = 96;//64;
 	private static final double MAX_STRUCTURE_RADIUS = 384;//128;
 
-	private static ChromaDimensionBiomeType[][] biomes = new ChromaDimensionBiomeType[SIZE][SIZE];
+	private static byte[][] biomes = new byte[SIZE][SIZE];
+
+	private static final ChromaDimensionBiomeType[] biomeList = buildBiomeList();
 
 	private static LobulatedCurve monumentBlob;
 	private static final EnumMap<CrystalElement, LobulatedCurve> structureBlobs = new EnumMap(CrystalElement.class);
@@ -70,12 +72,34 @@ public class BiomeDistributor extends ThreadedGenerator {
 		super(seed);
 	}
 
+	private static ChromaDimensionBiomeType[] buildBiomeList() {
+		ChromaDimensionBiomeType[] arr = new ChromaDimensionBiomeType[Biomes.biomeList.length+SubBiomes.biomeList.length+1];
+		for (int i = 0; i < Biomes.biomeList.length; i++) {
+			arr[i+1] = Biomes.biomeList[i];
+		}
+		for (int i = 0; i < SubBiomes.biomeList.length; i++) {
+			arr[i+1+Biomes.biomeList.length] = SubBiomes.biomeList[i];
+		}
+		return arr; //leave slot 0 as null
+	}
+
+	private static ChromaDimensionBiomeType getBiome(byte index) {
+		return biomeList[index];
+	}
+
+	private static byte getIndex(ChromaDimensionBiomeType b) {
+		if (b == null)
+			return 0;
+		int offset = b instanceof SubBiomes ? Biomes.biomeList.length : 0;
+		return (byte)(b.ordinal()+offset+1);
+	}
+
 	public static NBTTagList getDataForPacket() {
 		int n = 8;
 		NBTTagList tag = new NBTTagList();
 		for (int i = 0; i < SIZE; i += n) {
 			for (int k = 0; k < SIZE; k += n) {
-				tag.appendTag(new NBTTagByte((byte)biomes[i][k].getBiome().biomeID));
+				tag.appendTag(new NBTTagByte(biomes[i][k]));
 			}
 		}
 		return tag;
@@ -87,7 +111,7 @@ public class BiomeDistributor extends ThreadedGenerator {
 			for (int k = 0; k < SIZE; k += n) {
 				int idx = (i*SIZE+k)/n;
 				byte id = ((NBTTagByte)tag.tagList.get(idx)).func_150290_f();
-				biomes[i][k] = Biomes.getFromID(id);
+				biomes[i][k] = id;
 			}
 		}
 	}
@@ -115,12 +139,12 @@ public class BiomeDistributor extends ThreadedGenerator {
 		}
 		if (RegionMapper.isPointInCentralRegion(x, z))
 			return Biomes.CENTER.getBiome();
-		return getAdj(x/SCALE_FACTOR, z/SCALE_FACTOR, 0, 0).getBiome();
+		return getBiome(getAdj(x/SCALE_FACTOR, z/SCALE_FACTOR, 0, 0)).getBiome();
 	}
 
 	@Override
 	public void run() throws Throwable {
-		biomes = new ChromaDimensionBiomeType[SIZE][SIZE];
+		biomes = new byte[SIZE][SIZE];
 		monumentBlob = null;
 		structureBlobs.clear();
 
@@ -163,12 +187,12 @@ public class BiomeDistributor extends ThreadedGenerator {
 						int dx = getAdj(p.x, rand.nextInt(33)-16);
 						int dz = getAdj(p.y, rand.nextInt(33)-16);
 						int tries = 0;
-						while (biomes[dx][dz] != b && tries < 200) {
+						while (getBiome(biomes[dx][dz]) != b && tries < 200) {
 							dx = getAdj(p.x, rand.nextInt(33)-16);
 							dz = getAdj(p.y, rand.nextInt(33)-16);
 							tries++;
 						}
-						if (biomes[dx][dz] == b) {
+						if (getBiome(biomes[dx][dz]) == b) {
 							double f = 0.25+rand.nextDouble()*0.5;
 							this.placeBlob(s, dx, dz, f, b);
 						}
@@ -205,7 +229,7 @@ public class BiomeDistributor extends ThreadedGenerator {
 			for (int k = 0; k < b.spawnWeight; k++) {
 				int dx = rand.nextInt(SIZE);
 				int dz = rand.nextInt(SIZE);
-				while (biomes[dx][dz] != null) {
+				while (getBiome(biomes[dx][dz]) != null) {
 					dx = rand.nextInt(SIZE);
 					dz = rand.nextInt(SIZE);
 				}
@@ -263,7 +287,7 @@ public class BiomeDistributor extends ThreadedGenerator {
 		ArrayList<Point> li = new ArrayList();
 		for (int i = 0; i < SIZE; i++) {
 			for (int k = 0; k < SIZE; k++) {
-				if (biomes[i][k] == null) {
+				if (getBiome(biomes[i][k]) == null) {
 					/*
 					this.fillEmptySpace(i, k);
 					 */
@@ -289,7 +313,7 @@ public class BiomeDistributor extends ThreadedGenerator {
 		int r = 6;
 		for (int i = -r; i <= r; i++) {
 			for (int k = -r; k <= r; k++) {
-				ChromaDimensionBiomeType b = this.getAdj(x, z, i, k);
+				ChromaDimensionBiomeType b = getBiome(this.getAdj(x, z, i, k));
 				if (b != null)
 					map.increment(b);
 			}
@@ -315,12 +339,12 @@ public class BiomeDistributor extends ThreadedGenerator {
 	private void featherEdges() {
 		for (int i = 0; i < SIZE; i++) {
 			for (int k = 0; k < SIZE; k++) {
-				ChromaDimensionBiomeType b = biomes[i][k];
-				ChromaDimensionBiomeType bb = null;
+				byte b = biomes[i][k];
+				byte bb = 0;
 				boolean flag = true;
 				for (int d = 2; d < 6; d++) {
 					ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[d];
-					ChromaDimensionBiomeType b2 = this.getAdj(i, k, dir.offsetX, dir.offsetZ);
+					byte b2 = this.getAdj(i, k, dir.offsetX, dir.offsetZ);
 					if (b == b2) {
 						flag = false;
 						break;
@@ -346,7 +370,7 @@ public class BiomeDistributor extends ThreadedGenerator {
 		BufferedImage img = new BufferedImage(biomes.length, biomes.length, BufferedImage.TYPE_INT_ARGB);
 		for (int i = 0; i < biomes.length; i++) {
 			for (int k = 0; k < biomes[i].length; k++) {
-				ChromaDimensionBiomeType b = biomes[i][k];
+				ChromaDimensionBiomeType b = getBiome(biomes[i][k]);
 				ChromaDimensionBiomeType o = b;
 				if (b instanceof SubBiomes)
 					b = ((SubBiomes)b).getParent();
@@ -361,12 +385,12 @@ public class BiomeDistributor extends ThreadedGenerator {
 		ImageIO.write(img, "png", f);
 	}
 
-	private	static ChromaDimensionBiomeType getAdj(int x, int z, int dx, int dz) {
+	private	static byte getAdj(int x, int z, int dx, int dz) {
 		return biomes[getAdj(x, dx)][getAdj(z, dz)];
 	}
 
 	private	static void setAdj(int x, int z, int dx, int dz, ChromaDimensionBiomeType b) {
-		biomes[getAdj(x, dx)][getAdj(z, dz)] = b;
+		biomes[getAdj(x, dx)][getAdj(z, dz)] = getIndex(b);
 	}
 
 	private	static int getAdj(int p, int d) {
@@ -377,7 +401,7 @@ public class BiomeDistributor extends ThreadedGenerator {
 		for (int i = -r; i <= r; i++) {
 			for (int k = -r; k <= r; k++) {
 				if (i*i+k*k <= r*r) {
-					if (getAdj(x, z, i, k) == over)
+					if (getBiome(getAdj(x, z, i, k)) == over)
 						setAdj(x, z, i, k, b);
 				}
 			}
@@ -431,7 +455,7 @@ public class BiomeDistributor extends ThreadedGenerator {
 			ArrayList<ForgeDirection> li = new ArrayList();
 			for (int i = 2; i < 6; i++) {
 				ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
-				ChromaDimensionBiomeType b = BiomeDistributor.this.getAdj(posX, posZ, dir.offsetX*stepSize, dir.offsetZ*stepSize);
+				ChromaDimensionBiomeType b = getBiome(BiomeDistributor.this.getAdj(posX, posZ, dir.offsetX*stepSize, dir.offsetZ*stepSize));
 				if (b == null)
 					li.add(dir);
 			}

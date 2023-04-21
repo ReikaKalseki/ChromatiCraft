@@ -35,7 +35,6 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -61,6 +60,7 @@ import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.IO.CustomRecipeList;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
+import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.ReikaRecipeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.RotaryCraft.Auxiliary.RecipeManagers.WorktableRecipes;
@@ -255,7 +255,7 @@ public class ItemElementCalculator implements ItemElementAPI {
 		if (is.getItem() instanceof ItemFood) {
 			tag.addValueToColor(CrystalElement.MAGENTA, Math.round(((ItemFood)is.getItem()).func_150905_g(is)/2F));
 		}
-		FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(is);
+		FluidStack fs = ReikaFluidHelper.getFluidForItem(is);
 		if (fs != null) {
 			Fluid f = fs.getFluid();
 			ElementTagCompound ftag = ItemMagicRegistry.instance.getFluidValue(f);

@@ -89,7 +89,7 @@ public class UATrades implements ConnectionErrorHandler {
 				}
 			}
 			else {
-				f.delete();
+				//f.delete();
 			}
 		}
 

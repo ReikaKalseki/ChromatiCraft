@@ -1058,6 +1058,8 @@ public class ChromatiCraft extends DragonAPIMod {
 				for (int i = 0; i < CrystalElement.elements.length; i++) {
 					CrystalElement.elements[i].setIcons(event.map);
 				}
+
+				ChromaClientEventController.instance.loadTreeOverlays(event.map);
 			}
 			ChromaIcons.registerAll(event.map);
 		}

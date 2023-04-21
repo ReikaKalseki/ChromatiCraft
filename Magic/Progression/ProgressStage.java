@@ -70,6 +70,7 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 	SHARDCHARGE(	Shareability.PROXIMITY,	Reloadability.NEVER,	ChromaStacks.chargedRedShard),
 	ALLOY(			Shareability.PROXIMITY,	Reloadability.NEVER,	ChromaStacks.chromaIngot),
 	INFUSE(			Shareability.PROXIMITY,	Reloadability.NEVER,	ChromaTiles.INFUSER),
+	MUDHINT(		Shareability.PROXIMITY,	Reloadability.ALWAYS,	ChromaBlocks.MUD.getBlockInstance()), //look at chroma mud
 	CHROMA(			Shareability.SELFONLY,	Reloadability.NEVER,	ChromaBlocks.CHROMA.getBlockInstance()), //step in liquid chroma
 	//STONES(		Shareability.SELFONLY,	ChromaStacks.elementUnit), //craft all elemental stones together
 	SHOCK(			Shareability.SELFONLY,	Reloadability.NEVER,	ChromaBlocks.PYLONSTRUCT.getStackOfMetadata(5)), //get hit by a pylon

@@ -155,11 +155,13 @@ public class ProgressionManager implements ProgressRegistry {
 		this.addProgressPrereq(ProgressStage.BIOMESTRUCT, ProgressStage.CHROMA);
 		this.addProgressPrereq(ProgressStage.BIOMESTRUCT, ProgressStage.ENERGYIDEA);
 
-		this.addProgressPrereq(ProgressStage.ALLOY, 		ProgressStage.SHARDCHARGE);
-		this.addProgressPrereq(ProgressStage.ALLOY, 		ProgressStage.MULTIBLOCK);
-		this.addProgressPrereq(ProgressStage.ALLOY, 		ProgressStage.CHROMA);
+		this.addProgressPrereq(ProgressStage.ALLOY, 	ProgressStage.SHARDCHARGE);
+		this.addProgressPrereq(ProgressStage.ALLOY, 	ProgressStage.MULTIBLOCK);
+		this.addProgressPrereq(ProgressStage.ALLOY, 	ProgressStage.CHROMA);
 
 		this.addProgressPrereq(ProgressStage.INFUSE, 	ProgressStage.ALLOY);
+
+		this.addProgressPrereq(ProgressStage.MUDHINT,	ProgressStage.RAINBOWFOREST);
 
 		if (ProgressStage.VOIDMONSTER.active) {
 			this.addProgressPrereq(ProgressStage.VOIDMONSTER,	ProgressStage.BEDROCK);
@@ -281,6 +283,7 @@ public class ProgressionManager implements ProgressRegistry {
 		nonGatingProgress.put(ProgressStage.END, ResearchLevel.MULTICRAFT);
 		nonGatingProgress.put(ProgressStage.NODE, ResearchLevel.CTM);
 		nonGatingProgress.put(ProgressStage.MYST, ResearchLevel.CTM);
+		nonGatingProgress.put(ProgressStage.MUDHINT, ResearchLevel.CTM);
 
 		this.addChainedProgression(ProgressStage.BYPASSWEAK, ProgressStage.BLOWREPEATER, false, false);
 		this.addChainedProgression(ProgressStage.TUNECAST, ProgressStage.BYPASSWEAK, true, false, ProgressStage.BLOWREPEATER);

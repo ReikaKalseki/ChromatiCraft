@@ -144,6 +144,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	PYLONLINK("Interconnected Energy",		ChromaTiles.PYLONLINK.getCraftedProduct(),				ResearchLevel.ENERGY,		ProgressStage.PYLONLINK),
 	ITEMBURNER("Item Decomposition",		new ItemStack(Blocks.dirt),								ResearchLevel.ENERGY,		ProgressStage.CHARGE, ProgressStage.ALLCOLORS),
 	MONUMENT("Construction Restoration",	ChromaTiles.AURAPOINT.getCraftedProduct(),				ResearchLevel.CTM,			ProgressStage.CTM),
+	MUD("Magical Residue",					ChromaBlocks.MUD.getStackOf(),							ResearchLevel.RAWEXPLORE,	ProgressStage.MUDHINT),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING,		ProgressStage.BLOWREPEATER),

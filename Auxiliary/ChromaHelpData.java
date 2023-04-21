@@ -43,6 +43,8 @@ public class ChromaHelpData {
 
 		this.addKey(ChromaBlocks.RAINBOWLEAF, "rainbowleaf");
 
+		this.addKey(ChromaBlocks.MUD, "mud");
+
 		this.addKey(ChromaBlocks.DYELEAF, "dyeleaf");
 		this.addKey(ChromaBlocks.DECAY, "dyeleaf");
 

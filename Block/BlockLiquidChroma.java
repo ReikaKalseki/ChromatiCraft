@@ -19,6 +19,7 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -55,9 +56,21 @@ public class BlockLiquidChroma extends BlockFluidClassic {
 	}
 
 	@Override
-	public final int getLightValue(IBlockAccess world, int x, int y, int z)
-	{
+	public final int getLightValue(IBlockAccess world, int x, int y, int z) {
 		return 15;
+	}
+
+	@Override
+	protected void flowIntoBlock(World world, int x, int y, int z, int meta) {
+		super.flowIntoBlock(world, x, y, z, meta);
+		if (world.getBlock(x, y, z) == this) {
+			float chance = Math.min(1, (8-meta)/8F*0.67F);
+			if (meta == 0 || ReikaRandomHelper.doWithChance(chance*chance)) {
+				Block b = world.getBlock(x, y-1, z);
+				if (b == Blocks.grass || b == Blocks.dirt || b == Blocks.sand)
+					world.setBlock(x, y-1, z, ChromaBlocks.MUD.getBlockInstance());
+			}
+		}
 	}
 
 	@Override
@@ -152,6 +165,12 @@ public class BlockLiquidChroma extends BlockFluidClassic {
 			if (b == ChromaBlocks.PYLONSTRUCT.getBlockInstance()) {
 				((BlockPylonStructure)b).triggerAddCheck(world, dx, y, dz);
 			}
+		}
+
+		if (world.getBlockMetadata(x, y, z) == 0) {
+			Block b = world.getBlock(x, y-1, z);
+			if (b == Blocks.grass || b == Blocks.dirt || b == Blocks.sand)
+				world.setBlock(x, y-1, z, ChromaBlocks.MUD.getBlockInstance());
 		}
 	}
 

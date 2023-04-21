@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
@@ -24,9 +25,10 @@ import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGu
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaLiquidRenderer;
+import Reika.DragonAPI.ModInteract.DeepInteract.NEIIntercept.KeyConsumingGui;
 
 
-public class GuiFluidRelay extends GuiChromaBase {
+public class GuiFluidRelay extends GuiChromaBase implements KeyConsumingGui {
 
 	private final TileEntityFluidRelay relay;
 
@@ -60,6 +62,14 @@ public class GuiFluidRelay extends GuiChromaBase {
 		buttonList.add(new CustomSoundImagedGuiButton(5, j+xSize-10-in+dx, k+iny-dy, 10, 10, 90, 76, tex, ChromatiCraft.class, this));
 
 		buttonList.add(new CustomSoundImagedGuiButton(6, j+xSize-10-in+dx, k+iny+dy, 10, 10, 90, relay.autoFilter ? 86 : 56, tex, ChromatiCraft.class, this));
+	}
+
+	@Override
+	public boolean consumeKey(char c) {
+		if (!Character.isLetter(c))
+			return false;
+		((ContainerFluidRelay)inventorySlots).onCharTyped(c);
+		return true;
 	}
 
 	@Override
@@ -122,6 +132,10 @@ public class GuiFluidRelay extends GuiChromaBase {
 				int x = j+14+i*22;
 				int y = k+17;
 				api.drawTexturedModelRectFromIcon(x, y, ReikaLiquidRenderer.getFluidIconSafe(types[i]), 16, 16);
+
+				if (api.isMouseInBox(x, x+16, y, y+16)) {
+					api.drawTooltip(fontRendererObj, types[i].getLocalizedName(new FluidStack(types[i], 1000)));
+				}
 			}
 		}
 

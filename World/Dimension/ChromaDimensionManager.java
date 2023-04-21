@@ -272,6 +272,8 @@ public class ChromaDimensionManager {
 
 		public String name();
 
+		public int ordinal();
+
 	}
 
 	public static void initialize() {

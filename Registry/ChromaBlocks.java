@@ -127,6 +127,7 @@ import Reika.ChromatiCraft.Block.Relay.BlockFloatingRelay;
 import Reika.ChromatiCraft.Block.Relay.BlockLumenRelay;
 import Reika.ChromatiCraft.Block.Relay.BlockRelayFilter;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCaveIndicator;
+import Reika.ChromatiCraft.Block.Worldgen.BlockChromaMud;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
 import Reika.ChromatiCraft.Block.Worldgen.BlockDecoFlower;
@@ -288,6 +289,7 @@ public enum ChromaBlocks implements BlockEnum {
 	FERTILEDYEVINE(BlockDyeVine.class,			ItemBlockDyeTypes.class,		"chroma.dyevinefertile"),
 	NETHERGATE(BlockNetherBypassGate.class,										"chroma.nethergate"),
 	VOIDCAVE(BlockVoidCave.class,				ItemBlockMultiType.class,		"chroma.voidcave"),
+	MUD(BlockChromaMud.class,													"chroma.mud"),
 	;
 
 	private Class blockClass;
@@ -371,6 +373,7 @@ public enum ChromaBlocks implements BlockEnum {
 				return Material.circuits;
 			case SPARKLE:
 			case CLIFFSTONE:
+			case MUD:
 				return Material.ground;
 			default:
 				return Material.rock;
@@ -607,6 +610,7 @@ public enum ChromaBlocks implements BlockEnum {
 			case INJECTORAUX:
 			case NETHERGATE:
 			case VOIDCAVE:
+			case MUD:
 				return false;
 			default:
 				return true;

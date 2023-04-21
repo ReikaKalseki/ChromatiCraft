@@ -987,6 +987,9 @@ public class ChromatiPackets implements PacketHandler {
 				case RELAYFLUID:
 					((TileEntityFluidRelay)tile).sendFluidParticles(world, x, y, z, FluidRegistry.getFluid(data[0]));
 					break;
+				case RELAYFLUIDKEY:
+					((TileEntityFluidRelay)tile).setFluid(data[0], data[1] < 0 ? null : FluidRegistry.getFluid(data[1]));
+					break;
 				case RELAYFILTER:
 					((TileEntityRelayFilter)tile).setFlag(CrystalElement.elements[data[0]], data[1] > 0);
 					break;

@@ -17,7 +17,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidHandler;
 
@@ -36,6 +35,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.InertItem;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
+import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -96,7 +96,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 		}
 		else if (recipe == null || !ReikaItemHelper.matchStacks(recipe.output, out) || craftingTick == 0) {
 			FabricationRecipe rec = FabricationRecipes.recipes().getItemRecipe(out);
-			FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(out);
+			FluidStack fs = ReikaFluidHelper.getFluidForItem(out);
 			Fluid f = fs != null ? fs.getFluid() : null;
 			if (f != null) {
 				rec = FabricationRecipes.recipes().getOrCreateFluidRecipe(out, f);

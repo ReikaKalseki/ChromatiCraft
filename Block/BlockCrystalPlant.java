@@ -89,9 +89,8 @@ public class BlockCrystalPlant extends Block {
 	}
 
 	@Override
-	public boolean canBlockStay(World world, int x, int y, int z)
-	{
-		return ReikaPlantHelper.SAPLING.canPlantAt(world, x, y, z);
+	public boolean canBlockStay(World world, int x, int y, int z) {
+		return world.getBlock(x, y-1, z) == ChromaBlocks.MUD.getBlockInstance() || ReikaPlantHelper.SAPLING.canPlantAt(world, x, y, z);
 	}
 
 	@Override

@@ -78,7 +78,7 @@ public class ItemCrystalSeeds extends ItemCrystalBasic {
 				++x;
 		}
 		Block idbelow = world.getBlock(x, y-1, z);
-		if ((!ReikaWorldHelper.softBlocks(world, x, y, z)) || !ReikaPlantHelper.SAPLING.canPlantAt(world, x, y, z))
+		if ((!ReikaWorldHelper.softBlocks(world, x, y, z)) || !(idbelow == ChromaBlocks.MUD.getBlockInstance() || ReikaPlantHelper.SAPLING.canPlantAt(world, x, y, z)))
 			return false;
 		if (!player.canPlayerEdit(x, y, z, 0, item))
 			return false;

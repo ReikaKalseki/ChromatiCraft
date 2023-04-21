@@ -30,7 +30,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.item.ItemTossEvent;
-import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -49,6 +48,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
+import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -315,7 +315,7 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 	public boolean isItemValidForSlot(int slot, ItemStack is) {
 		if (slot >= targets.length)
 			return false;
-		if (FluidContainerRegistry.getFluidForFilledItem(is) != null)
+		if (ReikaFluidHelper.getFluidForItem(is) != null)
 			if (is.stackSize > 1 || inv[slot] != null)
 				return false;
 		return omniMode ? targets[slot] != null : ReikaItemHelper.matchStacks(inv[slot], is);
@@ -450,7 +450,7 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 				case RIGHTCLICK: {
 					ItemStack orig = is.copy();
 					ItemStack hold = ep.getCurrentEquippedItem();
-					FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(is);
+					FluidStack fs = ReikaFluidHelper.getFluidForItem(is);
 					ep.setCurrentItemOrArmor(0, is);
 					boolean flag = false;
 					if (is.getItem() instanceof ItemBucket && c.offset(0, 1, 0).isEmpty(world) && is.stackSize == 1) {

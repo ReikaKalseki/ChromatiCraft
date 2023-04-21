@@ -102,6 +102,7 @@ import Reika.DragonAPI.Interfaces.TileEntity.ConditionalUnbreakability;
 import Reika.DragonAPI.Interfaces.TileEntity.HitAction;
 import Reika.DragonAPI.Interfaces.TileEntity.RedstoneTile;
 import Reika.DragonAPI.Interfaces.TileEntity.SidePlacedTile;
+import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
@@ -510,7 +511,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 				}
 			}
 			else {
-				FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(is);
+				FluidStack fs = ReikaFluidHelper.getFluidForItem(is);
 				if (fs != null) {
 					tp.markAsFluid(fs.getFluid());
 					return true;
@@ -559,7 +560,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 
 		if (is != null && is.stackSize == 1 && m == ChromaTiles.TANK) {
 			TileEntityCrystalTank tile = (TileEntityCrystalTank)te;
-			FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(is);
+			FluidStack fs = ReikaFluidHelper.getFluidForItem(is);
 			if (fs != null) {
 				int drain = tile.fill(null, fs, false);
 				if (drain == fs.amount) {
@@ -576,7 +577,7 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 				if (rem != null) {
 					ItemStack fill = FluidContainerRegistry.fillFluidContainer(rem, is);
 					if (fill != null) {
-						FluidStack removed = FluidContainerRegistry.getFluidForFilledItem(fill);
+						FluidStack removed = ReikaFluidHelper.getFluidForItem(fill);
 						tile.drain(null, removed.amount, true);
 						if (!ep.capabilities.isCreativeMode) {
 							ep.setCurrentItemOrArmor(0, fill);

@@ -50,6 +50,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Block.ConnectedTextureGlass;
+import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
 import mcp.mobius.waila.api.IWailaConfigHandler;
@@ -100,7 +101,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 		if (tk == null)
 			return false;
 		if (is != null && is.stackSize == 1) {
-			FluidStack fs = FluidContainerRegistry.getFluidForFilledItem(is);
+			FluidStack fs = ReikaFluidHelper.getFluidForItem(is);
 			if (fs != null) {
 				int drain = tk.fill(null, fs, false);
 				if (drain == fs.amount) {
@@ -117,7 +118,7 @@ public class BlockCrystalTank extends Block implements IWailaDataProvider, Conne
 				if (rem != null) {
 					ItemStack fill = FluidContainerRegistry.fillFluidContainer(rem, is);
 					if (fill != null) {
-						FluidStack removed = FluidContainerRegistry.getFluidForFilledItem(fill);
+						FluidStack removed = ReikaFluidHelper.getFluidForItem(fill);
 						tk.drain(null, removed.amount, true);
 						if (!ep.capabilities.isCreativeMode) {
 							ep.setCurrentItemOrArmor(0, fill);

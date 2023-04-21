@@ -51,7 +51,10 @@ public class TileEntityCrystalPlant extends TileEntity {
 			growthTick--;
 			if (this.isPure()) {
 				for (int i = 2; i < 6; i++) {
-					if (ReikaRandomHelper.doWithChance(this.is(Modifier.PRIMAL) ? 80 : this.is(Modifier.BOOSTED) ? 30 : 5)) {
+					double chance = this.is(Modifier.PRIMAL) ? 80 : this.is(Modifier.BOOSTED) ? 30 : 5;
+					if (worldObj.getBlock(xCoord, yCoord-1, zCoord) == ChromaBlocks.MUD.getBlockInstance())
+						chance *= 2;
+					if (ReikaRandomHelper.doWithChance(Math.min(1, chance))) {
 						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
 						int dx = xCoord+dir.offsetX;
 						int dy = yCoord+dir.offsetY;
@@ -73,7 +76,7 @@ public class TileEntityCrystalPlant extends TileEntity {
 	}
 
 	private void tryGrowPrimal() {
-		if (random.nextInt(60) > 0)
+		if (random.nextInt(worldObj.getBlock(xCoord, yCoord-1, zCoord) == ChromaBlocks.MUD.getBlockInstance() ? 40 : 60) > 0)
 			return;
 		for (int i = 2; i < 6; i++) {
 			boolean flag = false;
@@ -130,7 +133,7 @@ public class TileEntityCrystalPlant extends TileEntity {
 					num = 1;
 				}
 				int smeta = meta+Modifier.IMPURE.flag;
-				if (this.isPure() && random.nextInt(this.is(Modifier.BOOSTED) ? 4 : 400) == 0)
+				if (this.isPure() && random.nextInt(this.is(Modifier.BOOSTED) ? 4 : (worldObj.getBlock(xCoord, yCoord-1, zCoord) == ChromaBlocks.MUD.getBlockInstance() ? 200 : 400)) == 0)
 					smeta = meta+Modifier.BOOSTED.flag;
 				for (int i = 0; i < num; i++) {
 					li.add(ChromaItems.SEED.getStackOfMetadata(smeta));

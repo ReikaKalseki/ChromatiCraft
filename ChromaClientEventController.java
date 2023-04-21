@@ -36,6 +36,7 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.entity.Entity;
@@ -137,6 +138,7 @@ import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.ChromatiCraft.World.EndOverhaulManager;
+import Reika.ChromatiCraft.World.RainbowForestGenerator;
 import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.SkyRiverManagerClient;
 import Reika.ChromatiCraft.World.Dimension.Rendering.ChromaCloudRenderer;
@@ -174,7 +176,7 @@ import Reika.DragonAPI.Instantiable.Event.Client.LightmapEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.NightVisionBrightnessEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.PlayMusicEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderBlockAtPosEvent;
-import Reika.DragonAPI.Instantiable.Event.Client.RenderBlockAtPosEvent.BlockRenderWatcher;
+import Reika.DragonAPI.Instantiable.Event.Client.RenderBlockAtPosEvent.AdvancedBlockRenderWatcher;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderFirstPersonItemEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.RenderItemInSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
@@ -188,6 +190,7 @@ import Reika.DragonAPI.Instantiable.IO.EnumSound;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
+import Reika.DragonAPI.Interfaces.Registry.TreeType;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
@@ -199,12 +202,15 @@ import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaVectorHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.Registry.ReikaTreeHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+import Reika.DragonAPI.ModRegistry.ModWoodList;
 
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.EventPriority;
@@ -222,7 +228,7 @@ import pneumaticCraft.api.client.pneumaticHelmet.InventoryTrackEvent;
 import thaumcraft.api.research.ResearchItem;
 
 @SideOnly(Side.CLIENT)
-public class ChromaClientEventController implements ProfileEventWatcher, ChunkWorldRenderWatcher, BlockRenderWatcher, EntityRenderWatcher, TileRenderWatcher {
+public class ChromaClientEventController implements ProfileEventWatcher, ChunkWorldRenderWatcher, AdvancedBlockRenderWatcher, EntityRenderWatcher, TileRenderWatcher {
 
 	public static final ChromaClientEventController instance = new ChromaClientEventController();
 
@@ -242,6 +248,8 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	private double playerOverlayPosX;
 	private double playerOverlayPosY;
 	private double playerOverlayPosZ;
+
+	private final IIcon[] rainbowForestTreeGlowOverlays = new IIcon[5];
 
 	private ChromaClientEventController() {
 		/*
@@ -264,6 +272,12 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 		snowColors.add(0x0000ff);
 		snowColors.add(0xb000ff);
 		snowColors.add(0x0094ff);
+	}
+
+	public void loadTreeOverlays(IIconRegister ico) {
+		for (int i = 0; i < rainbowForestTreeGlowOverlays.length; i++) {
+			rainbowForestTreeGlowOverlays[i] = ico.registerIcon("chromaticraft:dye/tree_overlay/"+i);
+		}
 	}
 
 	public void onCall(String tag) {
@@ -425,6 +439,20 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 		}
 	}
 
+	public int getMaxRenderPass(Block b, int x, int y, int z) {
+		World world = Minecraft.getMinecraft().theWorld;
+		if (ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x, z)) && b.isWood(world, x, y, z))
+			return 1;
+		return b.getRenderBlockPass();
+	}
+
+	public boolean tryRenderInPass(Block b, int x, int y, int z, int pass) {
+		if (b.canRenderInPass(pass))
+			return true;
+		World world = Minecraft.getMinecraft().theWorld;
+		return ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x, z)) && b.isWood(world, x, y, z);
+	}
+
 	public boolean onBlockTriedRender(Block b, int xCoord, int yCoord, int zCoord, WorldRenderer wr, RenderBlocks render, int renderPass) {
 		if (b == Blocks.snow_layer) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
@@ -502,7 +530,62 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 				}
 			}
 		}
+		else if (renderPass == 1 && ChromatiCraft.isRainbowForest(access.getBiomeGenForCoords(xCoord, zCoord)) && b.isWood(access, xCoord, yCoord, zCoord)) {
+			TreeType tree = this.getTreeType(b, meta);
+			if (tree != null) {
+				TreeType tree2 = tree;
+				int y = yCoord;
+				while (tree == tree2 && y < 255) {
+					y++;
+					tree2 = this.getTreeType(access.getBlock(xCoord, y, zCoord), access.getBlockMetadata(xCoord, y, zCoord));
+				}
+				if (access.getBlock(xCoord, y, zCoord) == ChromaBlocks.DECAY.getBlockInstance()) {
+					render.enableAO = false;
+					Tessellator.instance.setBrightness(240);
+					Tessellator.instance.setColorRGBA_I(ReikaDyeHelper.dyes[access.getBlockMetadata(xCoord, y, zCoord)].color, 255);
+					IIcon ico = render.getIconSafe(RainbowForestGenerator.getWoodGlow(xCoord, yCoord, zCoord, rainbowForestTreeGlowOverlays));
+					for (int i = 2; i < 6; i++) {
+						ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
+						int dx = xCoord+dir.offsetX;
+						//int dy = yCoord+dir.offsetY;
+						int dz = zCoord+dir.offsetZ;
+						boolean side = b.shouldSideBeRendered(access, dx, yCoord, dz, i);
+						double o = 0.0025;
+						if (side) {
+							render.setRenderBoundsFromBlock(b);
+							switch(dir) {
+								case WEST:
+									render.renderFaceXNeg(b, xCoord-o, yCoord, zCoord, ico);
+									break;
+								case EAST:
+									render.renderFaceXPos(b, xCoord+o, yCoord, zCoord, ico);
+									break;
+								case NORTH:
+									render.renderFaceZNeg(b, xCoord, yCoord, zCoord-o, ico);
+									break;
+								case SOUTH:
+									render.renderFaceZPos(b, xCoord, yCoord, zCoord+o, ico);
+									break;
+								default:
+									break;
+							}
+						}
+					}
+				}
+			}/*
+			if (b.getRenderBlockPass() < 1) {
+				RenderBlockAtPosEvent.continueRendering = true;
+				return true;
+			}*/
+		}
 		return false;
+	}
+
+	private TreeType getTreeType(Block b, int meta) {
+		TreeType tree = ReikaTreeHelper.getTree(b, meta);
+		if (tree == null)
+			tree = ModWoodList.getModWood(b, meta);
+		return tree;
 	}
 
 	@SubscribeEvent
