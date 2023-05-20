@@ -324,6 +324,10 @@ public final class PylonGenerator implements RetroactiveGenerator {
 			return false;
 		if (world.provider.dimensionId == TwilightForestHandler.getInstance().dimensionID)
 			return false;
+		if (world.provider.getClass().getName().endsWith("WorldProviderMiner"))
+			return false;
+		if (world.provider.getClass().getName().startsWith("com.emoniph.witchery"))
+			return false;
 		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
 			return MystPages.Pages.PYLONS.existsInWorld(world);
 		}

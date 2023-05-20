@@ -39,6 +39,7 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.CastingAPI;
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.Event.CastingRecipesReloadEvent;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.MultiBlockCastingRecipe;
@@ -248,7 +249,6 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.Transit
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.VacuumGunRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.WarpCapsuleRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Tools.WideCollectorRecipe;
-import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Block.BlockPath;
 import Reika.ChromatiCraft.Block.BlockPath.PathType;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
@@ -1096,8 +1096,13 @@ public class RecipesCastingTable implements CastingAPI {
 	}
 
 	public void addModdedRecipe(CastingRecipe r) {
-		if (this.verifyOutputItem(r.getOutput(), false))
-			this.addCustomRecipe(r);
+		try {
+			if (ChromaAux.verifyCustomRecipeOutputItem(r.getOutput(), false))
+				this.addCustomRecipe(r);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	private CastingRecipe addCustomRecipe(CastingRecipe r) {
@@ -1284,23 +1289,9 @@ public class RecipesCastingTable implements CastingAPI {
 		}
 	}
 
-	protected final boolean verifyOutputItem(ItemStack is, boolean throwExc) {
-		if (is.getItem() instanceof ItemChromaBasic || is.getItem().getClass().getName().startsWith("Reika.ChromatiCraft")) {
-			String s = "Invalid Recipe Output: This item is not allowed as an output, as it is a native ChromatiCraft item with its own recipe.";
-			if (throwExc)
-				throw new IllegalArgumentException(s);
-			else
-				ChromatiCraft.logger.logError(s);
-			return false;
-		}
-		else {
-			return true;
-		}
-	}
-
 	private CastingRecipe addCustomRecipe(LuaBlock lb, CustomRecipeList crl) throws Exception {
 		ItemStack out = crl.parseItemString(lb.getString("output"), lb.getChild("output_nbt"), false);
-		this.verifyOutputItem(out, true);
+		ChromaAux.verifyCustomRecipeOutputItem(out, true);
 		String lvl = lb.getString("level");
 		int duration = lb.containsKey("duration") ? lb.getInt("duration") : -1;
 		int typical = lb.containsKey("typical_crafted_amount") ? lb.getInt("typical_crafted_amount") : 1;

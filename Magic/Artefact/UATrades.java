@@ -20,7 +20,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
-import java.util.Random;
 
 import org.apache.commons.codec.Charsets;
 
@@ -38,13 +37,13 @@ import net.minecraft.village.MerchantRecipe;
 import net.minecraft.village.MerchantRecipeList;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.VillageTradeHandler;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ASM.ASMCalls;
+import Reika.DragonAPI.Auxiliary.VillageTradeHandler;
 import Reika.DragonAPI.IO.ReikaFileReader;
 import Reika.DragonAPI.IO.ReikaFileReader.ConnectionErrorHandler;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
@@ -167,12 +166,14 @@ public class UATrades implements ConnectionErrorHandler {
 		MAX_PRICE = Math.max(MAX_PRICE, val);
 	}
 
-	public void addTradesToVillager(EntityVillager ev, MerchantRecipeList li, Random rand) {
+	public void addTradesToVillager(EntityVillager ev, MerchantRecipeList li, VillageTradeHandler h) {
 		for (Entry<Class<? extends UATypeTrade>, Double> e : tradeList.entrySet()) {
 			Class<? extends UATypeTrade> trade = e.getKey();
-			if (VillageTradeHandler.instance.withRandomChance(ev, e.getValue(), trade.getSimpleName()) && !this.hasTrade(ev.buyingList, trade)) {
+			if (h.withRandomChance(ev, e.getValue(), trade.getSimpleName()) && !this.hasTrade(ev.buyingList, trade)) {
 				try {
-					ev.buyingList.add(trade.newInstance()); //add an unlocked trade
+					UATypeTrade u = trade.newInstance();
+					if (u.isValidForVillager(ev))
+						ev.buyingList.add(u); //add an unlocked trade
 				}
 				catch (Exception ex) {
 					ChromatiCraft.logger.logError("Could not add trade type "+trade+" to villager!");
@@ -181,7 +182,7 @@ public class UATrades implements ConnectionErrorHandler {
 			}
 		}
 		for (EDCommodityHook eh : externalHooks.allValues(false)) {
-			if (VillageTradeHandler.instance.withRandomChance(ev, eh.getChancePerVillager(), eh.getCommodityID())) {
+			if (h.withRandomChance(ev, eh.getChancePerVillager(), eh.getCommodityID())) {
 				MerchantRecipe trade = eh.createTrade();
 				if (!this.hasTrade(ev.buyingList, trade)) {
 					try {
@@ -228,6 +229,8 @@ public class UATrades implements ConnectionErrorHandler {
 			emeraldValue = calcValue(priceID);
 		}
 
+		public abstract boolean isValidForVillager(EntityVillager ev);
+
 		@Override
 		public final void incrementToolUses() {
 			//No-op to prevent expiry
@@ -246,6 +249,11 @@ public class UATrades implements ConnectionErrorHandler {
 			return ProgressStage.ARTEFACT.isPlayerAtStage(ep);
 		}
 
+		@Override
+		public boolean isValidForVillager(EntityVillager ev) {
+			return true;
+		}
+
 	}
 
 	public static class MetaAlloyTrade extends UATypeTrade {
@@ -257,6 +265,11 @@ public class UATrades implements ConnectionErrorHandler {
 		@Override
 		public boolean isValid(EntityPlayer ep) {
 			return true;
+		}
+
+		@Override
+		public boolean isValidForVillager(EntityVillager ev) {
+			return ev.getProfession() < 3;
 		}
 
 	}

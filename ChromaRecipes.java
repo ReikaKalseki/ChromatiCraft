@@ -37,6 +37,7 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCobbleGen;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.IO.CustomRecipeList;
 import Reika.DragonAPI.Instantiable.Recipe.ShapelessNBTRecipe;
@@ -120,6 +121,7 @@ public class ChromaRecipes {
 		RecipesCastingTable.instance.loadCustomRecipeFiles();
 		PoolRecipes.instance.loadCustomPoolRecipes();
 		InscriptionRecipes.instance.loadCustomInscriptionRecipes();
+		TileEntityCobbleGen.loadCustomFluidMixRecipes();
 
 		if (ModList.ROTARYCRAFT.isLoaded()) {
 			for (int i = 0; i < CrystalElement.elements.length; i++) {

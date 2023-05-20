@@ -57,6 +57,7 @@ import net.minecraftforge.fluids.Fluid;
 import Reika.ChromatiCraft.ChromaGuiHandler;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
+import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Block.BlockSelectiveGlass;
 import Reika.ChromatiCraft.Block.Dimension.BlockLightedLeaf;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone;
@@ -113,6 +114,7 @@ import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 import Reika.DragonAPI.Libraries.World.ReikaChunkHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
+import Reika.DragonAPI.ModInteract.DeepInteract.SensitiveItemRegistry;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BloodMagicHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ChiselBlockHandler;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
@@ -807,4 +809,20 @@ public class ChromaAux {
 		}
 		return val instanceof Number ? ((Number)val).doubleValue() : val;
 	}*/
+
+	public static boolean verifyCustomRecipeOutputItem(ItemStack is, boolean throwExc) throws Exception {
+		Exception ex = null;
+		if (is.getItem() instanceof ItemChromaBasic || is.getItem().getClass().getName().startsWith("Reika.ChromatiCraft"))
+			ex = new IllegalArgumentException("This item is not allowed as an output, as it is a native ChromatiCraft item with its own recipe.");
+		else if (SensitiveItemRegistry.instance.contains(is))
+			ex = new IllegalArgumentException("This item is not allowed as an output, as it is a progression-sensitive item.");
+		if (ex != null) {
+			if (throwExc)
+				throw ex;
+			else
+				ChromatiCraft.logger.logError(ex);
+			return false;
+		}
+		return true;
+	}
 }

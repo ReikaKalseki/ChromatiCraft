@@ -99,10 +99,14 @@ public class GuiRitualTable extends GuiChromability {
 	@Override
 	protected void keyTyped(char c, int key) {
 		super.keyTyped(c, key);
-		if (key == Keyboard.KEY_PRIOR)
+		if (key == Keyboard.KEY_RIGHT)
 			this.scrollRight(1);
-		if (key == Keyboard.KEY_NEXT)
+		if (key == Keyboard.KEY_LEFT)
 			this.scrollLeft(1);
+		if (key == Keyboard.KEY_PRIOR)
+			this.scrollRight(abilities.size()/8);
+		if (key == Keyboard.KEY_NEXT)
+			this.scrollLeft(abilities.size()/8);
 		if (key == Keyboard.KEY_END)
 			this.scrollLeft(999);
 		if (key == Keyboard.KEY_HOME)

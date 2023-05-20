@@ -1,0 +1,9 @@
+{
+	type = "test1"
+	primary = "chroma"
+	secondary = "water"
+	output = "minecraft:gold_nugget"
+	duration = 15
+	chanceConsumePrimary = 0
+	chanceConsumeSecondary = 25
+}

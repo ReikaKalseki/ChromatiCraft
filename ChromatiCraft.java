@@ -49,6 +49,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 
+import Reika.ChromatiCraft.Auxiliary.CCTradeHandler;
 import Reika.ChromatiCraft.Auxiliary.ChromaASMHandler;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookSpawner;
@@ -66,7 +67,6 @@ import Reika.ChromatiCraft.Auxiliary.PylonDamage;
 import Reika.ChromatiCraft.Auxiliary.ToolDispenserHandlers.BucketDispenserAction;
 import Reika.ChromatiCraft.Auxiliary.ToolDispenserHandlers.ManipulatorDispenserAction;
 import Reika.ChromatiCraft.Auxiliary.ToolDispenserHandlers.ProjectileToolDispenserAction;
-import Reika.ChromatiCraft.Auxiliary.VillageTradeHandler;
 import Reika.ChromatiCraft.Auxiliary.APIImpl.CCAPICore;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Ability.ChromabilityHandler;
@@ -173,6 +173,7 @@ import Reika.DragonAPI.Auxiliary.IconLookupRegistry;
 import Reika.DragonAPI.Auxiliary.PopupWriter;
 import Reika.DragonAPI.Auxiliary.SpecialBiomePlacementRegistry;
 import Reika.DragonAPI.Auxiliary.SpecialBiomePlacementRegistry.Category;
+import Reika.DragonAPI.Auxiliary.VillageTradeHandler;
 import Reika.DragonAPI.Auxiliary.WorldGenInterceptionRegistry;
 import Reika.DragonAPI.Auxiliary.Trackers.CommandableUpdateChecker;
 import Reika.DragonAPI.Auxiliary.Trackers.ConfigMatcher;
@@ -239,7 +240,6 @@ import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.common.registry.VillagerRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import ttftcuts.atg.api.ATGBiomes;
@@ -580,10 +580,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		//ReikaEntityHelper.overrideEntity(EntityChromaEnderCrystal.class, "EnderCrystal", 0);
 
 		VillagersFailChromatiCraft.register();
-		for (int i = 0; i < 4; i++)
-			VillagerRegistry.instance().registerVillageTradeHandler(i, VillageTradeHandler.instance);
-		for (int i : VillagerRegistry.instance().getRegisteredVillagers())
-			VillagerRegistry.instance().registerVillageTradeHandler(i, VillageTradeHandler.instance);
+		VillageTradeHandler.instance.addHandler(CCTradeHandler.instance);
 
 		ChromaChests.addToChests();
 

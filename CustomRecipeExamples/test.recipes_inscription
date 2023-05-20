@@ -1,0 +1,10 @@
+{
+	type = "test1"
+	input = "minecraft:stone"
+	output = "minecraft:stone_brick"
+}
+{
+	type = "test2"
+	input = "minecraft:obsidian"
+	output = "minecraft:enchantment_table"
+}

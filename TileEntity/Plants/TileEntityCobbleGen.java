@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity.Plants;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Locale;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -20,6 +21,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.EnumHelper;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -48,6 +50,8 @@ import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.Effects.EntityFluidFX;
+import Reika.DragonAPI.Instantiable.IO.CustomRecipeList;
+import Reika.DragonAPI.Instantiable.IO.LuaBlock;
 import Reika.DragonAPI.Instantiable.ParticleController.AttractiveMotionController;
 import Reika.DragonAPI.Interfaces.Block.FluidBlockSurrogate;
 import Reika.DragonAPI.Libraries.ReikaFluidHelper;
@@ -407,6 +411,58 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant implements Operati
 	@Override
 	protected void animateWithTick(World world, int x, int y, int z) {
 
+	}
+
+	public static void loadCustomFluidMixRecipes() {
+		CustomRecipeList crl = new CustomRecipeList(ChromatiCraft.instance, "fluidmix");
+		if (crl.load()) {
+			for (LuaBlock lb : crl.getEntries()) {
+				Exception e = null;
+				boolean flag = false;
+				try {
+					flag = addCustomRecipe(lb, crl);
+				}
+				catch (Exception ex) {
+					e = ex;
+					flag = false;
+				}
+				if (flag) {
+					ChromatiCraft.logger.log("Loaded custom fluidmix recipe '"+lb.getString("type")+"'");
+				}
+				else {
+					ChromatiCraft.logger.logError("Could not load custom fluidmix recipe '"+lb.getString("type")+"'");
+					if (e != null)
+						e.printStackTrace();
+				}
+			}
+		}
+		else {/*
+			crl.createFolders();
+			crl.addToExample(createLuaBlock(recipes.values().iterator().next()));
+			crl.createExampleFile();*/
+		}
+	}
+
+	private static boolean addCustomRecipe(LuaBlock lb, CustomRecipeList crl) throws Exception {
+		ItemStack out = crl.parseItemString(lb.getString("output"), null, false);
+		ChromaAux.verifyCustomRecipeOutputItem(out, true);
+		int time = lb.getInt("duration");
+		Fluid f1 = FluidRegistry.getFluid(lb.getString("primary"));
+		if (f1 == null)
+			throw new IllegalArgumentException("No such primary fluid!");
+		Fluid f2 = FluidRegistry.getFluid(lb.getString("secondary"));
+		if (f2 == null)
+			throw new IllegalArgumentException("No such secondary fluid!");
+		double c1 = lb.getDouble("chanceConsumePrimary");
+		double c2 = lb.getDouble("chanceConsumeSecondary");
+		addRecipe(lb.getString("type").toUpperCase(Locale.ENGLISH), f1, f2, out, time, (float)c1, (float)c2);
+		return true;
+	}
+
+	public static void addRecipe(String name, Fluid primary, Fluid secondary, ItemStack out, int time, float chanceConsumePrimary, float chanceConsumeSecondary) {
+		Class[] types = new Class[]{Fluid.class, Fluid.class, ItemStack.class, int.class, float.class, float.class};
+		Object[] args = new Object[]{primary, secondary, out, time, chanceConsumePrimary, chanceConsumeSecondary};
+		FluidMix c = EnumHelper.addEnum(FluidMix.class, name.toUpperCase(), types, args);
 	}
 
 	private static enum FluidMix {

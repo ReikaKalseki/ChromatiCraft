@@ -25,8 +25,8 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
-import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Block.BlockActiveChroma;
 import Reika.ChromatiCraft.Items.ItemUnknownArtefact.ArtefactTypes;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -213,14 +213,9 @@ public class PoolRecipes {
 		}
 	}
 
-	protected final void verifyOutputItem(ItemStack is) {
-		if (is.getItem() instanceof ItemChromaBasic || is.getItem().getClass().getName().startsWith("Reika.ChromatiCraft"))
-			throw new IllegalArgumentException("This item is not allowed as an output, as it is a native ChromatiCraft item with its own recipe.");
-	}
-
 	private boolean addCustomRecipe(LuaBlock lb, CustomRecipeList crl) throws Exception {
 		ItemStack out = crl.parseItemString(lb.getString("output"), lb.getChild("output_nbt"), false);
-		this.verifyOutputItem(out);
+		ChromaAux.verifyCustomRecipeOutputItem(out, true);
 		ItemStack main = crl.parseItemString(lb.getString("catalyst"), null, false);
 		LuaBlock items = lb.getChild("items");
 		ArrayList<ItemStack> li = new ArrayList();

@@ -2208,7 +2208,7 @@ public class ChromaticEventManager {
 	@SubscribeEvent
 	public void respawnDragon(WorldEvent.Load evt) {
 		if (evt.world.provider.dimensionId == 1 && !evt.world.isRemote) {
-			if (ChromaOptions.REDRAGON.getState()) {
+			if (ChromaOptions.REDRAGON.getState() && ReikaEntityHelper.countEntities(evt.world, e -> e instanceof EntityDragon && ((EntityDragon)e).isEntityAlive()) == 0) {
 				EntityDragon ed = new EntityDragon(evt.world);
 				ed.setLocationAndAngles(0.0D, 128.0D, 0.0D, evt.world.rand.nextFloat() * 360.0F, 0.0F);
 				evt.world.spawnEntityInWorld(ed);

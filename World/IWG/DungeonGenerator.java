@@ -1543,7 +1543,9 @@ public class DungeonGenerator implements RetroactiveGenerator {
 			return false;
 		if (world.provider.dimensionId == TwilightForestHandler.getInstance().dimensionID)
 			return false;
-		if (world.provider.getClass().getName().equals("WorldProviderMiner"))
+		if (world.provider.getClass().getName().endsWith("WorldProviderMiner"))
+			return false;
+		if (world.provider.getClass().getName().startsWith("com.emoniph.witchery"))
 			return false;
 		if (PlanetDimensionHandler.isOtherWorld(world))
 			return false;

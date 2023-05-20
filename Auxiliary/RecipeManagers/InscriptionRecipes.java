@@ -21,9 +21,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Base.BlockChromaTile;
-import Reika.ChromatiCraft.Base.ItemChromaBasic;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockPylonStructure.StoneTypes;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -121,14 +121,9 @@ public class InscriptionRecipes {
 		}
 	}
 
-	protected final void verifyOutputItem(ItemStack is) {
-		if (is.getItem() instanceof ItemChromaBasic || is.getItem().getClass().getName().startsWith("Reika.ChromatiCraft"))
-			throw new IllegalArgumentException("This item is not allowed as an output, as it is a native ChromatiCraft item with its own recipe.");
-	}
-
 	private boolean addCustomRecipe(LuaBlock lb, CustomRecipeList crl) throws Exception {
 		ItemStack out = crl.parseItemString(lb.getString("output"), null, false);
-		this.verifyOutputItem(out);
+		ChromaAux.verifyCustomRecipeOutputItem(out, true);
 		ItemStack in = crl.parseItemString(lb.getString("input"), null, false);
 		int time = lb.getInt("duration");
 		try {
