@@ -559,16 +559,16 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		ChromaStructures.buildStructures();
 
-		RetroGenController.instance.addHybridGenerator(PylonGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
-		RetroGenController.instance.addHybridGenerator(DungeonGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
-		RetroGenController.instance.addHybridGenerator(DataTowerGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
-		RetroGenController.instance.addHybridGenerator(DataTowerGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
-		RetroGenController.instance.addHybridGenerator(NetherStructureGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
-		RetroGenController.instance.addHybridGenerator(EndOverhaulManager.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
-		RetroGenController.instance.addHybridGenerator(GlowingCliffsAuxGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
-		RetroGenController.instance.addHybridGenerator(SkypeaterGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
-		//RetroGenController.instance.addHybridGenerator(UnknownArtefactGenerator.instance, Integer.MIN_VALUE, ChromaOptions.RETROGEN.getState());
-		RetroGenController.instance.addHybridGenerator(WarpNodeGenerator.instance, Integer.MAX_VALUE, ChromaOptions.RETROGEN.getState());
+		RetroGenController.instance.addHybridGenerator(PylonGenerator.instance, Integer.MIN_VALUE);
+		RetroGenController.instance.addHybridGenerator(DungeonGenerator.instance, Integer.MAX_VALUE);
+		RetroGenController.instance.addHybridGenerator(DataTowerGenerator.instance, Integer.MAX_VALUE);
+		RetroGenController.instance.addHybridGenerator(DataTowerGenerator.instance, Integer.MIN_VALUE);
+		RetroGenController.instance.addHybridGenerator(NetherStructureGenerator.instance, Integer.MAX_VALUE);
+		RetroGenController.instance.addHybridGenerator(EndOverhaulManager.instance, Integer.MIN_VALUE);
+		RetroGenController.instance.addHybridGenerator(GlowingCliffsAuxGenerator.instance, Integer.MIN_VALUE);
+		RetroGenController.instance.addHybridGenerator(SkypeaterGenerator.instance, Integer.MAX_VALUE);
+		//RetroGenController.instance.addHybridGenerator(UnknownArtefactGenerator.instance, Integer.MIN_VALUE);
+		RetroGenController.instance.addHybridGenerator(WarpNodeGenerator.instance, Integer.MAX_VALUE);
 
 		this.addRerunnableDecorator(CrystalGenerator.instance, 0);
 		this.addRerunnableDecorator(ColorTreeGenerator.instance, -10);
@@ -749,7 +749,7 @@ public class ChromatiCraft extends DragonAPIMod {
 	}
 
 	private static void addRerunnableDecorator(ChromaDecorator d, int wt) {
-		RetroGenController.instance.addHybridGenerator(d, wt, ChromaOptions.RETROGEN.getState());
+		RetroGenController.instance.addHybridGenerator(d, wt);
 		decorators.put(d.getCommandID().toLowerCase(Locale.ENGLISH), d);
 	}
 

@@ -21,6 +21,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.InscriptionRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.InscriptionRecipes.InscriptionRecipe;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
+import Reika.ChromatiCraft.Magic.Lore.LoreManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -109,6 +110,8 @@ public class ItemDataCrystal extends ItemChromaTool {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
+		if (!world.isRemote)
+			LoreManager.instance.initTowers(world);
 		ep.openGui(ChromatiCraft.instance, ChromaGuis.LOREKEY.ordinal(), world, 0, 0, 0);
 		return super.onItemRightClick(is, world, ep);
 	}

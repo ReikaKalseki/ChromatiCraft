@@ -621,6 +621,8 @@
 		</desc>
 		<note>
 			Checks the flowers adjacent to it to know what to break
+			
+			Requires direct sunlight to function
 		</note>
 	</harvestplant>
 	<alveary>

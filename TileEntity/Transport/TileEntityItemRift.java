@@ -159,7 +159,7 @@ public class TileEntityItemRift extends TileEntityRelayPowered implements SidePl
 
 	private IInventory getAttachment() {
 		TileEntity te = this.getAdjacentTileEntity(this.getFacing());
-		return te instanceof IInventory ? (IInventory)te : null;
+		return ReikaInventoryHelper.isAutomatableInventory(te) ? (IInventory)te : null;
 	}
 
 	private static int getMaxTransferRate(int energy) {

@@ -442,7 +442,7 @@ public class TileEntityItemInserter extends InventoriedChromaticBase implements 
 			switch(this) {
 				case INVENTORY:
 					TileEntity te = c.getTileEntity(world);
-					if (te instanceof IInventory) {
+					if (ReikaInventoryHelper.isAutomatableInventory(te)) {
 						if (ReikaInventoryHelper.addToIInv(is, (IInventory)te))
 							return null;
 					}

@@ -23,6 +23,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAreaDistributor;
+import Reika.ChromatiCraft.Block.BlockRFNode.TileEntityRFNode;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
@@ -206,6 +207,8 @@ public class TileEntityRFDistributor extends TileEntityAreaDistributor implement
 	}
 
 	public static boolean isValidRFReceiver(TileEntity te) {
+		if (te instanceof TileEntityRFNode)
+			return false;
 		if (te instanceof IEnergyReceiver || te instanceof IEnergyHandler) {
 			if (ModList.BCTRANSPORT.isLoaded() && InterfaceCache.BCPIPE.instanceOf(te))
 				return false;

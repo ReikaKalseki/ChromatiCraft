@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Items.Tools;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,6 +40,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BreadthFirstSearch;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.OpenPathFinder;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.OpenPathFinder.PassRules;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -248,7 +250,7 @@ public class ItemSplineAttack extends ItemChromaTool {
 			return li;
 		}
 		BlockBox box = BlockBox.between(from, to).expand(8, 6, 8);
-		return BreadthFirstSearch.getOpenPathBetween(from.worldObj, new Coordinate(from), new Coordinate(to), 16, box);
+		return BreadthFirstSearch.getOpenPathBetween(from.worldObj, new Coordinate(from), new Coordinate(to), 16, box, EnumSet.allOf(PassRules.class));
 	}
 
 	private List<EntityTarget> getAttackableEntitiesFrom(World world, EntityLivingBase from, EntityPlayer owner, List<EntityTarget> path) {

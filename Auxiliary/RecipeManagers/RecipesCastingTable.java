@@ -1340,7 +1340,7 @@ public class RecipesCastingTable implements CastingAPI {
 		}
 		else if (lvl.equals("multi") || lvl.equals("pylon")) {
 			LuaBlock recipe = lb.getChild("recipe");
-			ItemStack center = crl.parseItemString(recipe.getString("center"), null, false);
+			ItemStack center = crl.parseItemString(recipe.getString("center"), recipe.getChild("center_nbt"), false);
 			HashMap<Coordinate, Object> items = new HashMap();
 			for (LuaBlock entry : recipe.getChild("items").getChildren()) {
 				Coordinate c = new Coordinate(entry.getInt("x"), 0, entry.getInt("z"));

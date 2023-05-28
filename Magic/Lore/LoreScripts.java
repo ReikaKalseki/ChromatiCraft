@@ -160,7 +160,9 @@ public class LoreScripts implements DataProvider {
 		PYLON(new PanelSize(15, 5), 8),
 		TOWER(new PanelSize(23, 5), 4),
 		ALVEARY(new PanelSize(20, 7), 4),
-		SNOWSTRUCT(new PanelSize(24, 5), 4);
+		SNOWSTRUCT(new PanelSize(24, 5), 4),
+		BIOMESTRUCT(new PanelSize(24, 5), 4),
+		;
 
 		public final PanelSize size;
 		public final int panelCount;
@@ -214,7 +216,7 @@ public class LoreScripts implements DataProvider {
 		}
 
 		public boolean isEnabled() {
-			return this != PYLON;
+			return this != PYLON && !panels.isEmpty();
 		}
 	}
 

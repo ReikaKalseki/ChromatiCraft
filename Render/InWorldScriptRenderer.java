@@ -32,6 +32,64 @@ public class InWorldScriptRenderer {
 
 	private static final Random rand = new Random();
 
+	public static void renderBiomeScript(TileEntityStructControl te, float par8, Tessellator v5, double sc) {
+		//GL11.glDisable(GL11.GL_DEPTH_TEST);
+
+		seedRandom(te);
+
+		GL11.glPushMatrix();
+		GL11.glTranslated(0, 8.76, 2);
+
+		GL11.glPushMatrix();
+
+		int c1 = 0xd65aff;
+		int c2 = 0xe091fa;
+
+		ArrayList<LorePanel> li = LoreScripts.ScriptLocations.BIOMESTRUCT.getUniqueRandomPanels(rand, 4);
+
+		for (int r = 0; r < 4; r++) {
+			GL11.glPushMatrix();
+			GL11.glRotated(90*r, 0, 1, 0);
+			GL11.glTranslated(0, 0, -3+0.005);
+			switch(r) {
+				case 1:
+					GL11.glTranslated(-1, 0, 0);
+					break;
+				case 2:
+					GL11.glTranslated(-1, 0, -1);
+					break;
+				case 3:
+					GL11.glTranslated(0, 0, -1);
+					break;
+				case 4:
+					GL11.glTranslated(0, 0, 1);
+					break;
+			}
+			GL11.glTranslated(0.25, 0, 0);
+			GL11.glScaled(sc, sc, sc);
+			int i = 0;
+			LorePanel p = li.get(r);
+			int w = 4*p.size.maxLength*2;
+			double x = 4*(p.size.maxLength+1.5);
+			for (int k = 0; k < p.lineCount; k++) {
+				LoreLine l = p.getLine(k);
+				double tick = -i+0.125*(te.getTicksExisted()+par8);
+				float f1 = (float)(0.5+0.5*Math.sin(tick));
+				float f2 = (float)Math.min(1, (0.75+0.25*Math.sin(tick*0.25-4.7)+0.03125*Math.sin(tick*5-1)));
+				int c = ReikaColorAPI.mixColors(c1, c2, f1);
+				c = ReikaColorAPI.getColorWithBrightnessMultiplier(c, f2);
+				LoreScriptRenderer.instance.startRendering(true, c);
+				LoreScriptRenderer.instance.renderLine(l.text, x, i, w, true);
+				LoreScriptRenderer.instance.stopRendering();
+				i -= 11;
+			}
+			GL11.glPopMatrix();
+		}
+		GL11.glPopMatrix();
+
+		GL11.glPopMatrix();
+	}
+
 	public static void renderSnowScript(TileEntityStructControl te, float par8, Tessellator v5, double sc) {
 		//GL11.glDisable(GL11.GL_DEPTH_TEST);
 

@@ -44,7 +44,9 @@ public class GuiRitualTable extends GuiChromability {
 		Iterator<Ability> it = abilities.iterator();
 		while (it.hasNext()) {
 			Ability a = it.next();
-			if (a instanceof Chromabilities) {
+			if (Chromabilities.playerHasAbility(ep, a))
+				it.remove();
+			else if (a instanceof Chromabilities) {
 				ChromaResearch r = ChromaResearch.getPageFor((Chromabilities)a);
 				if (!ChromaResearchManager.instance.playerHasFragment(ep, r)) {
 					it.remove();

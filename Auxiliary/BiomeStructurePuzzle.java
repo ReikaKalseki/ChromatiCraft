@@ -38,7 +38,6 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -751,7 +750,12 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	}
 
 	private boolean isPlayingMelody(EntityPlayer ep) {
-		return ChromaItems.PROBE.matchWith(ep.getCurrentEquippedItem());//isPlayingMelody;
+		return melodyIndex >= 0;//ChromaItems.PROBE.matchWith(ep.getCurrentEquippedItem());//isPlayingMelody;
+	}
+
+	public void triggerPlay() {
+		nextNoteTick = musicTick;
+		melodyIndex = 0;
 	}
 
 	private void pushPlayer(EntityPlayer ep, TileEntityStructControl te) {
@@ -785,7 +789,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		nextNoteTick += 8;
 		melodyIndex++;
 		if (melodyIndex >= melody.size()) {
-			melodyIndex = 0;
+			melodyIndex = -1;
 			//nextNoteTick = 0;
 			//isPlayingMelody = false;
 

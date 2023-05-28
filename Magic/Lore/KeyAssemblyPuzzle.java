@@ -27,8 +27,10 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MathHelper;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Magic.ElementMixer;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
@@ -43,6 +45,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
@@ -136,8 +139,8 @@ public class KeyAssemblyPuzzle {
 			flag = this.subdivide(rand);
 			long dur = System.currentTimeMillis()-time;
 			ChromatiCraft.logger.log("Attempted to generate lore puzzle; attempt #"+attempts+" took "+dur+" ms. Success: "+flag);
-			if (dur > 15000) {
-				ChromatiCraft.logger.logError("Could not generate lore puzzle within 15s, even after "+attempts+" attempts!");
+			if (dur > 5000) {
+				ChromatiCraft.logger.logError("Could not generate lore puzzle within 5s, even after "+attempts+" attempts!");
 				this.errorGrid();
 				return;
 			}
@@ -147,6 +150,15 @@ public class KeyAssemblyPuzzle {
 			while (it.hasNext()) {
 				Move m = it.next().invert(grid);
 				this.getCell(m.hex).occupant.move(this, m.direction, null);
+			}
+		}
+	}
+
+	@SideOnly(Side.CLIENT)
+	public void tickCells(EntityPlayer ep) {
+		for (HexCell cell : cells.values()) {
+			if (cell.occupant != null) {
+				cell.occupant.tick(this, ep);
 			}
 		}
 	}
@@ -184,6 +196,10 @@ public class KeyAssemblyPuzzle {
 			this.setCellContents(c.location, c.occupant, null);
 			c.occupant.update(this, true, null);
 		}
+	}
+
+	public boolean isErrored() {
+		return isErrored;
 	}
 
 	private void generateVoids(Random rand) {
@@ -271,8 +287,8 @@ public class KeyAssemblyPuzzle {
 			flag = !this.pathSearch(rand, h, path, pathCache);
 			long dur = System.currentTimeMillis()-time;
 			ChromatiCraft.logger.log("Attempted to path lore puzzle; attempt #"+attempts+"; took "+dur+" ms so far. Success: "+!flag);
-			if (dur > 15000) {
-				ChromatiCraft.logger.logError("Could not path lore puzzle within 15s, even after "+attempts+" attempts!");
+			if (dur > 5000) {
+				ChromatiCraft.logger.logError("Could not path lore puzzle within 5s, even after "+attempts+" attempts!");
 				return null;
 			}
 		}
@@ -424,9 +440,10 @@ public class KeyAssemblyPuzzle {
 		GL11.glEnable(GL11.GL_BLEND);
 		BlendMode.DEFAULT.apply();
 		GL11.glDisable(GL11.GL_ALPHA_TEST);
+		GL11.glShadeModel(GL11.GL_SMOOTH);
 
 		if (isErrored) {
-			String s = "Puzzle generation failed. Restart your client, then try again.";
+			String s = "Puzzle generation failed. Close this screen then try again.";
 			FontRenderer f = ChromaFontRenderer.FontType.HUD.renderer;
 			int c = ReikaColorAPI.mixColors(0xffffff, 0, (float)(0.5+0.5*Math.sin(System.currentTimeMillis()/500D)));
 			f.drawString(s, (-f.getStringWidth(s))/2, 12-(int)h2, c);
@@ -446,6 +463,9 @@ public class KeyAssemblyPuzzle {
 			if (flag2) {
 				GL11.glTranslated(-w2, -h2, 0);
 				LoreManager.instance.getOrCreateRosetta(ep).render(res, w2, h2);
+			}
+			else {
+				LoreManager.instance.getOrCreateRosetta(ep).clear();
 			}
 		}
 		if (!flag2) {
@@ -607,24 +627,32 @@ public class KeyAssemblyPuzzle {
 		private HexTile occupant = null;
 		private Towers tower = null;
 
-		public boolean isHovered;
+		private Point isHovered;
 		private int flashTick = 0;
 		private int solveTick = 0;
 		private final int solveOffset;
+
+		private int frame = ReikaRandomHelper.getRandomBetween(0, 60);
+		private int frameDir = 1;
 
 		private HexCell(Hex h) {
 			location = h;
 			solveOffset = -(h.q+h.s)*2-20;
 		}
 
+		public void hover(KeyAssemblyPuzzle p) {
+			Point p0 = p.grid.getHexLocation(location);
+			this.hover(p, p0.x+CELL_SIZE/2D, p0.y+CELL_SIZE*SIN60/2D);
+		}
+
+		public void hover(KeyAssemblyPuzzle p, double x, double y) {
+			Point p2 = p.grid.getHexLocation(location);
+			isHovered = new Point(x-p2.x, y-p2.y);
+		}
+
 		public void onClick(KeyAssemblyPuzzle p, double dx, double dy, EntityPlayer ep) {
 			if (occupant != null) {
-				//int dx = x-p.grid.getHexLocation(location).x-CELL_SIZE/2;
-				//int dy = (int)(y-p.grid.getHexLocation(location).y-CELL_SIZE*SIN60/2);
-				double r = ReikaMathLibrary.py3d(dx, dy, 0);
-				//ReikaJavaLibrary.pConsole(dx+", "+dy+" @ "+r+" / "+CELL_SIZE/4D);
-				//ReikaJavaLibrary.pConsole(a+" @ "+location+" > "+dir+" > "+h);
-				if (r >= CELL_SIZE/4) {
+				if (this.isPointOnEdge(dx, dy)) {
 					double a = -Math.toDegrees(Math.atan2(dy, dx));
 					int dir = p.grid.getNeighborDirection(a);
 					//Hex h = location.getNeighbor(dir);
@@ -638,6 +666,10 @@ public class KeyAssemblyPuzzle {
 			//ReikaJavaLibrary.pConsole(p.isComplete()+": "+p.activeCells+"/"+p.totalCells);
 		}
 
+		public boolean isPointOnEdge(double dx, double dy) {
+			return ReikaMathLibrary.py3d(dx, dy, 0) >= CELL_SIZE/4;
+		}
+
 		public HexTile getOccupant() {
 			return occupant;
 		}
@@ -648,24 +680,31 @@ public class KeyAssemblyPuzzle {
 				Point loc = p.grid.getHexLocation(location);
 				GL11.glTranslated(loc.x, loc.y, 0);
 			}
+			frame += frameDir;
+			if (frame <= 0 || frame >= 60)
+				frameDir = -frameDir;
 			if (occupant != null) {
 				occupant.render(p, v5, inBoard, f);
 			}
 			else {
 				ReikaTextureHelper.bindTexture(ChromatiCraft.class, voidPNG);
 				double u = 66/128D;
-				double v = 6/64D;
 				double du = 126/128D;
-				double dv = 59/64D;
+				double v = (6+frame/4*64)/1024D;
+				double dv = (59+frame/4*64)/1024D;
 				v5.startDrawingQuads();
+				//BlendMode.INVERTEDADD.apply();
+				//v5.setColorOpaque_I(0xffffff);
 				v5.addVertexWithUV(0, CELL_SIZE*SIN60, 0, u, dv);
 				v5.addVertexWithUV(CELL_SIZE, CELL_SIZE*SIN60, 0, du, dv);
+				//v5.setColorOpaque_I(0xff0000);
 				v5.addVertexWithUV(CELL_SIZE, 0, 0, du, v);
 				v5.addVertexWithUV(0, 0, 0, u, v);
 				v5.draw();
+				//BlendMode.DEFAULT.apply();
 			}
 			if (inBoard) {
-				if (isHovered || flashTick > 0) {
+				if (isHovered != null || flashTick > 0) {
 					GL11.glDisable(GL11.GL_DEPTH_TEST);
 					if (flashTick > 0) {
 						int a = (int)(255*flashTick/20D);
@@ -674,19 +713,91 @@ public class KeyAssemblyPuzzle {
 						if (a2 > 0)
 							p.grid.drawFilledHex(v5, location, 0xff0000 | (a2 << 24));
 					}
-					else if (isHovered) {
-						p.grid.drawHexEdges(v5, location, 0xffffffff);
+					else if (isHovered != null) {
+						if (occupant != null && this.isPointOnEdge(isHovered.x, isHovered.y)) {
+							double a = -Math.toDegrees(Math.atan2(isHovered.y, isHovered.x));
+							int dir = p.grid.getNeighborDirection(a);
+							Point p1 = null;
+							Point p2 = null;
+							Point p3 = null;
+							Point p4 = null;
+							switch(dir) {
+								case 0:
+									p1 = new Point(14.5, 6);
+									p2 = new Point(11, 6);
+									p3 = new Point(9.5, 3.5);
+									p4 = new Point(11, 0.25);
+									break;
+								case 1:
+									p1 = new Point(11, 0.25);
+									p2 = new Point(9.5, 3.0);
+									p3 = new Point(5.5, 3.0);
+									p4 = new Point(4, 0.25);
+									break;
+								case 2:
+									p1 = new Point(4, 0.25);
+									p2 = new Point(5.5, 3.5);
+									p3 = new Point(4, 6);
+									p4 = new Point(0.5, 6);
+									break;
+								case 3:
+									p1 = new Point(0.5, 6.5);
+									p2 = new Point(4, 6.5);
+									p3 = new Point(5.5, 9);
+									p4 = new Point(4, 12.25);
+									break;
+								case 4:
+									p1 = new Point(4, 12.25);
+									p2 = new Point(11, 12.25);
+									p3 = new Point(9.5, 9.5);
+									p4 = new Point(5.5, 9.5);
+									break;
+								case 5:
+									p1 = new Point(11, 12.25);
+									p2 = new Point(9.5, 9);
+									p3 = new Point(11, 6.5);
+									p4 = new Point(14.5, 6.5);
+									break;
+							}
+							if (p1 != null) {
+								GL11.glEnable(GL11.GL_BLEND);
+								GL11.glLineWidth(2);
+								GL11.glColor4f(1, 1, 1, 1);
+								GL11.glDisable(GL11.GL_TEXTURE_2D);
+								int c = ReikaColorAPI.mixColors(0x7f7f7f, 0xffffff, 0.5F+0.5F*MathHelper.sin((frame/12F)%360));
+								v5.startDrawing(GL11.GL_LINE_LOOP);
+								v5.setBrightness(240);
+								v5.setColorOpaque_I(c);
+								v5.addVertex(p1.x, p1.y, 0);
+								v5.addVertex(p2.x, p2.y, 0);
+								v5.addVertex(p3.x, p3.y, 0);
+								v5.addVertex(p4.x, p4.y, 0);
+								v5.draw();
+								v5.startDrawingQuads();
+								v5.setBrightness(240);
+								v5.setColorRGBA_I(c, 127);
+								v5.addVertex(p4.x, p4.y, 0);
+								v5.addVertex(p3.x, p3.y, 0);
+								v5.addVertex(p2.x, p2.y, 0);
+								v5.addVertex(p1.x, p1.y, 0);
+								v5.draw();
+								GL11.glEnable(GL11.GL_TEXTURE_2D);
+							}
+						}
+						else {
+							p.grid.drawHexEdges(v5, location, 0xffffffff);
+						}
 						GL11.glEnable(GL11.GL_DEPTH_TEST);
 						for (int i = 0; i < 6; i++) {
 							if (Keyboard.isKeyDown(i == 0 ? Keyboard.KEY_0 : Keyboard.KEY_1+i-1)) {
 								if (this.getNeighbor(p, i) != null)
-									this.getNeighbor(p, i).isHovered = true;
+									this.getNeighbor(p, i).hover(p);
 							}
 						}
 					}
 				}
 			}
-			isHovered = false;
+			isHovered = null;
 			if (flashTick > 0)
 				flashTick--;
 			GL11.glPopMatrix();
@@ -732,14 +843,40 @@ public class KeyAssemblyPuzzle {
 
 	private static class HexTile {
 
-
 		private final CrystalElement color;
 
 		private HexCell location;
 		private boolean state;
+		private boolean queuedState;
+
+		private double renderOffsetX;
+		private double renderOffsetY;
+
+		private double shakeMagnitude;
 
 		private HexTile(CrystalElement e) {
 			color = e;
+		}
+
+		@SideOnly(Side.CLIENT)
+		public void tick(KeyAssemblyPuzzle p, EntityPlayer ep) {
+			if (queuedState != state) {
+				if (queuedState) {
+					p.activeCells++;
+					if (ep != null) {
+						ReikaSoundHelper.playClientSound(ChromaSounds.CAST, ep, 0.5F, 2);
+						ReikaSoundHelper.playClientSound(ChromaSounds.CAST, ep, 0.5F, 1.5F);
+					}
+				}
+				else {
+					p.activeCells--;
+					if (ep != null) {
+						ReikaSoundHelper.playClientSound(ChromaSounds.RIFT, ep, 0.4F, 0.875F);
+						ReikaSoundHelper.playClientSound(ChromaSounds.RIFT, ep, 0.4F, 0.5F);
+					}
+				}
+				state = queuedState;
+			}
 		}
 
 		private boolean isValid(KeyAssemblyPuzzle p) {
@@ -767,6 +904,15 @@ public class KeyAssemblyPuzzle {
 		public void render(KeyAssemblyPuzzle p, Tessellator v5, boolean inBoard, float f) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 			Point loc = p.grid.getHexLocation(location.location);
+			double ox = renderOffsetX;
+			double oy = renderOffsetY;
+			if (shakeMagnitude > 0) {
+				renderOffsetX = ReikaRandomHelper.getRandomPlusMinus(0, shakeMagnitude);
+				renderOffsetY = ReikaRandomHelper.getRandomPlusMinus(0, shakeMagnitude);
+				shakeMagnitude *= 0.8;
+				if (shakeMagnitude < 0.01)
+					shakeMagnitude = 0;
+			}
 			if (!inBoard || location.playerKnows(ep)) {
 				ReikaTextureHelper.bindTexture(ChromatiCraft.class, hexPNG);
 				double u = (2+64*(color.ordinal()%8))/512D;
@@ -775,23 +921,23 @@ public class KeyAssemblyPuzzle {
 				double dv = (v*256+53)/256D;
 				v5.startDrawingQuads();
 				v5.setColorRGBA_I(ReikaColorAPI.mixColors(0xffffff, 0x000000, f), 255);
-				v5.addVertexWithUV(0, CELL_SIZE*SIN60, 0, u, dv);
-				v5.addVertexWithUV(CELL_SIZE, CELL_SIZE*SIN60, 0, du, dv);
-				v5.addVertexWithUV(CELL_SIZE, 0, 0, du, v);
-				v5.addVertexWithUV(0, 0, 0, u, v);
+				v5.addVertexWithUV(ox, oy+CELL_SIZE*SIN60, 0, u, dv);
+				v5.addVertexWithUV(ox+CELL_SIZE, oy+CELL_SIZE*SIN60, 0, du, dv);
+				v5.addVertexWithUV(ox+CELL_SIZE, oy, 0, du, v);
+				v5.addVertexWithUV(ox, oy, 0, u, v);
 				v5.draw();
 			}
 			else {
 				ReikaTextureHelper.bindTexture(ChromatiCraft.class, voidPNG);
 				double u = 2/128D;
-				double v = 6/64D;
 				double du = 62/128D;
-				double dv = 59/64D;
+				double v = (6+location.frame/4*64)/1024D;
+				double dv = (59+location.frame/4*64)/1024D;
 				v5.startDrawingQuads();
-				v5.addVertexWithUV(0, CELL_SIZE*SIN60, 0, u, dv);
-				v5.addVertexWithUV(CELL_SIZE, CELL_SIZE*SIN60, 0, du, dv);
-				v5.addVertexWithUV(CELL_SIZE, 0, 0, du, v);
-				v5.addVertexWithUV(0, 0, 0, u, v);
+				v5.addVertexWithUV(ox, oy+CELL_SIZE*SIN60, 0, u, dv);
+				v5.addVertexWithUV(ox+CELL_SIZE, oy+CELL_SIZE*SIN60, 0, du, dv);
+				v5.addVertexWithUV(ox+CELL_SIZE, oy, 0, du, v);
+				v5.addVertexWithUV(ox, oy, 0, u, v);
 				v5.draw();
 			}
 		}
@@ -800,7 +946,7 @@ public class KeyAssemblyPuzzle {
 			if (!p.grid.getValidMovementDirections(location.location).contains(direction)) {
 				if (ep != null) {
 					location.flash();
-					ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, Minecraft.getMinecraft().thePlayer, 1, 2F);
+					ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, ep, 1, 2F);
 				}
 				return false;
 			}
@@ -810,12 +956,14 @@ public class KeyAssemblyPuzzle {
 				throw new RuntimeException(location.location.getNeighbor(direction).toString()+" has null cell yet was moved to?!");
 			}
 			if (target.occupant != null) {
+				target.flash();
+				shakeMagnitude = 2.5;
 				if (ep != null) {
-					target.flash();
-					ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, Minecraft.getMinecraft().thePlayer, 1, 2F);
+					ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, ep, 1, 2F);
 				}
 				return false;
 			}
+			ReikaSoundHelper.playClientSound(ChromaSounds.DING, ep, 0.5F, CrystalMusicManager.instance.getScaledDing(color, 3));
 			p.setCellContents(location.location, null, ep);
 			p.emptyHexes.add(location.location);
 			location = location.getNeighbor(p, direction);
@@ -826,25 +974,8 @@ public class KeyAssemblyPuzzle {
 		}
 
 		private void update(KeyAssemblyPuzzle p, boolean adj, EntityPlayer ep) {
-			boolean flag = this.isValid(p);
+			queuedState = this.isValid(p);
 			//ReikaJavaLibrary.pConsole(location.location+": "+color+", "+state+" > "+flag);
-			if (flag != state) {
-				if (flag) {
-					p.activeCells++;
-					if (ep != null) {
-						ReikaSoundHelper.playClientSound(ChromaSounds.CAST, Minecraft.getMinecraft().thePlayer, 0.75F, 2);
-						ReikaSoundHelper.playClientSound(ChromaSounds.CAST, Minecraft.getMinecraft().thePlayer, 0.75F, 1.5F);
-					}
-				}
-				else {
-					p.activeCells--;
-					if (ep != null) {
-						ReikaSoundHelper.playClientSound(ChromaSounds.RIFT, Minecraft.getMinecraft().thePlayer, 1, 0.875F);
-						ReikaSoundHelper.playClientSound(ChromaSounds.RIFT, Minecraft.getMinecraft().thePlayer, 1, 0.5F);
-					}
-				}
-				state = flag;
-			}
 			if (adj) {
 				for (Hex h : location.location.getNeighbors()) {
 					HexCell c = p.getCell(h);

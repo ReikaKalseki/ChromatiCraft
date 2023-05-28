@@ -60,7 +60,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	COPYTILE("Allow duplication wand to copy TileEntities", false),
 	HARDTHAUM("More difficult ThaumCraft integration", true),
 	PIELOC("Energy Buffer Overlay Location", 0),
-	RETROGEN("Retrogeneration", false),
+	//RETROGEN("Retrogeneration", false),
 	BIOMEPAINTER("Enable Biome Painter", true),
 	RAINBOWWEIGHT("Rainbow Forest Biome Weight", 10),
 	ENDERWEIGHT("Ender Forest Biome Weight", 10),

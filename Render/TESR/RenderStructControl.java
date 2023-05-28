@@ -260,6 +260,10 @@ public class RenderStructControl extends ChromaRenderBase {
 					if (ScriptLocations.SNOWSTRUCT.isEnabled())
 						InWorldScriptRenderer.renderSnowScript(te, par8, v5, sc);
 					break;
+				case BIOMEFRAG:
+					if (ScriptLocations.BIOMESTRUCT.isEnabled())
+						InWorldScriptRenderer.renderBiomeScript(te, par8, v5, sc);
+					break;
 				default:
 					break;
 			}

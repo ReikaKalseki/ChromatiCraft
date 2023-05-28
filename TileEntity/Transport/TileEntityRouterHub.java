@@ -520,7 +520,7 @@ public class TileEntityRouterHub extends TileEntityChromaticBase implements IAct
 		protected final IInventory getTarget(World world) {
 			Coordinate c = location.offset(direction.getOpposite(), 1);
 			TileEntity te = c.getTileEntity(world);
-			return te instanceof IInventory ? (IInventory)te : null;
+			return ReikaInventoryHelper.isAutomatableInventory(te) ? (IInventory)te : null;
 		}
 
 		public final NBTTagCompound writeToNBT() {

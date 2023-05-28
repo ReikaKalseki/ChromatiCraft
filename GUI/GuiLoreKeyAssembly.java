@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -59,6 +59,11 @@ public class GuiLoreKeyAssembly extends GuiScreen implements CustomSoundGui {
 	}
 
 	@Override
+	public void onGuiClosed() {
+		LoreManager.instance.getOrCreateRosetta(player).clear();
+	}
+
+	@Override
 	public final void drawScreen(int x, int y, float f) {
 		super.drawScreen(x, y, f);
 
@@ -67,9 +72,11 @@ public class GuiLoreKeyAssembly extends GuiScreen implements CustomSoundGui {
 		GL11.glTranslated(0, dy, 0);
 		ScaledResolution sr = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
 
-		Hex h = puzzle.getHexAt(x-sr.getScaledWidth()/2-puzzle.CELL_SIZE/2, y-sr.getScaledHeight()/2-puzzle.CELL_SIZE/2-dy);
+		double mx = x-sr.getScaledWidth()/2D-puzzle.CELL_SIZE/2D;
+		double my = y-sr.getScaledHeight()/2D-puzzle.CELL_SIZE/2D-dy;
+		Hex h = puzzle.getHexAt((int)mx, (int)my);
 		if (h != null) {
-			puzzle.getCell(h).isHovered = true;
+			puzzle.getCell(h).hover(puzzle, mx, my);
 			//Point p = puzzle.getHexLocation(h);
 			//ReikaGuiAPI.instance.drawLine(x, y, sr.getScaledWidth()/2+puzzle.CELL_SIZE/2+p.x, sr.getScaledHeight()/2+puzzle.CELL_SIZE/2+p.y, 0xffffffff);
 		}
@@ -95,6 +102,7 @@ public class GuiLoreKeyAssembly extends GuiScreen implements CustomSoundGui {
 				else {
 					Point p = puzzle.getHexLocation(h);
 					puzzle.getCell(h).onClick(puzzle, x-(sr.getScaledWidth()/2+puzzle.CELL_SIZE/2+p.x), y-(sr.getScaledHeight()/2+puzzle.CELL_SIZE/2+p.y)+0*16, player);
+					puzzle.tickCells(player);
 					if (puzzle.isComplete()) {
 						LoreManager.instance.completeBoard(player);
 					}

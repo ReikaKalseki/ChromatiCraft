@@ -199,8 +199,8 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 
 	private ManaPath calculateManaPath(World world, Coordinate from, Coordinate to) {
 		Coordinate mid = new Coordinate(this);
-		LinkedList<Coordinate> li = BreadthFirstSearch.getOpenPathBetween(world, from, mid, 40);
-		LinkedList<Coordinate> li2 = BreadthFirstSearch.getOpenPathBetween(world, mid, to, 40);
+		LinkedList<Coordinate> li = BreadthFirstSearch.getOpenPathBetween(world, from, mid, 40, OpenPathFinder.defaultRules);
+		LinkedList<Coordinate> li2 = BreadthFirstSearch.getOpenPathBetween(world, mid, to, 40, OpenPathFinder.defaultRules);
 		if (li != null && li2 != null) {
 			HashSet<Coordinate> set = new HashSet();
 
@@ -209,7 +209,7 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 			int i = -1;
 			for (Coordinate c : li) {
 				if (i%4 == 0 && c != li.getLast()) {
-					if (!c.equals(to) && !c.equals(from) && !c.equals(mid) && OpenPathFinder.isEmptyBlock(world, c.xCoord, c.yCoord, c.zCoord))
+					if (!c.equals(to) && !c.equals(from) && !c.equals(mid) && OpenPathFinder.isEmptyBlock(world, c.xCoord, c.yCoord, c.zCoord, OpenPathFinder.defaultRules))
 						set.add(c);
 					s1.addPoint(new BasicSplinePoint(new DecimalPosition(c)));
 				}
@@ -222,7 +222,7 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 			i = -1;
 			for (Coordinate c : li2) {
 				if (i%4 == 0 && c != li2.getLast()) {
-					if (!c.equals(to) && !c.equals(from) && !c.equals(mid) && OpenPathFinder.isEmptyBlock(world, c.xCoord, c.yCoord, c.zCoord))
+					if (!c.equals(to) && !c.equals(from) && !c.equals(mid) && OpenPathFinder.isEmptyBlock(world, c.xCoord, c.yCoord, c.zCoord, OpenPathFinder.defaultRules))
 						set.add(c);
 					s2.addPoint(new BasicSplinePoint(new DecimalPosition(c)));
 				}
@@ -457,7 +457,7 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 					continue;
 				if (c.getBlock(world) instanceof ISpecialFlower)
 					continue;
-				if (!OpenPathFinder.isEmptyBlock(world, c.xCoord, c.yCoord, c.zCoord)) {
+				if (!OpenPathFinder.isEmptyBlock(world, c.xCoord, c.yCoord, c.zCoord, OpenPathFinder.defaultRules)) {
 					ChromatiCraft.logger.log("Invalidating old mana path: "+c.getBlock(world).getLocalizedName()+" @ "+c);
 					return false;
 				}

@@ -127,14 +127,16 @@ public class LoreManager implements ProgressAccess {
 	}
 
 	public KeyAssemblyPuzzle getPuzzle(EntityPlayer ep) {
-		this.initTowers(ep.worldObj);
+		//this.initTowers(ep.worldObj);
+		if (puzzle != null && puzzle.isErrored())
+			puzzle = null;
 		if (puzzle == null || puzzle.getSeed() != KeyAssemblyPuzzle.calcSeed(ep))
 			puzzle = KeyAssemblyPuzzle.generatePuzzle(ep);
 		return puzzle;
 	}
 
 	public void preparePuzzle(EntityPlayer ep) {
-		this.initTowers(ep.worldObj);
+		//this.initTowers(ep.worldObj);
 		if (towerGroups.isEmpty()) {
 			for (int i = 0; i < Towers.towerList.length; i++) {
 				Towers t = Towers.towerList[i];

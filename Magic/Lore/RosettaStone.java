@@ -179,4 +179,8 @@ public class RosettaStone {
 			throw new RegistrationException(ChromatiCraft.instance, "Could not load loretext!");
 	}
 
+	public void clear() {
+		alpha = 1;
+	}
+
 }
