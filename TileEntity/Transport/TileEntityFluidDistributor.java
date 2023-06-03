@@ -200,7 +200,8 @@ public class TileEntityFluidDistributor extends TileEntityAreaDistributor implem
 			this.doParticles(world, x, y, z);
 			particleDuration.tick();
 			for (ParticleChannel pc : particleDuration.keySet()) {
-				this.sendFluidToClient(pc.location, pc.fluid, pc.amount);
+				if (pc.amount > 0)
+					this.sendFluidToClient(pc.location, pc.fluid, pc.amount);
 			}
 		}
 	}

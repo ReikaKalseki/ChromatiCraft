@@ -72,6 +72,7 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Magic.Progression.ResearchLevel;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
+import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.Render.TESR.RenderDataNode;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
 import Reika.DragonAPI.DragonAPICore;
@@ -349,7 +350,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	BEES("Crystal Bees",			new ItemStack(Blocks.dirt),								ResearchLevel.RAWEXPLORE,	ProgressStage.HIVE),
 	TINKERTOOLS("Mix-And-Magic Tools",	new ItemStack(Blocks.dirt),							ResearchLevel.MULTICRAFT),
 	BRANCHES("Magic Branches",		ItemMagicBranch.BranchTypes.CRYSTAL.getStack(),			ResearchLevel.ENERGY),
-	FERTILITYSEED("Fertility Seeds",ChromaItems.FERTILITYSEED.getStackOf(),					ResearchLevel.RAWEXPLORE),
+	FERTILITYSEED("Fertility Seeds",ChromaItems.FERTILITYSEED.getStackOf(),					ResearchLevel.RAWEXPLORE,	ProgressStage.GLOWCLIFFS),
 	ARTEFACT("Mysterious Artifacts",ChromaItems.ARTEFACT.getStackOf(),						ResearchLevel.RAWEXPLORE,	ProgressStage.ARTEFACT),
 	PROXESSENCE("Proximal Essence",	ChromaStacks.bedrockloot,								ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
 
@@ -979,6 +980,11 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 		}
 		if (this == ACCEL)
 			return ChromaDescriptions.getNotes(this, subpage-1);
+		else if (this == ALVEARY && subpage > 1) {
+			StringBuilder sb = new StringBuilder();
+			TileEntityLumenAlveary.getSortedEffectList().get(subpage-2).getLexiconString(sb);
+			return sb.toString();
+		}
 		String ret = ChromaDescriptions.getNotes(this, 0);
 		if (item != null && item.getItemInstance() instanceof DynamicallyGeneratedSubpage) {
 			DynamicallyGeneratedSubpage iw = (DynamicallyGeneratedSubpage)this.getItem().getItemInstance();

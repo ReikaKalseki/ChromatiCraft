@@ -1,7 +1,5 @@
 package Reika.ChromatiCraft.Base;
 
-import java.util.LinkedList;
-
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,6 +10,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.AbstractSearch.FoundPath;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.AbstractSearch.PropagationCondition;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.AbstractSearch.TerminationCondition;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BreadthFirstSearch;
@@ -37,8 +36,6 @@ public abstract class BlockProtectedByStructure extends Block {
 	}
 
 	private MultiBlockChromaTile getMultiblockTile(World world, int x, int y, int z) {
-		BreadthFirstSearch bfs = new BreadthFirstSearch(x, y, z);
-		bfs.limit = BlockBox.block(x, y, z).expand(15, 40, 15);
 		PropagationCondition prop = new PropagationCondition() {
 			@Override
 			public boolean isValidLocation(World world, int x, int y, int z, Coordinate from) {
@@ -52,12 +49,14 @@ public abstract class BlockProtectedByStructure extends Block {
 				return world.getTileEntity(x, y, z) instanceof MultiBlockChromaTile;
 			}
 		};
-		bfs.complete(world, prop, end);
-		LinkedList<Coordinate> li = bfs.getResult();
+		BreadthFirstSearch bfs = new BreadthFirstSearch(x, y, z, prop, end);
+		bfs.limit = BlockBox.block(x, y, z).expand(15, 40, 15);
+		bfs.complete(world);
+		FoundPath li = bfs.getResult();
 		//ReikaJavaLibrary.pConsole(li);
-		if (li == null || li.isEmpty())
+		if (li == null || !li.isEmpty())
 			return null;
-		TileEntity te = li.getLast().getTileEntity(world);
+		TileEntity te = li.getPath().getLast().getTileEntity(world);
 		return te instanceof MultiBlockChromaTile ? (MultiBlockChromaTile)te : null;
 	}
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.TileEntity.Plants;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 
 import net.minecraft.block.Block;
@@ -21,6 +22,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.IShearable;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ComplexAOE;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
@@ -39,24 +41,24 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BotaniaHandler;
 
 
-public class TileEntityHarvesterPlant extends TileEntityMagicPlant {
+public class TileEntityHarvesterPlant extends TileEntityMagicPlant implements ComplexAOE {
 
 	private static double[][] randomDistrib = {
-		{3, 2, 1, 1, 2, 3, 2, 1, 1, 2, 3},
-		{1, 6, 4, 3, 4, 5, 4, 3, 4, 6, 2},
-		{1, 4, 7, 5, 4, 6, 4, 5, 7, 4, 1},
-		{1, 3, 5, 8, 6, 7, 6, 8, 5, 3, 1},
-		{2, 4, 4, 6, 9, 0, 9, 6, 4, 4, 2},
-		{3, 5, 6, 7, 0, 0, 0, 7, 6, 5, 3},
-		{2, 4, 4, 6, 9, 0, 9, 6, 4, 4, 2},
-		{1, 3, 5, 8, 6, 7, 6, 8, 5, 3, 1},
-		{1, 4, 7, 5, 4, 6, 4, 5, 7, 4, 1},
-		{2, 6, 4, 3, 3, 5, 3, 3, 4, 6, 2},
-		{3, 2, 1, 1, 2, 3, 2, 1, 1, 2, 3},
+			{3, 2, 1, 1, 2, 3, 2, 1, 1, 2, 3},
+			{1, 6, 4, 3, 4, 5, 4, 3, 4, 6, 2},
+			{1, 4, 7, 5, 4, 6, 4, 5, 7, 4, 1},
+			{1, 3, 5, 8, 6, 7, 6, 8, 5, 3, 1},
+			{2, 4, 4, 6, 9, 0, 9, 6, 4, 4, 2},
+			{3, 5, 6, 7, 0, 0, 0, 7, 6, 5, 3},
+			{2, 4, 4, 6, 9, 0, 9, 6, 4, 4, 2},
+			{1, 3, 5, 8, 6, 7, 6, 8, 5, 3, 1},
+			{1, 4, 7, 5, 4, 6, 4, 5, 7, 4, 1},
+			{2, 6, 4, 3, 3, 5, 3, 3, 4, 6, 2},
+			{3, 2, 1, 1, 2, 3, 2, 1, 1, 2, 3},
 	};
 
 	private static double[] heightDistrib = {
-		10, 8, 5, 2
+			10, 8, 5, 2
 	};
 
 	private static final WeightedRandom<Coordinate> coordinateRand = WeightedRandom.fromArray(randomDistrib);
@@ -148,6 +150,16 @@ public class TileEntityHarvesterPlant extends TileEntityMagicPlant {
 	@Override
 	public boolean isPlantable(World world, int x, int y, int z) {
 		return ReikaPlantHelper.FLOWER.canPlantAt(world, x, y, z) || ReikaBlockHelper.isLeaf(world, x, y-1, z) || ChromaTiles.getTile(world, x, y-1, z) == ChromaTiles.PLANTACCEL;
+	}
+
+	@Override
+	public Collection<Coordinate> getPossibleRelativePositions() {
+		return coordinateRand.getValues();
+	}
+
+	@Override
+	public double getNormalizedWeight(Coordinate c) {
+		return coordinateRand.getNormalizedWeight(c);
 	}
 
 }

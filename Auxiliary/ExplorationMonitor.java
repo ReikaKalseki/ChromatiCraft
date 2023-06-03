@@ -19,13 +19,14 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ProgressionTrigger;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.ModInterface.ModInteraction;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
-import Reika.ChromatiCraft.World.BiomeRainbowForest;
+import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
@@ -103,8 +104,12 @@ public class ExplorationMonitor implements TickHandler {
 				ProgressStage.DEEPCAVE.stepPlayerTo(ep);
 			}
 
-			if (world.provider.dimensionId == 0 && world.getBiomeGenForCoords(x0, z0) instanceof BiomeRainbowForest) {
+			if (world.provider.dimensionId == 0 && ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x0, z0))) {
 				ProgressStage.RAINBOWFOREST.stepPlayerTo(ep);
+			}
+
+			if (world.provider.dimensionId == 0 && BiomeGlowingCliffs.isGlowingCliffs(world.getBiomeGenForCoords(x0, z0))) {
+				ProgressStage.GLOWCLIFFS.stepPlayerTo(ep);
 			}
 		}
 	}

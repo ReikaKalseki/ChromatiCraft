@@ -163,6 +163,8 @@ public class ProgressionManager implements ProgressRegistry {
 
 		this.addProgressPrereq(ProgressStage.MUDHINT,	ProgressStage.RAINBOWFOREST);
 
+		this.addProgressPrereq(ProgressStage.LUMA, ProgressStage.GLOWCLIFFS);
+
 		if (ProgressStage.VOIDMONSTER.active) {
 			this.addProgressPrereq(ProgressStage.VOIDMONSTER,	ProgressStage.BEDROCK);
 			this.addProgressPrereq(ProgressStage.VOIDMONSTERDIE,	ProgressStage.VOIDMONSTER);
@@ -226,6 +228,7 @@ public class ProgressionManager implements ProgressRegistry {
 		this.addProgressPrereq(ProgressStage.DIMENSION, 	ProgressStage.NETHERSTRUCT);
 		this.addProgressPrereq(ProgressStage.DIMENSION, 	ProgressStage.POWERCRYSTAL);
 		this.addProgressPrereq(ProgressStage.DIMENSION, 	ProgressStage.RAINBOWFOREST);
+		this.addProgressPrereq(ProgressStage.DIMENSION, 	ProgressStage.GLOWCLIFFS);
 		this.addProgressPrereq(ProgressStage.DIMENSION, 	ProgressStage.CAVERN);
 		this.addProgressPrereq(ProgressStage.DIMENSION, 	ProgressStage.BURROW);
 		this.addProgressPrereq(ProgressStage.DIMENSION, 	ProgressStage.OCEAN);

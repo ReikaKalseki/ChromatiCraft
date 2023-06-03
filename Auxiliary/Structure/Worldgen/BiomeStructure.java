@@ -11,6 +11,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.BiomeStructurePuzzle;
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Base.FragmentStructureWithBonusLoot;
@@ -97,9 +98,11 @@ public class BiomeStructure extends FragmentStructureWithBonusLoot {
 
 	@Override
 	public FilledBlockArray getArray(World world, int x, int y, int z) {
-		if (puzzle == null)
-			throw new RuntimeException("Puzzle not set!");
 		FilledBlockArray array = new FilledBlockArray(world);
+		if (puzzle == null) {
+			ChromatiCraft.logger.logError("Puzzle not set!");
+			return array;
+		}
 		Coordinate c = new Coordinate(x, y, z);
 		array.setBlock(x, y, z, ChromaTiles.STRUCTCONTROL.getBlock(), ChromaTiles.STRUCTCONTROL.getBlockMetadata());
 		//ControllerDelegateCallback del = new ControllerDelegateCallback(c);
@@ -273,6 +276,15 @@ public class BiomeStructure extends FragmentStructureWithBonusLoot {
 				array.setBlock(x+i, y+10, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), m);
 			}
 		}
+		for (int i = -1; i <= 1; i++) {
+			for (int k = -1; k <= 1; k++) {
+				array.setBlock(x+i, y+11, z+k, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+			}
+		}
+		array.setBlock(x+2, y+11, z+2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+		array.setBlock(x-2, y+11, z+2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+		array.setBlock(x+2, y+11, z-2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
+		array.setBlock(x-2, y+11, z-2, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 		for (int j = 6; j <= 8; j++) {
 			array.setBlock(x+6, y+j, z+6, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
 			array.setBlock(x-6, y+j, z+6, ChromaBlocks.STRUCTSHIELD.getBlockInstance(), BlockType.STONE.metadata);
@@ -329,6 +341,7 @@ public class BiomeStructure extends FragmentStructureWithBonusLoot {
 				}
 			}
 		}
+
 		this.addLootChest(array, x-5, y+2, z+4, ForgeDirection.EAST);
 		this.addLootChest(array, x+4, y+2, z+5, ForgeDirection.NORTH);
 		this.addLootChest(array, x+5, y+2, z-4, ForgeDirection.WEST);

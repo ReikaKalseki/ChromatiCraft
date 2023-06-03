@@ -250,7 +250,7 @@ public class ItemSplineAttack extends ItemChromaTool {
 			return li;
 		}
 		BlockBox box = BlockBox.between(from, to).expand(8, 6, 8);
-		return BreadthFirstSearch.getOpenPathBetween(from.worldObj, new Coordinate(from), new Coordinate(to), 16, box, EnumSet.allOf(PassRules.class));
+		return BreadthFirstSearch.getOpenPathBetween(from.worldObj, new Coordinate(from), new Coordinate(to), 16, box, EnumSet.allOf(PassRules.class)).getPath();
 	}
 
 	private List<EntityTarget> getAttackableEntitiesFrom(World world, EntityLivingBase from, EntityPlayer owner, List<EntityTarget> path) {

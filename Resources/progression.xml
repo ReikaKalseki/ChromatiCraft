@@ -415,6 +415,20 @@
 			A magic forest, full of multicolored trees and with significant power to keep evil away
 		</desc>
 	</rainbowforest>
+	<glowcliffs>
+		<title>
+			Glowing Terraces
+		</title>
+		<hint>
+			Are all the magical areas in this world forests? Might there be rare exceptions?
+		</hint>
+		<reveal>
+			Every level of this strange new place seems to contain novel phenomena, resources, or flora.
+		</reveal>
+		<desc>
+			Large terraced cliffs, with a distinctly unusual ambience
+		</desc>
+	</glowcliffs>
 	<dimension>
 		<title>
 			Other Worlds

@@ -97,19 +97,22 @@ public class ItemCaveExitFinder extends ItemChromaTool {
 		boolean deep = ep.isSneaking();
 		if (!deep && skyFinder.isValidTerminus(world, x, y, z))
 			return is;
-		BreadthFirstSearch s = new BreadthFirstSearch(x, y, z);
 		PropagationCondition f = deep ? new DownwardsFinder(y) : pathFinder;
 		TerminationCondition t = skyFinder;
+		BlockBox bounds = null;
 		if (deep) {
-			s.limit = new BlockBox(x, y, z, x, y, z).expand(400, 256, 400);
+			bounds = new BlockBox(x, y, z, x, y, z).expand(400, 256, 400);
 			BlockArray b = new BlockArray();
-			b.recursiveAddCallbackWithBounds(world, x, y, z, s.limit.minX, 0, s.limit.minZ, s.limit.maxX, 256, s.limit.maxZ, f);
+			b.recursiveAddCallbackWithBounds(world, x, y, z, bounds.minX, 0, bounds.minZ, bounds.maxX, 256, bounds.maxZ, f);
 			t = new LowYFinder(b.getMinY());
 		}
-		while (!s.tick(world, f, t)) {
+		BreadthFirstSearch s = new BreadthFirstSearch(x, y, z, f, t);
+		if (bounds != null)
+			s.limit = bounds;
+		while (!s.tick(world)) {
 
 		}
-		LinkedList<Coordinate> li = s.getResult();
+		LinkedList<Coordinate> li = s.getResult().getPath();
 		if (!li.isEmpty()) {
 			int n = 0;
 			ArrayList<Coordinate> li2 = new ArrayList();

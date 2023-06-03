@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 
@@ -18,6 +20,11 @@ import net.minecraft.world.World;
 import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
 import Reika.ChromatiCraft.Auxiliary.RangeTracker;
 import Reika.DragonAPI.Instantiable.StepTimer;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.AbstractSearch.FoundPath;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.BreadthFirstSearch;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.OpenPathFinder.PassRules;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Instantiable.Data.Maps.TimerMap;
 
@@ -32,6 +39,7 @@ public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase 
 
 	private final HashSet<WorldLocation> storages = new HashSet();
 	private final HashSet<WorldLocation> inputs = new HashSet();
+	private final HashMap<Coordinate, FoundPath> pathCache = new HashMap();
 
 	private final TimerMap<WorldLocation> particleCooldowns = new TimerMap();
 
@@ -76,12 +84,31 @@ public abstract class TileEntityAreaDistributor extends TileEntityChromaticBase 
 			for (int k = -r; k <= r; k++) {
 				for (int j = -r2; j <= 0; j++) {
 					TileEntity te = world.getTileEntity(x+i, y+j, z+k);
-					if (this.isValidTarget(te)) {
+					if (this.isValidTarget(te) && this.canAccess(te)) {
 						this.addStorage(new WorldLocation(te));
 					}
 				}
 			}
 		}
+	}
+
+	private boolean canAccess(TileEntity te) {
+		return this.getOrCreateOpenPath(te) != null;
+	}
+
+	private FoundPath getOrCreateOpenPath(TileEntity te) {
+		Coordinate c = new Coordinate(te);
+		FoundPath p = pathCache.get(c);
+		if (p != null && p.isValid(worldObj))
+			return p;
+		pathCache.remove(c);
+		Coordinate pc = new Coordinate(this);
+		BlockBox bounds = BlockBox.between(c, pc);//.expand(1);
+		p = BreadthFirstSearch.getOpenPathBetween(worldObj, pc, c, SCAN_RADIUS_XZ, bounds, EnumSet.of(PassRules.SMALLNONSOLID, PassRules.SOFT));
+		if (p.isEmpty())
+			return null;
+		pathCache.put(c, p);
+		return p;
 	}
 
 	protected abstract boolean isValidTarget(TileEntity te);

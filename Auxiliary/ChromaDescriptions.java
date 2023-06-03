@@ -27,6 +27,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.DynamicallyGeneratedSubpage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAreaDistributor;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
@@ -35,7 +36,9 @@ import Reika.ChromatiCraft.Magic.Lore.LoreScripts;
 import Reika.ChromatiCraft.Magic.Lore.LoreScripts.ScriptLocations;
 import Reika.ChromatiCraft.Magic.Network.RelayNetworker;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.ModInterface.RFWeb;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
+import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary.AlvearyEffect;
 import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaEnchants;
@@ -51,6 +54,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalBeacon;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityLumenTurret;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -239,6 +243,37 @@ public final class ChromaDescriptions {
 				pages.add(NOTE_SUFFIX);
 				for (int i = 0; i < 16; i++) {
 					pages.add(":"+CrystalElement.elements[i].name().toLowerCase());
+				}
+				int i = 0;
+				for (String s : pages) {
+					String text = machines.getValueAtNode("machines:"+m.name().toLowerCase(Locale.ENGLISH)+s);
+					boolean desc = s.equals(DESC_SUFFIX);
+					boolean note = s.equals(NOTE_SUFFIX);
+					if (desc)
+						text = String.format(text, machineData.get(m));
+					else if (note)
+						text = String.format(text, machineNotes.get(m));
+					if (XMLInterface.NULL_VALUE.equals(text))
+						text = "There is no lexicon data for this machine yet.";
+					if (m.isIncomplete()) {
+						text += "\nThis machine is incomplete. Use at your own risk.";
+					}
+					if (desc)
+						addEntry(h, text);
+					else
+						notes.put(text, h, i-1);
+					i++;
+				}
+			}
+			else if (m == ChromaTiles.ALVEARY && ModList.FORESTRY.isLoaded()) {
+				ArrayList<String> pages = new ArrayList();
+				pages.add(DESC_SUFFIX);
+				pages.add(NOTE_SUFFIX);
+				for (AlvearyEffect e : TileEntityLumenAlveary.getEffectSet()) {
+					String text = machines.getValueAtNode("machines:"+m.name().toLowerCase(Locale.ENGLISH)+":"+e.getClass().getSimpleName());
+					if (XMLInterface.NULL_VALUE.equals(text))
+						text = "There is no lexicon data for this effect yet.";
+					e.setXMLText(text);
 				}
 				int i = 0;
 				for (String s : pages) {
@@ -462,12 +497,14 @@ public final class ChromaDescriptions {
 		addNotes(ChromaTiles.LAMPCONTROL, TileEntityLampController.MAXRANGE, TileEntityLampController.MAXCHANNEL);
 		addNotes(ChromaTiles.ASPECTJAR, TileEntityAspectJar.CAPACITY_PRIMAL, TileEntityAspectJar.CAPACITY);
 		addNotes(ChromaTiles.WIRELESS, ChromaStructures.WIRELESSPEDESTAL.getDisplayName(), ChromaTiles.WIRELESS.getName());
-		if (ModList.FORESTRY.isLoaded())
-			addNotes(ChromaTiles.ALVEARY, TileEntityLumenAlveary.getEffectsAsString());
 		addNotes(ChromaTiles.TOOLSTORAGE, TileEntityToolStorage.ToolType.getTypesAsString());
 		addNotes(ChromaTiles.ITEMRIFT, CrystalElement.LIME.displayName);
+		addNotes(ChromaTiles.RFDISTRIBUTOR, TileEntityAreaDistributor.SCAN_RADIUS_XZ);
+		addNotes(ChromaTiles.FLUIDDISTRIBUTOR, TileEntityAreaDistributor.SCAN_RADIUS_XZ);
+		addNotes(ChromaTiles.TURRET, TileEntityLumenTurret.getUpgradesListString());
 
 		addData(ChromaBlocks.RELAY, RelayNetworker.instance.maxRange);
+		addData(ChromaBlocks.RFPOD, RFWeb.RANGE, RFWeb.THROUGHPUT);
 
 		for (int i = 0; i < 16; i++) {
 			CrystalElement e = CrystalElement.elements[i];

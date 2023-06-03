@@ -419,6 +419,8 @@ public class FragmentCategorizationSystem {
 	}
 
 	private void addMapping(ChromaTiles r, FragmentCategory fc, int amt) {
+		if (r.isDummiedOut())
+			return;
 		ChromaResearch f = r.getFragment();
 		if (f != null && f.getMachine() == r)
 			this.addMapping(f, fc, amt);
@@ -427,6 +429,8 @@ public class FragmentCategorizationSystem {
 	}
 
 	private void addMapping(ChromaItems r, FragmentCategory fc, int amt) {
+		if (r.isDummiedOut())
+			return;
 		ChromaResearch f = r.getFragment();
 		if (f != null && f.getItem() == r)
 			this.addMapping(f, fc, amt);
@@ -435,6 +439,8 @@ public class FragmentCategorizationSystem {
 	}
 
 	private void addMapping(ChromaBlocks r, FragmentCategory fc, int amt) {
+		if (r.isDummiedOut())
+			return;
 		ChromaResearch f = r.getFragment();
 		if (f != null && f.getBlock() == r)
 			this.addMapping(f, fc, amt);
@@ -443,6 +449,8 @@ public class FragmentCategorizationSystem {
 	}
 
 	private void addMapping(Chromabilities r, FragmentCategory fc, int amt) {
+		if (r.isDummiedOut())
+			return;
 		ChromaResearch f = r.getFragment();
 		if (f != null && f.getAbility() == r)
 			this.addMapping(f, fc, amt);

@@ -89,6 +89,7 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 	ALLCOLORS(		Shareability.SELFONLY,	Reloadability.NEVER,	ChromaItems.ELEMENTAL.getStackOf(CrystalElement.CYAN)), //find all colors
 	REPEATER(		Shareability.ALWAYS,	Reloadability.TRIGGER,	ChromaTiles.REPEATER), //craft any repeater type
 	RAINBOWFOREST(	Shareability.PROXIMITY,	Reloadability.ALWAYS,	ChromaBlocks.RAINBOWSAPLING.getBlockInstance()),
+	GLOWCLIFFS(		Shareability.PROXIMITY,	Reloadability.ALWAYS,	ChromaBlocks.CLIFFSTONE.getBlockInstance()),
 	DIMENSION(		Shareability.SELFONLY,	Reloadability.NEVER,	ChromaBlocks.PORTAL.getBlockInstance()),
 	CTM(			Shareability.SELFONLY,	Reloadability.NEVER,	ChromaTiles.AURAPOINT),
 	STORAGE(		Shareability.ALWAYS,	Reloadability.TRIGGER,	ChromaItems.STORAGE.getStackOf()),

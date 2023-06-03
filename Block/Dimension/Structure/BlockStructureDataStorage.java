@@ -323,6 +323,10 @@ public class BlockStructureDataStorage extends BlockDimensionStructureTile {
 				data.onInteract(worldObj, xCoord, yCoord, zCoord, ep, s, extraData);
 		}
 
+		public void setData(StructureData data) {
+			this.data = data;
+		}
+
 		@Override
 		public void readFromNBT(NBTTagCompound NBT) {
 			super.readFromNBT(NBT);

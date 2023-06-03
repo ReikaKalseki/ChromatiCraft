@@ -46,7 +46,7 @@ public class RFWeb {
 		FMLCommonHandler.instance().bus().register(new RFWebHandler());
 	}
 
-	public static final int RANGE = 9;
+	public static final int RANGE = 12;
 	public static final int THROUGHPUT = 3600/2;
 
 	private final HashMap<Coordinate, RFConnection> data = new HashMap();
@@ -314,7 +314,7 @@ public class RFWeb {
 			int total = 0;
 			for (Coordinate c : branches) {
 				RFConnection r = web.data.get(c);
-				if (r != null && r != this) {
+				if (r != null && r.canAcceptFrom(world, this)) {
 					int moved = this.moveEnergyTo(world, r, amt, true);
 					if (moved > 0) {
 						amt -= moved;
@@ -325,6 +325,10 @@ public class RFWeb {
 				}
 			}
 			return total;
+		}
+
+		private boolean canAcceptFrom(World world, RFConnection con) {
+			return con != this && this.getConnection(world) != this.getConnection(world);
 		}
 
 		private int moveEnergyTo(World world, RFConnection r, int amt, boolean forceAllow) {

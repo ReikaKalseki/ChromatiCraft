@@ -10,24 +10,31 @@
 package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
 import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.MathHelper;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ComplexAOE;
 import Reika.ChromatiCraft.Base.GuiDescription;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
+import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -36,9 +43,14 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Proportionality;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
+import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
+import Reika.DragonAPI.Objects.LineType;
 
 public class GuiMachineDescription extends GuiDescription {
 
@@ -46,8 +58,17 @@ public class GuiMachineDescription extends GuiDescription {
 
 	public static boolean runningRender = false;
 
+	private final ArrayList<Pages> pageList = new ArrayList();
+
 	public GuiMachineDescription(EntityPlayer ep, ChromaResearch r) {
 		super(ChromaGuis.MACHINEDESC, ep, r, 256, 220);
+		pageList.add(Pages.MAIN);
+		if (!ChromaDescriptions.isUnfilled(page.getNotes(1)))
+			pageList.add(Pages.NOTES);
+		if (this.getUsedEnergy() != null)
+			pageList.add(Pages.ENERGY);
+		if (ComplexAOE.class.isAssignableFrom(page.getMachine().getTEClass()))
+			pageList.add(Pages.AOE);
 	}
 
 	@Override
@@ -59,12 +80,33 @@ public class GuiMachineDescription extends GuiDescription {
 	protected int getMaxSubpage() {
 		if (page == ChromaResearch.ACCEL)
 			return 2+16-1;
+		if (page == ChromaResearch.ALVEARY && ModList.FORESTRY.isLoaded())
+			return 1+TileEntityLumenAlveary.getEffectSet().size();
+		/*
 		int max = super.getMaxSubpage();
 		if (max == 0 && this.getUsedEnergy() != null)
 			max = 1;
+		if (ComplexAOE.class.isAssignableFrom(page.getMachine().getTEClass()))
+			max++;
 		return max;
+		 */
+		return pageList.size()-1;
 	}
 
+	@Override
+	protected String getText(int subpage) {
+		if (page == ChromaResearch.ACCEL || page == ChromaResearch.ALVEARY)
+			return super.getText(subpage);
+		switch(pageList.get(subpage)) {
+			case AOE:
+				return "This construct has a complex area of effect, shown here.\n\nMore intensely colored tiles indicate stronger effect relative to weakly colored ones.";
+			case ENERGY:
+				return "This device requires lumen energy to function.";
+			default:
+				return super.getText(subpage);
+		}
+	}
+	/*
 	@Override
 	protected int parseMaxSubpage() {
 		int ret = super.parseMaxSubpage();
@@ -72,7 +114,7 @@ public class GuiMachineDescription extends GuiDescription {
 			ret = 1;
 		return ret;
 	}
-
+	 */
 	private ElementTagCompound getUsedEnergy() {
 		ElementTagCompound tag = new ElementTagCompound();
 		ChromaTiles m = page.getMachine();
@@ -114,22 +156,82 @@ public class GuiMachineDescription extends GuiDescription {
 		int posX = (width - xSize) / 2;
 		int posY = (height - ySize) / 2 - 8;
 
-		if (subpage == 0 || (page == ChromaResearch.ACCEL && subpage != 1))
+		if (page == ChromaResearch.ACCEL && subpage != 1) {
 			this.drawMachineRender(posX, posY);
+		}
 		else {
-			ElementTagCompound tag = this.getUsedEnergy();
-			if (tag != null) {
-				int r = 32;
-				int dx = posX+xSize-r-50;
-				int dy = posY+r+10;
-				Proportionality<CrystalElement> p = tag.getProportionality();
-				p.setGeometry(dx, dy, r, System.identityHashCode(this)+this.getGuiTick()%360);
-				p.render(CrystalElement.getColorMap());
-				float lf = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
-				GL11.glLineWidth(2.5F);
-				api.drawCircle(dx, dy, r+1, 0xffffffff);
-				api.drawCircle(dx, dy, r, 0xff000000);
-				GL11.glLineWidth(lf);
+			switch (pageList.get(subpage)) {
+				case MAIN:
+					this.drawMachineRender(posX, posY);
+					break;
+				case ENERGY:
+					ElementTagCompound tag = this.getUsedEnergy();
+					if (tag != null) {
+						ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/infoicons.png");
+						int idx = -1;
+						if (page.getMachine().isPylonPowered()) {
+							idx = 1;
+						}
+						else if (page.getMachine().isRelayPowered()) {
+							idx = 2;
+						}
+						else if (page.getMachine().isChargedCrystalPowered()) {
+							idx = 3;
+						}
+						else if (page.getMachine().isWirelessPowered()) {
+							idx = 4;
+						}
+						double u = 0.0625*idx;
+						double v = 0;
+						double s = 0.0625;
+						Tessellator v5 = Tessellator.instance;
+						int r = 64;
+						int dx = posX+xSize/2-r/2;
+						int dy = posY+ySize-r-16;
+						v5.startDrawingQuads();
+						v5.addVertexWithUV(dx, dy+r, 0, u, v+s);
+						v5.addVertexWithUV(dx+r, dy+r, 0, u+s, v+s);
+						v5.addVertexWithUV(dx+r, dy, 0, u+s, v);
+						v5.addVertexWithUV(dx, dy, 0, u, v);
+						v5.draw();
+
+						r = 32;
+						dx = posX+xSize-r-50;
+						dy = posY+r+10;
+						Proportionality<CrystalElement> p = tag.getProportionality();
+						p.setGeometry(dx, dy, r, System.identityHashCode(this)+this.getGuiTick()%360);
+						p.render(CrystalElement.getColorMap());
+						float lf = GL11.glGetFloat(GL11.GL_LINE_WIDTH);
+						GL11.glLineWidth(2.5F);
+						api.drawCircle(dx, dy, r+1, 0xffffffff);
+						api.drawCircle(dx, dy, r, 0xff000000);
+						GL11.glLineWidth(lf);
+					}
+					break;
+				case AOE:
+					ComplexAOE te = (ComplexAOE)page.getMachine().createTEInstanceForRender(0);
+					Collection<Coordinate> li = te.getPossibleRelativePositions();
+					BlockBox box = BlockBox.nothing();
+					for (Coordinate c : li) {
+						box = box.addCoordinate(c.xCoord, c.yCoord, c.zCoord);
+					}
+					int area = xSize/2;
+					int height = 77;
+					int w = Math.min(area/box.getSizeX(), height/box.getSizeZ());
+					//ReikaGuiAPI.instance.drawRectFrame(posX+xSize/2-30, posY+3, 90, height, 0xff0000, LineType.SOLID);
+					for (Coordinate c : li) {
+						int dx = posX+xSize/2+w*c.xCoord;
+						int dy = posY+height/2+5-w/2+w*c.zCoord;
+						int a = (int)(te.getNormalizedWeight(c)*255);
+						int c1 = ReikaColorAPI.RGBtoHex(192, 212, 255, a);
+						int c2 = ReikaColorAPI.RGBtoHex(192, 128, 255, a);
+						int clr = ReikaColorAPI.mixColors(c1, c2, 0.5F+0.5F*MathHelper.sin((this.getGuiTick()*0.1F+System.identityHashCode(c)%10000))*0.2F);
+						ReikaGuiAPI.instance.drawRect(dx, dy, w, w, clr, true);
+						ReikaGuiAPI.instance.drawRectFrame(dx, dy, w, w, clr | (a/3 << 24), LineType.SOLID);
+					}
+					break;
+				default:
+					break;
 			}
 		}
 	}
@@ -269,6 +371,13 @@ public class GuiMachineDescription extends GuiDescription {
 		GL11.glDisable(GL12.GL_RESCALE_NORMAL);
 		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glTranslated(0, 0, -32);
+	}
+
+	private static enum Pages {
+		MAIN,
+		NOTES,
+		ENERGY,
+		AOE;
 	}
 
 }

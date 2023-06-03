@@ -127,7 +127,6 @@ import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Items.ItemFertilitySeed;
-import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Items.Tools.ItemFloatstoneBoots;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
@@ -460,10 +459,10 @@ public class ChromaticEventManager {
 
 		};
 
-		BreadthFirstSearch s = new BreadthFirstSearch(x, y, z);
+		BreadthFirstSearch s = new BreadthFirstSearch(x, y, z, c, t);
 		s.limit = BlockBox.block(x, y, z).expand(7, 15, 7);
 		s.depthLimit = 32;
-		s.complete(world, c, t);
+		s.complete(world);
 		return s.getResult().isEmpty();
 	}
 
@@ -2335,7 +2334,7 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void sendLinkedItems(EntityItemPickupEvent ev) {
-		this.fillFragments(ev);
+		//this.fillFragments(ev);
 		EntityPlayer ep = ev.entityPlayer;
 		this.parseInventoryForLinking(ev, ep.inventory.mainInventory, null);
 	}
@@ -2714,7 +2713,7 @@ public class ChromaticEventManager {
 		}
 	}
 	 */
-
+	/*
 	//@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void fillFragments(EntityItemPickupEvent ev) {
 		ItemStack is = ev.item.getEntityItem();
@@ -2722,7 +2721,7 @@ public class ChromaticEventManager {
 			ItemInfoFragment.programShardAndGiveData(is, ev.entityPlayer);
 		}
 	}
-
+	 */
 	@SubscribeEvent
 	public void biomeDrops(LivingDropsEvent ev) {
 		EntityLivingBase e = ev.entityLiving;

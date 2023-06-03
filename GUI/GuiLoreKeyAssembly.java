@@ -90,7 +90,7 @@ public class GuiLoreKeyAssembly extends GuiScreen implements CustomSoundGui {
 	protected void mouseClicked(int x, int y, int button) {
 		super.mouseClicked(x, y, button);
 
-		if (button == 0 && (!LoreManager.instance.hasPlayerCompletedBoard(player) || !puzzle.isComplete())) {
+		if (button == 0 && !LoreManager.instance.hasPlayerCompletedBoard(player)) {
 			ScaledResolution sr = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
 
 			Hex h = puzzle.getHexAt(x-sr.getScaledWidth()/2-puzzle.CELL_SIZE/2, y-sr.getScaledHeight()/2-puzzle.CELL_SIZE/2);

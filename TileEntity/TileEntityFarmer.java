@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.TileEntity;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -19,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ComplexAOE;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -27,6 +29,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay.RelayFunctions;
+import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Interfaces.Registry.CropType;
@@ -34,7 +37,6 @@ import Reika.DragonAPI.Interfaces.Registry.CropType.CropMethods;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -43,7 +45,31 @@ import Reika.DragonAPI.ModRegistry.ModCropList;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class TileEntityFarmer extends TileEntityRelayPowered {
+public class TileEntityFarmer extends TileEntityRelayPowered implements ComplexAOE {
+
+	private static final WeightedRandom<Coordinate>[] coordinateRand = new WeightedRandom[4];
+
+	static {
+		for (int i = 0; i < 4; i++) {
+			WeightedRandom<Coordinate> wr = new WeightedRandom();
+			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i+2];
+			ForgeDirection left = ReikaDirectionHelper.getLeftBy90(dir);
+			for (int r = 0; r < 16; r++) {
+				for (int a = -r; a <= r; a++) {
+					int dx = r*dir.offsetX+a*left.offsetX;
+					int dz = r*dir.offsetZ+a*left.offsetZ;
+					double wt = 100;
+					if (Math.abs(a) > 2 && Math.abs(a) >= r/2)
+						wt -= (Math.abs(a)/3D)*10;
+					if (r > 8)
+						wt *= 1-((r-8)/8D);
+					if (wt > 0)
+						wr.addEntry(new Coordinate(dx, 0, dz), wt);
+				}
+			}
+			coordinateRand[i] = wr;
+		}
+	}
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -137,7 +163,7 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 		return type;
 	}
 
-	private Coordinate getRandomPosition(World world, int x, int y, int z) {
+	private Coordinate getRandomPosition(World world, int x, int y, int z) {/*
 		ForgeDirection dir = this.getFacing();
 		ForgeDirection left = ReikaDirectionHelper.getLeftBy90(dir);
 		int r = rand.nextInt(16);
@@ -145,7 +171,10 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 		int dx = x+r*dir.offsetX+sp*left.offsetX;//ReikaRandomHelper.getRandomPlusMinus(x, r);
 		int dz = z+r*dir.offsetZ+sp*left.offsetZ;//ReikaRandomHelper.getRandomPlusMinus(z, r);
 		int dy = ReikaWorldHelper.findTopBlockBelowY(world, dx, y, dz);//Math.min(y, world.getTopSolidOrLiquidBlock(x, z));
-		return new Coordinate(dx, dy, dz);
+		return new Coordinate(dx, dy, dz);*/
+		Coordinate pos = coordinateRand[this.getFacing().ordinal()-2].getRandomEntry();
+		int dy = ReikaWorldHelper.findTopBlockBelowY(world, pos.xCoord, y, pos.zCoord);//Math.min(y, world.getTopSolidOrLiquidBlock(x, z));
+		return pos.setY(dy);
 	}
 	/*
 	@Override
@@ -246,6 +275,16 @@ public class TileEntityFarmer extends TileEntityRelayPowered {
 			default:
 				return ForgeDirection.UNKNOWN;
 		}
+	}
+
+	@Override
+	public Collection<Coordinate> getPossibleRelativePositions() {
+		return coordinateRand[3].getValues();
+	}
+
+	@Override
+	public double getNormalizedWeight(Coordinate c) {
+		return coordinateRand[3].getNormalizedWeight(c);
 	}
 
 }

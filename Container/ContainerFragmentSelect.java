@@ -188,6 +188,7 @@ public class ContainerFragmentSelect extends Container {
 			ItemStack in = inventory.getStackInSlot(0);
 			if (ChromaItems.FRAGMENT.matchWith(in) && options[slot].giveToPlayer(player)) {
 				ItemInfoFragment.setResearch(in, options[slot].fragment);
+				player.closeScreen();
 				return true;
 			}
 			return false;

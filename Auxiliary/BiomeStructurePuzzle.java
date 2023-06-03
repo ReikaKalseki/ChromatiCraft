@@ -27,7 +27,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Base.StructureData;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
+import Reika.ChromatiCraft.Block.Dimension.Structure.BlockStructureDataStorage.TileEntityStructureDataStorage;
 import Reika.ChromatiCraft.Block.Dimension.Structure.LightPanel.BlockLightSwitch;
 import Reika.ChromatiCraft.Block.Dimension.Structure.LightPanel.BlockLightSwitch.LightSwitchTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockColoredLock.TileEntityColorLock;
@@ -38,6 +40,7 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -229,6 +232,8 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		for (Coordinate c : this.getLiquidLocations(root)) {
 			array.setBlock(c.xCoord, c.yCoord, c.zCoord, Blocks.water);
 		}
+
+		array.setBlock(x0, y0+10, z0, ChromaBlocks.DIMDATA.getBlockInstance(), 0);
 	}
 
 	public void placeData(World world, TileEntityStructControl root) {
@@ -259,6 +264,22 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 				e.getKey().setBlock(world, ChromaBlocks.SHIFTLOCK.getBlockInstance(), p.ordinal());
 			}
 		}
+
+		world.setBlock(root.xCoord, root.yCoord+10, root.zCoord, ChromaBlocks.DIMDATA.getBlockInstance(), 0, 3);
+		TileEntityStructureDataStorage tile = (TileEntityStructureDataStorage)world.getTileEntity(root.xCoord, root.yCoord+10, root.zCoord);
+		tile.setData(new StructureData(null) {
+
+			@Override
+			public void load(HashMap<String, Object> map) {
+
+			}
+
+			@Override
+			public void onInteract(World world, int x, int y, int z, EntityPlayer ep, int s, HashMap<String, Object> extraData) {
+				BiomeStructurePuzzle.this.triggerPlay();
+			}
+
+		});
 
 		for (Coordinate c : this.getSwitchLocations(ref)) {
 			c.setBlock(world, ChromaBlocks.PANELSWITCH.getBlockInstance());
@@ -747,6 +768,9 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 				this.playNextNote(te);
 			}
 		}
+		else if (ChromaItems.PROBE.matchWith(ep.getCurrentEquippedItem())) {
+			this.triggerPlay();
+		}
 	}
 
 	private boolean isPlayingMelody(EntityPlayer ep) {
@@ -754,6 +778,8 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	}
 
 	public void triggerPlay() {
+		if (melodyIndex >= 0)
+			return;
 		nextNoteTick = musicTick;
 		melodyIndex = 0;
 	}

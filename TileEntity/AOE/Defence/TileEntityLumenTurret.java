@@ -41,6 +41,7 @@ import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFlareFX;
+import Reika.DragonAPI.Exception.UnreachableCodeException;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Interfaces.Entity.TameHostile;
@@ -238,6 +239,17 @@ public class TileEntityLumenTurret extends TileEntityChromaticBase {
 
 	}
 
+	public static String getUpgradesListString() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < TurretUpgrades.list.length; i++) {
+			TurretUpgrades t = TurretUpgrades.list[i];
+			sb.append(t.color.displayName+": "+t.getLexiconString());
+			if (i < TurretUpgrades.list.length-1)
+				sb.append("\n");
+		}
+		return sb.toString();
+	}
+
 	public static enum TurretUpgrades {
 		PASSIVE(CrystalElement.GREEN),
 		PLAYERS(CrystalElement.PURPLE),
@@ -254,6 +266,28 @@ public class TileEntityLumenTurret extends TileEntityChromaticBase {
 
 		private TurretUpgrades(CrystalElement e) {
 			color = e;
+		}
+
+		public String getLexiconString() {
+			switch(this) {
+				case DAMAGE:
+					return "Increase damage per hit";
+				case FIRE:
+					return "Set fire to hit mobs";
+				case FIRERATE:
+					return "Increase fire rate";
+				case NONPLAYER:
+					return "Obfuscate damage source as non-player";
+				case PASSIVE:
+					return "Enable targeting of passive creatures";
+				case PLAYERS:
+					return "Enable targeting of players";
+				case RANGE:
+					return "Increase range";
+				case SKY:
+					return "Function without sky view";
+			}
+			throw new UnreachableCodeException();
 		}
 
 		public boolean check(TileEntityLumenTurret te) {

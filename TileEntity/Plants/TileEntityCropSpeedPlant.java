@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Plants;
 
+import java.util.Collection;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCactus;
 import net.minecraft.block.BlockReed;
@@ -17,6 +19,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ComplexAOE;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -29,7 +32,7 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModRegistry.ModCropList;
 
 
-public class TileEntityCropSpeedPlant extends TileEntityMagicPlant {
+public class TileEntityCropSpeedPlant extends TileEntityMagicPlant implements ComplexAOE {
 
 	private static double[][] growthDistrib = {
 			{0, 0, 4, 0, 0},
@@ -103,6 +106,16 @@ public class TileEntityCropSpeedPlant extends TileEntityMagicPlant {
 	@Override
 	public boolean isPlantable(World world, int x, int y, int z) {
 		return world.getBlock(x, y-1, z) == Blocks.farmland || ChromaTiles.getTile(world, x, y-1, z) == ChromaTiles.PLANTACCEL || (world.getBlock(x, y-1, z) == ChromaBlocks.CLIFFSTONE.getBlockInstance() && Variants.getVariant(world.getBlockMetadata(x, y-1, z)) == Variants.FARMLAND);
+	}
+
+	@Override
+	public Collection<Coordinate> getPossibleRelativePositions() {
+		return growthRand.getValues();
+	}
+
+	@Override
+	public double getNormalizedWeight(Coordinate c) {
+		return growthRand.getNormalizedWeight(c);
 	}
 
 }

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -17,6 +17,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
+import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
@@ -78,7 +79,7 @@ public abstract class GuiDescription extends GuiBookSection {
 		super.drawScreen(x, y, f);
 
 		int px = posX+descX;
-		String s = String.format("%s", page.getData());
+		String s = this.getText(subpage);
 		boolean flag = page.isUnloadable();
 		if (flag) {
 			int c1 = 0x6c6c6c; //7a7a7a avg
@@ -106,7 +107,7 @@ public abstract class GuiDescription extends GuiBookSection {
 					}
 				}
 				else {
-					fontRendererObj.drawSplitString(String.format("%s", page.getNotes(subpage)), px, posY+descY, 242, c);
+					fontRendererObj.drawSplitString(s, px, posY+descY, 242, c);
 				}
 			}
 			if (disable) {
@@ -117,12 +118,13 @@ public abstract class GuiDescription extends GuiBookSection {
 		}
 	}
 
+	protected String getText(int subpage) {
+		return subpage == 0 ? page.getData() : page.getNotes(subpage);
+	}
+
 	private List<String> getSplitDescription() {
 		if (page == ChromaResearch.BEES && subpage > 0) {
 			return CrystalBees.getBeeDescription(CrystalBees.getBeeByIndex(subpage-1));
-		}
-		else if (page == ChromaResearch.ALVEARY && subpage > 0) {
-			return fontRendererObj.listFormattedStringToWidth(page.getNotes(subpage), 242);
 		}
 		return null;
 	}
@@ -136,6 +138,8 @@ public abstract class GuiDescription extends GuiBookSection {
 	public final String getPageTitle() {
 		if (page == ChromaResearch.ACCEL && subpage > 1)
 			return AdjacencyUpgrades.upgrades[subpage-2].getName();
+		else if (page == ChromaResearch.ALVEARY && subpage > 1)
+			return "Alveary Effect - "+TileEntityLumenAlveary.getSortedEffectList().get(subpage-2).getDescription();
 		return page.isConfigDisabled() ? page.getTitle()+" (Disabled)" : super.getPageTitle();
 	}
 

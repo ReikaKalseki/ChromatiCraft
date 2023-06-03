@@ -40,8 +40,8 @@ import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
 
 public abstract class GuiBookSection extends ChromaBookGui {
 
@@ -73,7 +73,7 @@ public abstract class GuiBookSection extends ChromaBookGui {
 		if (!NEItrigger)
 			this.addAuxButton(new CustomSoundImagedGuiButton(51, j+xSize, k+5, 22, 39, 42, 210, file, ChromatiCraft.class, this), "Save & Exit");
 
-		if (this.parseMaxSubpage() > 0) {
+		if (this.getMaxSubpage() > 0) {
 			buttonList.add(new CustomSoundGuiButton(13, j+xSize-27, k+32, 20, 20, ">", this));
 			buttonList.add(new CustomSoundGuiButton(14, j+xSize-27, k+52, 20, 20, "<", this));
 		}
@@ -99,7 +99,7 @@ public abstract class GuiBookSection extends ChromaBookGui {
 			return;
 		}
 		else if (button.id == 13) {
-			if (subpage < this.parseMaxSubpage())
+			if (subpage < this.getMaxSubpage())
 				subpage++;
 			this.initGui();
 			return;
@@ -113,7 +113,7 @@ public abstract class GuiBookSection extends ChromaBookGui {
 	}
 
 	protected abstract int getMaxSubpage();
-
+	/*
 	protected int parseMaxSubpage() {
 		int ret = this.getMaxSubpage();
 		if (page != null && (page.isMachine() || page.isTool())) {
@@ -122,7 +122,7 @@ public abstract class GuiBookSection extends ChromaBookGui {
 			}
 		}
 		return ret;
-	}
+	}*/
 
 	@Override
 	public void drawScreen(int x, int y, float f) {

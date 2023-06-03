@@ -9,10 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Plants;
 
+import java.util.Collection;
+
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.Auxiliary.Interfaces.ComplexAOE;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.StepTimer;
@@ -22,7 +25,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Libraries.Registry.ReikaPlantHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 
-public class TileEntityBiomeReverter extends TileEntityMagicPlant/* implements LocationCached*/ {
+public class TileEntityBiomeReverter extends TileEntityMagicPlant implements ComplexAOE/* implements LocationCached*/ {
 
 	private StepTimer timer = new StepTimer(40);
 
@@ -107,6 +110,16 @@ public class TileEntityBiomeReverter extends TileEntityMagicPlant/* implements L
 	@Override
 	public boolean isPlantable(World world, int x, int y, int z) {
 		return ReikaPlantHelper.FLOWER.canPlantAt(world, x, y, z) || ChromaTiles.getTile(world, x, y-1, z) == ChromaTiles.PLANTACCEL;
+	}
+
+	@Override
+	public Collection<Coordinate> getPossibleRelativePositions() {
+		return coordinateRand.getValues();
+	}
+
+	@Override
+	public double getNormalizedWeight(Coordinate c) {
+		return coordinateRand.getNormalizedWeight(c);
 	}
 
 }

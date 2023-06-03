@@ -199,8 +199,8 @@ public class TileEntityManaBooster extends TileEntityWirelessPowered {
 
 	private ManaPath calculateManaPath(World world, Coordinate from, Coordinate to) {
 		Coordinate mid = new Coordinate(this);
-		LinkedList<Coordinate> li = BreadthFirstSearch.getOpenPathBetween(world, from, mid, 40, OpenPathFinder.defaultRules);
-		LinkedList<Coordinate> li2 = BreadthFirstSearch.getOpenPathBetween(world, mid, to, 40, OpenPathFinder.defaultRules);
+		LinkedList<Coordinate> li = BreadthFirstSearch.getOpenPathBetween(world, from, mid, 40, OpenPathFinder.defaultRules).getPath();
+		LinkedList<Coordinate> li2 = BreadthFirstSearch.getOpenPathBetween(world, mid, to, 40, OpenPathFinder.defaultRules).getPath();
 		if (li != null && li2 != null) {
 			HashSet<Coordinate> set = new HashSet();
 

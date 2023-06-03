@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
+import Reika.DragonAPI.Instantiable.Event.Client.RenderItemInSlotEvent;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 
 
@@ -99,7 +100,7 @@ public class ChromaItemRenderer implements IItemRenderer {
 		}
 		Minecraft mc = Minecraft.getMinecraft();
 		EntityPlayer ep = mc.thePlayer;
-		if (!entity && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)/* && (mc.currentScreen == null || mc.currentScreen instanceof GuiContainerCreative)*/ && ProgressStage.USEENERGY.isPlayerAtStage(ep) && machine.isLumenTile() && (item.stackTagCompound == null || !item.stackTagCompound.getBoolean("tooltip"))) {
+		if (!entity && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || RenderItemInSlotEvent.isRenderingStackHovered(item)) && ProgressStage.USEENERGY.isPlayerAtStage(ep) && machine.isLumenTile() && (item.stackTagCompound == null || !item.stackTagCompound.getBoolean("tooltip"))) {
 			int idx = -1;
 			if (machine.isPylonPowered()) {
 				idx = 1;
@@ -116,7 +117,7 @@ public class ChromaItemRenderer implements IItemRenderer {
 			if (idx >= 0) {
 				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				GL11.glPushMatrix();
-				GL11.glDisable(GL11.GL_BLEND);
+				GL11.glEnable(GL11.GL_BLEND);
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				if (machine.hasBlockRender()) {

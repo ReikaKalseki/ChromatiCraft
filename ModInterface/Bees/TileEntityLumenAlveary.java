@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 
 import com.google.common.base.Strings;
@@ -67,6 +68,7 @@ import Reika.DragonAPI.ModInteract.Bees.DummyEffectData;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ForestryMultiblockControllerHandling;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
+import Reika.RotaryCraft.API.Interfaces.Shockable;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -106,7 +108,7 @@ import thaumcraft.api.visnet.VisNetHandler;
 		"forestry.api.multiblock.IAlvearyComponent$BeeListener", "forestry.api.apiculture.IBeeModifier", "forestry.api.apiculture.IBeeListener",
 		"thaumcraft.api.aspects.IEssentiaTransport", "thaumcraft.api.aspects.IAspectContainer"})
 public class TileEntityLumenAlveary extends TileEntityRelayPowered implements GuiController, IAlvearyComponent, BeeModifier, BeeListener,
-IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaTransport, IAspectContainer {
+IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaTransport, IAspectContainer, Shockable {
 
 	private static final HashMap<String, AlvearyEffect> effectSet = new HashMap();
 	private static final HashSet<AlvearyEffect> continualSet = new HashSet();
@@ -171,6 +173,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 	private Coordinate relativeLocation;
 
 	private int lightningTicks;
+	private int consecutiveLightningTicks;
 
 	private String movePrincess;
 	private String moveDrone;
@@ -248,30 +251,6 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 			new FloweringBoostEffect();
 			new RainBoostEffect();
 		}
-	}
-
-	public static String getEffectsAsString() {
-		StringBuilder sb = new StringBuilder();
-		ArrayList<AlvearyEffect> li = new ArrayList(effectSet.values());
-		Collections.sort(li, effectSorter);
-		for (AlvearyEffect ae : li) {
-			sb.append(ae.getDescription());
-			sb.append(" - ");
-			if (ae instanceof LumenAlvearyEffect) {
-				sb.append(((LumenAlvearyEffect)ae).color.displayName);
-				sb.append(" (");
-				sb.append(((LumenAlvearyEffect)ae).requiredEnergy);
-				sb.append(" L/cycle)");
-			}
-			else if (ae instanceof VisAlvearyEffect) {
-				sb.append(((VisAlvearyEffect)ae).aspect.getLocalizedDescription());
-				sb.append(" (");
-				sb.append(((VisAlvearyEffect)ae).requiredVis);
-				sb.append(" cv/cycle)");
-			}
-			sb.append("\n");
-		}
-		return sb.toString();
 	}
 
 	public TileEntityLumenAlveary() {
@@ -933,6 +912,8 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		if (ModList.FORESTRY.isLoaded())
 			this.getMultiblockLogic().readFromNBT(data);
 
+		consecutiveLightningTicks = data.getInteger("lightning");
+
 		movePrincess = data.getString("move");
 		if (movePrincess.isEmpty())
 			movePrincess = null;
@@ -956,6 +937,8 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		super.writeToNBT(data);
 		if (ModList.FORESTRY.isLoaded())
 			this.getMultiblockLogic().writeToNBT(data);
+
+		data.setInteger("lightning", consecutiveLightningTicks);
 
 		data.setString("move", !Strings.isNullOrEmpty(movePrincess) ? movePrincess : "");
 		data.setString("movedr", !Strings.isNullOrEmpty(moveDrone) ? moveDrone : "");
@@ -1053,6 +1036,12 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		return Collections.unmodifiableCollection(effectSet.values());
 	}
 
+	public static final List<AlvearyEffect> getSortedEffectList() {
+		List<AlvearyEffect> li = new ArrayList(effectSet.values());
+		Collections.sort(li, effectSorter);
+		return li;
+	}
+
 	public static final Collection<? extends AlvearyEffect> getEffectSet(Class<? extends AlvearyEffect> c) {
 		ArrayList<AlvearyEffect> li = new ArrayList();
 		for (AlvearyEffect ae : effectSet.values()) {
@@ -1088,6 +1077,10 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 		public final String ID;
 
+		//private static final HashMap<AlvearyEffect, String> alvearyEffectText = new HashMap();
+
+		private String xmlText;
+
 		protected AlvearyEffect(String id) {
 			ID = id;
 			effectSet.put(ID, this);
@@ -1104,6 +1097,17 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		}
 
 		public abstract String getDescription();
+
+		public void getLexiconString(StringBuilder sb) {
+			sb.append(this.getDescription());
+			sb.append("\n\n");
+			sb.append(xmlText);
+		}
+
+		public void setXMLText(String text) {
+			if (Strings.isNullOrEmpty(text))
+				xmlText = text;
+		}
 
 		protected abstract void consumeEnergy(TileEntityLumenAlveary te, int amount);
 
@@ -1204,6 +1208,16 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 			super(id);
 			aspect = a;
 			requiredVis = amt;
+		}
+
+		@Override
+		public final void getLexiconString(StringBuilder sb) {
+			super.getLexiconString(sb);
+			sb.append("\n\nCost: ");
+			sb.append(aspect.getLocalizedDescription());
+			sb.append(" (");
+			sb.append(requiredVis);
+			sb.append(" cv/cycle)");
 		}
 
 		@Override
@@ -1383,6 +1397,16 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		}
 
 		@Override
+		public final void getLexiconString(StringBuilder sb) {
+			super.getLexiconString(sb);
+			sb.append("\n\nCost: ");
+			sb.append(color.displayName);
+			sb.append(" (");
+			sb.append(requiredEnergy);
+			sb.append(" L/cycle)");
+		}
+
+		@Override
 		public final String getResource() {
 			return color.displayName;
 		}
@@ -1518,6 +1542,16 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 				for (int i = 0; i < n; i++)
 					ReikaBeeHelper.runProductionCycle(te.getBeeHousing());
 				te.lightningTicks--;
+				te.consecutiveLightningTicks++;
+			}
+			else {
+				te.consecutiveLightningTicks = 0;
+			}
+
+			if (te.consecutiveLightningTicks >= 30) {
+				float f = (te.consecutiveLightningTicks-30)/60F;
+				if (rand.nextFloat() < f)
+					te.getBee().setIsNatural(false);
 			}
 
 			return true;
@@ -2241,6 +2275,36 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 	@Override
 	public int containerContains(Aspect tag) {
 		return aspects.getAmount(tag);
+	}
+
+	@Override
+	public void onDischarge(int charge, double range) {
+		lightningTicks = Math.max(lightningTicks, ReikaMathLibrary.logbase2(charge/6000));
+	}
+
+	@Override
+	public int getMinDischarge() {
+		return 6000;
+	}
+
+	@Override
+	public boolean canDischargeLongRange() {
+		return false;
+	}
+
+	@Override
+	public float getAimX() {
+		return 0.5F;
+	}
+
+	@Override
+	public float getAimY() {
+		return 0.5F;
+	}
+
+	@Override
+	public float getAimZ() {
+		return 0.5F;
 	}
 
 }

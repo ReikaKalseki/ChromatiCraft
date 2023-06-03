@@ -397,7 +397,7 @@
 			You thought that it could hardly get any easier with this kind of power; simply hook up the conduits from a generator to a machine and everything worked. However, you were still presented with one final dilemma: When grouping machines together, the cluster of cables is both unsightly and inconvenient to navigate around. Some way to transmit that power wirelessly from above would solve this problem.
 		</desc>
 		<note>
-
+			Can only send to blocks that are below it and that it can path towards without large deviation, and to a maximum range of %dm
 		</note>
 	</rfdistributor>
 	<fluiddistributor>
@@ -405,7 +405,7 @@
 			Noting the similarity between this red-tinted magic power and the way fluids tend to flow - one would almost think they were designed by the same person - you figure: If you can make one to radiate the power, surely you can make one to radiate fluid as well.
 		</desc>
 		<note>
-
+			Can only send to blocks that are below it and that it can path towards without large deviation, and to a maximum range of %dm
 		</note>
 	</fluiddistributor>
 	<window>
@@ -431,8 +431,10 @@
 			If you had an emerald for every time a creeper ambushed you right as you left your front door, you would have enough to be able to afford trading with villagers. Frustrated with this repeated occurrence, you have designed a small construct which can fire energy into nearby hostiles, ultimately killing them. Now all they need is a high-pitched voice and a polite demeanor...
 		</desc>
 		<note>
-			Requires a clear view of the sky and the target mob to function
-			Can be upgraded with different runes below it
+			Normally requires a clear view of the sky and the target mob to function
+			Can be upgraded with different runes below it to modulate behavior:
+			
+			%s
 		</note>
 	</turret>
 	<pylonturbo>
@@ -630,15 +632,107 @@
 			Untold piles of wax, jelly, and pollen later, and now poorer some 27 drums of honey, you finally have it: The pinnacle of your apiculture abilities, large structures to keep your bees as happy as possible and to maximize their productivity (wooden boxes, treated or not, proved lacking in that regard). And they help, but you still want MORE. More speed, more products, more everything. So an idea occurs to you: Lumen-powered bees! Well, more accurately, using the lumen energy to enhance them, or of the housing itself. You might even be able to plug it into those crystal relays from that glowy sparky thing you made as well.
 		</desc>
 		<note>
-			%s
+			One per alveary
+			
+			Effect choices can be controlled
 		</note>
+		<RainBoostEffect>
+			Increases productivity when the alveary is exposed to rain
+		</RainBoostEffect>
+		<ProductionBoostEffect>
+			Doubles productivity
+		</ProductionBoostEffect>
+		<NoProductionEffect>
+			Prevents item production
+		</NoProductionEffect>
+		<EnhancedEffectEffect>
+			Increases the strength of applied ambient effects
+		</EnhancedEffectEffect>
+		<MutationBoostEffect>
+			Increases mutation rate
+		</MutationBoostEffect>
+		<FloweringBoostEffect>
+			Increases flowering rate
+		</FloweringBoostEffect>
+		<AutomationEffect>
+			Automatically cycles resultant princesses and drones back to the input at the end of the lifecycle
+		</AutomationEffect>
+		<AccelerationEffectI>
+			Doubles alveary tick rate
+		</AccelerationEffectI>
+		<AccelerationEffectII>
+			Quadruples alveary tick rate
+		</AccelerationEffectII>
+		<AccelerationEffectIII>
+			Octuples alveary tick rate
+		</AccelerationEffectIII>
+		<LightningProductionEffect>
+			Lightning strikes trigger brief bursts of massively increased productivity
+		</LightningProductionEffect>
+		<HistoryRewriteEffect>
+			Rewrites bee mate genetics to match self
+		</HistoryRewriteEffect>
+		<GeneticBalancingEffect>
+			Slowly matches primary and seconary alleles, and very slowly restores ignoble princesses or queens
+		</GeneticBalancingEffect>
+		<GeneticStabilityEffect>
+			Stops all mutation and slows decay
+		</GeneticStabilityEffect>
+		<GeneticImmutabilityEffect>
+			Stops all mutation and ignoble decay
+		</GeneticImmutabilityEffect>
+		<GeneticFluxEffect>
+			Quadruples mutation rate
+		</GeneticFluxEffect>
+		<ExplorationEffect>
+			Strongly increases territory size
+		</ExplorationEffect>
+		<GeneticImprovementEffect>
+			Gradually improves bee genes
+		</GeneticImprovementEffect>
+		<TemperatureMatchingEffect>
+			Makes the internal alveary temperature match the ideal value for the bee
+		</TemperatureMatchingEffect>
+		<HumidityMatchingEffect>
+			Makes the internal alveary humidity match the ideal value for the bee
+		</HumidityMatchingEffect>
+		<GeneticRepairEffectI>
+			Slowly repairs overworked and forced-ignoble queens
+		</GeneticRepairEffectI>
+		<GeneticRepairEffectII>
+			Quickly repairs overworked and forced-ignoble queens
+		</GeneticRepairEffectII>
+		<EternalEffect>
+			Makes Eon lifespan last forever
+		</EternalEffect>
+		<PlayerRestrictionEffect>
+			Restricts elemental effects to players only
+		</PlayerRestrictionEffect>
+		<ElementalBoostEffect>
+			Greatly strengthens the ambient effect for the corresponding crystal bee
+		</ElementalBoostEffect>
+		<InfiniteSightEffect>
+			Increases detection range for non-climatic environmental needs to infinity
+		</InfiniteSightEffect>
+		<OmnipresentEffectEffect>
+			Makes some effects apply to the player regardless of their proximity to the alveary
+		</OmnipresentEffectEffect>
+		<RareDropBoostEffect>
+			Greatly increases the chance of rare products
+		</RareDropBoostEffect>
+		<name>
+			
+		</name>
 	</alveary>
 	<fluidrelay>
 		<desc>
-			Fluids. Fluids EVERYWHERE. Water, lava, oil, honey, liquid nitrogen, cryotheum, and more, routed all over your base with a rat's nest of pipes and ducts. Sure, some of them can be hidden in walls or the floor, but it is still a pain to connect everything, and that time you accidentally disconnected a fluid line and half your base cratered itself remains painfully sharp in your memory. Though you obviously will still need to connect all the endpoints, there has to be a better way...
+			Fluids. Fluids EVERYWHERE. Water, lava, oil, chroma, honey, liquid nitrogen, jet fuel, cryotheum, and more, routed all over your base with a rat's nest of pipes and ducts. Sure, some of them can be hidden in walls or the floor, but it is still a pain to connect everything, and that time you accidentally disconnected a fluid line and half your base cratered itself remains painfully sharp in your memory. Though you obviously will still need to connect all the endpoints, there has to be a better way...
 		</desc>
 		<note>
 			Positive pressures try to push fluids, negative pressures try to pull
+			Only zero or negative pressure accept being pushed into, and only zero or positive being pulled from
+			
+			Filters can be set to the current tank contents, either once upon command or, with dynamic filtering enabled, continously updated over time
 		</note>
 	</fluidrelay>
 	<bookdecomp>
