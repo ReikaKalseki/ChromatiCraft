@@ -374,9 +374,11 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				break;
 		}
 		this.openUpperChests();
-		ProgressStage.ANYSTRUCT.stepPlayerTo(ep);
-		this.getProgressStage().stepPlayerTo(ep);
-		triggered = true;
+		if (!world.isRemote) {
+			ProgressStage.ANYSTRUCT.stepPlayerTo(ep);
+			this.getProgressStage().stepPlayerTo(ep);
+			triggered = true;
+		}
 	}
 
 	public void reopenStructure() {

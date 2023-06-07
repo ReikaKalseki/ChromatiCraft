@@ -64,6 +64,11 @@ public class FragmentCategorizationSystem {
 		this.addMapping(ChromaTiles.ITEMCOLLECTOR, FragmentCategory.WORLD, 40);
 		this.addMapping(ChromaTiles.INSERTER, FragmentCategory.AUTOMATION, 40);
 		this.addMapping(ChromaTiles.LIGHTER, FragmentCategory.WORLD, 40);
+		this.addMapping(ChromaTiles.LASER, FragmentCategory.WORLD, 20);
+		this.addMapping(ChromaTiles.PROGRESSLINK, FragmentCategory.CONVERSION, 20);
+		this.addMapping(ChromaTiles.LUMENWIRE, FragmentCategory.AUTOMATION, 20);
+		this.addMapping(ChromaTiles.CHROMACRAFTER, FragmentCategory.AUTOMATION, 20);
+		this.addMapping(ChromaTiles.FUNCTIONRELAY, FragmentCategory.IMPROVEMENT, 20);
 
 		this.addMapping(ChromaTiles.ADJACENCY, FragmentCategory.IMPROVEMENT, 40);
 
@@ -213,6 +218,10 @@ public class FragmentCategorizationSystem {
 
 		this.addMapping(ChromaItems.ENDEREYE, FragmentCategory.WORLD, 40);
 
+		this.addMapping(ChromaResearch.FERTILITYSEED, FragmentCategory.WORLD, 20);
+		this.addMapping(ChromaResearch.SHARDS, FragmentCategory.LUMENS, 20);
+		this.addMapping(ChromaResearch.SHARDS, FragmentCategory.CRAFTING, 20);
+
 		this.addMapping(ChromaItems.BOTTLENECK, FragmentCategory.LUMENS, 40);
 		this.addMapping(ChromaItems.CAVEPATHER, FragmentCategory.TRAVEL, 40);
 		this.addMapping(ChromaItems.BULKMOVER, FragmentCategory.AUTOMATION, 40);
@@ -244,6 +253,8 @@ public class FragmentCategorizationSystem {
 		this.addMapping(ChromaItems.STORAGE, FragmentCategory.LUMENS, 40);
 		this.addMapping(ChromaItems.STORAGE, FragmentCategory.TOOLARMOR, 40);
 		this.addMapping(ChromaItems.STORAGE, FragmentCategory.STORAGE, 40);
+		this.addMapping(ChromaItems.LENS, FragmentCategory.LUMENS, 20);
+		this.addMapping(ChromaItems.MOBSONAR, FragmentCategory.DEFENCE, 20);
 
 		this.addMapping(ChromaItems.SHIELDEDCELL, FragmentCategory.IMPROVEMENT, 20);
 		this.addMapping(ChromaItems.SHIELDEDCELL, FragmentCategory.STORAGE, 40);
@@ -294,6 +305,7 @@ public class FragmentCategorizationSystem {
 		this.addMapping(Chromabilities.CHESTCLEAR, FragmentCategory.COLLECTION, 40);
 		this.addMapping(Chromabilities.MOBBAIT, FragmentCategory.DEFENCE, 40);
 		this.addMapping(Chromabilities.LIGHTCAST, FragmentCategory.WORLD, 40);
+		this.addMapping(Chromabilities.SPAWNERSEE, FragmentCategory.ATTACK, 40);
 
 		this.addMapping(ChromaStructures.PYLON, FragmentCategory.ARTIFACT, 40);
 		this.addMapping(ChromaStructures.PYLON, FragmentCategory.LUMENS, 40);
@@ -416,6 +428,13 @@ public class FragmentCategorizationSystem {
 		this.addMapping(ChromaResearch.MONUMENT, FragmentCategory.CONVERSION, 40);
 		this.addMapping(ChromaResearch.MONUMENT, FragmentCategory.IMPROVEMENT, 40);
 		this.addMapping(ChromaResearch.MONUMENT, FragmentCategory.STRUCTURE, 40);
+		this.addMapping(ChromaResearch.MUD, FragmentCategory.WORLD, 20);
+		this.addMapping(ChromaResearch.MUD, FragmentCategory.LUMENS, 20);
+		this.addMapping(ChromaResearch.ITEMCHARGE, FragmentCategory.LUMENS, 30);
+		this.addMapping(ChromaResearch.ITEMCHARGE, FragmentCategory.TOOLARMOR, 30);
+		this.addMapping(ChromaResearch.BALLLIGHTNING, FragmentCategory.WORLD, 10);
+		this.addMapping(ChromaResearch.STRUCTUREPASSWORDS, FragmentCategory.STRUCTURE, 30);
+		this.addMapping(ChromaResearch.STRUCTUREPASSWORDS, FragmentCategory.ARTIFACT, 20);
 	}
 
 	private void addMapping(ChromaTiles r, FragmentCategory fc, int amt) {
@@ -484,10 +503,11 @@ public class FragmentCategorizationSystem {
 	}
 
 	public void calculate() {
+		HashSet<ChromaResearch> empty = new HashSet();
 		for (ChromaResearch r : ChromaResearch.getAllObtainableFragments()) {
 			FragmentCategorization fc = this.calculateCategoriesFor(r);
 			if (fc.weights.isEmpty())
-				throw new RegistrationException(ChromatiCraft.instance, "Fragment "+r+" has no categories!");
+				empty.add(r);
 			categories.put(r, fc);
 			for (Entry<FragmentCategory, Double> e : fc.weights.entrySet()) {
 				FragmentCategory c = e.getKey();
@@ -499,6 +519,8 @@ public class FragmentCategorizationSystem {
 				t.weights.put(r, e.getValue());
 			}
 		}
+		if (!empty.isEmpty())
+			throw new RegistrationException(ChromatiCraft.instance, "Fragments "+empty+" have no categories!");
 	}
 
 	public FragmentCategorization getCategories(ChromaResearch r) {
@@ -512,6 +534,7 @@ public class FragmentCategorizationSystem {
 	private FragmentCategorization calculateCategoriesFor(ChromaResearch r) {
 		FragmentCategorization ret = new FragmentCategorization(r);
 		CountMap<FragmentCategory> map = mappings.get(r);
+
 		if (map != null) {
 			for (FragmentCategory fc : map.keySet()) {
 				ret.add(fc, map.get(fc));

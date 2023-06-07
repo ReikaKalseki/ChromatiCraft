@@ -296,8 +296,8 @@ public class GuiMachineDescription extends GuiDescription {
 		double sc = 48;
 		GL11.glPushMatrix();
 
+		runningRender = true;
 		if (m.hasRender()) {
-			runningRender = true;
 			double dx = x;
 			double dy = y+m.getRenderOffset();
 			double dz = 0;
@@ -346,7 +346,6 @@ public class GuiMachineDescription extends GuiDescription {
 			}
 			TileEntityRendererDispatcher.instance.renderTileEntityAt(te, a, 0, b, 0);
 			GL11.glPopMatrix();
-			runningRender = false;
 		}
 		if (m.hasBlockRender()) {
 			double dx = x;
@@ -366,6 +365,7 @@ public class GuiMachineDescription extends GuiDescription {
 			CrystalRenderer.renderAllArmsInInventory = false;
 			GL11.glPopMatrix();
 		}
+		runningRender = false;
 		GL11.glPopMatrix();
 
 		GL11.glDisable(GL12.GL_RESCALE_NORMAL);

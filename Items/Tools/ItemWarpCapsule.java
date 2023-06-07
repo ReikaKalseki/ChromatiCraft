@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -33,6 +33,8 @@ import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 
 
 public class ItemWarpCapsule extends ItemChromaTool {
+
+	public static final int MAXRANGE = 2000;
 
 	public ItemWarpCapsule(int index) {
 		super(index);
@@ -94,7 +96,7 @@ public class ItemWarpCapsule extends ItemChromaTool {
 	}
 
 	private static boolean canTeleport(EntityPlayer ep, DecimalPosition pos, int dim) {
-		return dim == ep.worldObj.provider.dimensionId && new WorldLocation(ep).canSeeTheSky() && pos.getDistanceTo(new DecimalPosition(ep)) <= 2000;
+		return dim == ep.worldObj.provider.dimensionId && new WorldLocation(ep).canSeeTheSky() && pos.getDistanceTo(new DecimalPosition(ep)) <= MAXRANGE;
 	}
 
 	@Override

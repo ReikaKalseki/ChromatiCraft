@@ -110,7 +110,9 @@ public class GuiCraftableDesc extends GuiDescription {
 			int mod = 2000;
 			int metas = page.getBlock().getNumberMetadatas();
 			int meta = (int)((System.currentTimeMillis()/mod)%metas);
+			GuiMachineDescription.runningRender = true;
 			this.drawBlockRender(posX, posY, page.getBlock().getBlockInstance(), meta);
+			GuiMachineDescription.runningRender = false;
 		}
 	}
 }

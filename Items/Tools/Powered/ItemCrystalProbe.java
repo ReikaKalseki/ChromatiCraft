@@ -19,6 +19,7 @@ import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ColoredMultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.MultiBlockChromaTile;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.SpecialStructureTile;
@@ -38,10 +39,12 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledSoundEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.RenderItemInSlotEvent;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -187,26 +190,40 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 	@Override
 	@SideOnly(Side.CLIENT)
 	protected void renderExtraIcons(RenderItem ri, ItemStack is, ItemRenderType type) {
-		if (type == ItemRenderType.INVENTORY && GuiScreen.isCtrlKeyDown()) {
+		if (type == ItemRenderType.INVENTORY && (GuiScreen.isCtrlKeyDown() || RenderItemInSlotEvent.isRenderingStackHovered(is))) {
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glPushMatrix();
 			GL11.glColor4f(1, 1, 1, 1);
 			GL11.glEnable(GL11.GL_BLEND);
 			BlendMode.DEFAULT.apply();
 			GL11.glDisable(GL11.GL_LIGHTING);
-			double sc = 1;
+			double sc = GuiScreen.isCtrlKeyDown() ? 1 : 0.5;
 			GL11.glScaled(sc, sc, sc);
-			GL11.glTranslated(0.5/sc, -0.5/sc, 0);
+			GL11.glTranslated(0.5/sc, GuiScreen.isCtrlKeyDown() ? -0.5/sc : 0.5/sc, 0);
 			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/infoicons.png");
-			int d = 1+this.getActionType(is);
-			if (d == 1 && (System.currentTimeMillis()/500)%2 == 0)
-				d = 0;
+			int d = 0;
+			int act = this.getActionType(is);
+			switch(act) {
+				case 0:
+					d = (int)((System.currentTimeMillis()/500)%2);
+					break;
+				case 1:
+				case 2:
+					d = 2;
+					break;
+			}
 			double u = 0.0625*d;
 			double v = 0.125;
 			double s = 0.0625;
 			Tessellator v5 = Tessellator.instance;
 			double z = 50;
 			v5.startDrawingQuads();
+			int c = 0xffffff;
+			if (act == 1) {
+				int[] arr = ChromaFX.getChromaColorTiles();
+				c = arr[(int)((ReikaRenderHelper.getRenderFrame()/6)%arr.length)];
+			}
+			v5.setColorOpaque_I(c);
 			v5.addVertexWithUV(0, 0, z, u, v+s);
 			v5.addVertexWithUV(1, 0, z, u+s, v+s);
 			v5.addVertexWithUV(1, 1, z, u+s, v);

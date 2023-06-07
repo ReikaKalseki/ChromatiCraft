@@ -111,9 +111,9 @@
 	<mud>
 		Scattered under the giant rainbow trees you have found patches of soil turned muddy by the remnants of some kind of liquid, and judging from the weak magical energy you can detect in it, one either posessing such energies or capable of absorbing them from other sources. The patches under the trees are unsalvageable, having been polluted with the sum total of days to months of random debris from the trees above, but this phenomenon or knowledge thereof may prove helpful at some point in the future. Perhaps you can try seeing if the "magically watered" ground helps certain compatible plants...
 	</mud>
-	<name>
-		
-	</name>
+	<itemcharge>
+		Just as your motorized wrench and gravel launcher require energy to operate, so too do many of your more magical tools, be that a wand that can bore temporary passages through solid rock or staves that conjure bridges made of solid rainbow. One thing that does differ between these devices, however, is the mechanism by which you charge them, and these new crystal-based tools have once again broken the usual pattern, having neither an external power-bearing item nor a charging device into which to insert them. One of them did charge slightly when you were walking around outside, but what could have been out there that provided the energy?
+	</itemcharge>
 	<name>
 		
 	</name>

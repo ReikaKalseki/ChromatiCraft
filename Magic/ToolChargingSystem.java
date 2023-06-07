@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.item.EntityItem;
@@ -32,6 +33,7 @@ import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
+import Reika.DragonAPI.Instantiable.Event.Client.RenderItemInSlotEvent;
 import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Interfaces.Entity.ChunkLoadingEntity;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -163,7 +165,7 @@ public class ToolChargingSystem {
 
 	@SideOnly(Side.CLIENT)
 	public void renderItemAux(RenderItem ri, ItemStack is, ItemRenderType type) {
-		if (type == ItemRenderType.INVENTORY && Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+		if (type == ItemRenderType.INVENTORY && (GuiScreen.isShiftKeyDown() || RenderItemInSlotEvent.isRenderingStackHovered(is))) {
 			ReikaTextureHelper.bindTerrainTexture();
 			CrystalElement e = this.getItem(is).getColor(is);
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);

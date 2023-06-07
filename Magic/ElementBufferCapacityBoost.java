@@ -2,6 +2,8 @@ package Reika.ChromatiCraft.Magic;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.TreeSet;
+import java.util.function.BiFunction;
 
 import org.lwjgl.opengl.GL11;
 
@@ -19,23 +21,22 @@ import Reika.ChromatiCraft.Magic.Progression.ProgressAccess;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
-import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 public enum ElementBufferCapacityBoost {
 
-	ALLCOLORS(10000,			ProgressStage.ALLCOLORS),
-	ABILITY(100000,				ProgressStage.ABILITY),
-	ALLOYS(240000,				ProgressStage.ALLOY),
-	DIMENSION(2F,				ProgressStage.DIMENSION),
-	TURBOCHARGE(1.5F,			ProgressStage.TURBOCHARGE),
-	CTM(2F,						ProgressStage.CTM),
-	TOWER(100000, 1F,			ProgressStage.TOWER),
-	LORECOMPLETE(200000, 1.2F,	LoreManager.instance);
+	ALLCOLORS(6000,				ProgressStage.ALLCOLORS),
+	ABILITY(30000,				ProgressStage.ABILITY),
+	ALLOYS(180000,				ProgressStage.ALLOY),
+	DIMENSION(300000,			ProgressStage.DIMENSION),
+	TURBOCHARGE(720000,			ProgressStage.TURBOCHARGE),
+	CTM(1200000,				ProgressStage.CTM),
+	TOWER(1.5F,					ProgressStage.TOWER),
+	LORECOMPLETE(2F,			LoreManager.instance);
 
-	public final int increaseLinear;
-	public final float increaseFactor;
-	public final int maxValueIfNotPresent;
+	public final BiFunction<Integer, Boolean, Integer> capFunction;
 
 	private final ProgressAccess requirement;
 	private ElementBufferCapacityBoost dependency;
@@ -45,23 +46,37 @@ public enum ElementBufferCapacityBoost {
 
 	public static final ElementBufferCapacityBoost[] list = values();
 
+	private static final TreeSet<Integer> niceNumberPowers = new TreeSet();
+
 	private ElementBufferCapacityBoost(int clamp, ProgressAccess req) {
-		this(0, 1, clamp, req);
+		this((f, has) -> has ? f : Math.min(f, clamp), req);
 	}
 
 	private ElementBufferCapacityBoost(float fac, ProgressAccess req) {
-		this(0, fac, req);
+		this((f, has) -> has ? roundToNiceNumber(f*fac) : f, req);
 	}
 
-	private ElementBufferCapacityBoost(int lin, float fac, ProgressAccess req) {
-		this(lin, fac, Integer.MAX_VALUE, req);
-	}
-
-	private ElementBufferCapacityBoost(int lin, float fac, int max, ProgressAccess req) {
-		increaseFactor = fac;
-		increaseLinear = lin;
-		maxValueIfNotPresent = max;
+	private ElementBufferCapacityBoost(BiFunction<Integer, Boolean, Integer> func, ProgressAccess req) {
+		capFunction = func;
 		requirement = req;
+	}
+
+	private static int roundToNiceNumber(float f) {
+		int num = (int)f;
+		int pow = 0;
+		if (f > niceNumberPowers.last() && f < 100) {
+			return niceNumberPowers.last();
+		}
+		else {
+			while (num > niceNumberPowers.last()) {
+				num /= 10;
+				pow++;
+			}
+		}
+		Integer v1 = niceNumberPowers.floor(num);
+		Integer v2 = niceNumberPowers.ceiling(num);
+		int v = v1 != null && Math.abs(v1-num) < Math.abs(v2-num) ? v1 : v2;
+		return v*ReikaMathLibrary.intpow2(10, pow);
 	}
 
 	public void drawIcon(Tessellator v5, int x, int y, double s) {
@@ -161,17 +176,13 @@ public enum ElementBufferCapacityBoost {
 		return li;
 	}
 
-	public static int calculateCap(int base, EntityPlayer ep) {
-		for (ElementBufferCapacityBoost e : list) {
-			if (e.playerHas(ep)) {
-				base *= e.increaseFactor;
-				base += e.increaseLinear;
-			}
-			else {
-				base = Math.min(base, e.maxValueIfNotPresent);
-			}
+	public static int calculateCap(EntityPlayer ep) {
+		int amt = 10000000;
+		for (int i = list.length-1; i >= 0; i--) {
+			ElementBufferCapacityBoost e = list[i];
+			amt = e.capFunction.apply(amt, e.playerHas(ep));
 		}
-		return base;
+		return amt;
 	}
 
 	static {
@@ -185,6 +196,23 @@ public enum ElementBufferCapacityBoost {
 		TURBOCHARGE.ingredient = ChromaStacks.boostroot;
 		CTM.ingredient = ChromaStacks.echoCrystal;
 		TOWER.ingredient = ChromaStacks.unknownFragments;
+
+		niceNumberPowers.add(1);
+		niceNumberPowers.add(3);
+		niceNumberPowers.add(6);
+		niceNumberPowers.add(9);
+		niceNumberPowers.add(12);
+		niceNumberPowers.add(15);
+		niceNumberPowers.add(18);
+		niceNumberPowers.add(24);
+		niceNumberPowers.add(27);
+		niceNumberPowers.add(30);
+		niceNumberPowers.add(36);
+		niceNumberPowers.add(48);
+		niceNumberPowers.add(60);
+		niceNumberPowers.add(72);
+		niceNumberPowers.add(90);
+		niceNumberPowers.add(96);
 	}
 
 }

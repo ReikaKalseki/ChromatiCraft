@@ -9,10 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Render.Item;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
@@ -100,7 +100,7 @@ public class ChromaItemRenderer implements IItemRenderer {
 		}
 		Minecraft mc = Minecraft.getMinecraft();
 		EntityPlayer ep = mc.thePlayer;
-		if (!entity && (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || RenderItemInSlotEvent.isRenderingStackHovered(item)) && ProgressStage.USEENERGY.isPlayerAtStage(ep) && machine.isLumenTile() && (item.stackTagCompound == null || !item.stackTagCompound.getBoolean("tooltip"))) {
+		if (!entity && (GuiScreen.isShiftKeyDown() || RenderItemInSlotEvent.isRenderingStackHovered(item)) && ProgressStage.USEENERGY.isPlayerAtStage(ep) && machine.isLumenTile() && (item.stackTagCompound == null || !item.stackTagCompound.getBoolean("tooltip"))) {
 			int idx = -1;
 			if (machine.isPylonPowered()) {
 				idx = 1;
@@ -130,13 +130,13 @@ public class ChromaItemRenderer implements IItemRenderer {
 				}
 				GL11.glScaled(1.6, 1.6, 1.6);
 				double sc = 0.5;
-				if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+				if (GuiScreen.isCtrlKeyDown())
 					sc = 1;
 				GL11.glScaled(sc, sc, sc);
 				GL11.glTranslated((-0.5+0.5)/sc, (1.875-2)/sc, 0);
-				if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL))
+				if (GuiScreen.isCtrlKeyDown())
 					GL11.glTranslated(0, -0.25, 0);
-				ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/infoicons.png");
+				ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/infoicons.png");
 				double u = 0.0625*idx;
 				double v = 0;
 				double s = 0.0625;

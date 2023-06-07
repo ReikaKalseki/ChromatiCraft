@@ -527,7 +527,7 @@
 			Some things you never have enough of, in particular diamonds, shards, and iron (the last of which was not helped by your attempts to build a turbine the size of a small house). Other things you have so much of that your biggest problem is storing it somewhere. What would be most convenient would be to be able to decompose the latter into energy with which you could cast the former. Surely nothing could go wrong with this sort of exchange project, though early experimentation indicates that the value of what you get and what you fed in may not necessarily be equivalent...
 		</desc>
 		<note>
-
+			Energy containment is imperfect, and will leak slowly at first but may trigger larger discharges when stored energy levels are high
 		</note>
 	</glowfire>
 	<broadcast>
@@ -591,6 +591,8 @@
 			You are already very familiar with the fact that certain constructs require energy. Most draw that energy directly off the repeater network, and some use the relay system. However, others seem to need to be in proximity to a node of sorts, which weakly radiates energy around it. It even appears to be capable of passing through solid barriers, though it unsuprisingly is rather less efficient when it does.
 		</desc>
 		<note>
+			Maximum transmission range of %dm
+			
 			Can be built on a %s to broadcast power to other %ss
 		</note>
 	</wireless>
@@ -600,6 +602,8 @@
 		</desc>
 		<note>
 			Requires a redstone signal
+			
+			Maximum range of %dm
 		</note>
 	</areabreaker>
 	<teleport>

@@ -57,6 +57,7 @@ import Reika.ChromatiCraft.Base.TileEntity.FluidIOChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.FluidReceiverChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityMassStorage;
+import Reika.ChromatiCraft.GUI.Book.GuiMachineDescription;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
@@ -204,7 +205,10 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return icons[meta][s][0];
+		int idx = 0;
+		if (GuiMachineDescription.runningRender && ChromaTiles.getTileFromIDandMetadata(this, meta) == ChromaTiles.INJECTOR)
+			idx = 1;
+		return icons[meta][s][idx];
 	}
 
 	@Override

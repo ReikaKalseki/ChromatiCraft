@@ -29,6 +29,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.VariableTexture;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedChromaticBase;
 import Reika.ChromatiCraft.Block.BlockCastingInjectorFocus.CastingInjectorAuxTile;
+import Reika.ChromatiCraft.GUI.Book.GuiMachineDescription;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.DragonAPICore;
@@ -39,6 +40,8 @@ import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 import appeng.api.networking.IGridNode;
 import appeng.api.util.AECableType;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCastingInjector extends InventoriedChromaticBase implements CastingAutomationBlock<CastingAutomationSystem>, VariableTexture {
 
@@ -239,8 +242,9 @@ public class TileEntityCastingInjector extends InventoriedChromaticBase implemen
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public int getIconState(int side) {
-		return side != 0 && this.getTable() != null ? 1 : 0;
+		return side != 0 && (this.getTable() != null || GuiMachineDescription.runningRender) ? 1 : 0;
 	}
 
 	public static Set<Coordinate> getFoci() {

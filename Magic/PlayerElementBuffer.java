@@ -40,7 +40,6 @@ public class PlayerElementBuffer implements PlayerBufferAPI {
 	private final CountMap<UUID> recentUpgrades = new CountMap();
 
 	private static final String NBT_TAG = "CrystalBuffer";
-	private static final int PLAYER_BASE_CAP = 400000;
 
 	private PlayerElementBuffer() {
 
@@ -237,7 +236,7 @@ public class PlayerElementBuffer implements PlayerBufferAPI {
 	}
 
 	int getPlayerMaximumCap(EntityPlayer ep) {
-		return ElementBufferCapacityBoost.calculateCap(PLAYER_BASE_CAP, ep);
+		return ElementBufferCapacityBoost.calculateCap(ep);
 	}
 
 	public int getChargeInefficiency(EntityPlayer ep) {

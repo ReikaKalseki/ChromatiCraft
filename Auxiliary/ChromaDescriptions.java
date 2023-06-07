@@ -28,6 +28,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.DynamicallyGeneratedSubpage;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAreaDistributor;
+import Reika.ChromatiCraft.Items.Tools.ItemWarpCapsule;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalNetworkTile;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
@@ -48,6 +49,7 @@ import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.Chromabilities;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAreaBreaker;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityCrystalLaser;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
@@ -58,6 +60,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityLumenTurret;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityCrystalCharger;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWirelessSource;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityCrystalFurnace;
 import Reika.ChromatiCraft.TileEntity.Storage.TileEntityCrystalTank;
@@ -88,6 +91,7 @@ public final class ChromaDescriptions {
 	private static final HashMap<ChromaTiles, Object[]> machineNotes = new HashMap<ChromaTiles, Object[]>();
 	private static final HashMap<ChromaBlocks, Object[]> blockData = new HashMap<ChromaBlocks, Object[]>();
 	private static final HashMap<ChromaItems, Object[]> itemData = new HashMap<ChromaItems, Object[]>();
+	private static final HashMap<ChromaItems, Object[]> itemNotes = new HashMap<ChromaItems, Object[]>();
 	private static final HashMap<ChromaResearch, Object[]> miscData = new HashMap<ChromaResearch, Object[]>();
 	private static final EnumMap<Chromabilities, Object[]> abilityData = new EnumMap(Chromabilities.class);
 	private static final HashMap<String, Object[]> hoverData = new HashMap<String, Object[]>();
@@ -191,6 +195,10 @@ public final class ChromaDescriptions {
 
 	private static void addNotes(ChromaTiles m, Object... data) {
 		machineNotes.put(m, data);
+	}
+
+	private static void addNotes(ChromaItems m, Object... data) {
+		itemNotes.put(m, data);
 	}
 
 	public static void reload() {
@@ -354,6 +362,7 @@ public final class ChromaDescriptions {
 			else if (tools.nodeExists(key+":notes")) {
 				notes.put(tools.getValueAtNode(key+":notes"), h, 0);
 				desc = tools.getValueAtNode(key+":desc");
+				desc = String.format(desc, itemNotes.get(h.getItem()));
 			}
 			addEntry(h, desc);
 		}
@@ -496,11 +505,12 @@ public final class ChromaDescriptions {
 		addNotes(ChromaTiles.POWERTREE, TileEntityPowerTree.BASE, TileEntityPowerTree.RATIO, TileEntityPowerTree.POWER);
 		addNotes(ChromaTiles.LAMPCONTROL, TileEntityLampController.MAXRANGE, TileEntityLampController.MAXCHANNEL);
 		addNotes(ChromaTiles.ASPECTJAR, TileEntityAspectJar.CAPACITY_PRIMAL, TileEntityAspectJar.CAPACITY);
-		addNotes(ChromaTiles.WIRELESS, ChromaStructures.WIRELESSPEDESTAL.getDisplayName(), ChromaTiles.WIRELESS.getName());
+		addNotes(ChromaTiles.WIRELESS, TileEntityWirelessSource.TRANSMIT_RANGE, ChromaStructures.WIRELESSPEDESTAL.getDisplayName(), ChromaTiles.WIRELESS.getName());
 		addNotes(ChromaTiles.TOOLSTORAGE, TileEntityToolStorage.ToolType.getTypesAsString());
 		addNotes(ChromaTiles.ITEMRIFT, CrystalElement.LIME.displayName);
 		addNotes(ChromaTiles.RFDISTRIBUTOR, TileEntityAreaDistributor.SCAN_RADIUS_XZ);
 		addNotes(ChromaTiles.FLUIDDISTRIBUTOR, TileEntityAreaDistributor.SCAN_RADIUS_XZ);
+		addNotes(ChromaTiles.AREABREAKER, TileEntityAreaBreaker.MAX_RANGE);
 		addNotes(ChromaTiles.TURRET, TileEntityLumenTurret.getUpgradesListString());
 
 		addData(ChromaBlocks.RELAY, RelayNetworker.instance.maxRange);
@@ -515,6 +525,7 @@ public final class ChromaDescriptions {
 		}
 
 		addData(ChromaItems.SHARE, ChromaTiles.TABLE.getName(), ChromaTiles.RITUAL.getName());
+		addNotes(ChromaItems.WARPCAPSULE, ItemWarpCapsule.MAXRANGE);
 
 		addData(Chromabilities.REACH, new Object[]{Chromabilities.MAX_REACH});
 		addData(Chromabilities.LIFEPOINT, new Object[]{CrystalElement.MAGENTA.displayName});

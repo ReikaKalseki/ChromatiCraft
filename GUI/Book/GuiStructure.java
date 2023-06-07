@@ -599,7 +599,7 @@ public class GuiStructure extends GuiBookSection {
 		}
 
 		RenderVoidMonsterTrap.netherRender = page == ChromaResearch.VOIDTRAPSTRUCTN;
-		render.draw3D(j, k, ptick, true);
+		render.draw3D(0, 0, ptick, true);
 		RenderVoidMonsterTrap.netherRender = false;
 	}
 
@@ -637,7 +637,7 @@ public class GuiStructure extends GuiBookSection {
 		}
 
 		@Override
-		public ItemStack getBlock(Coordinate pos) {
+		public ItemStack getBlock(Coordinate pos, ItemStack orig) {
 			int max = TileEntityPowerTree.maxLeafCount(color)*3/2;
 			int tick = (int)((System.currentTimeMillis()/500)%max)-2;
 			boolean show = tick > step;
@@ -649,7 +649,7 @@ public class GuiStructure extends GuiBookSection {
 	private static class RuneRenderHook implements BlockChoiceHook {
 
 		@Override
-		public ItemStack getBlock(Coordinate pos) {
+		public ItemStack getBlock(Coordinate pos, ItemStack orig) {
 			return new BlockKey(ChromaBlocks.RUNE.getBlockInstance(), getElementByTick()).asItemStack();
 		}
 
@@ -666,7 +666,7 @@ public class GuiStructure extends GuiBookSection {
 		}
 
 		@Override
-		public final ItemStack getBlock(Coordinate pos) {
+		public final ItemStack getBlock(Coordinate pos, ItemStack orig) {
 			return block.getStackOfMetadata(this.getRandomColor(pos));
 		}
 
@@ -697,7 +697,7 @@ public class GuiStructure extends GuiBookSection {
 		private final ArrayList<String> fluids = ReikaJavaLibrary.makeListFrom("chroma", "ender", "luma");
 
 		@Override
-		public ItemStack getBlock(Coordinate pos) {
+		public ItemStack getBlock(Coordinate pos, ItemStack orig) {
 			int i = (int)((System.currentTimeMillis()/1000)%fluids.size());
 			Block b = FluidRegistry.getFluid(fluids.get(i)).getBlock();
 			return new BlockKey(b).asItemStack();
@@ -708,7 +708,7 @@ public class GuiStructure extends GuiBookSection {
 	private static class LogRenderHook implements BlockChoiceHook {
 
 		@Override
-		public ItemStack getBlock(Coordinate pos) {
+		public ItemStack getBlock(Coordinate pos, ItemStack orig) {
 			ArrayList<TreeType> li = ReikaJavaLibrary.makeListFromArray(ReikaTreeHelper.treeList);
 			for (int i = 0; i < ModWoodList.woodList.length; i++) {
 				ModWoodList tree = ModWoodList.woodList[i];

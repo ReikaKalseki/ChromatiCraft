@@ -58,6 +58,7 @@ import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre.TieredOres;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
+import Reika.ChromatiCraft.GUI.Book.GuiMachineDescription;
 import Reika.ChromatiCraft.Items.ItemMagicBranch;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystal;
 import Reika.ChromatiCraft.Items.ItemBlock.ItemBlockCrystalColors;
@@ -93,6 +94,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -146,6 +148,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	ITEMBURNER("Item Decomposition",		new ItemStack(Blocks.dirt),								ResearchLevel.ENERGY,		ProgressStage.CHARGE, ProgressStage.ALLCOLORS),
 	MONUMENT("Construction Restoration",	ChromaTiles.AURAPOINT.getCraftedProduct(),				ResearchLevel.CTM,			ProgressStage.CTM),
 	MUD("Magical Residue",					ChromaBlocks.MUD.getStackOf(),							ResearchLevel.RAWEXPLORE,	ProgressStage.MUDHINT),
+	ITEMCHARGE("Passive Charging",			new ItemStack(Blocks.dirt),								ResearchLevel.BASICCRAFT,	ProgressStage.CHARGE),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING,		ProgressStage.BLOWREPEATER),
@@ -855,6 +858,23 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 			GL11.glPopMatrix();
 			return;
 		}
+		else if (this == ITEMCHARGE) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ADDITIVEDARK.apply();
+			ReikaTextureHelper.bindTerrainTexture();
+			int c = CrystalElement.getBlendedColor(Minecraft.getMinecraft().thePlayer.ticksExisted, 30);
+			GL11.glColor4f(ReikaColorAPI.getRed(c)/255F, ReikaColorAPI.getGreen(c)/255F, ReikaColorAPI.getBlue(c)/255F, 1);
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, ChromaIcons.RADIATE.getIcon(), 16, 16);
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, ChromaIcons.RADIATE.getIcon(), 16, 16);
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x-8, y-8, ChromaIcons.ROUNDFLARE.getIcon(), 32, 32);
+			GL11.glColor4f(1, 1, 1, 1);
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, ChromaIcons.ROUNDFLARE.getIcon(), 16, 16);
+			GL11.glPopAttrib();
+			return;
+		}
 		else if (this == APIRECIPES) {
 			ArrayList<ItemStack> ico = new ArrayList();
 			/*
@@ -932,11 +952,14 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 			ReikaChatHelper.write("Error rendering fragment "+this+": no icon to draw");
 			return;
 		}
+
+		GuiMachineDescription.runningRender = true;
 		ItemStack ico = this.getTabIcon().copy();
 		if (ico.stackTagCompound == null)
 			ico.stackTagCompound = new NBTTagCompound();
 		ico.stackTagCompound.setBoolean("tooltip", true);
 		ReikaGuiAPI.instance.drawItemStack(ri, ico, x, y);
+		GuiMachineDescription.runningRender = false;
 
 		ri.zLevel = zp;
 		if (this == FARLANDS) {

@@ -24,6 +24,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.GUI.Book.GuiMachineDescription;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityCastingInjector;
@@ -31,11 +32,9 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 
 public class BlockCastingInjectorFocus extends Block {
 
-	private IIcon topInactive;
-	private IIcon topActive;
-	private IIcon sideInactive;
-	private IIcon sideActive;
 	private IIcon bottom;
+	private final IIcon[] sideTextures = new IIcon[2];
+	private final IIcon[] topTextures = new IIcon[2];
 
 	public BlockCastingInjectorFocus(Material mat) {
 		super(mat);
@@ -56,24 +55,25 @@ public class BlockCastingInjectorFocus extends Block {
 
 	@Override
 	public IIcon getIcon(int s, int meta) {
-		return s == 0 ? bottom : (s == 1 ? topInactive : sideInactive);
+		return s == 0 ? bottom : (s == 1 ? topTextures[GuiMachineDescription.runningRender ? 1 : 0] : sideTextures[GuiMachineDescription.runningRender ? 1 : 0]);
 	}
 
 	@Override
 	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
 		if (s == 0)
 			return bottom;
-		boolean active = ChromaTiles.getTile(iba, x, y+1, z) == ChromaTiles.STAND;
-		return s == 1 ? (active ? topActive : topInactive) : (active ? sideActive : sideInactive);
+		boolean active = GuiMachineDescription.runningRender || ChromaTiles.getTile(iba, x, y+1, z) == ChromaTiles.STAND;
+		int idx = active ? 1 : 0;
+		return s == 1 ? topTextures[idx] : sideTextures[idx];
 	}
 
 	@Override
 	public void registerBlockIcons(IIconRegister ico) {
 		bottom = ico.registerIcon("chromaticraft:tile/injector_bottom");
-		topInactive = ico.registerIcon("chromaticraft:tile/injector_top");
-		sideInactive = ico.registerIcon("chromaticraft:tile/injector_side");
-		topActive = ico.registerIcon("chromaticraft:tile/injector_top_variant");
-		sideActive = ico.registerIcon("chromaticraft:tile/injector_side_variant");
+		topTextures[0] = ico.registerIcon("chromaticraft:tile/injector_top");
+		sideTextures[0] = ico.registerIcon("chromaticraft:tile/injector_side");
+		topTextures[1] = ico.registerIcon("chromaticraft:tile/injector_top_variant");
+		sideTextures[1] = ico.registerIcon("chromaticraft:tile/injector_side_variant");
 	}
 
 	@Override
