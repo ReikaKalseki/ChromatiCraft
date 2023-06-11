@@ -48,6 +48,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeType;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.PoolRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.ChargedItemPlayerBufferConnectionRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.RepeaterTurboRecipe;
 import Reika.ChromatiCraft.Base.ItemCrystalBasic;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
@@ -149,6 +150,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	MONUMENT("Construction Restoration",	ChromaTiles.AURAPOINT.getCraftedProduct(),				ResearchLevel.CTM,			ProgressStage.CTM),
 	MUD("Magical Residue",					ChromaBlocks.MUD.getStackOf(),							ResearchLevel.RAWEXPLORE,	ProgressStage.MUDHINT),
 	ITEMCHARGE("Passive Charging",			new ItemStack(Blocks.dirt),								ResearchLevel.BASICCRAFT,	ProgressStage.CHARGE),
+	ITEMBUFFERLINK("Lumen Buffer Connection",new ItemStack(Blocks.dirt),							ResearchLevel.PYLONCRAFT,	ProgressStage.CHARGE),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING,		ProgressStage.BLOWREPEATER),
@@ -766,6 +768,34 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 			GL11.glPopMatrix();
 			return;
 		}
+		else if (this == ITEMBUFFERLINK) {
+			GL11.glPushMatrix();
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glDisable(GL11.GL_CULL_FACE);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.DEFAULT.apply();
+			ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/infoicons.png");
+			Tessellator tessellator = Tessellator.instance;
+			tessellator.startDrawingQuads();
+			int[] idxs = {24, 7};
+			for (int idx : idxs) {
+				double u = idx%16/16D;
+				double v = idx/16/16D;
+				double du = u+1/16D;
+				double dv = v+1/16D;
+				int d = idx == 7 ? 2 : 0;
+				int w = 16;
+				int h = 16;
+				tessellator.addVertexWithUV((x + 0 - d), (y + h + d), 0, u, dv);
+				tessellator.addVertexWithUV((x + w + d), (y + h + d), 0, du, dv);
+				tessellator.addVertexWithUV((x + w + d), (y + 0 - d), 0, du, v);
+				tessellator.addVertexWithUV((x + 0 - d), (y + 0 - d), 0, u, v);
+			}
+			tessellator.draw();
+			GL11.glPopMatrix();
+			GL11.glPopAttrib();
+			return;
+		}
 		else if (this == TURBO) {
 			GL11.glPushMatrix();
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
@@ -811,7 +841,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 			return;
 		}
 		else if (this == ENERGY) {
-			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/infoicons.png");
+			ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/infoicons.png");
 			int idx = 24;
 			double u = idx%8/8D;
 			double v = idx/8/8D;
@@ -1048,6 +1078,8 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 		if (isParent)
 			return false;
 		if (this == APIRECIPES)
+			return true;
+		if (this == ITEMBUFFERLINK)
 			return true;
 		if (this == TURBOREPEATER)
 			return true;
@@ -1489,6 +1521,15 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 			li.addAll(RecipesCastingTable.instance.getAllAPIRecipes());
 			li.addAll(RecipesCastingTable.instance.getAllModdedItemRecipes());
 			return new ArrayList(li);
+		}
+		if (this == ITEMBUFFERLINK) {
+			ArrayList<CastingRecipe> li = new ArrayList();
+			for (CastingRecipe cr : RecipesCastingTable.instance.getAllRecipes()) {
+				if (cr instanceof ChargedItemPlayerBufferConnectionRecipe) {
+					li.add(cr);
+				}
+			}
+			return li;
 		}
 		if (this == TURBOREPEATER) {
 			ArrayList<CastingRecipe> li = new ArrayList();

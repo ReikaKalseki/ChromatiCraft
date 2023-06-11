@@ -13,12 +13,12 @@ public class ItemBodyLight extends ItemPoweredChromaTool {
 	public ItemBodyLight(int index) {
 		super(index);
 	}
-
+	/*
 	@Override
 	public float getPlayerChargeCoefficient(ItemStack is) {
 		return 1;
 	}
-
+	 */
 	@Override
 	public CrystalElement getColor(ItemStack is) {
 		return CrystalElement.BLUE;

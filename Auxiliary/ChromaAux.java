@@ -592,6 +592,8 @@ public class ChromaAux {
 	}
 
 	private static void tryChargePoweredItem(ItemStack in, EntityPlayer player, ChargingPoint te, CrystalElement e) {
+		if (in.stackTagCompound == null || !in.stackTagCompound.getBoolean("bufferlinked"))
+			return;
 		PoweredItem pi = (PoweredItem)in.getItem();
 		if (pi.getColor(in) == e) {
 			float sc = pi.getPlayerChargeCoefficient(in);

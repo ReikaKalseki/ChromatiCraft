@@ -107,6 +107,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.Transfo
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.VoidCoreRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.VoidStorageRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.BeeConversionRecipe;
+import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.ChargedItemPlayerBufferConnectionRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.ConfigRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.DivisionSigilActivationRecipe;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Special.DoubleJumpRecipe;
@@ -963,6 +964,15 @@ public class RecipesCastingTable implements CastingAPI {
 		this.addRecipe(new RepeaterTurboRecipe(ChromaTiles.REPEATER, 5000));
 		this.addRecipe(new RepeaterTurboRecipe(ChromaTiles.COMPOUND, 12500));
 		this.addRecipe(new RepeaterTurboRecipe(ChromaTiles.BROADCAST, 30000));
+
+		this.addRecipe(new ChargedItemPlayerBufferConnectionRecipe(ChromaItems.PROBE.getStackOf(), 1));
+		this.addRecipe(new ChargedItemPlayerBufferConnectionRecipe(ChromaItems.NETHERKEY.getStackOf(), 3));
+		this.addRecipe(new ChargedItemPlayerBufferConnectionRecipe(ChromaItems.SPAWNERBYPASS.getStackOf(), 2));
+		this.addRecipe(new ChargedItemPlayerBufferConnectionRecipe(ChromaItems.OREPICK.getStackOf(), 4));
+		this.addRecipe(new ChargedItemPlayerBufferConnectionRecipe(ChromaItems.STRUCTUREFINDER.getStackOf(), 1));
+		this.addRecipe(new ChargedItemPlayerBufferConnectionRecipe(ChromaItems.PURIFY.getStackOf(), 10));
+		for (int i = 0; i < 16; i++)
+			this.addRecipe(new ChargedItemPlayerBufferConnectionRecipe(ChromaItems.PENDANT3.getStackOfMetadata(i), 15));
 
 		this.addRecipe(new TankExpandingRecipe());
 	}

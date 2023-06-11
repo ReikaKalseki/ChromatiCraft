@@ -87,7 +87,7 @@ public class ItemPendant extends ItemCrystalBasic {
 	public static int getActivePendantLevel(EntityPlayer ep, CrystalElement e) {
 		long val = getRootStorage(ep).getLong(e.name());
 		long dur = ep.worldObj.getTotalWorldTime()-val;
-		return dur <= 20 ? (int)(dur & 1) : -1;
+		return dur <= 20 ? (int)(dur > 0 ? 1 : 0) : -1;
 	}
 
 }

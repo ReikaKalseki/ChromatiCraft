@@ -112,11 +112,11 @@
 		Scattered under the giant rainbow trees you have found patches of soil turned muddy by the remnants of some kind of liquid, and judging from the weak magical energy you can detect in it, one either posessing such energies or capable of absorbing them from other sources. The patches under the trees are unsalvageable, having been polluted with the sum total of days to months of random debris from the trees above, but this phenomenon or knowledge thereof may prove helpful at some point in the future. Perhaps you can try seeing if the "magically watered" ground helps certain compatible plants...
 	</mud>
 	<itemcharge>
-		Just as your motorized wrench and gravel launcher require energy to operate, so too do many of your more magical tools, be that a wand that can bore temporary passages through solid rock or staves that conjure bridges made of solid rainbow. One thing that does differ between these devices, however, is the mechanism by which you charge them, and these new crystal-based tools have once again broken the usual pattern, having neither an external power-bearing item nor a charging device into which to insert them. One of them did charge slightly when you were walking around outside, but what could have been out there that provided the energy?
+		Just as your motorized wrench and gravel launcher require energy to operate, so too do many of your magical tools, be that a wand able to bore fleeting hallways or staves that conjure bridges made of solid rainbow. One thing that does differ between these devices, however, is the mechanism by which you charge them, and these new crystal-based tools have once again broken the usual pattern, having neither an external power-bearing item nor a charging device into which to insert them. One of them did charge slightly when you were walking around outside, but what could have been out there that provided the energy?
 	</itemcharge>
-	<name>
-		
-	</name>
+	<itembufferlink>
+		Charging items by leaving them lying on the ground is a slow process even before you consider the travel time to and from the pylon (possibly several times if you were feeling impatient and kept checking to see if the charging was complete; for whatever reason, the last few percent seem to take forever, and despite your inability to tell the difference between tool at 94%% charge vs 100%%, you constantly find yourself insisting on the latter). You may eventually be able to build a more local energy source, but until then, perhaps you can make the tools be able to draw from your personal lumen buffer as a last, if inefficient, resort.
+	</itembufferlink>
 	<name>
 		
 	</name>

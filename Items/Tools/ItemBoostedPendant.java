@@ -48,7 +48,7 @@ public class ItemBoostedPendant extends ItemPendant implements PoweredItem {
 	@Override
 	protected void onTick(ItemStack is, World world, EntityPlayer ep, int slot) {
 		if (ChromaOptions.POWEREDPENDANTS.getState()) {
-			ToolChargingSystem.instance.tryChargeFromPlayer(is, ep);
+			//ToolChargingSystem.instance.tryChargeFromPlayer(is, ep);
 			ToolChargingSystem.instance.removeCharge(is, this.getChargeConsumptionRate(ep, world, is), ep);
 		}
 	}
@@ -144,13 +144,13 @@ public class ItemBoostedPendant extends ItemPendant implements PoweredItem {
 
 	@Override
 	public float getPlayerChargeCoefficient(ItemStack is) {
-		return 3.6F;
+		return 0.6F;
 	}
-
+	/*
 	@Override
 	public float getPlayerBufferExtractionValue(ItemStack is) {
 		return 40;
-	}
+	}*/
 
 	@Override
 	public String getNotes(int subpage) {

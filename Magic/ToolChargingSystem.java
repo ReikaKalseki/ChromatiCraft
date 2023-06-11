@@ -91,8 +91,10 @@ public class ToolChargingSystem {
 		if (this.getItem(is).hasChargeStates())
 			is.setItemDamage(this.getItem(is).getChargeState(this.getCharge(is)/(float)max));
 	}
-
+	/*
 	public void tryChargeFromPlayer(ItemStack is, EntityPlayer ep) {
+		if (is.stackTagCompound == null || !is.stackTagCompound.getBoolean("bufferlinked"))
+			return;
 		if (this.getCharge(is) >= this.getItem(is).getMaxCharge()/2)
 			return;
 		float extr = this.getItem(is).getPlayerBufferExtractionValue(is);
@@ -106,7 +108,7 @@ public class ToolChargingSystem {
 			}
 		}
 	}
-
+	 */
 	private PoweredItem getItem(ItemStack is) {
 		return (PoweredItem)is.getItem();
 	}
