@@ -105,6 +105,9 @@ public enum ChromaPackets {
 	MUSICCLEARCHANNEL(1),
 	MUSICDEMO(),
 	MUSICBKSP(1),
+	MUSICPAUSE(),
+	MUSICSTOP(),
+	MUSICBASS(),
 	//MUSICDISC(),
 	PYLONTURBOSTART(),
 	PYLONTURBOEVENT(2),
@@ -230,6 +233,8 @@ public enum ChromaPackets {
 	AURORACLEAR(),
 	FRAGSELECT(1),
 	ARTEZONEPARTICLES(),
+	ALTARSHOCK(4),
+	ALTARBREAK(3),
 	;
 
 	public final int numInts;

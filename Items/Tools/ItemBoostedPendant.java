@@ -22,6 +22,7 @@ import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
 import Reika.ChromatiCraft.Magic.ToolChargingSystem;
 import Reika.ChromatiCraft.Magic.ToolChargingSystem.EntityChargingTool;
+import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Magic.Interfaces.PoweredItem;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -143,8 +144,8 @@ public class ItemBoostedPendant extends ItemPendant implements PoweredItem {
 	}
 
 	@Override
-	public float getPlayerChargeCoefficient(ItemStack is) {
-		return 0.6F;
+	public float getPlayerChargeCoefficient(EntityPlayer ep, ChargingPoint te, ItemStack is) {
+		return 0.5F;
 	}
 	/*
 	@Override

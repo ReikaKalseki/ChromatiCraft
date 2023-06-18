@@ -24,6 +24,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -35,7 +36,9 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.API.AbilityAPI.Ability;
+import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
+import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.RecursiveCastingAutomationSystem;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityCalls;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
@@ -172,6 +175,7 @@ import Reika.ChromatiCraft.World.Dimension.StructureCalculator;
 import Reika.ChromatiCraft.World.Dimension.Structure.RayBlend.RayBlendPuzzle;
 import Reika.ChromatiCraft.World.IWG.DungeonGenerator.StructureGenStatus;
 import Reika.ChromatiCraft.World.IWG.PylonGenerator;
+import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Auxiliary.PacketTypes;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -186,7 +190,9 @@ import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.DataPacket;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper.PacketObj;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.AppEngHandler;
 import Reika.Satisforestry.API.SFAPI;
@@ -727,6 +733,15 @@ public class ChromatiPackets implements PacketHandler {
 				case MUSICBKSP:
 					((TileEntityCrystalMusic)tile).backspace(data[0]);
 					break;
+				case MUSICPAUSE:
+					((TileEntityCrystalMusic)tile).togglePause();
+					break;
+				case MUSICSTOP:
+					((TileEntityCrystalMusic)tile).stop();
+					break;
+				case MUSICBASS:
+					((TileEntityCrystalMusic)tile).toggleBass();
+					break;
 				case MUSICDEMO:
 					((TileEntityCrystalMusic)tile).loadDemo();
 					break;
@@ -1242,6 +1257,19 @@ public class ChromatiPackets implements PacketHandler {
 				case ARTEZONEPARTICLES: {
 					//ProgressionChoiceSystem.Selection.giveToPlayer(ep, ChromaResearch.researchList[data[0]]);
 					ArtefactSpawner.instance.refreshShader(ep);
+					break;
+				}
+				case ALTARSHOCK: {
+					ChromaAux.dischargeIntoPlayer(data[0]+0.5, data[1]+0.5, data[2]+0.5, DragonAPICore.rand, ep, CrystalElement.elements[data[3]], 1, 1);
+					break;
+				}
+				case ALTARBREAK: {
+					world.setBlockToAir(data[0], data[1], data[2]);
+					int n = ReikaRandomHelper.getRandomBetween(1, 4);
+					for (int i = 0; i < n; i++)
+						ReikaItemHelper.dropItem(world, data[0]+DragonAPICore.rand.nextDouble(), data[1]+DragonAPICore.rand.nextDouble(), data[2]+DragonAPICore.rand.nextDouble(), ChromaStacks.crystalPowder);
+					if (DragonAPICore.rand.nextBoolean())
+						ReikaItemHelper.dropItem(world, data[0]+DragonAPICore.rand.nextDouble(), data[1]+DragonAPICore.rand.nextDouble(), data[2]+DragonAPICore.rand.nextDouble(), new ItemStack(Blocks.cobblestone));
 					break;
 				}
 			}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -32,8 +32,8 @@ import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Instantiable.Rendering.ColorVariance;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 // have translucent shimmering colored "spiky" base in a metal cup, have twirling cubes flying around and rising particles
 public class RenderColoredAltar extends ChromaRenderBase {
@@ -302,7 +302,7 @@ public class RenderColoredAltar extends ChromaRenderBase {
 
 	@Override
 	public String getImageFileName(RenderFetcher te) {
-		return null;
+		return "altartex.png";
 	}
 
 }

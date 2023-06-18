@@ -223,6 +223,8 @@ public class GuiSpawnerProgrammer extends GuiLetterSearchable<String> {
 			int c = 0xffffff;
 			ReikaGuiAPI.instance.drawCenteredString(fontRendererObj, display, xSize/2, 47, debug ? 0xffff00 : c);
 		}
+
+		this.drawSearch();
 	}
 
 	@Override
@@ -268,12 +270,12 @@ public class GuiSpawnerProgrammer extends GuiLetterSearchable<String> {
 	protected String getString(String val) {
 		return ReikaEntityHelper.getEntityDisplayName(val);
 	}
-
+	/*
 	@Override
 	protected boolean isIndexable(String val) {
 		return true;
 	}
-
+	 */
 	@Override
 	protected Collection<String> getAllEntries(EntityPlayer ep) {
 		return validMobs;

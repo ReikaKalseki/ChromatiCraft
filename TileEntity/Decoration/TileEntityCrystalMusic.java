@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.TileEntity.Decoration;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Map.Entry;
@@ -25,6 +26,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.TemporaryCrystalReceiver;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaSound;
@@ -51,6 +53,7 @@ import Reika.DragonAPI.Instantiable.MusicScore.NoteData;
 import Reika.DragonAPI.Instantiable.MusicScore.ScoreTrack;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray.BlockMatchFailCallback;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.IO.MIDIInterface;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
@@ -72,6 +75,9 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements S
 
 	private boolean isPlaying;
 	private int playTick;
+
+	private boolean enableBassline;
+	private boolean isPaused;
 
 	private MusicScore track = new MusicScore(16);
 
@@ -131,6 +137,19 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements S
 		return pos+(n != null && !n.isEmpty() ? n.iterator().next().length : 0); //only used for manual entry, which does not allow chords
 	}
 
+	public void togglePause() {
+		isPaused = !isPaused;
+	}
+
+	public void stop() {
+		isPlaying = false;
+		isPaused = false;
+	}
+
+	public void toggleBass() {
+		enableBassline = !enableBassline;
+	}
+
 	public void clearChannel(int channel) {
 		track.clearChannel(channel);
 	}
@@ -172,9 +191,20 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements S
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (!world.isRemote && track != null) {
 			if (world.getBlock(x, y+1, z) == Blocks.bedrock)
-				isPlaying = false;
-			if (isPlaying) {
+				this.stop();
+			if (isPlaying && !isPaused) {
 				this.play(world, x, y, z);
+			}
+		}
+
+		if (world.isRemote) {
+			for (Entry<CrystalElement, Coordinate> e : colorPositions.entrySet()) {
+				Coordinate c = e.getValue();
+				Coordinate c2 = c.offset(x, y, z);
+				CrystalElement cc = e.getKey();
+				if (c2.getBlock(world) instanceof CrystalBlock && c2.getBlockMetadata(world) == cc.ordinal())
+					continue;
+				ChromaFX.doPlacementHintParticles(world, x, y, z, Arrays.asList(c), fx -> fx.setColor(cc.getColor()));
 			}
 		}
 
@@ -276,7 +306,11 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements S
 		}
 		else {
 			canPlay = true;
-			this.generateParticles(world, x, y+2, z, CrystalElement.randomElement(), 20, n.key);
+			CrystalElement e = CrystalElement.randomElement();
+			Coordinate c = colorPositions.get(e).offset(x, y, z);
+			this.generateParticles(world, c.xCoord, c.yCoord, c.zCoord, e, 20, n.key);
+			//CrystalElement e = CrystalElement.randomElement();
+			//ChromaFX.doBoltFX(worldObj, xCoord, yCoord, zCoord, new DecimalPosition(colorPositions.get(e).offset(x, y, z)), e.getColor(), 1, 1.5, false);
 		}
 
 		if (canPlay) {
@@ -289,6 +323,10 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements S
 				f = 1F;
 				v = 0.5F;
 			}*/
+			if (s == ChromaSounds.MONUMENTRAY) {
+				f *= 4F;
+				v *= 0.75F;
+			}
 			if (this.attentuate(world, x, y, z))
 				s.playSoundAtBlock(this, v, f);
 			else
@@ -311,8 +349,15 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements S
 					//	return (ChromaSound)ChromaSounds.ORB.getVariant("PURE");
 			}
 		}*/
+		if (this.isBassline(n.key))
+			return ChromaSounds.MONUMENTRAY;
 		return ChromaSounds.DING;
 	}
+
+	private boolean isBassline(MusicKey n) {
+		return enableBassline && n.pitch < CrystalMusicManager.instance.getBasePitch(CrystalElement.BLACK);
+	}
+
 	/*
 	private SoundEnum getFlute(Note n) {
 		String var = n.key.getInterval(-12).name().toLowerCase(Locale.ENGLISH);
@@ -336,6 +381,8 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements S
 		if (DragonAPICore.debugtest)
 			c.setBlock(world, ChromaBlocks.LAMP.getBlockInstance(), e.ordinal());
 		if (b instanceof CrystalBlock && c.getBlockMetadata(world) == e.ordinal()) {
+			if (this.isBassline(note))
+				ChromaFX.doBoltFX(worldObj, xCoord, yCoord, zCoord, new DecimalPosition(colorPositions.get(e).offset(x, y, z)), e.getColor(), 1, 0.75, false);
 			this.generateParticles(world, c.xCoord, c.yCoord, c.zCoord, e, length, note);
 			if (networkConnections[e.ordinal()] != null && networkConnections[e.ordinal()].stillValid().canConduct()) {
 				//ReikaJavaLibrary.pConsole(networkConnections[e.ordinal()]);
@@ -435,6 +482,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements S
 	public void loadDemo() {
 		if (demoTrack != null && demoTrack.getLatestPos() > 0)
 			this.setTrack(demoTrack.copy());
+		enableBassline = false;
 		this.triggerPlay();
 	}
 
@@ -520,6 +568,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements S
 		NBTTagCompound tag = new NBTTagCompound();
 		temple.writeSyncData(tag);
 		NBT.setTag("structure", tag);
+		NBT.setBoolean("bass", enableBassline);
 	}
 
 	@Override
@@ -529,6 +578,8 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements S
 		//hasPillars = NBT.getBoolean("pillar");
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
 			temple.readSyncData(NBT.getCompoundTag("structure"));
+
+		enableBassline = NBT.getBoolean("bass");
 	}
 
 	@Override

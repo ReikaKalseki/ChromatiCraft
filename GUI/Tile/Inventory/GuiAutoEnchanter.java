@@ -190,6 +190,8 @@ public class GuiAutoEnchanter extends GuiLetterSearchable<Enchantment> {
 		}
 		GL11.glLineWidth(w);
 		GL11.glEnable(GL11.GL_BLEND);
+
+		this.drawSearch();
 	}
 
 	@Override
@@ -211,12 +213,12 @@ public class GuiAutoEnchanter extends GuiLetterSearchable<Enchantment> {
 	protected String getString(Enchantment val) {
 		return val.getTranslatedName(1);
 	}
-
+	/*
 	@Override
 	protected boolean isIndexable(Enchantment val) {
 		return true;
 	}
-
+	 */
 	@Override
 	protected Collection<Enchantment> getAllEntries(EntityPlayer ep) {
 		Collection<Enchantment> c = new ArrayList();

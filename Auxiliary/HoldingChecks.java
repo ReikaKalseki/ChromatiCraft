@@ -18,6 +18,8 @@ public enum HoldingChecks {
 
 	MANIPULATOR(),
 	FOCUSCRYSTAL(),
+	DELEGATE,
+	POWERCRYS,
 	REPEATER();
 
 	private float fade;
@@ -55,6 +57,10 @@ public enum HoldingChecks {
 				return ChromaItems.TOOL.matchWith(is);
 			case FOCUSCRYSTAL:
 				return ChromaItems.PLACER.matchWith(is) && is.getItemDamage() == ChromaTiles.FOCUSCRYSTAL.ordinal();
+			case DELEGATE:
+				return ChromaItems.PLACER.matchWith(is) && is.getItemDamage() == ChromaTiles.AUTOMATOR.ordinal();
+			case POWERCRYS:
+				return ChromaItems.PLACER.matchWith(is) && is.getItemDamage() == ChromaTiles.CRYSTAL.ordinal();
 			case REPEATER:
 				return ChromaItems.PLACER.matchWith(is) && ChromaTiles.TEList[is.getItemDamage()].isRepeater();
 			default:

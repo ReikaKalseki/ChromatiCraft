@@ -62,9 +62,22 @@ public class BlockCastingInjectorFocus extends Block {
 	public IIcon getIcon(IBlockAccess iba, int x, int y, int z, int s) {
 		if (s == 0)
 			return bottom;
-		boolean active = GuiMachineDescription.runningRender || ChromaTiles.getTile(iba, x, y+1, z) == ChromaTiles.STAND;
+		boolean active = GuiMachineDescription.runningRender || this.isValidPosition(iba, x, y, z);
 		int idx = active ? 1 : 0;
 		return s == 1 ? topTextures[idx] : sideTextures[idx];
+	}
+
+	private boolean isValidPosition(IBlockAccess iba, int x, int y, int z) {
+		if (ChromaTiles.getTile(iba, x, y+1, z) != ChromaTiles.STAND)
+			return false;
+		int r = 4;
+		for (int i = -r; i <= r; i += r) {
+			for (int k = -r; k <= r; k += r) {
+				if (ChromaTiles.getTile(iba, x+i, y, z+k) == ChromaTiles.TABLE)
+					return true;
+			}
+		}
+		return false;
 	}
 
 	@Override

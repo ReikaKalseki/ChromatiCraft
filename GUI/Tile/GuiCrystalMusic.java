@@ -100,10 +100,16 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 
 		if (page == Pages.KEYS) {
 			buttonList.add(new CustomSoundImagedGuiButton(0, j+4, k+4+20, 19, 20, 228, 136, file, ChromatiCraft.class, this));
-			buttonList.add(new CustomSoundImagedGuiButton(1, j+4, k+4+40, 19, 20, 228, 156, file, ChromatiCraft.class, this));
-			buttonList.add(new CustomSoundImagedGuiButton(2, j+4, k+4+100, 28, 20, 228, 196, file, ChromatiCraft.class, this));
-			buttonList.add(new CustomSoundImagedGuiButton(3, j+4, k+4+80, 21, 20, 228, 176, file, ChromatiCraft.class, this));
-			buttonList.add(new CustomSoundImagedGuiButton(6, j+4, k+4+60, 19, 20, 209, 156, file, ChromatiCraft.class, this));
+
+			buttonList.add(new CustomSoundImagedGuiButton(1, j+23, k+4+20, 19, 20, 228, 156, file, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(6, j+42, k+4+20, 19, 20, 209, 156, file, ChromatiCraft.class, this));
+
+			buttonList.add(new CustomSoundImagedGuiButton(2, j+4, k+4+40, 28, 20, 228, 196, file, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(3, j+32, k+4+40, 21, 20, 228, 176, file, ChromatiCraft.class, this));
+
+			buttonList.add(new CustomSoundImagedGuiButton(9, j+4, k+4+120, 19, 20, 209, 156, file, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(7, j+4, k+4+140, 19, 20, 209, 156, file, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(8, j+23, k+4+140, 19, 20, 209, 156, file, ChromatiCraft.class, this));
 		}
 		else {
 			buttonList.add(new CustomSoundImagedGuiButton(5, j+4, k+4+20, 19, 20, 209, 136, file, ChromatiCraft.class, this));
@@ -178,6 +184,15 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 		}
 		else if (b.id == 6) {
 			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MUSICBKSP.ordinal(), music, channel);
+		}
+		else if (b.id == 7) {
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MUSICPAUSE.ordinal(), music);
+		}
+		else if (b.id == 8) {
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MUSICSTOP.ordinal(), music);
+		}
+		else if (b.id == 9) {
+			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MUSICBASS.ordinal(), music);
 		}
 		else if (b.id >= 16 && b.id < 32) {
 			channel = b.id-16;

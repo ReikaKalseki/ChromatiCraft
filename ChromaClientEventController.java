@@ -151,7 +151,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.ModLockController.ModReVerifyEvent;
 import Reika.DragonAPI.Auxiliary.Trackers.SpecialDayTracker;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Event.ItemStackUpdateEvent;
@@ -1684,7 +1684,7 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	public void drawPlacerHighlight(DrawBlockHighlightEvent evt) {
 		if (evt.target != null && evt.target.typeOfHit == MovingObjectType.BLOCK) {
 			if (evt.currentItem != null && ChromaItems.DUPLICATOR.matchWith(evt.currentItem)) {
-				StructuredBlockArray blocks = ItemDuplicationWand.getStructureFor(Minecraft.getMinecraft().thePlayer);
+				FilledBlockArray blocks = ItemDuplicationWand.getStructureFor(Minecraft.getMinecraft().thePlayer);
 				if (blocks != null) {
 					blocks.offset(ForgeDirection.VALID_DIRECTIONS[evt.target.sideHit], 1);
 					GL11.glPushMatrix();
@@ -1697,54 +1697,65 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 					//GL11.glTranslated(p2, p4, p6);
 					GL11.glDisable(GL11.GL_LIGHTING);
 					GL11.glEnable(GL11.GL_BLEND);
+					BlendMode.DEFAULT.apply();
 					Tessellator v5 = Tessellator.instance;
 					double o = 0.0125;
 					int r = 255;
 					int g = 255;
 					int b = 255;
+
+					float dx0 = x-(float)TileEntityRendererDispatcher.staticPlayerX;
+					float dy0 = y-(float)TileEntityRendererDispatcher.staticPlayerY;
+					float dz0 = z-(float)TileEntityRendererDispatcher.staticPlayerZ;
+
+					GL11.glDisable(GL11.GL_TEXTURE_2D);
+					v5.startDrawing(GL11.GL_LINE_LOOP);
+					v5.setBrightness(240);
+					v5.addTranslation(dx0, dy0, dz0);
+					v5.setColorRGBA(r, g, b, 96);
+					v5.addVertex(1, 1, 1);
+					v5.addVertex(1-blocks.getSizeX(), 1, 1);
+					v5.addVertex(1-blocks.getSizeX(), 1, 1-blocks.getSizeZ());
+					v5.addVertex(1, 1, 1-blocks.getSizeZ());
+					v5.addTranslation(-dx0, -dy0, -dz0);
+					v5.draw();
+
+					v5.startDrawing(GL11.GL_LINE_LOOP);
+					v5.setBrightness(240);
+					v5.addTranslation(dx0, dy0, dz0);
+					v5.setColorRGBA(r, g, b, 96);
+					v5.addVertex(1, 1+blocks.getSizeY(), 1);
+					v5.addVertex(1-blocks.getSizeX(), 1+blocks.getSizeY(), 1);
+					v5.addVertex(1-blocks.getSizeX(), 1+blocks.getSizeY(), 1-blocks.getSizeZ());
+					v5.addVertex(1, 1+blocks.getSizeY(), 1-blocks.getSizeZ());
+					v5.addTranslation(-dx0, -dy0, -dz0);
+					v5.draw();
+
+					v5.startDrawing(GL11.GL_LINES);
+					v5.setBrightness(240);
+					v5.addTranslation(dx0, dy0, dz0);
+					v5.setColorRGBA(r, g, b, 96);
+					v5.addVertex(1, 1, 1);
+					v5.addVertex(1, 1+blocks.getSizeY(), 1);
+					v5.addVertex(1-blocks.getSizeX(), 1, 1);
+					v5.addVertex(1-blocks.getSizeX(), 1+blocks.getSizeY(), 1);
+					v5.addVertex(1, 1, 1-blocks.getSizeZ());
+					v5.addVertex(1, 1+blocks.getSizeY(), 1-blocks.getSizeZ());
+					v5.addVertex(1-blocks.getSizeX(), 1, 1-blocks.getSizeZ());
+					v5.addVertex(1-blocks.getSizeX(), 1+blocks.getSizeY(), 1-blocks.getSizeZ());
+					v5.addTranslation(-dx0, -dy0, -dz0);
+					v5.draw();
+					GL11.glEnable(GL11.GL_TEXTURE_2D);
+
 					ReikaTextureHelper.bindTerrainTexture();
 					for (int i = 0; i < blocks.getSize(); i++) {
 						Coordinate c = blocks.getNthBlock(i);
-						float dx = c.xCoord+x-(float)TileEntityRendererDispatcher.staticPlayerX;
-						float dy = c.yCoord+y-(float)TileEntityRendererDispatcher.staticPlayerY;
-						float dz = c.zCoord+z-(float)TileEntityRendererDispatcher.staticPlayerZ;
 						Block bk = blocks.getBlockAt(c.xCoord, c.yCoord, c.zCoord);
 						if (bk != null && bk != Blocks.air && bk.getMaterial() != Material.air) {
+							float dx = c.xCoord+dx0;
+							float dy = c.yCoord+dy0;
+							float dz = c.zCoord+dz0;
 							v5.addTranslation(dx, dy, dz);
-							/*
-							GL11.glDisable(GL11.GL_TEXTURE_2D);
-							v5.startDrawing(GL11.GL_LINE_LOOP);
-							v5.setBrightness(240);
-							v5.setColorRGBA(r, g, b, 96);
-							v5.addVertex(0, 0, 0);
-							v5.addVertex(1, 0, 0);
-							v5.addVertex(1, 0, 1);
-							v5.addVertex(0, 0, 1);
-							v5.draw();
-
-							v5.startDrawing(GL11.GL_LINE_LOOP);
-							v5.setBrightness(240);
-							v5.setColorRGBA(r, g, b, 96);
-							v5.addVertex(0, 1, 0);
-							v5.addVertex(1, 1, 0);
-							v5.addVertex(1, 1, 1);
-							v5.addVertex(0, 1, 1);
-							v5.draw();
-
-							v5.startDrawing(GL11.GL_LINES);
-							v5.setBrightness(240);
-							v5.setColorRGBA(r, g, b, 96);
-							v5.addVertex(0, 0, 0);
-							v5.addVertex(0, 1, 0);
-							v5.addVertex(1, 0, 0);
-							v5.addVertex(1, 1, 0);
-							v5.addVertex(0, 0, 1);
-							v5.addVertex(0, 1, 1);
-							v5.addVertex(1, 0, 1);
-							v5.addVertex(1, 1, 1);
-							v5.draw();
-							GL11.glEnable(GL11.GL_TEXTURE_2D);
-							 */
 							v5.startDrawingQuads();
 							v5.setBrightness(240);
 							v5.setColorRGBA(r, g, b, 96);

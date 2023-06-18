@@ -41,7 +41,9 @@ import net.minecraftforge.common.MinecraftForge;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
+import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Auxiliary.HoldingChecks;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PlayerChargedFromPylonEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonDrainedEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.PylonEvents.PylonFullyChargedEvent;
@@ -368,6 +370,13 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 
 			if (world.isRemote) {
 				this.spawnParticle(world, x, y, z);
+
+				if (HoldingChecks.POWERCRYS.isClientHolding())
+					ChromaFX.doPlacementHintParticles(world, x, y, z, crystalPositions, fx -> {
+						fx.setColor(this.getColor().getColor());
+						fx.setLife(fx.getMaxAge()*2);
+						fx.setGravity(fx.getGravity()*1.5F);
+					});
 			}
 
 			if (!world.isRemote && hasMultiblock && structure != null) {

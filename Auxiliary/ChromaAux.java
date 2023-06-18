@@ -596,7 +596,7 @@ public class ChromaAux {
 			return;
 		PoweredItem pi = (PoweredItem)in.getItem();
 		if (pi.getColor(in) == e) {
-			float sc = pi.getPlayerChargeCoefficient(in);
+			float sc = pi.getPlayerChargeCoefficient(player, te, in);
 			if (sc > 0) {
 				int rate = Math.max(0, (int)(te.getHeldToolChargingPower(player, e, in)*sc*ToolChargingSystem.instance.getChargeRate(in)));
 				if (rate > 0)

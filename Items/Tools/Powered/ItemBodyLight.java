@@ -5,6 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.Base.ItemPoweredChromaTool;
+import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 
 //TODO Incomplete item
@@ -13,12 +14,12 @@ public class ItemBodyLight extends ItemPoweredChromaTool {
 	public ItemBodyLight(int index) {
 		super(index);
 	}
-	/*
+
 	@Override
-	public float getPlayerChargeCoefficient(ItemStack is) {
-		return 1;
+	public float getPlayerChargeCoefficient(EntityPlayer ep, ChargingPoint te, ItemStack is) {
+		return 0.33F;
 	}
-	 */
+
 	@Override
 	public CrystalElement getColor(ItemStack is) {
 		return CrystalElement.BLUE;

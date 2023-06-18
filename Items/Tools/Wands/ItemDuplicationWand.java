@@ -38,7 +38,7 @@ import net.minecraftforge.fluids.BlockFluidBase;
 import net.minecraftforge.fluids.Fluid;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.API.Interfaces.UnCopyableBlock;
+import Reika.ChromatiCraft.API.Interfaces.CustomCopyBehavior;
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -51,7 +51,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickHandler;
 import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry.TickType;
 import Reika.DragonAPI.Base.TileEntityBase;
-import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
@@ -73,7 +73,7 @@ public class ItemDuplicationWand extends ItemWandBase {
 	public static final int MAX_SIZE = Math.min(1000, ChromaOptions.COPYSIZE.getValue());
 
 	//Do not switch to playermap; not compatible, and not persistent across loads anyways
-	private static HashMap<String, StructuredBlockArray> structures = new HashMap();
+	private static HashMap<String, FilledBlockArray> structures = new HashMap();
 	private HashMap<String, Boolean> region = new HashMap();
 	private HashMap<String, Coordinate> centers = new HashMap();
 	private HashMap<String, Coordinate> lastClick = new HashMap();
@@ -107,7 +107,7 @@ public class ItemDuplicationWand extends ItemWandBase {
 					ChromaSounds.USE.playSound(ep, 0.75F, 0.8F);
 			}
 			else {
-				StructuredBlockArray struct = structures.get(sg);
+				FilledBlockArray struct = structures.get(sg);
 				if (struct != null && !struct.isEmpty() && this.hasItems(struct, ep)) {
 					//ChromaSounds.CAST.playSound(ep, 0.5F, 0.5F);
 					if (this.sufficientEnergy(ep, 1+struct.getSize()/16F)) {
@@ -125,7 +125,7 @@ public class ItemDuplicationWand extends ItemWandBase {
 		return false;
 	}
 
-	private boolean hasItems(StructuredBlockArray blocks, EntityPlayer ep) {
+	private boolean hasItems(FilledBlockArray blocks, EntityPlayer ep) {
 		if (ep.capabilities.isCreativeMode)
 			return true;
 		ItemHashMap<Integer> items = blocks.getItems();
@@ -133,8 +133,8 @@ public class ItemDuplicationWand extends ItemWandBase {
 		return ReikaInventoryHelper.inventoryContains(items, ep.inventory);
 	}
 
-	private void removeFromInventory(EntityPlayer ep, StructuredBlockArray blocks) {
-		ItemHashMap<Integer> items = blocks.getItems();
+	private void removeFromInventory(EntityPlayer ep, FilledBlockArray blocks) {
+		ItemHashMap<Integer> items = blocks.tally();
 		this.performMappings(items);
 		//if (!ep.worldObj.isRemote && Chromabilities.MEINV.enabledOn(ep)) {
 		//	AbilityHelper.instance.removeFromPlayerME(ep, items);
@@ -189,21 +189,22 @@ public class ItemDuplicationWand extends ItemWandBase {
 	private void clearStructureCache(String s) {
 		region.remove(s);
 		centers.remove(s);
+		structures.remove(s);
 	}
 
 	private boolean addToStructureCache(World world, int x, int y, int z, String s) {
-		StructuredBlockArray all = structures.get(s);
+		FilledBlockArray all = structures.get(s);
 		Coordinate cx = new Coordinate(x, y, z);
 		boolean second = region.containsKey(s) && region.get(s);
 		if (all == null) {
-			all = new StructuredBlockArray(world);
+			all = new FilledBlockArray(world);
 			if (!second)
 				centers.put(s, cx);
 		}
 
 		if (second) {
 			Coordinate last = lastClick.get(s);
-			StructuredBlockArray add = new StructuredBlockArray(world);
+			FilledBlockArray add = new FilledBlockArray(world);
 			int x1 = Math.min(last.xCoord, x);
 			int x2 = Math.max(last.xCoord, x);
 			int y1 = Math.min(last.yCoord, y);
@@ -217,7 +218,7 @@ public class ItemDuplicationWand extends ItemWandBase {
 						if (dy >= 0) {
 							Block b = world.getBlock(dx, dy, dz);
 							int meta = world.getBlockMetadata(dx, dy, dz);
-							if (b instanceof UnCopyableBlock && ((UnCopyableBlock)b).disallowCopy(meta)) {
+							if (b instanceof CustomCopyBehavior && !((CustomCopyBehavior)b).allowCopy(meta)) {
 
 							}
 							else if (!ChromaOptions.COPYTILE.getState() && world.getTileEntity(dx, dy, dz) instanceof TileEntityBase) {
@@ -227,7 +228,11 @@ public class ItemDuplicationWand extends ItemWandBase {
 
 							}
 							else {
-								add.addBlockCoordinate(dx, dy, dz);
+								if (b instanceof CustomCopyBehavior) {
+									meta = ((CustomCopyBehavior)b).getMeta(meta);
+									b = ((CustomCopyBehavior)b).getBlock(meta);
+								}
+								add.addBlock(dx, dy, dz, b, meta);
 								ct++;
 							}
 						}
@@ -258,7 +263,7 @@ public class ItemDuplicationWand extends ItemWandBase {
 	}
 
 	private static void triggerPlacement(World world, int x, int y, int z, ForgeDirection dir, String s) {
-		StructuredBlockArray struct = structures.get(s);
+		FilledBlockArray struct = structures.get(s);
 		ArrayList<PositionedBlock> ls = new ArrayList();
 		for (int i = 0; i < struct.getSize(); i++) {
 			Coordinate c = struct.getNthBlock(i);
@@ -274,14 +279,14 @@ public class ItemDuplicationWand extends ItemWandBase {
 
 	private static void finishPlacement(String s) {
 		lock.remove(s);
-		structures.remove(s);
+		//structures.remove(s);
 		ticker.placing.remove(s);
 	}
 
-	public static StructuredBlockArray getStructureFor(EntityPlayer ep) {
+	public static FilledBlockArray getStructureFor(EntityPlayer ep) {
 		String s = ep.getCommandSenderName();
-		StructuredBlockArray a = structures.get(s);
-		return !lock.contains(s) && a != null ? (StructuredBlockArray)a.copy() : null;
+		FilledBlockArray a = structures.get(s);
+		return !lock.contains(s) && a != null ? (FilledBlockArray)a.copy() : null;
 	}
 
 	public static void loadMappings() {

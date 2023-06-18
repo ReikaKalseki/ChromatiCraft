@@ -142,8 +142,7 @@ public class BlockModelledChromaTile extends BlockChromaTile {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public final boolean addHitEffects(World world, MovingObjectPosition tg, EffectRenderer eff)
-	{
+	public final boolean addHitEffects(World world, MovingObjectPosition tg, EffectRenderer eff) {
 		return ReikaRenderHelper.addModelledBlockParticles("/Reika/ChromatiCraft/Textures/TileEntity/", world, tg, this, eff, ReikaJavaLibrary.makeListFrom(new double[]{0,0,1,1}), ChromatiCraft.class);
 	}
 

@@ -154,6 +154,8 @@ public class ChromaClient extends ChromaCommon {
 
 	private static final EnderCrystalRenderer csr = new EnderCrystalRenderer();
 
+	public static final RenderColoredAltar altarRenderer = new RenderColoredAltar();
+
 	public static KeyBinding key_ability;
 
 	public static SoundCategory chromaCategory;
@@ -287,7 +289,7 @@ public class ChromaClient extends ChromaCommon {
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityLootChest.class, new RenderLootChest());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityCrystalPortal.class, new RenderCrystalPortal());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityVoidRift.class, new RenderVoidRift());
-		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityColoredAltar.class, new RenderColoredAltar());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityColoredAltar.class, altarRenderer);
 		ClientRegistry.bindTileEntitySpecialRenderer(AntKeyTile.class, new RenderAntKey());
 		ClientRegistry.bindTileEntitySpecialRenderer(TargetTile.class, new RenderLaserTarget());
 		ClientRegistry.bindTileEntitySpecialRenderer(TileBouncePad.class, new RenderBouncePad());

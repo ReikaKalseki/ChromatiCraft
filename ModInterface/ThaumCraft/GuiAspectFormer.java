@@ -28,11 +28,14 @@ import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectFormer.Aspect
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.DragonAPICore;
+import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Instantiable.Data.Proportionality;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 
@@ -206,6 +209,8 @@ public class GuiAspectFormer extends GuiLetterSearchable<Aspect> {
 				api.drawCircle(dx+32, dy+20, 20.25, 0);
 			}
 		}
+
+		this.drawSearch();
 	}
 
 	@Override
@@ -291,14 +296,16 @@ public class GuiAspectFormer extends GuiLetterSearchable<Aspect> {
 	protected String getString(Aspect val) {
 		return val.getTag();
 	}
-
+	/*
 	@Override
 	protected boolean isIndexable(Aspect val) {
 		return !val.isPrimal();
 	}
-
+	 */
 	@Override
 	protected Collection<Aspect> getAllEntries(EntityPlayer ep) {
+		if (!ModList.THAUMCRAFT.isLoaded() && DragonAPICore.isReikasComputer() && ReikaObfuscationHelper.isDeObfEnvironment())
+			return ReikaThaumHelper.getAllAspects();
 		return ReikaThaumHelper.getAllDiscoveredAspects(ep);
 	}
 

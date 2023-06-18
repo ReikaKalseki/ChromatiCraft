@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.opengl.GL11;
@@ -749,52 +750,56 @@ public class ChromaFX {
 		}
 	}
 
+
 	public static void doFocusCrystalParticles(World world, int x, int y, int z, FocusAcceleratable fa) {
-		if (HoldingChecks.FOCUSCRYSTAL.isClientHolding()) {
-			Collection<Coordinate> set = fa.getRelativeFocusCrystalLocations();
-			for (Coordinate c : set) {
-				double dx = x+c.xCoord+0.5;
-				double dy = y+c.yCoord+0.125;
-				double dz = z+c.zCoord+0.5;
-				int n = ReikaRandomHelper.getRandomBetween(1, 3);
-				for (int i = 0; i < n; i++) {
-					boolean ctr = rand.nextInt(3) == 0;
-					double px = ReikaRandomHelper.getRandomPlusMinus(dx, 0.03125);
-					double py = ReikaRandomHelper.getRandomPlusMinus(dy, 0.03125);
-					double pz = ReikaRandomHelper.getRandomPlusMinus(dz, 0.03125);
-					double ang = (world.getTotalWorldTime()/2D)%360;
-					int split = 6;//3;
-					double dAng = 360D/split*rand.nextInt(split);
-					ang = (ang+dAng)%360D;
-					ang = ReikaRandomHelper.getRandomPlusMinus(ang, 6);
-					if (!ctr) {
-						double d = ReikaRandomHelper.getRandomBetween(0.15, 0.25);
-						double[] off = ReikaPhysicsHelper.polarToCartesian(d, 0, ang);
-						px += off[0];
-						pz += off[2];
-					}
-					double vel = ctr ? 0 : ReikaRandomHelper.getRandomBetween(0.015, 0.03);
-					double[] v = ReikaPhysicsHelper.polarToCartesian(vel, 0, ang);
-					float g = -(float)ReikaRandomHelper.getRandomBetween(0, 0.125);
-					int l = ReikaRandomHelper.getRandomBetween(8, 40);
-					float s = (float)ReikaRandomHelper.getRandomBetween(0.25, 1.25);
-					int clr = FOCUS_CRYSTAL_PARTICLES.getColor(world.getTotalWorldTime()/8D);
-					EntityCCBlurFX fx = new EntityCCBlurFX(world, px, py, pz, v[0], v[1], v[2]);
-					ChromaIcons ico = ChromaIcons.FADE;
-					switch(rand.nextInt(4)) {
-						case 0:
-							ico = ChromaIcons.NODE2;
-							break;
-						case 1:
-							ico = ChromaIcons.FLARE;
-							break;
-					}
-					fx.setIcon(ico).setColor(clr).setLife(l).setScale(s).setGravity(g).setRapidExpand().setAlphaFading();
-					EntityCCBlurFX fx2 = new EntityCCBlurFX(world, px, py, pz, v[0], v[1], v[2]);
-					fx2.setIcon(ico).setColor(0xffffff).setLife(l).setScale(s*0.6F).setGravity(g).setRapidExpand().setAlphaFading().lockTo(fx);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
+		if (HoldingChecks.FOCUSCRYSTAL.isClientHolding())
+			doPlacementHintParticles(world, x, y, z, fa.getRelativeFocusCrystalLocations(), fx -> fx.setColor(FOCUS_CRYSTAL_PARTICLES.getColor(world.getTotalWorldTime()/8D)));
+	}
+
+	public static void doPlacementHintParticles(World world, int x, int y, int z, Collection<Coordinate> set, Consumer<EntityCCBlurFX> particle) {
+		for (Coordinate c : set) {
+			double dx = x+c.xCoord+0.5;
+			double dy = y+c.yCoord+0.125;
+			double dz = z+c.zCoord+0.5;
+			int n = ReikaRandomHelper.getRandomBetween(1, 3);
+			for (int i = 0; i < n; i++) {
+				boolean ctr = rand.nextInt(3) == 0;
+				double px = ReikaRandomHelper.getRandomPlusMinus(dx, 0.03125);
+				double py = ReikaRandomHelper.getRandomPlusMinus(dy, 0.03125);
+				double pz = ReikaRandomHelper.getRandomPlusMinus(dz, 0.03125);
+				double ang = (world.getTotalWorldTime()/2D)%360;
+				int split = 6;//3;
+				double dAng = 360D/split*rand.nextInt(split);
+				ang = (ang+dAng)%360D;
+				ang = ReikaRandomHelper.getRandomPlusMinus(ang, 6);
+				if (!ctr) {
+					double d = ReikaRandomHelper.getRandomBetween(0.15, 0.25);
+					double[] off = ReikaPhysicsHelper.polarToCartesian(d, 0, ang);
+					px += off[0];
+					pz += off[2];
 				}
+				double vel = ctr ? 0 : ReikaRandomHelper.getRandomBetween(0.015, 0.03);
+				double[] v = ReikaPhysicsHelper.polarToCartesian(vel, 0, ang);
+				float g = -(float)ReikaRandomHelper.getRandomBetween(0, 0.125);
+				int l = ReikaRandomHelper.getRandomBetween(8, 40);
+				float s = (float)ReikaRandomHelper.getRandomBetween(0.25, 1.25);
+				EntityCCBlurFX fx = new EntityCCBlurFX(world, px, py, pz, v[0], v[1], v[2]);
+				ChromaIcons ico = ChromaIcons.FADE;
+				switch(rand.nextInt(4)) {
+					case 0:
+						ico = ChromaIcons.NODE2;
+						break;
+					case 1:
+						ico = ChromaIcons.FLARE;
+						break;
+				}
+				fx.setIcon(ico).setLife(l).setScale(s).setGravity(g).setRapidExpand().setAlphaFading();
+				if (particle != null)
+					particle.accept(fx);
+				EntityCCBlurFX fx2 = new EntityCCBlurFX(world, px, py, pz, v[0], v[1], v[2]);
+				fx2.setIcon(ico).setColor(0xffffff).setLife(l).setScale(s*0.6F).setGravity(g).setRapidExpand().setAlphaFading().lockTo(fx);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+				Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 			}
 		}
 	}
@@ -806,6 +811,10 @@ public class ChromaFX {
 	}
 
 	public static void doBoltFX(World world, int x, int y, int z, DecimalPosition p2, int color, float beamSize, double varScale) {
+		doBoltFX(world, x, y, z, p2, color, beamSize, varScale, true);
+	}
+
+	public static void doBoltFX(World world, int x, int y, int z, DecimalPosition p2, int color, float beamSize, double varScale, boolean freeze) {
 		int n = 4+world.rand.nextInt(4);
 		LightningBolt b = new LightningBolt(new DecimalPosition(x+0.5, y+0.5, z+0.5), p2, n);
 		b.scaleVariance(0.5*varScale);
@@ -819,7 +828,10 @@ public class ChromaFX {
 				int l = 20;
 				int a = (int)(2*f);
 				DecimalPosition dd = DecimalPosition.interpolate(pos1, pos2, r);
-				EntityFX fx = new EntityCCBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord).setScale(s).setColor(color).setLife(l).setRapidExpand().freezeLife(a);
+				EntityCCBlurFX fx = new EntityCCBlurFX(world, dd.xCoord, dd.yCoord, dd.zCoord);
+				fx.setScale(s).setColor(color).setLife(l).setRapidExpand();
+				if (freeze)
+					fx.freezeLife(a);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 			}
 		}

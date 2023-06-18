@@ -24,6 +24,7 @@ import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 
 import Reika.ChromatiCraft.Magic.ToolChargingSystem;
 import Reika.ChromatiCraft.Magic.ToolChargingSystem.EntityChargingTool;
+import Reika.ChromatiCraft.Magic.Interfaces.ChargingPoint;
 import Reika.ChromatiCraft.Magic.Interfaces.PoweredItem;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
@@ -51,8 +52,8 @@ public abstract class ItemPoweredChromaTool extends ItemChromaTool implements Po
 	public abstract int getChargeConsumptionRate(EntityPlayer e, World world, ItemStack is);
 	protected abstract boolean doTick(ItemStack is, World world, EntityPlayer e, boolean held);
 
-	public float getPlayerChargeCoefficient(ItemStack is) {
-		return 0;
+	public float getPlayerChargeCoefficient(EntityPlayer ep, ChargingPoint te, ItemStack is) {
+		return 0.05F;
 	}
 
 	public int getChargeRate(ItemStack is, int base) {

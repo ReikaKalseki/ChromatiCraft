@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -40,6 +40,11 @@ public abstract class CrystalTypeBlock extends Block {
 	@Override
 	public final void breakBlock(World world, int x, int y, int z, Block b, int meta) {
 		ding(world, x, y, z, CrystalElement.elements[meta]);
+		this.onBroken(world, x, y, z);
+	}
+
+	protected void onBroken(World world, int x, int y, int z) {
+
 	}
 
 	@Override
