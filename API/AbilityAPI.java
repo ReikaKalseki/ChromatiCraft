@@ -81,6 +81,9 @@ public interface AbilityAPI {
 		/** Whether the ability is currently doing anything, irrespective of being enabled/disabled. Controls energy consumption and function. */
 		public boolean isFunctioningOn(EntityPlayer ep);
 
+		/** The little "what this power level does" blurb when selecting the ability to fire. */
+		public String getPowerDesc(int level);
+
 	}
 
 }

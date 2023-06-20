@@ -9,14 +9,10 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Container;
 
-import java.util.ArrayList;
-import java.util.Locale;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -33,16 +29,7 @@ public class ContainerFluidRelay extends CoreContainer {
 
 	private final TileEntityFluidRelay relay;
 
-	private int manualSelectionSlot;
-	private char manualSelectionChar = 0;
-	private int manualSelectionIndex = -1;
-	private final ArrayList<Fluid> manualOptions = new ArrayList();
-
-	private static final ArrayList<Fluid> allFluids = new ArrayList(FluidRegistry.getRegisteredFluids().values());
-
-	static {
-		allFluids.sort((f1, f2) -> Integer.compare(f1.getID(), f2.getID()));
-	}
+	private int manualSelectionSlot = -1;
 
 	public ContainerFluidRelay(EntityPlayer player, TileEntityFluidRelay te) {
 		super(player, te);
@@ -61,7 +48,7 @@ public class ContainerFluidRelay extends CoreContainer {
 	public boolean allowShiftClicking(EntityPlayer player, int slot, ItemStack stack) {
 		return false;
 	}
-
+	/*
 	public void onCharTyped(char c) {
 		if (manualSelectionSlot >= 0) {
 			if (manualSelectionChar == c) {
@@ -80,6 +67,18 @@ public class ContainerFluidRelay extends CoreContainer {
 			else
 				relay.setFluid(manualSelectionSlot, f);
 		}
+	}
+	 */
+
+	public int getManualSelectSlot() {
+		return manualSelectionSlot;
+	}
+
+	public void setFluid(Fluid f) {
+		if (relay.worldObj.isRemote)
+			ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.RELAYFLUIDKEY.ordinal(), relay.worldObj, relay.xCoord, relay.yCoord, relay.zCoord, PacketTarget.server, manualSelectionSlot, f == null ? -1 : f.getID());
+		else
+			relay.setFluid(manualSelectionSlot, f);
 	}
 
 	@Override

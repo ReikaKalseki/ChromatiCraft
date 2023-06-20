@@ -107,9 +107,9 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 			buttonList.add(new CustomSoundImagedGuiButton(2, j+4, k+4+40, 28, 20, 228, 196, file, ChromatiCraft.class, this));
 			buttonList.add(new CustomSoundImagedGuiButton(3, j+32, k+4+40, 21, 20, 228, 176, file, ChromatiCraft.class, this));
 
-			buttonList.add(new CustomSoundImagedGuiButton(9, j+4, k+4+120, 19, 20, 209, 156, file, ChromatiCraft.class, this));
-			buttonList.add(new CustomSoundImagedGuiButton(7, j+4, k+4+140, 19, 20, 209, 156, file, ChromatiCraft.class, this));
-			buttonList.add(new CustomSoundImagedGuiButton(8, j+23, k+4+140, 19, 20, 209, 156, file, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(9, j+4, k+4+120, 26, 20, music.isBasslineEnabled() ? 221 : 195, 57, file, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(7, j+4, k+4+140, 19, 19, music.isPaused() ? 209 : 228, 77, file, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(8, j+23, k+4+140, 19, 19, 228, 97, file, ChromatiCraft.class, this));
 		}
 		else {
 			buttonList.add(new CustomSoundImagedGuiButton(5, j+4, k+4+20, 19, 20, 209, 136, file, ChromatiCraft.class, this));
@@ -186,12 +186,14 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MUSICBKSP.ordinal(), music, channel);
 		}
 		else if (b.id == 7) {
+			music.togglePause();
 			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MUSICPAUSE.ordinal(), music);
 		}
 		else if (b.id == 8) {
 			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MUSICSTOP.ordinal(), music);
 		}
 		else if (b.id == 9) {
+			music.toggleBass();
 			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MUSICBASS.ordinal(), music);
 		}
 		else if (b.id >= 16 && b.id < 32) {

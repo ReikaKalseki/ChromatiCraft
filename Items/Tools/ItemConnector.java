@@ -415,7 +415,10 @@ public class ItemConnector extends ItemChromaTool {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
-		is.stackTagCompound = null;
+		if (!world.isRemote) {
+			is.stackTagCompound = null;
+			ChromaSounds.USE.playSound(ep, 0.5F, 0.67F);
+		}
 		return is;
 	}
 
@@ -423,18 +426,20 @@ public class ItemConnector extends ItemChromaTool {
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
 		if (is.stackTagCompound != null) {
 			int x1 = is.stackTagCompound.getInteger("x1");
-			int y1 = is.stackTagCompound.getInteger("y1");
-			int z1 = is.stackTagCompound.getInteger("z1");
-			int x2 = is.stackTagCompound.getInteger("x2");
-			int y2 = is.stackTagCompound.getInteger("y2");
-			int z2 = is.stackTagCompound.getInteger("z2");
-			int w1 = is.stackTagCompound.getInteger("w1");
-			int w2 = is.stackTagCompound.getInteger("w2");
-			if (x1 != Integer.MIN_VALUE)
+			if (x1 != Integer.MIN_VALUE) {
+				int y1 = is.stackTagCompound.getInteger("y1");
+				int z1 = is.stackTagCompound.getInteger("z1");
+				int x2 = is.stackTagCompound.getInteger("x2");
+				int y2 = is.stackTagCompound.getInteger("y2");
+				int z2 = is.stackTagCompound.getInteger("z2");
+				int w1 = is.stackTagCompound.getInteger("w1");
+				int w2 = is.stackTagCompound.getInteger("w2");
 				li.add(String.format("Connected to %d, %d, %d in DIM%d", x1, y1, z1, w1));
-			//li.add(String.format("Anchor 1: %d, %d, %d in DIM%d", x1, y1, z1, w1));
-			//if (x2 != Integer.MIN_VALUE)
-			//	li.add(String.format("Anchor 2: %d, %d, %d in DIM%d", x2, y2, z2, w2));
+				li.add("Use on air to clear");
+			}
+			else {
+				li.add("No linked endpoints.");
+			}
 		}
 	}
 

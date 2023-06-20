@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.UUID;
 
@@ -201,12 +202,24 @@ public class AbilityHelper implements AbilityAPI {
 
 	public static final int LYING_DURATION = 1200;
 
+	public static final float SONIC_EXPLO_FACTOR = 12F;
+
+	private static final HashMap<GrowAuraEffect, Integer> growAuraEffects = new HashMap();
+
 	private AbilityHelper() {
 		List<Ability> li = Chromabilities.getAbilities();
 		for (Ability c : li) {
 			ElementTagCompound tag = AbilityRituals.instance.getAura(c);
 			tagMap.put(c, tag);
 		}
+
+		this.addGrowAuraEffect(GrowAuraEffects.butterflyAttract, 0);
+		this.addGrowAuraEffect(GrowAuraEffects.cleanRadiation, 0);
+		this.addGrowAuraEffect(GrowAuraEffects.rainbowLeafFX, 0);
+		this.addGrowAuraEffect(GrowAuraEffects.fertilize, 1);
+		this.addGrowAuraEffect(GrowAuraEffects.growTick, 1);
+		this.addGrowAuraEffect(GrowAuraEffects.bonemeal, 2);
+		this.addGrowAuraEffect(GrowAuraEffects.nodeHeal, 3);
 
 		progressMap.addValue(Chromabilities.FIREBALL, ProgressStage.NETHER);
 		progressMap.addValue(Chromabilities.PYLON, ProgressStage.SHOCK);
@@ -251,6 +264,10 @@ public class AbilityHelper implements AbilityAPI {
 		for (AbilityXRays x : AbilityXRays.values()) {
 			xRayMap.put(x.objectClass, x);
 		}
+	}
+
+	private void addGrowAuraEffect(GrowAuraEffect g, int minLevel) {
+		growAuraEffects.put(g, minLevel);
 	}
 
 	public void register() {
@@ -1801,6 +1818,18 @@ public class AbilityHelper implements AbilityAPI {
 	@Override
 	public boolean playerHasAbility(EntityPlayer ep, Ability a) {
 		return Chromabilities.playerHasAbility(ep, a);
+	}
+
+	public List<GrowAuraEffect> getGrowAuraEffects(int level) {
+		List<GrowAuraEffect> li = new ArrayList();
+		for (Entry<GrowAuraEffect, Integer> e : growAuraEffects.entrySet()) {
+			if (e.getValue() <= level) {
+				GrowAuraEffect g = e.getKey();
+				if (g.isEffectViable())
+					li.add(g);
+			}
+		}
+		return li;
 	}
 
 }

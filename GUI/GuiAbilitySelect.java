@@ -163,6 +163,8 @@ public class GuiAbilitySelect extends GuiScreen {
 			int sc = data*64/ability.getMaxPower();
 			this.drawTexturedModalRect(width/2-12, height/2+5-sc, 116, 76-sc, 24, sc);
 			ReikaGuiAPI.instance.drawCenteredStringNoShadow(FontType.GUI.renderer, String.format("%d/%d", data, ability.getMaxPower()), width/2, height/2-72, 0xffffff);
+
+
 		}
 
 		int sep = 22;

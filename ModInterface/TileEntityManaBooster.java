@@ -49,8 +49,8 @@ import vazkii.botania.api.subtile.SubTileGenerating;
 @Injectable(value = {"vazkii.botania.api.mana.IManaCollector"})
 public class TileEntityManaBooster extends TileEntityWirelessPowered {
 
-	private static final int FLOWER_RANGE = 8;
-	private static final int POOL_RANGE = 12;
+	public static final int FLOWER_RANGE = 8;
+	public static final int POOL_RANGE = 12;
 
 	public static final int BOOST_FACTOR = 6;
 

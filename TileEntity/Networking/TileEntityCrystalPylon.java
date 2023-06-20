@@ -375,7 +375,8 @@ public class TileEntityCrystalPylon extends CrystalTransmitterBase implements Na
 					ChromaFX.doPlacementHintParticles(world, x, y, z, crystalPositions, fx -> {
 						fx.setColor(this.getColor().getColor());
 						fx.setLife(fx.getMaxAge()*2);
-						fx.setGravity(fx.getGravity()*1.5F);
+						fx.particleScale = 1.5F;
+						fx.setGravity(fx.getGravity()*1.25F);
 					});
 			}
 

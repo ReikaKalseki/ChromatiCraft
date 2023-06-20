@@ -36,7 +36,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.server.MinecraftServer;
@@ -55,6 +54,7 @@ import net.minecraftforge.fluids.BlockFluidBase;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
+import Reika.ChromatiCraft.Auxiliary.Ability.GrowAuraEffect.BlockBasedGrowAuraEffect;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent;
 import Reika.ChromatiCraft.Auxiliary.Event.DimensionPingEvent.StructurePingEvent;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
@@ -67,7 +67,6 @@ import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
-import Reika.ChromatiCraft.Magic.RainbowTreeEffects;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.ModInterface.TileEntityLifeEmitter;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -86,10 +85,8 @@ import Reika.ChromatiCraft.World.Dimension.ChromaDimensionManager;
 import Reika.ChromatiCraft.World.Dimension.ChunkProviderChroma;
 import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
-import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.ModList;
-import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 import Reika.DragonAPI.Auxiliary.Trackers.TickScheduler;
@@ -103,8 +100,6 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
-import Reika.DragonAPI.Instantiable.Event.BlockTickEvent;
-import Reika.DragonAPI.Instantiable.Event.BlockTickEvent.UpdateFlags;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledBlockPlace;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent.ScheduledPacket;
@@ -120,7 +115,6 @@ import Reika.DragonAPI.Libraries.ReikaInventoryHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
-import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
@@ -133,15 +127,9 @@ import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 import Reika.DragonAPI.ModRegistry.ModWoodList;
-import Reika.ReactorCraft.Entities.EntityRadiation;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import thaumcraft.api.aspects.Aspect;
-import thaumcraft.api.aspects.AspectList;
-import thaumcraft.api.nodes.INode;
-import thaumcraft.api.nodes.NodeModifier;
-import thaumcraft.api.nodes.NodeType;
 
 
 public class AbilityCalls {
@@ -490,7 +478,7 @@ public class AbilityCalls {
 									}
 								}
 								if (ReikaPlayerAPI.playerCanBreakAt((WorldServer)ep.worldObj, dx, dy, dz, (EntityPlayerMP)ep)) {
-									if (power > b.getExplosionResistance(ep, ep.worldObj, dx, dy, dz, ep.posX, ep.posY, ep.posZ)/12F) {
+									if (power > b.getExplosionResistance(ep, ep.worldObj, dx, dy, dz, ep.posX, ep.posY, ep.posZ)/AbilityHelper.SONIC_EXPLO_FACTOR) {
 										ArrayList<ItemStack> li = b.getDrops(ep.worldObj, dx, dy, dz, meta, 0);
 										if (b instanceof BlockTieredResource) {
 											BlockTieredResource bt = (BlockTieredResource)b;
@@ -928,72 +916,21 @@ public class AbilityCalls {
 		}
 		else {
 			int power = AbilityHelper.instance.getGrowAuraState(ep);
-			RainbowTreeEffects.instance.doRainbowTreeEffects(ep.worldObj, x, y, z, 4, 0.25, DragonAPICore.rand, false);
-			if (power >= 1) {
-				for (int i = 0; i < 8; i++) {
-					int dx = ReikaRandomHelper.getRandomPlusMinus(x, 8);
-					int dz = ReikaRandomHelper.getRandomPlusMinus(z, 8);
-					int dy = ReikaRandomHelper.getRandomPlusMinus(y, 2);
-					ReikaWorldHelper.fertilizeAndHealBlock(ep.worldObj, dx, dy, dz);
-					Block b = ep.worldObj.getBlock(dx, dy, dz);
-					if (power >= 3 && ModList.THAUMCRAFT.isLoaded() && b == ThaumItemHelper.BlockEntry.NODE.getBlock()) {
-						healNodes(ep.worldObj, dx, dy, dz);
+			for (GrowAuraEffect g : AbilityHelper.instance.getGrowAuraEffects(power)) {
+				if (g instanceof BlockBasedGrowAuraEffect) {
+					BlockBasedGrowAuraEffect bb = (BlockBasedGrowAuraEffect)g;
+					int n = bb.getNumberPerTick(ep, x, y, z, power);
+					for (int i = 0; i < n; i++) {
+						int dx = ReikaRandomHelper.getRandomPlusMinus(x, bb.getXZRange());
+						int dz = ReikaRandomHelper.getRandomPlusMinus(z, bb.getXZRange());
+						int dy = ReikaRandomHelper.getRandomPlusMinus(y, bb.getYRange());
+						bb.performEffect(ep, x, y, z, power);
 					}
-					else {
-						//if (b.canSustainPlant(ep.worldObj, dx, dy, dz, ForgeDirection.UP, Blocks.red_flower) && ep.worldObj.getBlock(dx, dy+1, dz).isAir(ep.worldObj, dx, dy+1, dz))
-						if (power >= 2 && ep.worldObj.rand.nextInt(b == Blocks.grass ? 18 : 6) == 0) {
-							EntityPlayer fake = ReikaPlayerAPI.getFakePlayerByNameAndUUID((WorldServer)ep.worldObj, "Random", Chromabilities.FAKE_UUID);
-							fake.setCurrentItemOrArmor(0, ReikaItemHelper.bonemeal.copy());
-							ItemDye.applyBonemeal(fake.getCurrentEquippedItem().copy(), ep.worldObj, dx, dy, dz, fake);
-						}
-						else {
-							BlockTickEvent.fire(b, ep.worldObj, dx, dy, dz, DragonAPICore.rand, UpdateFlags.getForcedUnstoppableTick());
-						}
-					}
-				}
-			}
-			if (ModList.REACTORCRAFT.isLoaded() && DragonAPICore.rand.nextInt(40) == 0) {
-				cleanRadiation(ep);
-			}
-			if (ModList.FORESTRY.isLoaded()) {
-				ReikaBeeHelper.attractButterflies(ep.worldObj, ep.posX, ep.posY, ep.posZ, 32, null);
-			}
-		}
-	}
-
-	@ModDependent(ModList.THAUMCRAFT)
-	private static void healNodes(World world, int x, int y, int z) {
-		TileEntity te = world.getTileEntity(x, y, z);
-		if (te instanceof INode) {
-			INode n = (INode)te;
-			AspectList al = n.getAspects();
-			Aspect a = ReikaJavaLibrary.getRandomCollectionEntry(world.rand, al.aspects.keySet());
-			if (a != null) {
-				if (n.getNodeVisBase(a) > al.getAmount(a)) {
-					n.addToContainer(a, 1);
-				}
-			}
-			if (world.rand.nextInt(8) == 0) {
-				if (world.rand.nextInt(4) == 0) {
-					NodeModifier m = n.getNodeModifier();
-					if (m != NodeModifier.BRIGHT)
-						n.setNodeModifier(m == NodeModifier.FADING ? NodeModifier.PALE : NodeModifier.BRIGHT);
 				}
 				else {
-					NodeType t = n.getNodeType();
-					if (t != NodeType.PURE && t != NodeType.NORMAL) {
-						n.setNodeType(t == NodeType.HUNGRY || t == NodeType.TAINTED ? NodeType.DARK : t == NodeType.DARK ? NodeType.UNSTABLE : NodeType.NORMAL);
-					}
+					g.performEffect(ep, x, y, z, power);
 				}
 			}
-		}
-	}
-
-	@ModDependent(ModList.REACTORCRAFT)
-	private static void cleanRadiation(EntityPlayer ep) {
-		AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(ep, 8);
-		for (EntityRadiation e : ((List<EntityRadiation>)ep.worldObj.getEntitiesWithinAABB(EntityRadiation.class, box))) {
-			e.clean();
 		}
 	}
 

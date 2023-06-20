@@ -35,6 +35,8 @@
 		</desc>
 		<notes>
 			In some cases, this may alter the nature of the application of the effect
+			
+			Higher tiers of pendant emulate similarly higher tiers of placed crystals
 		</notes>
 	</pendant>
 	<vacuumgun>
@@ -78,6 +80,8 @@
 		</desc>
 		<notes>
 			Individual slots can be toggled to temporarily negate both effects and lumen consumption
+			
+			Some items which normally require being held may continue to work in the pouch
 		</notes>
 	</aurapouch>
 	<multitool>

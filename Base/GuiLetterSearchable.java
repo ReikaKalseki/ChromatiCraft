@@ -2,6 +2,7 @@ package Reika.ChromatiCraft.Base;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Locale;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -18,14 +19,20 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
+import Reika.DragonAPI.ModInteract.DeepInteract.NEIIntercept.KeyConsumingGui;
 
-public abstract class GuiLetterSearchable<E> extends GuiChromaBase {
+public abstract class GuiLetterSearchable<E> extends GuiChromaBase implements KeyConsumingGui {
 
 	protected int index = 0;
 	protected ArrayList<E> list = new ArrayList();
 	protected ArrayList<E> filteredList = new ArrayList();
 	private String filterString = null;
 	//private HashMap<Character, Integer> charIndex = new HashMap();
+
+	private float searchFadeTick;
+	private long lastMillis;
+
+	private boolean noResultsFound = false;
 
 	public GuiLetterSearchable(Container c, EntityPlayer ep, TileEntityChromaticBase te) {
 		super(c, ep, te);
@@ -52,12 +59,16 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase {
 				}
 			}*/
 		}
-		this.resetFilter();
+		this.resetFilter(true);
 	}
 
-	protected void resetFilter() {
+	protected void resetFilter(boolean clearFilter) {
 		this.index = 0;
 		this.filteredList = new ArrayList(this.list);
+		noResultsFound = false;
+		if (clearFilter) {
+			filterString = null;
+		}
 	}
 
 	protected final E getActive() {
@@ -107,45 +118,62 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase {
 	}
 
 	@Override
+	public final boolean consumeKey(char c, int keyCode) {
+		return this.handleKey(c, keyCode);
+	}
+
+	@Override
 	protected final void keyTyped(char c, int idx) {
+		if (!this.isSearchActive() || !this.handleKey(c, idx))
+			super.keyTyped(c, idx);
+	}
+
+	private boolean handleKey(char c, int idx) {
 		if (idx == Keyboard.KEY_HOME) {
 			index = 0;
-			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.6F);
-		}/*
-		else if (idx == Keyboard.KEY_UP) {
-			index = this.getLastIndexOfPreviousLetter();
-			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.85F);
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.67F);
+			return true;
 		}
-		else if (idx == Keyboard.KEY_DOWN) {
-			index = this.getFirstIndexOfNextLetter();
-			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.85F);
-		}
-		else if (Character.isLetter(c)) {
-			Integer seek = charIndex.get(c);
-			if (seek != null) {
-				if (this.getAlphaKeyAt(index) == c && index < list.size()-1 && this.getAlphaKeyAt(index+1) == c)
-					index++;
-				else
-					index = seek;
-				ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.7F);
-			}
-		}*/
-		else if (Character.isLetter(c) || Character.isDigit(c) || ",./?<>;:'\\\"[]{}|+=_-)(*&^%$#@!~`".contains(String.valueOf(c))) {
+		else if (Character.isLetter(c) || Character.isDigit(c) || " ,./?<>;:'\\\"[]{}|+=_-)(*&^%$#@!~`".contains(String.valueOf(c))) {
 			this.addToSearch(c);
+			return true;
 		}
-		else if (idx == Keyboard.KEY_BACK && !this.filterString.isEmpty()) {
+		else if (idx == Keyboard.KEY_BACK && !Strings.isNullOrEmpty(filterString)) {
 			this.filterString = this.filterString.substring(0, this.filterString.length()-1);
 			if (this.filterString.isEmpty())
 				this.filterString = null;
 			this.updateFilter();
+			return true;
+		}
+		else if ((idx == Keyboard.KEY_RETURN || idx == Keyboard.KEY_NUMPADENTER) && !Strings.isNullOrEmpty(filterString)) {
+			E selected = this.getActive();
+			this.resetFilter(true);
+			this.index = this.list.indexOf(selected);
+			ReikaSoundHelper.playClientSound(ChromaSounds.CAST, player, 0.5F, 1.5F);
+			this.onSelected(selected);
+			return true;
+		}
+		else if (idx == Keyboard.KEY_ESCAPE && !Strings.isNullOrEmpty(filterString)) {
+			this.resetFilter(true);
+			return true;
+		}
+		else if (idx == Keyboard.KEY_UP || idx == Keyboard.KEY_RIGHT) {
+			this.incrIndex();
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 1F);
+			return true;
+		}
+		else if (idx == Keyboard.KEY_DOWN || idx == Keyboard.KEY_LEFT) {
+			this.decrIndex();
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 1F);
+			return true;
 		}
 		else {
-			super.keyTyped(c, idx);
+			return false;
 		}
 	}
 
 	private void addToSearch(char c) {
-		String sc = String.valueOf(c);
+		String sc = String.valueOf(c).toLowerCase(Locale.ENGLISH);
 		if (Strings.isNullOrEmpty(filterString)) {
 			filterString = sc;
 		}
@@ -156,11 +184,22 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase {
 	}
 
 	private void updateFilter() {
-		this.resetFilter();
-		this.filteredList.removeIf(e -> !this.getString(e).contains(filterString));
-		if (this.filteredList.isEmpty())
+		this.resetFilter(false);
+		if (!Strings.isNullOrEmpty(filterString)) {
+			filteredList.clear();
+			ArrayList<E> start = new ArrayList(list);
+			ArrayList<E> contains = new ArrayList(list);
+			start.removeIf(e -> !this.getString(e).toLowerCase(Locale.ENGLISH).startsWith(filterString));
+			contains.removeIf(e -> !this.getString(e).toLowerCase(Locale.ENGLISH).contains(filterString));
+			contains.removeAll(start);
+			this.filteredList.addAll(start);
+			this.filteredList.addAll(contains);
+		}
+		if (this.filteredList.isEmpty()) {
 			this.filteredList = new ArrayList(this.list);
-		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.5F);
+			this.noResultsFound = true;
+		}
+		ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.67F);
 	}
 
 	protected final String getFilterString() {
@@ -173,24 +212,36 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase {
 	}
 
 	protected void drawSearch() {
-		if (!Strings.isNullOrEmpty(filterString)) {
-			int j = (width - xSize) / 2;
-			int k = (height - ySize) / 2;
-
-			GL11.glDisable(GL11.GL_BLEND);
+		if (this.isSearchActive() && !Strings.isNullOrEmpty(filterString)) {
+			long ms = System.currentTimeMillis()-lastMillis;
+			searchFadeTick = Math.min(1, searchFadeTick+ms/150F);
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glEnable(GL11.GL_BLEND);
 			BlendMode.DEFAULT.apply();
-			GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.25F);
+			GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.67F*this.searchFadeTick);
 			ReikaTextureHelper.bindTexture(ChromatiCraft.class, this.getFullTexturePath());
-			float z = zLevel;
-			//zLevel = ?;
-			this.drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
+			this.drawTexturedModalRect(0, 0, 0, 0, xSize, ySize);
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 			GL11.glPushMatrix();
-			ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, filterString, j+xSize/2, k+ySize/2, 0xffffff);
+			double s = 2;
+			GL11.glScaled(s, s, s);
+			ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, filterString, (int)(xSize/(2*s)), (int)(ySize/(2*s)), this.noResultsFound ? 0xffa0a0 : 0xa0ffa0);
 			GL11.glPopMatrix();
-			zLevel = z;
+			GL11.glPopAttrib();
 		}
+		else {
+			searchFadeTick = 0;
+		}
+		lastMillis = System.currentTimeMillis();
+	}
+
+	protected boolean isSearchActive() {
+		return true;
+	}
+
+	protected void onSelected(E obj) {
+
 	}
 
 }

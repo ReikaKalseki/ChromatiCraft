@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityCalls;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilitySorter;
+import Reika.ChromatiCraft.Auxiliary.Ability.GrowAuraEffect;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer.FontType;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.PlayerElementBuffer;
@@ -707,6 +708,36 @@ public enum Chromabilities implements Ability {
 
 	public ChromaResearch getFragment() {
 		return ChromaResearch.getPageFor(this);
+	}
+
+	public String getPowerDesc(int level) {
+		switch(this) {
+			case SONIC:
+				return level+"m radius, max explosion resist "+String.format("%.0f", AbilityHelper.SONIC_EXPLO_FACTOR*level);
+			case SHIFT:
+				return level+"m shift";
+			case HEAL:
+				return String.format("%.1f hearts", level/2F);
+			case MAGNET:
+				return level > 0 ? "Phasing" : "Solid";
+			case REACH:
+				return AbilityHelper.REACH_SCALE[level]+"m";
+			case JUMP:
+			case FIREBALL:
+			case HEALTH:
+			case LIGHTNING:
+			case BREADCRUMB:
+				return "Level "+level;
+			case GROWAURA:
+				StringBuilder sb = new StringBuilder();
+				for (GrowAuraEffect g : AbilityHelper.instance.getGrowAuraEffects(level)) {
+					sb.append(g.getGuiLabel());
+					sb.append("\n");
+				}
+				return sb.toString();
+			default:
+				return null;
+		}
 	}
 
 

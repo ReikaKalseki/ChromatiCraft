@@ -114,7 +114,7 @@
 			Your initial foray into transmitting lumen energy was a disaster. The basic wooden repeaters you created only marginally served their purpose, proving vulnerable to violent failure. In hindsight, wood was a monumentally foolish material to choose. Perhaps the crystal you have used so much of would be a better choice, being able to better focus and relay the energy rather than leaking and absorbing it. A rune to focus a specific color would improve them even better, though that would mean restricting it to only that color of transmission. You may find a way around that too...later.
 		</desc>
 		<note>
-			
+			Can "double-ping" to visualize approximate connectivity range
 		</note>
 	</repeater>
 	<weakrepeater>
@@ -218,7 +218,7 @@
 	</itemrift>
 	<crystal>
 		<desc>
-			Once you started to do a lot of pylon-driven crafting, or started to charge yourself with large quantities of crystal energy, you made a crucial observation: Pylons are not infinite, but lose their color as they are drained. Granted, they do recharge, but slowly - though planting similarly colored trees around them helps a bit. However, you have found that these crystals, being raw elemental energy cast into crystal form, can dramatically increase the charging speed of a pylon, with a full, balanced ring of eight speeding it up enormously.
+			Once you started to do a lot of pylon-driven crafting, or started to charge yourself with large quantities of crystal energy, you made a crucial observation: Pylons are not infinite, but lose their color as they are drained. Granted, they do recharge, but this is enormously slow. However, you have found that these crystals, being raw elemental energy cast into crystal form, can dramatically increase the charging speed of a pylon, with a full, balanced ring of eight speeding it up enormously.
 		</desc>
 		<note>
 
@@ -334,7 +334,7 @@
 	</lamp>
 	<powertree>
 		<desc>
-			Even with power crystals in place, pylons still remain incapable of handling very heavy load. That, combined with the tedium of venturing to them every time you need to recharge yourself, leads you to dream of a way to store energy in larger quantities, effectively a battery. Obviously a simple box would not be the correct approach, but maybe if you built some sort of structure, it could grow organically. As long as the energy remains pure...
+			Even with power crystals in place, pylons still remain incapable of handling very heavy load. That, combined with the tedium of venturing to them every time you need to recharge yourself or some devices, leads you to dream of a way to locally store energy in larger quantities, effectively a battery. Obviously a simple box would not be the correct approach, but maybe if you built some sort of structure, it could grow organically. As long as the energy remains pure...
 		</desc>
 		<note>
 			Capacity: %d+%dn^%d, where n is the number of leaf blocks
@@ -414,6 +414,8 @@
 		</desc>
 		<note>
 			Requires a square frame of crystal-based stone, such as crystalline stone, shielding stone, or obsidian, and to be linked to another location
+			
+			Connections are unidirectional but a given window can participate in multiple connections
 		</note>
 	</window>
 	<music>
@@ -752,6 +754,8 @@
 			So you have a field of constructs, all generating or needing items. Sure, you could run a giant grid of item pipes, but that is boring, expensive, and ugly. What you want is the ability to connect them all through the aether to some central hub which would automatically pull and push items as necessary.
 		</desc>
 		<note>
+			The hub must be anchored on a valid storage (inventory, ME system, etc)
+			
 			Endpoints must be connected to the hub (by right-clicking) in order to be placed
 		</note>
 	</routerhub>
@@ -825,7 +829,9 @@
 			Pools of shiny blue liquid and flowers that eat cake, leaves, bread, and coal to make said liquid are nice, as are ones that turn this blue liquid into clay, item movement, dungeon loot, or forbidden knowledge. But there comes a time when you realize that in order to fully supply those flowers (disregarding the sunflower field that now looks more like a radiation accident), you need enough flowers and their preferred foods that you can barely move. Additionally, even the best spreaders can barely manage the load. What you need is something else which can pull from the flowers with a much greater efficiency.
 		</desc>
 		<note>
-
+			Requires an open though not necessarily direct path for mana to flow
+			
+			Mana bursts can only originate from flowers within %dm, and will fade away at distances over %dm
 		</note>
 	</manabooster>
 	<progresslink>

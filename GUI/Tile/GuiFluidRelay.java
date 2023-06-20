@@ -9,14 +9,18 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.GUI.Tile;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Base.GuiChromaBase;
+import Reika.ChromatiCraft.Base.GuiLetterSearchable;
 import Reika.ChromatiCraft.Container.ContainerFluidRelay;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityFluidRelay;
@@ -24,13 +28,15 @@ import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGu
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButtonSneakIcon;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaLiquidRenderer;
-import Reika.DragonAPI.ModInteract.DeepInteract.NEIIntercept.KeyConsumingGui;
 
 
-public class GuiFluidRelay extends GuiChromaBase implements KeyConsumingGui {
+public class GuiFluidRelay extends GuiLetterSearchable<Fluid> {
 
 	private final TileEntityFluidRelay relay;
+
+	private int lastSelSlot;
 
 	public GuiFluidRelay(EntityPlayer ep, TileEntityFluidRelay te) {
 		super(new ContainerFluidRelay(ep, te), ep, te);
@@ -62,14 +68,6 @@ public class GuiFluidRelay extends GuiChromaBase implements KeyConsumingGui {
 		buttonList.add(new CustomSoundImagedGuiButton(5, j+xSize-10-in+dx, k+iny-dy, 10, 10, 90, 76, tex, ChromatiCraft.class, this));
 
 		buttonList.add(new CustomSoundImagedGuiButton(6, j+xSize-10-in+dx, k+iny+dy, 10, 10, 90, relay.autoFilter ? 86 : 56, tex, ChromatiCraft.class, this));
-	}
-
-	@Override
-	public boolean consumeKey(char c) {
-		if (!Character.isLetter(c))
-			return false;
-		((ContainerFluidRelay)inventorySlots).onCharTyped(c);
-		return true;
 	}
 
 	@Override
@@ -112,10 +110,17 @@ public class GuiFluidRelay extends GuiChromaBase implements KeyConsumingGui {
 	}
 
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int a, int b) {
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
+		super.drawGuiContainerForegroundLayer(par1, par2);
+
+		this.drawSearch();
+	}
+
+	@Override
+	protected void drawGuiContainerBackgroundLayer(float f0, int a, int b) {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
-		super.drawGuiContainerBackgroundLayer(f, a, b);
+		super.drawGuiContainerBackgroundLayer(f0, a, b);
 
 
 		Fluid[] types = relay.getFluidTypes();
@@ -127,25 +132,61 @@ public class GuiFluidRelay extends GuiChromaBase implements KeyConsumingGui {
 			api.drawTexturedModalRect(x, y, 179, 0, 16, 16);
 		}*/
 		ReikaTextureHelper.bindTerrainTexture();
+		int mansel = ((ContainerFluidRelay)inventorySlots).getManualSelectSlot();
+		if (mansel != lastSelSlot)
+			this.resetFilter(true);
 		for (int i = 0; i < n; i++) {
-			if (types[i] != null) {
-				int x = j+14+i*22;
-				int y = k+17;
-				api.drawTexturedModelRectFromIcon(x, y, ReikaLiquidRenderer.getFluidIconSafe(types[i]), 16, 16);
+			int x = j+14+i*22;
+			int y = k+17;
+			Fluid f = types[i];
+			if (i == mansel) {
+				int c = ReikaColorAPI.mixColors(0x77d0ff, 0x22aaff, 0.5F+0.5F*MathHelper.sin((System.currentTimeMillis()%1000000)/250F));
+				api.drawRectFrame(x-2, y-2, 19, 19, c);
+				f = this.getActive();
+			}
+			if (f != null) {
+				api.drawTexturedModelRectFromIcon(x, y, ReikaLiquidRenderer.getFluidIconSafe(f), 16, 16);
 
 				if (api.isMouseInBox(x, x+16, y, y+16)) {
-					api.drawTooltip(fontRendererObj, types[i].getLocalizedName(new FluidStack(types[i], 1000)));
+					api.drawTooltip(fontRendererObj, this.getString(f));
 				}
 			}
 		}
 
 		String s = String.format("Pressure: %d + %d/B", relay.getBasePressure(), relay.getFunctionPressure());
 		api.drawCenteredStringNoShadow(fontRendererObj, s, j+xSize/2, k+45, 0xffffff);
+
+		lastSelSlot = mansel;
 	}
 
 	@Override
 	public String getGuiTexture() {
 		return "fluidrelay";
+	}
+
+	@Override
+	protected String getString(Fluid f) {
+		return f.getLocalizedName();
+	}
+
+	@Override
+	protected Collection<Fluid> getAllEntries(EntityPlayer ep) {
+		return FluidRegistry.getRegisteredFluids().values();
+	}
+
+	@Override
+	protected void sortEntries(ArrayList<Fluid> li) {
+		li.sort((f1, f2) -> Integer.compare(f1.getID(), f2.getID()));
+	}
+
+	@Override
+	protected boolean isSearchActive() {
+		return ((ContainerFluidRelay)inventorySlots).getManualSelectSlot() >= 0;
+	}
+
+	@Override
+	protected void onSelected(Fluid f) {
+		((ContainerFluidRelay)inventorySlots).setFluid(f);
 	}
 
 }

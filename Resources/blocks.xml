@@ -28,7 +28,7 @@
 		The leaves of the lumen tree throb with crystal energy. Because of this, you likely can use them to charge yourself. Seeing as they are the storage for the tree, breaking them means losing all the stored energy, but you wonder what result that may give...
 	</lumenleaves>
 	<dyeleaves>
-		Weakly magical trees dot the landscape, and ocasionally congregate together in forests where the magical energy is strong enough to drive away hostile mobs.
+		Weakly magical trees dot the landscape, and ocasionally congregate together in forests where the magical energy is strong enough to drive away hostile mobs. Containing weak elemental energy themselves, they might be able to help channel, purify, or otherwise improve the functionality of other more powerful sources nearby...
 	</dyeleaves>
 	<lampaux>
 		Scatter these around your base, and you have a network of lights that can be remotely controlled with the flick of a switch.
@@ -91,7 +91,7 @@
 		Walking through a dark cave is a perilous affair at the best of times, but this is often a necessary action to make new discoveries and find more exotic materials. So too was the case this time, though both the mechanism and results were highly surprising: Deep under the multi-layer cliffs, while fleeing from a crack spewing noxious gases, you tripped over a crystal and landed facefirst in a puddle. In contrast to the usual outcome of being soaking wet and having gained nothing of value, this purple liquid seems almost...nonexistent. In fact, this liquid is so tenuous that it might grant a key to manipulating space or energy itself.
 	</luma>
 	<ender>
-		Why a liquid propels anything that touches it in a random direction is a mystery to you, but it has not escaped your notice that this is the same property present on other ender-related materials, so this might simply be their liquid form. To that end, it might be valuable in anything involving travelling through space.
+		Why a liquid propels anything that touches it in a random direction is a mystery to you, but it has not escaped your notice that this is the same property present on other ender-related materials, so this might simply be their liquid form. To that end, it might be valuable in anything involving travelling through space. Additionally, and somewhat bizarrely, hydrating grass with this liquid seems to increase the growth rate of certain flora atop it.
 	</ender>
 	<trapfloor>
 		Sometimes you want to have the floor be made of a given material to convey some sort of status effect, but good luck making floors out of liquid chroma, and using lava as a mob farm floor destroys the drops as surely as it does the mobs. If you could make the floor out of a solid block that still...relayed the effects, you could solve both problems.

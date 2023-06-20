@@ -753,7 +753,11 @@ public class ChromaFX {
 
 	public static void doFocusCrystalParticles(World world, int x, int y, int z, FocusAcceleratable fa) {
 		if (HoldingChecks.FOCUSCRYSTAL.isClientHolding())
-			doPlacementHintParticles(world, x, y, z, fa.getRelativeFocusCrystalLocations(), fx -> fx.setColor(FOCUS_CRYSTAL_PARTICLES.getColor(world.getTotalWorldTime()/8D)));
+			doPlacementHintParticles(world, x, y, z, fa.getRelativeFocusCrystalLocations(), FOCUS_CRYSTAL_PARTICLES.getColor(world.getTotalWorldTime()/8D));
+	}
+
+	public static void doPlacementHintParticles(World world, int x, int y, int z, Collection<Coordinate> set, int color) {
+		doPlacementHintParticles(world, x, y, z, set, fx -> fx.setColor(color));
 	}
 
 	public static void doPlacementHintParticles(World world, int x, int y, int z, Collection<Coordinate> set, Consumer<EntityCCBlurFX> particle) {
@@ -793,7 +797,7 @@ public class ChromaFX {
 						ico = ChromaIcons.FLARE;
 						break;
 				}
-				fx.setIcon(ico).setLife(l).setScale(s).setGravity(g).setRapidExpand().setAlphaFading();
+				fx.setIcon(ico).setLife(l).setScale(s).setGravity(g).setRapidExpand().setAlphaFading().forceIgnoreLimits();
 				if (particle != null)
 					particle.accept(fx);
 				EntityCCBlurFX fx2 = new EntityCCBlurFX(world, px, py, pz, v[0], v[1], v[2]);

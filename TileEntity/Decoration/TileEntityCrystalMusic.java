@@ -150,6 +150,14 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements S
 		enableBassline = !enableBassline;
 	}
 
+	public boolean isPaused() {
+		return isPaused;
+	}
+
+	public boolean isBasslineEnabled() {
+		return enableBassline;
+	}
+
 	public void clearChannel(int channel) {
 		track.clearChannel(channel);
 	}
@@ -204,7 +212,7 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements S
 				CrystalElement cc = e.getKey();
 				if (c2.getBlock(world) instanceof CrystalBlock && c2.getBlockMetadata(world) == cc.ordinal())
 					continue;
-				ChromaFX.doPlacementHintParticles(world, x, y, z, Arrays.asList(c), fx -> fx.setColor(cc.getColor()));
+				ChromaFX.doPlacementHintParticles(world, x, y, z, Arrays.asList(c), cc.getColor());
 			}
 		}
 
