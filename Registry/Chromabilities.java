@@ -713,7 +713,7 @@ public enum Chromabilities implements Ability {
 	public String getPowerDesc(int level) {
 		switch(this) {
 			case SONIC:
-				return level+"m radius, max explosion resist "+String.format("%.0f", AbilityHelper.SONIC_EXPLO_FACTOR*level);
+				return level+"m radius\nMax explosion resist "+String.format("%.0f", AbilityHelper.SONIC_EXPLO_FACTOR*level);
 			case SHIFT:
 				return level+"m shift";
 			case HEAL:

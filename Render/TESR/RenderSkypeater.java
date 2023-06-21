@@ -23,6 +23,7 @@ import Reika.ChromatiCraft.ChromaClient;
 import Reika.ChromatiCraft.Base.CrystalTransmitterRender;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater;
+import Reika.ChromatiCraft.TileEntity.Networking.TileEntitySkypeater.NodeClass;
 import Reika.DragonAPI.Instantiable.IO.RemoteSourcedAsset;
 import Reika.DragonAPI.Instantiable.Rendering.StructureRenderer;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
@@ -125,12 +126,13 @@ public class RenderSkypeater extends CrystalTransmitterRender {
 			GL11.glPopAttrib();
 		}
 		else if (!tile.hasWorldObj()) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			IIcon ico = ChromaIcons.STARFLARE.getIcon();
 			ReikaTextureHelper.bindTerrainTexture();
-			float u = ico.getMinU();
-			float v = ico.getMinV();
-			float du = ico.getMaxU();
-			float dv = ico.getMaxV();
+			double u = ico.getMinU();
+			double v = ico.getMinV();
+			double du = ico.getMaxU();
+			double dv = ico.getMaxV();
 			GL11.glDisable(GL11.GL_LIGHTING);
 			//ReikaRenderHelper.disableEntityLighting();
 			GL11.glEnable(GL11.GL_BLEND);
@@ -141,19 +143,33 @@ public class RenderSkypeater extends CrystalTransmitterRender {
 			GL11.glRotated(-45, 1, 0, 0);
 			Tessellator v5 = Tessellator.instance;
 			v5.startDrawingQuads();
+			float tick = (System.currentTimeMillis()%1000000)/1000F;
+			int c = ReikaColorAPI.mixColors(NodeClass.SHORE.color, NodeClass.WATER.color, 0.5F+0.5F*MathHelper.sin(tick));
+			v5.setColorOpaque_I(c);
+			double s = 1.33;
+			v5.addVertexWithUV(-s, -s, 0, u, v);
+			v5.addVertexWithUV(s, -s, 0, du, v);
+			v5.addVertexWithUV(s, s, 0, du, dv);
+			v5.addVertexWithUV(-s, s, 0, u, dv);
+			v5.draw();
+
+			ReikaTextureHelper.bindTexture(texture);
+			int idx = (int)(System.currentTimeMillis()/20%128);
+			u = idx%16/16D;
+			v = idx/16/8D;
+			du = u+1/16D;
+			dv = v+1/8D;
+			v5.startDrawingQuads();
 			v5.setColorOpaque_I(0xffffff);
-			v5.addVertexWithUV(-1, -1, 0, u, v);
-			v5.addVertexWithUV(1, -1, 0, du, v);
-			v5.addVertexWithUV(1, 1, 0, du, dv);
-			v5.addVertexWithUV(-1, 1, 0, u, dv);
+			s = 0.67;
+			v5.addVertexWithUV(-s, -s, 0, u, v);
+			v5.addVertexWithUV(s, -s, 0, du, v);
+			v5.addVertexWithUV(s, s, 0, du, dv);
+			v5.addVertexWithUV(-s, s, 0, u, dv);
 			v5.draw();
 
 			GL11.glPopMatrix();
-			BlendMode.DEFAULT.apply();
-			GL11.glEnable(GL11.GL_CULL_FACE);
-			GL11.glDisable(GL11.GL_BLEND);
-			//RenderHelper.enableStandardItemLighting();
-			GL11.glEnable(GL11.GL_LIGHTING);
+			GL11.glPopAttrib();
 		}
 	}
 

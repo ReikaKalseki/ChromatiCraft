@@ -151,6 +151,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	MUD("Magical Residue",					ChromaBlocks.MUD.getStackOf(),							ResearchLevel.RAWEXPLORE,	ProgressStage.MUDHINT),
 	ITEMCHARGE("Passive Charging",			new ItemStack(Blocks.dirt),								ResearchLevel.BASICCRAFT,	ProgressStage.CHARGE),
 	ITEMBUFFERLINK("Lumen Buffer Connection",new ItemStack(Blocks.dirt),							ResearchLevel.PYLONCRAFT,	ProgressStage.CHARGE),
+	SKYPEATER(ChromaTiles.SKYPEATER.getName(),ChromaTiles.SKYPEATER.getCraftedProduct(),			ResearchLevel.ENERGY,		ProgressStage.GLOWCLIFFS),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING,		ProgressStage.BLOWREPEATER),
@@ -268,7 +269,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	MUSICTRIGGER(	ChromaBlocks.MUSICTRIGGER,										ResearchLevel.BASICCRAFT,	ProgressStage.ANYSTRUCT),
 	SELECTIVEGLASS(	ChromaBlocks.SELECTIVEGLASS,									ResearchLevel.BASICCRAFT),
 	AVOLAMP(		ChromaBlocks.AVOLAMP,											ResearchLevel.ENDGAME,		TieredOres.AVOLITE.level),
-	REPEATERLAMP(	ChromaBlocks.REPEATERLAMP,										ResearchLevel.ENERGY),
+	REPEATERLAMP(	ChromaBlocks.REPEATERLAMP,										ResearchLevel.NETWORKING,	ProgressStage.REPEATER),
 	REDSTONEPOD(	ChromaBlocks.REDSTONEPOD,										ResearchLevel.RUNECRAFT),
 	FAKESKY(		ChromaBlocks.FAKESKY,											ResearchLevel.RUNECRAFT),
 	CHUNKLOADER(	ChromaBlocks.CHUNKLOADER,										ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
@@ -358,6 +359,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	FERTILITYSEED("Fertility Seeds",ChromaItems.FERTILITYSEED.getStackOf(),					ResearchLevel.RAWEXPLORE,	ProgressStage.GLOWCLIFFS),
 	ARTEFACT("Mysterious Artifacts",ChromaItems.ARTEFACT.getStackOf(),						ResearchLevel.RAWEXPLORE,	ProgressStage.ARTEFACT),
 	PROXESSENCE("Proximal Essence",	ChromaStacks.bedrockloot,								ResearchLevel.ENDGAME,		ProgressStage.DIMENSION),
+	VOIDESSENCE("Corrupted Essence",ChromaStacks.voidmonsterEssence, 						ResearchLevel.RAWEXPLORE,	ProgressStage.VOIDMONSTER),
 
 	ABILITYDESC("Abilities", ""),
 	REACH(			Chromabilities.REACH),
@@ -1061,6 +1063,8 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 			return false;
 		if (this == TRAPFLOOR)
 			return false;
+		if (this == VOIDESSENCE)
+			return false;
 		for (ProgressStage p : progress) {
 			if (!p.isGating(at))
 				return false;
@@ -1429,7 +1433,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 		}
 		if (this == TANKAUX)
 			return ReikaJavaLibrary.makeListFrom(ChromaBlocks.TANK.getStackOf(), ChromaBlocks.TANK.getStackOfMetadata(2));
-		if (this == FENCEAUX || this == TNT)
+		if (this == FENCEAUX || this == TNT || this == VOIDESSENCE)
 			return ReikaJavaLibrary.makeListFrom(iconItem);
 		if (this == PROXESSENCE)
 			return ReikaJavaLibrary.makeListFrom(ChromaStacks.bedrockloot, ChromaStacks.bedrockloot2);
@@ -1665,6 +1669,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 			case DEATHFOG:
 			case VOIDTRAP:
 			case VOIDTRAPSTRUCT:
+			case VOIDESSENCE:
 				return ModList.VOIDMONSTER;
 			default:
 				return null;

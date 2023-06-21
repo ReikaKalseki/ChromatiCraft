@@ -61,13 +61,13 @@ import Reika.DragonAPI.Instantiable.Data.Compass.CompassDivisions;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper.FanDirections;
-import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
-import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
-import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.ReikaEnchantmentHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 
 public class GuiBasicInfo extends GuiBookSection {
 
@@ -231,6 +231,15 @@ public class GuiBasicInfo extends GuiBookSection {
 		}
 		else if (page == ChromaResearch.PYLONS) {
 			this.renderPylon(posX, posY);
+		}
+		else if (page == ChromaResearch.SKYPEATER) {
+			GL11.glPushMatrix();
+			double s = 4;
+			GL11.glScaled(s, s, 1);
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			api.drawItemStack(itemRender, ChromaTiles.SKYPEATER.getCraftedProduct(), (int)((posX+xSize*0.5)/s), (int)(posY+5/s));
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			GL11.glPopMatrix();
 		}
 		else if (page == ChromaResearch.USINGRUNES && subpage == 1) {
 			this.renderRunes(posX, posY);

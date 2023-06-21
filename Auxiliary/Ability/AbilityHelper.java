@@ -112,6 +112,7 @@ import Reika.DragonAPI.Instantiable.Event.RemovePlayerItemEvent;
 import Reika.DragonAPI.Instantiable.Event.ScheduledTickEvent;
 import Reika.DragonAPI.Instantiable.Event.SlotEvent.AddToSlotEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.ClientLoginEvent;
+import Reika.DragonAPI.Instantiable.Event.Client.EntityRenderingLoopEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.SinglePlayerLogoutEvent;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
@@ -188,8 +189,6 @@ public class AbilityHelper implements AbilityAPI {
 
 	private final PlayerMap<Collection<LightningBolt>> playerBolts = new PlayerMap();
 
-	public static final AbilityHelper instance = new AbilityHelper();
-
 	//private int savedAOSetting;
 
 	public boolean isNoClipEnabled;
@@ -205,6 +204,8 @@ public class AbilityHelper implements AbilityAPI {
 	public static final float SONIC_EXPLO_FACTOR = 12F;
 
 	private static final HashMap<GrowAuraEffect, Integer> growAuraEffects = new HashMap();
+
+	public static final AbilityHelper instance = new AbilityHelper();
 
 	private AbilityHelper() {
 		List<Ability> li = Chromabilities.getAbilities();
@@ -567,7 +568,10 @@ public class AbilityHelper implements AbilityAPI {
 		path.setLength(len);
 	}
 
-	public void renderPath(EntityPlayer ep) {
+	@SubscribeEvent
+	@SideOnly(Side.CLIENT)
+	public void renderBreadcrumb(EntityRenderingLoopEvent evt) {
+		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 		DimensionStructureGenerator struct = ChromaDimensionManager.getStructurePlayerIsIn(ep);
 		if (struct != null && struct.getType() == DimensionStructureType.NONEUCLID)
 			return;

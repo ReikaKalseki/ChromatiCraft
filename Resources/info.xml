@@ -117,9 +117,9 @@
 	<itembufferlink>
 		Charging items by leaving them lying on the ground is a slow process even before you consider the travel time to and from the pylon (possibly several times if you were impatient and kept checking if the charging was complete; for some reason, the last few percent seem to take ages, and despite your inability to tell the difference between tools at 94%% charge vs 100%%, you often find yourself insisting on the latter). You may eventually be able to build a more local energy source, but until then, perhaps as a last, if inefficient, resort, you can have the act of refilling your own energy buffer also charge your carried tools.
 	</itembufferlink>
-	<name>
-		
-	</name>
+	<skypeater>
+		Scattered high above the large inland seas in the terraced biomes are points of light whose purpose so far eludes you. In fact, initially it was not just their purpose that proved elusive; they seem to blink in and out of existence and are all but impossible to detect at large distances, with your first several sightings being mistaken for simple reflections or other atmospheric phenomena. At any rate, aside from adding to the aesthetic value of the region, they seem to be of no use to you. Besides, you have other priorities right now, like how painful it is going to be crossing these seas with lumen transmission infrastructure.
+	</skypeater>
 	<name>
 		
 	</name>

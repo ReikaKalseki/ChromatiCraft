@@ -404,6 +404,7 @@ public class GuiNavigation extends GuiScrollingPage {
 							e.decreaseHover();
 						}
 						if (e.hoverTime > 0) {
+							GL11.glLineWidth(2);
 							int w = (int)Math.round(Section.elementWidth/s);
 							int mxs = (int)Math.round(mx/s);
 							int mys = (int)Math.round(my/s);
@@ -474,6 +475,7 @@ public class GuiNavigation extends GuiScrollingPage {
 				//GL11.glTranslated(0, -4D*hoverTime/20D, 0);
 			}
 			 */
+			GL11.glDepthMask(false);
 			destination.drawTabIcon(itemRender, ex, ey);//api.drawItemStack(itemRender, this.getIcon(), ex, ey);
 			GL11.glPopMatrix();
 

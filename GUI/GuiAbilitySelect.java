@@ -16,6 +16,8 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import com.google.common.base.Strings;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.settings.GameSettings;
@@ -164,7 +166,17 @@ public class GuiAbilitySelect extends GuiScreen {
 			this.drawTexturedModalRect(width/2-12, height/2+5-sc, 116, 76-sc, 24, sc);
 			ReikaGuiAPI.instance.drawCenteredStringNoShadow(FontType.GUI.renderer, String.format("%d/%d", data, ability.getMaxPower()), width/2, height/2-72, 0xffffff);
 
-
+			String desc = ability.getPowerDesc(data);
+			if (!Strings.isNullOrEmpty(desc)) {
+				String[] parts = desc.split("\\n");
+				int dx = width/2+20;
+				int dy2 = height/2+6-10*parts.length;
+				for (String s : parts) {
+					FontType.GUI.renderer.drawString(s, dx+1, dy2+1, 0x505050);
+					FontType.GUI.renderer.drawString(s, dx, dy2, 0xffffff);
+					dy2 += 10;
+				}
+			}
 		}
 
 		int sep = 22;

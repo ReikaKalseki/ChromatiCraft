@@ -1128,11 +1128,6 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 		}
 	}
 
-	@SubscribeEvent
-	public void renderBreadcrumb(EntityRenderingLoopEvent evt) {
-		AbilityHelper.instance.renderPath(Minecraft.getMinecraft().thePlayer);
-	}
-
 	@ModDependent(ModList.VOIDMONSTER)
 	private void setShaderFoci(Entity e) {
 		if (VoidMonsterDestructionRitual.isFocusOfActiveRitual(e)) {

@@ -114,11 +114,6 @@ public class CrystalRenderer extends ISBRH {
 		//xu = u = xv = v = 0;
 
 		Tessellator v5 = Tessellator.instance;
-		//GL11.glEnable(GL11.GL_DEPTH_TEST);
-		//v5.draw();
-		//GL11.glDisable(GL11.GL_CULL_FACE);
-		//GL11.glEnable(GL11.GL_BLEND);
-		//v5.startDrawingQuads();
 
 		double maxx = b.getBlockBoundsMaxX();
 		double minx = b.getBlockBoundsMinX();
@@ -161,8 +156,6 @@ public class CrystalRenderer extends ISBRH {
 			//this.renderWater(world, x, y, z, b, meta, v5);
 		}
 
-		//v5.setColorOpaque(0, 0, 0);
-		//this.renderOutline(v5);
 		if (renderPass == 0) {
 			if (((CrystalRenderedBlock)b).renderBase()) {
 				this.renderBase(v5, world, x, y, z, (CrystalRenderedBlock)b);
@@ -170,15 +163,6 @@ public class CrystalRenderer extends ISBRH {
 		}
 
 		v5.addTranslation(-x, -y, -z);
-
-		//v5.draw();
-		//GL11.glEnable(GL11.GL_CULL_FACE);
-		//GL11.glDisable(GL11.GL_BLEND);
-		//v5.startDrawingQuads();
-		//v5.addVertex(0, 0, 0);
-		//v5.addVertex(0, 0, 0);
-		//v5.addVertex(0, 0, 0);
-		//v5.addVertex(0, 0, 0);
 
 		return true;
 	}

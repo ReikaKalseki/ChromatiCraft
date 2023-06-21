@@ -168,7 +168,7 @@
 			You, in your (less than) infinite wisdom, decided to make a sugarcane farm in a snow biome. It worked perfectly...until the water froze and your sugarcane rotted on the ground. You need some way to heat the water and stave off the cold in a small area around the farm. Maybe if you used some essence of those mechanical-sounding fire creatures from the Nether bridges, you could make a plant that not only served that purpose, but was aesthetically pleasing as well. This should also help prevent your high-drop landing pools from freezing over. (Ow.)
 		</desc>
 		<note>
-
+			Can supply its heat to related flora nearby
 		</note>
 	</heatlily>
 	<ticker>
@@ -373,7 +373,11 @@
 			Though less of a hassle than some other fabrication systems - that pyramidal altar nearly left you dead on the table - your casting system can still be tedious, particularly with recursive crafting that can take quite a bit of time. You DID create a device for placing items in stands automatically, but it is slow, limited to a few recipes, and cannot actually start the crafting, meaning you are still forced to be involved. This is where an idea hits you - you should be familiar enough with some of these recipes that you might be able to build on that device, adding what is missing and finally achieving proper automation.
 		</desc>
 		<note>
-
+			Supports repeated crafting
+			
+			Where multiple recipes for component recipes exist, one can be marked as priority
+			
+			Recipes can additionally be selected via the lexicon or with a corresponding item
 		</note>
 	</automator>
 	<biomepainter>

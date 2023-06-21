@@ -924,7 +924,7 @@ public class AbilityCalls {
 						int dx = ReikaRandomHelper.getRandomPlusMinus(x, bb.getXZRange());
 						int dz = ReikaRandomHelper.getRandomPlusMinus(z, bb.getXZRange());
 						int dy = ReikaRandomHelper.getRandomPlusMinus(y, bb.getYRange());
-						bb.performEffect(ep, x, y, z, power);
+						bb.performEffect(ep, dx, dy, dz, power);
 					}
 				}
 				else {

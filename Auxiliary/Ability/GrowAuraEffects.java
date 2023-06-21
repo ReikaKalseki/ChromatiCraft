@@ -55,6 +55,8 @@ public class GrowAuraEffects {
 		@Override
 		@ModDependent(ModList.REACTORCRAFT)
 		public void performEffect(EntityPlayer ep, int x, int y, int z, int power) {
+			if (DragonAPICore.rand.nextInt(40) != 0)
+				return;
 			AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(ep, 8);
 			for (EntityRadiation e : ((List<EntityRadiation>)ep.worldObj.getEntitiesWithinAABB(EntityRadiation.class, box))) {
 				e.clean();
@@ -62,7 +64,7 @@ public class GrowAuraEffects {
 		}
 		@Override
 		public boolean isEffectViable() {
-			return ModList.REACTORCRAFT.isLoaded() && DragonAPICore.rand.nextInt(40) == 0;
+			return ModList.REACTORCRAFT.isLoaded();
 		}
 		@Override
 		public String getGuiLabel() {
