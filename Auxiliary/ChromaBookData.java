@@ -211,10 +211,22 @@ public class ChromaBookData {
 			BlendMode.DEFAULT.apply();
 
 			String s = "Textures/GUIs/Handbook/misc.png";
-			ReikaTextureHelper.bindTexture(ChromatiCraft.class, s);
+			ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, s);
 			ReikaGuiAPI.instance.drawTexturedModalRect(dx-(int)Math.ceil(r), dy-(int)Math.ceil(r), 0, 0, (int)(r*2), (int)(r*2));
 
 			ReikaGuiAPI.instance.drawTexturedModalRect(px+1, py+108-frac, 0, 118, 36, 7);
+		}
+		if (ChromaResearch.DOUBLECRAFT.playerHas(Minecraft.getMinecraft().thePlayer)) {
+			ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/GUIs/Handbook/misc.png");
+			gui.drawTexturedModalRect(posX+10, posY+31, 224, c.canGiveDoubleOutput() ? 32 : 64, 32, 32);
+			if (gui.isMouseInBox(posX+10, posX+42, posY+31, posY+63)) {
+				ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/Ability/doublecraft.png");
+				GL11.glPushMatrix();
+				double s = 0.1;
+				GL11.glScaled(s, s, s);
+				gui.drawTexturedModalRect((int)((gui.getMouseRealX()+10)/s), (int)((gui.getMouseRealY()+10)/s), 0, 0, 256, 256);
+				GL11.glPopMatrix();
+			}
 		}
 		c.drawAdditionalBookData(fr, ri, posX+9, posY+80, subpage);
 	}
