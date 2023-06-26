@@ -30,7 +30,6 @@ import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
 import net.minecraft.launchwrapper.IClassTransformer;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraftforge.classloading.FMLForgePlugin;
 
 import Reika.DragonAPI.ModList;
@@ -46,7 +45,7 @@ import cpw.mods.fml.relauncher.IFMLLoadingPlugin.SortingIndex;
 public class ChromaASMHandler implements IFMLLoadingPlugin {
 
 	static {
-		Launch.classLoader.addTransformerExclusion("Reika.ChromatiCraft.Magic.Progression");
+		//too many @SideOnly Launch.classLoader.addTransformerExclusion("Reika.ChromatiCraft.Magic.Progression");
 	}
 
 	@Override

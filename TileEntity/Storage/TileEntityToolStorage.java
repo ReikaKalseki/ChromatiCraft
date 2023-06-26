@@ -40,7 +40,9 @@ public class TileEntityToolStorage extends TileEntityMassStorage {
 
 	public boolean stepMode() {
 		if (this.getPendingInput() == null && this.getItems().isEmpty()) {
-			filter = ToolType.list[(filter.ordinal()+1)%ToolType.list.length];
+			filter = filter.next();
+			while (!filter.isValid())
+				filter = filter.next();
 			this.resetWorkTimer();
 			return true;
 		}
@@ -126,6 +128,10 @@ public class TileEntityToolStorage extends TileEntityMassStorage {
 			return render;
 		}
 
+		public ToolType next() {
+			return list[(this.ordinal()+1)%list.length];
+		}
+
 		public boolean isDamageImportant() {
 			switch(this) {
 				case POTION:
@@ -133,6 +139,15 @@ public class TileEntityToolStorage extends TileEntityMassStorage {
 					return true;
 				default:
 					return false;
+			}
+		}
+
+		public boolean isValid() {
+			switch(this) {
+				case TINKER:
+					return ModList.TINKERER.isLoaded();
+				default:
+					return true;
 			}
 		}
 

@@ -36,12 +36,11 @@ import Reika.ChromatiCraft.Base.ChromaWorldGenerator;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureType;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.StructurePair;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenCanyons;
-import Reika.ChromatiCraft.World.Dimension.MapGen.MapGenTendrils;
 import Reika.ChromatiCraft.World.Dimension.Structure.MonumentGenerator;
 import Reika.ChromatiCraft.World.IWG.TieredWorldGenerator;
 import Reika.DragonAPI.Instantiable.Data.BumpMap;
 import Reika.DragonAPI.Instantiable.Data.Collections.OneWayCollections.OneWayList;
+import Reika.DragonAPI.Instantiable.Math.Noise.SimplexNoiseGenerator;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 
@@ -76,6 +75,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	private World worldObj;
 	/** are map structures going to be generated (e.g. strongholds) */
 	private WorldType worldType;
+	private final SimplexNoiseGenerator offsetNoise;
 
 	private final double[] field_147434_q;
 	private final float[] parabolicField;
@@ -88,15 +88,13 @@ public class ChunkProviderChroma implements IChunkProvider {
 	private double[] noiseData6;
 	private int[][] field_73219_j = new int[32][32];
 
-	private final MapGenCanyons canyonGen = new MapGenCanyons();
-	private final MapGenTendrils caveGenerator = new MapGenTendrils();
-
 	private final ChromaChunkManager chunkManager;
 	private final BiomeTerrainProvider terrainManager;
 
 	private final OneWayList<ChromaWorldGenerator> decorators = new OneWayList();
 
-	public static final int VERTICAL_OFFSET = 40;
+	public static final int VERTICAL_OFFSET = 48;
+	public static final int VERTICAL_OFFSET_VARIATION = 12;
 
 	//private final HashSet<ChunkCoordIntPair> populatedChunks = new HashSet();
 
@@ -164,6 +162,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 	public ChunkProviderChroma(World world) {
 		worldObj = world;
 		randomSeed = this.getOrCreateSeed();
+		offsetNoise = (SimplexNoiseGenerator)new SimplexNoiseGenerator(randomSeed).setFrequency(0.015);
 		chunkManager = new ChromaChunkManager(world);
 		worldType = WorldType.DEFAULT;//world.getWorldInfo().getTerrainType(); //not that it matters
 		overWorldSeed = world.getSeed();
@@ -392,7 +391,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 		return 127 + (bp.getBump(mx, mz)+bp.getBump(mxp, mz)+bp.getBump(mxm, mz)+bp.getBump(mx, mzp)+bp.getBump(mx, mzm)) / 5 / 16;
 	}
 
-	public void replaceBlocksForBiome(int chunkX, int chunkZ, Block[] columnData, byte[] metaData, BiomeGenBase[] biomeData, int dy) {
+	public void replaceBlocksForBiome(int chunkX, int chunkZ, Block[] columnData, byte[] metaData, BiomeGenBase[] biomeData, int[] dy0) {
 		double d0 = 0.03125D;
 		stoneNoise = noiseGen4.func_151599_a(stoneNoise, chunkX * 16, chunkZ * 16, 16, 16, d0 * 2.0D, d0 * 2.0D, 1.0D);
 
@@ -403,6 +402,7 @@ public class ChunkProviderChroma implements IChunkProvider {
 				int d = (dx*16+dz);
 				BiomeGenBase biome = biomeData[d];
 				int posIndex = d*columnData.length/256;
+				int dy = dy0[dx*16+dz];
 
 				this.generateBedrockLayer(x, z, posIndex, columnData, metaData, biome);
 				this.generateSandBeaches(x, z, posIndex, columnData, metaData, dy, biome);
@@ -505,8 +505,9 @@ public class ChunkProviderChroma implements IChunkProvider {
 			}
 		}
 		this.generateColumnData(chunkX, chunkZ, ablock);
-		ablock = this.shiftTerrainGen(ablock, VERTICAL_OFFSET);
-		this.replaceBlocksForBiome(chunkX, chunkZ, ablock, abyte, biomesForGeneration, VERTICAL_OFFSET);
+		int[] offset = new int[256];
+		ablock = this.shiftTerrainGen(chunkX, chunkZ, ablock, offset);
+		this.replaceBlocksForBiome(chunkX, chunkZ, ablock, abyte, biomesForGeneration, offset);
 
 		this.runGenerators(chunkZ, chunkZ, ablock, abyte);
 
@@ -526,11 +527,16 @@ public class ChunkProviderChroma implements IChunkProvider {
 		return chunk;
 	}
 
-	private Block[] shiftTerrainGen(Block[] ablock, int dy) {
+	private Block[] shiftTerrainGen(int chunkX, int chunkZ, Block[] ablock, int[] offset) {
 		Block[] temp = new Block[ablock.length];
 		for (int dx = 0; dx < 16; dx++) {
 			for (int dz = 0; dz < 16; dz++) {
+				int dy = VERTICAL_OFFSET;/* does not look good
+				double off = offsetNoise.getValue(chunkX*16+dx, chunkZ*16+dz);
+				if (off > 0)
+					dy += (off+0.5)*(VERTICAL_OFFSET_VARIATION*0.75);*/
 				int d = (dx*16+dz);
+				offset[d] = dy;
 				int posIndex = d*ablock.length/256;
 				for (int j = 255-dy; j >= 0; j--) {
 					temp[posIndex+j+dy] = ablock[posIndex+j];

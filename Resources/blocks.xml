@@ -22,7 +22,7 @@
 		Combined with the controller, these crystalline blocks widen the bridge to the void, allowing you to store more and more fluid.
 	</tankaux>
 	<fenceaux>
-		These seem to relay and redirect the beam from the crystal fence, allowing you to draw a perimeter. Sneak-clicking with the manipulator sets the output side, whereas normal right-clicking sets the input.
+		These seem to relay and redirect the beam from the crystal fence, allowing you to draw a perimeter. Sneak-use with the manipulator sets the output side, whereas normal use with a manipulator sets the input.
 	</fenceaux>
 	<lumenleaves>
 		The leaves of the lumen tree throb with crystal energy. Because of this, you likely can use them to charge yourself. Seeing as they are the storage for the tree, breaking them means losing all the stored energy, but you wonder what result that may give...

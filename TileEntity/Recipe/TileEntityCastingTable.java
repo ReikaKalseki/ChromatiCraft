@@ -228,79 +228,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 		if (world.isRemote) {
 			ChromaFX.doFocusCrystalParticles(world, x, y, z, this);
-			if (HoldingChecks.DELEGATE.isClientHolding()) {
-				double dx = x+0.5;
-				double dy = y+5.5;
-				double dz = z+0.5;
-				int l = 20;
-				if (this.getTicksExisted()%8 == 0) {
-					EntityCCBlurFX fx = new EntityCCBlurFX(world, dx, dy, dz);
-					fx.setIcon(ChromaIcons.RADIATE).setColor(0xff0000).setLife(l).setScale(6).setGravity(0).setRapidExpand().setAlphaFading();
-					EntityCCBlurFX fx2 = new EntityCCBlurFX(world, dx, dy, dz);
-					fx2.setIcon(ChromaIcons.GUARDIANINNER).setColor(0xffffff).setLife(l).setScale(3.6F).setGravity(0).setRapidExpand().setAlphaFading();
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
-				}
-				for (int i = 0; i < 6; i++) {
-					dx = ReikaRandomHelper.getRandomBetween(x, x+1D);
-					dy = ReikaRandomHelper.getRandomBetween(y+5D, y+6D);
-					dz = ReikaRandomHelper.getRandomBetween(z, z+1D);
-					switch(rand.nextInt(12)) {
-						case 0:
-							dx = x;
-							dy = y+5;
-							break;
-						case 1:
-							dx = x;
-							dy = y+6;
-							break;
-						case 2:
-							dx = x+1;
-							dy = y+5;
-							break;
-						case 3:
-							dx = x+1;
-							dy = y+6;
-							break;
-						case 4:
-							dz = z;
-							dy = y+5;
-							break;
-						case 5:
-							dz = z;
-							dy = y+6;
-							break;
-						case 6:
-							dz = z+1;
-							dy = y+6;
-							break;
-						case 7:
-							dz = z+1;
-							dy = y+5;
-							break;
-						case 8:
-							dx = x;
-							dz = z;
-							break;
-						case 9:
-							dx = x+1;
-							dz = z;
-							break;
-						case 10:
-							dx = x+1;
-							dz = z+1;
-							break;
-						case 11:
-							dx = x;
-							dz = z+1;
-							break;
-						default:
-							break;
-					}
-					EntityCCBlurFX fx = new EntityCCBlurFX(world, dx, dy, dz);
-					fx.setIcon(ChromaIcons.CENTER).setColor(0xffffff).setLife(l).setScale(0.8F).setGravity(0).setRapidExpand().setAlphaFading();
-					Minecraft.getMinecraft().effectRenderer.addEffect(fx);
-				}
+			if (ChromaTiles.getTile(world, x, y+5, z) != ChromaTiles.AUTOMATOR && HoldingChecks.DELEGATE.isClientHolding()) {
+				this.doDelegateFX(world, x, y, z);
 			}
 		}
 
@@ -378,6 +307,82 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		 */
 
 		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doDelegateFX(World world, int x, int y, int z) {
+		double dx = x+0.5;
+		double dy = y+5.5;
+		double dz = z+0.5;
+		int l = 20;
+		if (this.getTicksExisted()%8 == 0) {
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, dx, dy, dz);
+			fx.setIcon(ChromaIcons.RADIATE).setColor(0xff0000).setLife(l).setScale(6).setGravity(0).setRapidExpand().setAlphaFading();
+			EntityCCBlurFX fx2 = new EntityCCBlurFX(world, dx, dy, dz);
+			fx2.setIcon(ChromaIcons.GUARDIANINNER).setColor(0xffffff).setLife(l).setScale(3.6F).setGravity(0).setRapidExpand().setAlphaFading();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
+		}
+		for (int i = 0; i < 6; i++) {
+			dx = ReikaRandomHelper.getRandomBetween(x, x+1D);
+			dy = ReikaRandomHelper.getRandomBetween(y+5D, y+6D);
+			dz = ReikaRandomHelper.getRandomBetween(z, z+1D);
+			switch(rand.nextInt(12)) {
+				case 0:
+					dx = x;
+					dy = y+5;
+					break;
+				case 1:
+					dx = x;
+					dy = y+6;
+					break;
+				case 2:
+					dx = x+1;
+					dy = y+5;
+					break;
+				case 3:
+					dx = x+1;
+					dy = y+6;
+					break;
+				case 4:
+					dz = z;
+					dy = y+5;
+					break;
+				case 5:
+					dz = z;
+					dy = y+6;
+					break;
+				case 6:
+					dz = z+1;
+					dy = y+6;
+					break;
+				case 7:
+					dz = z+1;
+					dy = y+5;
+					break;
+				case 8:
+					dx = x;
+					dz = z;
+					break;
+				case 9:
+					dx = x+1;
+					dz = z;
+					break;
+				case 10:
+					dx = x+1;
+					dz = z+1;
+					break;
+				case 11:
+					dx = x;
+					dz = z+1;
+					break;
+				default:
+					break;
+			}
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, dx, dy, dz);
+			fx.setIcon(ChromaIcons.CENTER).setColor(0xffffff).setLife(l).setScale(0.8F).setGravity(0).setRapidExpand().setAlphaFading();
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 	private void attemptTriggerProgressSync(World world, int x, int y, int z) {

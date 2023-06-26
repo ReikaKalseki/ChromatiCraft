@@ -424,6 +424,7 @@ public class ItemConnector extends ItemChromaTool {
 
 	@Override
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
+		super.addInformation(is, ep, li, vb);
 		if (is.stackTagCompound != null) {
 			int x1 = is.stackTagCompound.getInteger("x1");
 			if (x1 != Integer.MIN_VALUE) {
@@ -435,11 +436,11 @@ public class ItemConnector extends ItemChromaTool {
 				int w1 = is.stackTagCompound.getInteger("w1");
 				int w2 = is.stackTagCompound.getInteger("w2");
 				li.add(String.format("Connected to %d, %d, %d in DIM%d", x1, y1, z1, w1));
-				li.add("Use on air to clear");
 			}
 			else {
 				li.add("No linked endpoints.");
 			}
+			li.add("Use on air to clear");
 		}
 	}
 

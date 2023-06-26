@@ -120,9 +120,9 @@
 	<skypeater>
 		Scattered high above the large inland seas in the terraced biomes are points of light whose purpose so far eludes you. In fact, initially it was not just their purpose that proved elusive; they seem to blink in and out of existence and are all but impossible to detect at large distances, with your first several sightings being mistaken for simple reflections or other atmospheric phenomena. At any rate, aside from adding to the aesthetic value of the region, they seem to be of no use to you. Besides, you have other priorities right now, like how painful it is going to be crossing these seas with lumen transmission infrastructure.
 	</skypeater>
-	<name>
-		
-	</name>
+	<fragmentselect>
+		The information contained within fragments seems to have largely faded with time, but in a very peculiar way: the information, rather than being removed, has instead become somewhat jumbled, and to glean comprehensible insights you have found it to be necessary to focus on a given topic and try to work out the mystery from that perspective. Of course, many such potential perspectives exist, and each piece of information could reasonably be arrived at from more than one. And of course, if you did not care about what kind of insight you obtained, you could just dump them all into chroma or something...
+	</fragmentselect>
 	<name>
 		
 	</name>

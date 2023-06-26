@@ -205,6 +205,7 @@ public class GuiFragmentSelect extends GuiContainer implements CustomSoundGui {
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glDisable(GL11.GL_ALPHA_TEST);
 			GL11.glEnable(GL11.GL_BLEND);
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
 			GL11.glDepthMask(false);
 			BlendMode.DEFAULT.apply();
 			ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/squarefog.png");
@@ -243,8 +244,9 @@ public class GuiFragmentSelect extends GuiContainer implements CustomSoundGui {
 				GL11.glTranslated(0.375, 0, 0);
 			if (id == 2)
 				GL11.glTranslated(0.25, 0, 0);
-			if (s != null && s.fragment != null)
+			if (s != null && s.fragment != null) {
 				s.fragment.drawTabIcon(itemRender, (int)(xPosition/sc), (int)(yPosition/sc));
+			}
 			GL11.glDepthMask(false);
 			GL11.glPopMatrix();
 			c = ReikaColorAPI.mixColors(c, 0xffffff, 0.5F);
@@ -254,6 +256,8 @@ public class GuiFragmentSelect extends GuiContainer implements CustomSoundGui {
 			int c3 = ReikaColorAPI.getShiftedHue(c, 45F*(float)Math.sin(9*t));
 			int c4 = ReikaColorAPI.getShiftedHue(c, 45F*(float)Math.sin(13*t));
 			//GL11.glColor4f(ReikaColorAPI.getRed(c)/255F, ReikaColorAPI.getGreen(c)/255F, ReikaColorAPI.getBlue(c)/255F, 1);
+			double dd = 100;
+			GL11.glTranslated(0, 0, dd);
 			ReikaTextureHelper.bindTexture(modClass, this.getButtonTexture());
 			f = 1F/textureSize;
 			GL11.glShadeModel(GL11.GL_SMOOTH);
@@ -268,10 +272,14 @@ public class GuiFragmentSelect extends GuiContainer implements CustomSoundGui {
 			v5.setColorOpaque_I(c4);
 			v5.addVertexWithUV(xPosition+0, yPosition+0, zLevel, (u+0)*f, (v+0)*f);
 			v5.draw();
-			GL11.glColor4f(0.4F, 0.4F, 0.4F, 0.3F);
+			GL11.glEnable(GL11.GL_BLEND);
 			BlendMode.ADDITIVEDARK.apply();
-			super.renderButton();
+			int gs = (int)(255*(0.5+0.5*MathHelper.sin(((t*4)%50000)+System.identityHashCode(this)%50000)));
+			c = ReikaColorAPI.GStoHex(gs);
+			int a = 32;
+			this.drawTexturedModalRect(xPosition, yPosition, u, v, width, height, c, a);
 			GL11.glPopAttrib();
+			GL11.glTranslated(0, 0, -dd);
 			height = h;
 		}
 

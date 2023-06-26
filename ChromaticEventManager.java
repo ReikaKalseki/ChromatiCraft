@@ -127,6 +127,7 @@ import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChromaEnderCrystal;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Items.ItemFertilitySeed;
+import Reika.ChromatiCraft.Items.ItemInfoFragment;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Items.Tools.ItemFloatstoneBoots;
 import Reika.ChromatiCraft.Items.Tools.ItemInventoryLinker;
@@ -2713,15 +2714,15 @@ public class ChromaticEventManager {
 		}
 	}
 	 */
-	/*
-	//@SubscribeEvent(priority = EventPriority.HIGHEST)
+
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
 	public void fillFragments(EntityItemPickupEvent ev) {
 		ItemStack is = ev.item.getEntityItem();
-		if (ChromaItems.FRAGMENT.matchWith(is) && ItemInfoFragment.isBlank(is) && !ev.entityPlayer.capabilities.isCreativeMode) {
+		if (ChromaItems.FRAGMENT.matchWith(is) && ItemInfoFragment.isBlank(is) && is.stackTagCompound != null && is.stackTagCompound.getBoolean(ItemInfoFragment.RANDOM_TAG)) {
 			ItemInfoFragment.programShardAndGiveData(is, ev.entityPlayer);
 		}
 	}
-	 */
+
 	@SubscribeEvent
 	public void biomeDrops(LivingDropsEvent ev) {
 		EntityLivingBase e = ev.entityLiving;

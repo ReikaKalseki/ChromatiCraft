@@ -475,7 +475,6 @@ public class GuiNavigation extends GuiScrollingPage {
 				//GL11.glTranslated(0, -4D*hoverTime/20D, 0);
 			}
 			 */
-			GL11.glDepthMask(false);
 			destination.drawTabIcon(itemRender, ex, ey);//api.drawItemStack(itemRender, this.getIcon(), ex, ey);
 			GL11.glPopMatrix();
 

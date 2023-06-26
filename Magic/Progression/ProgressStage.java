@@ -419,6 +419,7 @@ public enum ProgressStage implements ProgressElement, ProgressAccess {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	private void setItemRBTintField(boolean flag) {
 		RenderItem ri = (RenderItem)RenderManager.instance.entityRenderMap.get(EntityItem.class);
 		ri.renderBlocksRi.useInventoryTint = flag;

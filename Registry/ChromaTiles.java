@@ -412,13 +412,8 @@ public enum ChromaTiles implements TileEnum {
 			try {
 				renderInstance = (TileEntity)tile.newInstance();
 			}
-			catch (InstantiationException e) {
-				e.printStackTrace();
-				throw new RegistrationException(ChromatiCraft.instance, "Could not create TE instance to render "+this);
-			}
-			catch (IllegalAccessException e) {
-				e.printStackTrace();
-				throw new RegistrationException(ChromatiCraft.instance, "Could not create TE instance to render "+this);
+			catch (Throwable e) {
+				throw new RegistrationException(ChromatiCraft.instance, "Could not create TE instance to render "+this, e);
 			}
 		}
 		((TileEntityChromaticBase)renderInstance).animateItem();

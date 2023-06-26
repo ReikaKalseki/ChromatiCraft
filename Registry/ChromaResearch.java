@@ -69,6 +69,7 @@ import Reika.ChromatiCraft.Magic.Interfaces.PoweredItem;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager.ProgressElement;
 import Reika.ChromatiCraft.Magic.Progression.FragmentCategorizationSystem;
+import Reika.ChromatiCraft.Magic.Progression.FragmentCategorizationSystem.FragmentCategory;
 import Reika.ChromatiCraft.Magic.Progression.ProgressAccess;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionManager;
@@ -152,6 +153,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 	ITEMCHARGE("Passive Charging",			new ItemStack(Blocks.dirt),								ResearchLevel.BASICCRAFT,	ProgressStage.CHARGE),
 	ITEMBUFFERLINK("Lumen Buffer Connection",new ItemStack(Blocks.dirt),							ResearchLevel.PYLONCRAFT,	ProgressStage.CHARGE),
 	SKYPEATER(ChromaTiles.SKYPEATER.getName(),ChromaTiles.SKYPEATER.getCraftedProduct(),			ResearchLevel.ENERGY,		ProgressStage.GLOWCLIFFS),
+	FRAGMENTSELECT("Fragment Decoding",		new ItemStack(Blocks.dirt),								ResearchLevel.BASICCRAFT,	ProgressStage.CHROMA),
 
 	MACHINEDESC("Constructs", ""),
 	REPEATER(		ChromaTiles.REPEATER,		ResearchLevel.NETWORKING,		ProgressStage.BLOWREPEATER),
@@ -793,6 +795,56 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 				tessellator.addVertexWithUV((x + w + d), (y + 0 - d), 0, du, v);
 				tessellator.addVertexWithUV((x + 0 - d), (y + 0 - d), 0, u, v);
 			}
+			tessellator.draw();
+			GL11.glPopMatrix();
+			GL11.glPopAttrib();
+			return;
+		}
+		else if (this == FRAGMENTSELECT) {
+			GL11.glPushMatrix();
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glDisable(GL11.GL_CULL_FACE);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.ADDITIVEDARK.apply();
+			GL11.glShadeModel(GL11.GL_SMOOTH);
+			ReikaTextureHelper.bindTerrainTexture();
+			int d = 0;
+			int hash = System.identityHashCode(this);
+			int c = CrystalElement.getBlendedColor(ReikaRenderHelper.getSystemTimeAsInt()/48+17*hash, 30);
+			int br = ReikaColorAPI.GStoHex((int)(192+64*Math.sin(System.currentTimeMillis()/271D+hash)));
+			float mix = (float)(0.5+0.5*Math.sin(System.currentTimeMillis()/443D-13*hash));
+			c = ReikaColorAPI.mixColors(c, br, mix);
+			c = ReikaColorAPI.getModifiedSat(c, 1.5F);
+			GL11.glColor4f(ReikaColorAPI.getRed(c)/255F, ReikaColorAPI.getGreen(c)/255F, ReikaColorAPI.getBlue(c)/255F, 1);
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x-d, y-d, ChromaIcons.LATTICE.getIcon(), 16+d*2, 16+d*2);
+			BlendMode.DEFAULT.apply();
+			ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/fragmentcategories.png");
+			Tessellator tessellator = Tessellator.instance;
+			//GL11.glDisable(GL11.GL_BLEND);
+			GL11.glColor4f(1, 1, 1, 1);
+			c = ReikaColorAPI.mixColors(c, 0xffffff, 0.5F);
+			float t = ReikaJavaLibrary.getSystemTimeAsInt()/2000F;
+			int c1 = ReikaColorAPI.mixColors(0xffffff, ReikaColorAPI.getShiftedHue(c, 45F*(float)Math.sin(2*t)), 0.5F);
+			int c2 = ReikaColorAPI.mixColors(0xffffff, ReikaColorAPI.getShiftedHue(c, 45F*(float)Math.sin(5*t)), 0.5F);
+			int c3 = ReikaColorAPI.mixColors(0xffffff, ReikaColorAPI.getShiftedHue(c, 45F*(float)Math.sin(9*t)), 0.5F);
+			int c4 = ReikaColorAPI.mixColors(0xffffff, ReikaColorAPI.getShiftedHue(c, 45F*(float)Math.sin(13*t)), 0.5F);
+			tessellator.startDrawingQuads();
+			int idx = (int)((System.currentTimeMillis()/800)%FragmentCategory.list.length);
+			double u = idx%8/8D;
+			double v = idx/8/8D;
+			double du = u+1/8D;
+			double dv = v+1/8D;
+			int w = 16;
+			int h = 16;
+			d = -2;
+			tessellator.setColorOpaque_I(c1);
+			tessellator.addVertexWithUV((x + 0 - d), (y + h + d), 0, u, dv);
+			tessellator.setColorOpaque_I(c2);
+			tessellator.addVertexWithUV((x + w + d), (y + h + d), 0, du, dv);
+			tessellator.setColorOpaque_I(c3);
+			tessellator.addVertexWithUV((x + w + d), (y + 0 - d), 0, du, v);
+			tessellator.setColorOpaque_I(c4);
+			tessellator.addVertexWithUV((x + 0 - d), (y + 0 - d), 0, u, v);
 			tessellator.draw();
 			GL11.glPopMatrix();
 			GL11.glPopAttrib();
@@ -1640,6 +1692,10 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 		if (this == PACKCHANGES && !PackModificationTracker.instance.modificationsExist(ChromatiCraft.instance))
 			return true;
 		if (this == AUGMENT)
+			return true;
+		if (this == VILLAGEREPAIR)
+			return true;
+		if (this == AISHUTDOWN)
 			return true;
 		Dependency dep = this.getDependency();
 		if (dep != null && !dep.isLoaded())

@@ -19,12 +19,14 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 
@@ -36,6 +38,7 @@ import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.FragmentCategorizationSystem;
 import Reika.ChromatiCraft.Magic.Progression.FragmentCategorizationSystem.FragmentCategorization;
 import Reika.ChromatiCraft.Magic.Progression.FragmentCategorizationSystem.FragmentCategory;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
@@ -53,6 +56,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCallback {
 
+	public static final String RANDOM_TAG = "pickRandom";
+
 	public ItemInfoFragment(int tex) {
 		super(tex);
 		this.setMaxStackSize(1);
@@ -67,7 +72,8 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 			if (world.getTotalWorldTime()%n == slot%n) {
 				ChromaResearch r = getResearch(is);
 				if (r == null) {
-					//this.programShardAndGiveData(is, ep);
+					if (is.stackTagCompound != null && is.stackTagCompound.getBoolean(RANDOM_TAG))
+						this.programShardAndGiveData(is, ep);
 				}
 				else {
 					if (r.canPlayerProgressTo(ep) && ChromaResearchManager.instance.getNextResearchesFor(ep).contains(r))
@@ -78,8 +84,35 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 	}
 
 	@Override
+	public boolean onEntityItemUpdate(EntityItem ei) {
+		if (!ei.worldObj.isRemote) {
+			ItemStack is = ei.getEntityItem();
+			if (getResearch(is) == null) {
+				int x = MathHelper.floor_double(ei.posX);
+				int y = MathHelper.floor_double(ei.posY);
+				int z = MathHelper.floor_double(ei.posZ);
+				if (ei.worldObj.getBlock(x, y, z) == ChromaBlocks.CHROMA.getBlockInstance()) {
+					if (is.stackTagCompound == null)
+						is.stackTagCompound = new NBTTagCompound();
+					is.stackTagCompound.setBoolean(RANDOM_TAG, true);
+					ei.setEntityItemStack(is);
+					/*
+					EntityPlayer ep = ReikaItemHelper.getDropper(ei);
+					if (ep != null && !ReikaPlayerAPI.isFake(ep)) {
+						ChromaResearch r = ChromaResearchManager.instance.getRandomNextResearchFor(ep);
+						if (r != null) {
+							setResearch(is, r);
+						}
+					}*/
+				}
+			}
+		}
+		return false;
+	}
+
+	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
-		if (isBlank(is) && !ChromaResearchManager.instance.getNextResearchesFor(ep).isEmpty())
+		if (isBlank(is) && !(is.stackTagCompound != null && is.stackTagCompound.getBoolean(RANDOM_TAG)) && !ChromaResearchManager.instance.getNextResearchesFor(ep).isEmpty())
 			ep.openGui(ChromatiCraft.instance, ChromaGuis.FRAGSELECT.ordinal(), world, 0, 0, 0);
 		return is;
 	}
@@ -96,7 +129,13 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 	@Override
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
 		if (this.isBlank(is)) {
-			li.add(EnumChatFormatting.ITALIC.toString()+"Blank");
+			if (is.stackTagCompound != null && is.stackTagCompound.getBoolean(RANDOM_TAG)) {
+				li.add(EnumChatFormatting.ITALIC.toString()+"Chroma-Soaked");
+			}
+			else {
+				li.add(EnumChatFormatting.ITALIC.toString()+"Undeciphered");
+				li.add("Extract information to learn contents");
+			}
 		}
 		else {
 			ChromaResearch r = this.getResearch(is);
@@ -130,11 +169,11 @@ public class ItemInfoFragment extends ItemChromaBasic implements SpriteRenderCal
 		if (is.getItemDamage() == 0)
 			return false;
 		ChromaResearch r = this.getResearch(is);
-		return ChromaResearchManager.instance.canPlayerStepTo(Minecraft.getMinecraft().thePlayer, r);
+		return r != null && ChromaResearchManager.instance.canPlayerStepTo(Minecraft.getMinecraft().thePlayer, r);
 	}
 
 	public static boolean isBlank(ItemStack is) {
-		return is.stackTagCompound == null;
+		return is.stackTagCompound == null || !is.stackTagCompound.hasKey("page");
 	}
 
 	public static ChromaResearch getResearch(ItemStack is) {

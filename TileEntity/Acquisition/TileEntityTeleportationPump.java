@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Set;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -38,8 +39,11 @@ import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
 import Reika.DragonAPI.Auxiliary.ChunkManager;
 import Reika.DragonAPI.Instantiable.HybridTank;
@@ -47,8 +51,12 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.CountMap;
 import Reika.DragonAPI.Interfaces.TileEntity.ChunkLoadingTile;
 import Reika.DragonAPI.Libraries.ReikaFluidHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityTeleportationPump extends ChargedCrystalPowered implements IFluidHandler, OwnedTile, ChunkLoadingTile {
 
@@ -190,8 +198,8 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
-		if (scanning) {
-			this.onScan(world, x, y, z);
+		if (scanning && world.isRemote) {
+			this.doScanFX(world, x, y, z);
 		}
 		if (world.isRemote)
 			return;
@@ -220,6 +228,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 				if (scanY > 255) {
 					scanning = false;
 					fastscan = false;
+					ChromaSounds.CRAFTDONE.playSoundAtBlock(this, 1, 1.25F);
 					Collection<ArrayList<FluidSource>> vals = fluids.values();
 					for (ArrayList<FluidSource> li : vals) {
 						Collections.shuffle(li);
@@ -301,8 +310,14 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 		return !scanning && super.isPlayerAccessible(var1);
 	}
 
-	private void onScan(World world, int x, int y, int z) {
+	@SideOnly(Side.CLIENT)
+	private void doScanFX(World world, int x, int y, int z) {
 		ReikaParticleHelper.PORTAL.spawnAroundBlock(world, x, y, z, 8);
+		if (Minecraft.getMinecraft().gameSettings.particleSetting == 2) {
+			EntityCCBlurFX fx = new EntityCCBlurFX(world, x+rand.nextDouble(), y+1+rand.nextDouble(), z+rand.nextDouble());
+			fx.setIcon(ChromaIcons.FADE_RAY).setGravity((float)ReikaRandomHelper.getRandomBetween(0.03125F, 0.0625F)).setColor(0xC227FF);
+			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+		}
 	}
 
 	public int getRange() {

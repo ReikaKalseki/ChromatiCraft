@@ -435,6 +435,10 @@ public class FragmentCategorizationSystem {
 		this.addMapping(ChromaResearch.BALLLIGHTNING, FragmentCategory.WORLD, 10);
 		this.addMapping(ChromaResearch.STRUCTUREPASSWORDS, FragmentCategory.STRUCTURE, 30);
 		this.addMapping(ChromaResearch.STRUCTUREPASSWORDS, FragmentCategory.ARTIFACT, 20);
+		this.addMapping(ChromaResearch.ITEMBUFFERLINK, FragmentCategory.LUMENS, 30);
+		this.addMapping(ChromaResearch.ITEMBUFFERLINK, FragmentCategory.TOOLARMOR, 30);
+		this.addMapping(ChromaResearch.SKYPEATER, FragmentCategory.LUMENS, 40);
+		this.addMapping(ChromaResearch.SKYPEATER, FragmentCategory.WORLD, 30);
 	}
 
 	private void addMapping(ChromaTiles r, FragmentCategory fc, int amt) {

@@ -138,6 +138,7 @@ public class RenderSkypeater extends CrystalTransmitterRender {
 			GL11.glEnable(GL11.GL_BLEND);
 			GL11.glDisable(GL11.GL_CULL_FACE);
 			BlendMode.ADDITIVEDARK.apply();
+			GL11.glDepthMask(false);
 			GL11.glPushMatrix();
 			GL11.glRotated(45, 0, 1, 0);
 			GL11.glRotated(-45, 1, 0, 0);

@@ -489,12 +489,15 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 			if (is != null && ts.isItemValidForSlot(0, is)) {
 				ts.setInventorySlotContents(0, is.copy());
 				ep.setCurrentItemOrArmor(0, null);
+				ReikaSoundHelper.playSoundAtBlock(te, "random.pop", 1, 0.7F);
 				return true;
 			}
 			else if (is == null) {
 				ItemStack take = ts.removeLastItem();
 				if (take != null) {
 					ep.setCurrentItemOrArmor(0, take);
+					ReikaSoundHelper.playSoundAtBlock(te, "random.pop");
+					return true;
 				}
 			}
 		}
