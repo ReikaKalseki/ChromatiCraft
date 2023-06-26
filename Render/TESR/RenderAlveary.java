@@ -287,7 +287,7 @@ public class RenderAlveary extends ChromaRenderBase {
 				GL11.glTranslated(-f.getStringWidth(sg)/32D/s2, 0.1875D/s2-ei.hoverStart*0.375/s2-0.125/s2, 0);
 				f.drawString(sg, 0, 0, 0xffffff);
 
-				if (te.isJubilant() | true) {
+				if (te.isJubilant()) {
 					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 					BlendMode.DEFAULT.apply();
 					ReikaTextureHelper.bindTerrainTexture();

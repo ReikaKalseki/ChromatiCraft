@@ -42,9 +42,11 @@ public class ItemWarpProofer extends ItemChromaTool {
 			if (!is.stackTagCompound.hasKey(PLAYER_TAG)) {
 				is.stackTagCompound.setString(PLAYER_TAG, ep.getCommandSenderName());
 			}
-			if (world.getTotalWorldTime()-e.getEntityData().getLong(ACTIVITY_TAG) >= 240) {
-				ReikaThaumHelper.removeWarp(ep, 1);
-				e.getEntityData().setLong(ACTIVITY_TAG, world.getTotalWorldTime());
+			if (!ep.getCommandSenderName().equals(is.stackTagCompound.getString(PLAYER_TAG))) {
+				if (world.getTotalWorldTime()-e.getEntityData().getLong(ACTIVITY_TAG) >= 240) {
+					ReikaThaumHelper.removeWarp(ep, 1);
+					e.getEntityData().setLong(ACTIVITY_TAG, world.getTotalWorldTime());
+				}
 			}
 		}
 	}

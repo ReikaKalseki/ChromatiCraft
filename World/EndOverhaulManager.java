@@ -245,7 +245,7 @@ public class EndOverhaulManager extends IRenderHandler implements RetroactiveGen
 			fogDistance = Math.min(fogTarget, fogDistance+18F*spf);
 		}
 		ChromaShaders.ENDRING.setIntensity(renderFactor*0);
-		if (renderFactor > 0.2 && !Minecraft.getMinecraft().isGamePaused() && ReikaRandomHelper.doWithChance(renderFactor*0.01)) {
+		if (renderFactor > 0.2 && !Minecraft.getMinecraft().isGamePaused() && ReikaRandomHelper.doWithChance(renderFactor*0.02)) {
 			ThrottleableEffectRenderer.getRegisteredInstance().registerDelegateRenderer(EntityAnglerLight.class, CCParticleEngine.instance);
 			double[] xyz = ReikaPhysicsHelper.polarToCartesian(80, ReikaRandomHelper.getRandomPlusMinus(0D, 30D), DragonAPICore.rand.nextDouble()*360);
 			xyz[0] += ep.posX;
