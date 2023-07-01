@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -13,7 +13,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+
+import com.google.common.base.Charsets;
 
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -104,7 +107,7 @@ public class RedecorateCommand extends DragonCommandBase {
 		generatedChunks.remove(d.getCommandID());
 		File f = this.getFile(world, d);
 		if (f.exists()) {
-			ArrayList<String> li = ReikaFileReader.getFileAsLines(f, true);
+			List<String> li = ReikaFileReader.getFileAsLines(f, true, Charsets.UTF_8);
 			for (String s : li) {
 				ChunkCoordIntPair p = this.parseCoordPair(s);
 				generatedChunks.addValue(d.getCommandID(), p);
@@ -126,7 +129,7 @@ public class RedecorateCommand extends DragonCommandBase {
 		for (ChunkCoordIntPair p : generatedChunks.get(d.getCommandID())) {
 			li.add(this.toString(p));
 		}
-		ReikaFileReader.writeLinesToFile(f, li, true);
+		ReikaFileReader.writeLinesToFile(f, li, true, Charsets.UTF_8);
 	}
 
 	private File getFile(World world, ChromaDecorator d) {

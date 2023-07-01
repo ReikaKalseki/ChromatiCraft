@@ -11,11 +11,13 @@ package Reika.ChromatiCraft.World.Dimension;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
+
+import com.google.common.base.Charsets;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -109,7 +111,7 @@ public class StructureCalculator extends ThreadedGenerator {
 		try {
 			if (f.exists()) {
 				try {
-					ArrayList<String> li = ReikaFileReader.getFileAsLines(f, true, Charset.defaultCharset());
+					List<String> li = ReikaFileReader.getFileAsLines(f, true, Charsets.UTF_8);
 					if (!li.isEmpty()) {
 						String s = li.get(0);
 						s = s.substring(s.indexOf(':')+1);
@@ -124,7 +126,7 @@ public class StructureCalculator extends ThreadedGenerator {
 			f.getParentFile().mkdirs();
 			f.createNewFile();
 			long seed = System.currentTimeMillis();
-			ReikaFileReader.writeLinesToFile(f, ReikaJavaLibrary.makeListFrom("Seed:"+String.valueOf(seed)), true);
+			ReikaFileReader.writeLinesToFile(f, ReikaJavaLibrary.makeListFrom("Seed:"+String.valueOf(seed)), true, Charsets.UTF_8);
 		}
 		catch (IOException e) {
 			e.printStackTrace();

@@ -806,6 +806,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 			GL11.glDisable(GL11.GL_CULL_FACE);
 			GL11.glEnable(GL11.GL_BLEND);
 			BlendMode.ADDITIVEDARK.apply();
+			GL11.glDepthMask(false);
 			GL11.glShadeModel(GL11.GL_SMOOTH);
 			ReikaTextureHelper.bindTerrainTexture();
 			int d = 0;
@@ -836,7 +837,7 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 			double dv = v+1/8D;
 			int w = 16;
 			int h = 16;
-			d = -2;
+			d = -1;
 			tessellator.setColorOpaque_I(c1);
 			tessellator.addVertexWithUV((x + 0 - d), (y + h + d), 0, u, dv);
 			tessellator.setColorOpaque_I(c2);

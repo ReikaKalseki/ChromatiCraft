@@ -63,17 +63,19 @@ public abstract class GuiScrollingPage extends ChromaBookGui {
 		else if (GuiScreen.isCtrlKeyDown()) {
 			sp = Math.max(1, sp/2);
 		}
-		if (Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindForward.getKeyCode()) || Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-			offsetY -= sp;
-		}
-		if (Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindLeft.getKeyCode()) || Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
-			offsetX -= sp;
-		}
-		if (Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindBack.getKeyCode()) || Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-			offsetY += sp;
-		}
-		if (Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindRight.getKeyCode()) || Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
-			offsetX += sp;
+		if (this.isScrollEnabled()) {
+			if (Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindForward.getKeyCode()) || Keyboard.isKeyDown(Keyboard.KEY_UP)) {
+				offsetY -= sp;
+			}
+			if (Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindLeft.getKeyCode()) || Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
+				offsetX -= sp;
+			}
+			if (Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindBack.getKeyCode()) || Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
+				offsetY += sp;
+			}
+			if (Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindRight.getKeyCode()) || Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
+				offsetX += sp;
+			}
 		}
 
 		if (offsetX < 0) {
@@ -95,6 +97,10 @@ public abstract class GuiScrollingPage extends ChromaBookGui {
 		this.drawTexturedModalRect(leftX+7, topY-1, u, v, paneWidth, paneHeight);
 
 		super.drawScreen(x, y, f);
+	}
+
+	protected boolean isScrollEnabled() {
+		return true;
 	}
 
 	protected abstract String getScrollingTexture();

@@ -730,7 +730,8 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 				map.put(dir, li);
 			}
 			TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)c.getTileEntity(worldObj);
-			te.markAsTableGrouped(false);
+			if (te != null)
+				te.markAsTableGrouped(false);
 			CrystalElement e = te.getActiveColor();
 			if (e != null && hasPylonConnections) {
 				li.add(e);

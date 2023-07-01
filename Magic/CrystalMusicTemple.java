@@ -2,7 +2,6 @@ package Reika.ChromatiCraft.Magic;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -13,6 +12,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.TreeMap;
+
+import com.google.common.base.Charsets;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -1038,7 +1039,7 @@ public class CrystalMusicTemple {
 			lowest = null;
 
 			int tick = 0;
-			ArrayList<String> li = ReikaFileReader.getFileAsLines(in, false, Charset.defaultCharset());
+			List<String> li = ReikaFileReader.getFileAsLines(in, false, Charsets.UTF_8);
 			for (String s : li) {
 				if (s.startsWith("--"))
 					continue;

@@ -139,13 +139,13 @@ public class GuiFragmentSelect extends GuiContainer implements CustomSoundGui {
 				v5.startDrawing(GL11.GL_TRIANGLE_FAN);
 				v5.setColorOpaque_I(0xffffff);
 				v5.setBrightness(240);
-				v5.addVertexWithUV(x0, y0, 0, ico.getInterpolatedU(8), ico.getInterpolatedV(8));
+				v5.addVertexWithUV(x0, y0, 35, ico.getInterpolatedU(8), ico.getInterpolatedV(8));
 				double r = b.SIZE*0.5;
 				for (int i = 0; i <= 360*frac; i += 2) {
 					double ang = Math.toRadians(i-90);
 					double dx = -Math.cos(ang);
 					double dy = Math.sin(ang);
-					v5.addVertexWithUV(x0+dx*r, y0+dy*r, 0, ico.getInterpolatedU(8+8*dx), ico.getInterpolatedV(8+8*dy));
+					v5.addVertexWithUV(x0+dx*r, y0+dy*r, 35, ico.getInterpolatedU(8+8*dx), ico.getInterpolatedV(8+8*dy));
 				}
 				b.rollout = 1-frac;
 				v5.draw();
@@ -247,7 +247,7 @@ public class GuiFragmentSelect extends GuiContainer implements CustomSoundGui {
 			if (s != null && s.fragment != null) {
 				s.fragment.drawTabIcon(itemRender, (int)(xPosition/sc), (int)(yPosition/sc));
 			}
-			GL11.glDepthMask(false);
+			GL11.glDepthMask(true);
 			GL11.glPopMatrix();
 			c = ReikaColorAPI.mixColors(c, 0xffffff, 0.5F);
 			float t = ReikaJavaLibrary.getSystemTimeAsInt()/2000F;
@@ -261,6 +261,9 @@ public class GuiFragmentSelect extends GuiContainer implements CustomSoundGui {
 			ReikaTextureHelper.bindTexture(modClass, this.getButtonTexture());
 			f = 1F/textureSize;
 			GL11.glShadeModel(GL11.GL_SMOOTH);
+			float z = zLevel;
+			BlendMode.DEFAULT.apply();
+			zLevel = 50;
 			v5.startDrawingQuads();
 			v5.setBrightness(240);
 			v5.setColorOpaque_I(c1);
@@ -272,6 +275,7 @@ public class GuiFragmentSelect extends GuiContainer implements CustomSoundGui {
 			v5.setColorOpaque_I(c4);
 			v5.addVertexWithUV(xPosition+0, yPosition+0, zLevel, (u+0)*f, (v+0)*f);
 			v5.draw();
+			zLevel = z;
 			GL11.glEnable(GL11.GL_BLEND);
 			BlendMode.ADDITIVEDARK.apply();
 			int gs = (int)(255*(0.5+0.5*MathHelper.sin(((t*4)%50000)+System.identityHashCode(this)%50000)));

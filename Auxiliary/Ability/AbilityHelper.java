@@ -192,6 +192,7 @@ public class AbilityHelper implements AbilityAPI {
 	//private int savedAOSetting;
 
 	public boolean isNoClipEnabled;
+	public boolean isLOSViewEnabled;
 
 	private static final Random rand = new Random();
 

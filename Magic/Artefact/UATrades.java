@@ -13,7 +13,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collection;
@@ -21,13 +20,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
-import org.apache.commons.codec.Charsets;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.stream.JsonReader;
 
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -77,15 +73,8 @@ public class UATrades implements ConnectionErrorHandler {
 		if (jvm) {
 			File f = new File(DragonAPICore.getMinecraftDirectory(), "ChromatiCraft_Data/eddbcache.json");
 			if (f.exists() && System.currentTimeMillis()-f.lastModified() < 24*3600*1000) { //1d
-				try (BufferedReader r = ReikaFileReader.getReader(f, Charsets.UTF_8)) {
-					if (r != null) {
-						this.loadJSONData(r);
-						return;
-					}
-				}
-				catch (IOException e) {
-					e.printStackTrace();
-				}
+				this.loadJSONData(ReikaFileReader.readJSON(f));
+				return;
 			}
 			else {
 				//f.delete();
@@ -99,7 +88,7 @@ public class UATrades implements ConnectionErrorHandler {
 					throw new IOException("Could not read URL!");
 				}
 				else {
-					this.loadJSONData(r);
+					this.loadJSONData(new JsonParser().parse(r));
 					if (jvm) {
 						File f = new File(DragonAPICore.getMinecraftDirectory(), "ChromatiCraft_Data/eddbcache.json");
 						f.getParentFile().mkdirs();
@@ -122,10 +111,7 @@ public class UATrades implements ConnectionErrorHandler {
 		externalHooks.addValue(ech.getCommodityID(), ech);
 	}
 
-	private void loadJSONData(Reader r) {
-		JsonReader jr = new JsonReader(r);
-		jr.setLenient(true);
-		JsonElement e = new JsonParser().parse(jr);
+	private void loadJSONData(JsonElement e) {
 		if (e instanceof JsonArray) {
 			JsonArray j = (JsonArray)e;
 			Iterator<JsonElement> it = j.iterator();

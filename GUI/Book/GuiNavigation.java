@@ -13,14 +13,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.TreeMap;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+
+import com.google.common.base.Strings;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.IIcon;
@@ -28,6 +33,7 @@ import net.minecraft.util.MathHelper;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
+import Reika.ChromatiCraft.Base.GuiLetterSearchable;
 import Reika.ChromatiCraft.Base.GuiScrollingPage;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
@@ -54,6 +60,10 @@ public class GuiNavigation extends GuiScrollingPage {
 	private static final int SectionSpacing = 32;
 	private static RegionMap<SectionElement> locations = new RegionMap();
 	private static PluralMap<String> tooltips = new PluralMap(2);
+
+	private boolean searchEnabled = false;
+	private boolean preserveSearchContent = false;
+	private String searchString = null;
 
 	private final boolean isCreative;
 
@@ -115,6 +125,7 @@ public class GuiNavigation extends GuiScrollingPage {
 		else {
 			this.addAuxButton(new CustomSoundImagedGuiButton(1, j-13, k+27, 13, 88, 15, 95, file, ChromatiCraft.class, this), "Recipes");
 			this.addAuxButton(new CustomSoundImagedGuiButton(0, j-13, k-7, 13, 88, 15, 4, file, ChromatiCraft.class, this), "Items");
+			this.addAuxButton(new CustomSoundImagedGuiButton(5, j-13, k+160, 13, 35, 15, 221, file, ChromatiCraft.class, this), "Search");
 		}
 
 		this.addAuxButton(new CustomSoundImagedGuiButton(2, j+xSize, k, 22, 39, 42, 84, file, ChromatiCraft.class, this), "Progress");
@@ -146,6 +157,10 @@ public class GuiNavigation extends GuiScrollingPage {
 			this.goTo(ChromaGuis.NOTES, null);
 			this.resetOffset();
 		}
+		else if (button.id == 5) {
+			searchEnabled = true;
+			preserveSearchContent = false;
+		}
 		this.initGui();
 	}
 
@@ -166,6 +181,25 @@ public class GuiNavigation extends GuiScrollingPage {
 
 		super.drawScreen(x, y, f);
 
+		if (!searchEnabled && !preserveSearchContent)
+			searchString = null;
+		if (!Strings.isNullOrEmpty(searchString)) {
+			int j = (width - xSize) / 2;
+			int k = (height - ySize) / 2;
+			int c = 0xffffff;
+			if (!searchEnabled) {
+				float t = 0.5F+0.5F*MathHelper.sin(this.getGuiTick()/15F);
+				c = (((int)(t*64+127)) << 16) | (((int)(t*128+96)) << 8) | 0xff;
+			}
+			int sw = fontRendererObj.getStringWidth(searchString);
+			int dx = j-20-sw;
+			int dy = k+ySize-47;
+			int o = 2;
+			drawRect(dx-o, dy-o, dx+sw+o, dy+fontRendererObj.FONT_HEIGHT+o, 0x9a000000);
+			api.drawRectFrame(dx-o, dy-o, sw+o*2, fontRendererObj.FONT_HEIGHT+o*2, 0x3090ff);
+			api.drawString(fontRendererObj, searchString, dx, dy, c);
+		}
+
 		this.drawSections(leftX+11-offsetX, topY+11-offsetY);
 
 		GL11.glDisable(GL11.GL_LIGHTING);
@@ -182,6 +216,11 @@ public class GuiNavigation extends GuiScrollingPage {
 	}
 
 	@Override
+	protected boolean isScrollEnabled() {
+		return !searchEnabled;
+	}
+
+	@Override
 	protected void mouseClicked(int x, int y, int b) {
 		super.mouseClicked(x, y, b);
 
@@ -194,6 +233,30 @@ public class GuiNavigation extends GuiScrollingPage {
 				ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 0.35F, 0.8F);
 				ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 0.35F, 1.2F);
 			}
+		}
+	}
+
+	@Override
+	protected void keyTyped(char c, int idx) {
+		super.keyTyped(c, idx);
+
+		if (idx == Keyboard.KEY_ESCAPE) {
+			searchEnabled = false;
+		}
+		else if (searchEnabled && idx == Keyboard.KEY_BACK && !Strings.isNullOrEmpty(searchString)) {
+			searchString = searchString.substring(0, searchString.length()-1);
+			if (searchString.isEmpty())
+				searchString = null;
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 1F);
+		}
+		else if (searchEnabled && (idx == Keyboard.KEY_RETURN || idx == Keyboard.KEY_NUMPADENTER)) {
+			preserveSearchContent = true;
+			searchEnabled = false;
+			ReikaSoundHelper.playClientSound(ChromaSounds.CAST, player, 0.5F, 1.5F);
+		}
+		else if (searchEnabled && GuiLetterSearchable.isSearchableCharacter(c)) {
+			searchString = Strings.isNullOrEmpty(searchString) ? String.valueOf(c) : searchString+String.valueOf(c);
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 1F);
 		}
 	}
 
@@ -387,9 +450,34 @@ public class GuiNavigation extends GuiScrollingPage {
 				GL11.glScaled(s, s, 1);
 				int ix = (int)Math.round(dx/s);
 				int iy = (int)Math.round(dy/s);
+				e.updateSearch(searchString);
 				if (dx >= leftX && dx <= leftX+paneWidth-Section.elementWidth) {
 					if (dy >= topY && dy <= topY+paneHeight-Section.elementWidth) {
-						e.draw(ix, iy);
+						if (e.searchAlpha > 0) {
+							e.draw(ix, iy);
+						}
+						if (e.searchAlpha < 1) {
+							ReikaTextureHelper.bindTerrainTexture();
+							GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+							GL11.glDisable(GL11.GL_ALPHA_TEST);
+							GL11.glEnable(GL11.GL_BLEND);
+							GL11.glDisable(GL11.GL_DEPTH_TEST);
+							GL11.glDepthMask(false);
+							BlendMode.DEFAULT.apply();
+							GL11.glColor4f(1, 1, 1, 1-e.searchAlpha);
+							ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/squarefog.png");
+							int w = Section.elementWidth-8;
+							//api.drawTexturedModelRectFromIcon(ix, iy, ChromaIcons.FADE, w, w);
+							Tessellator v5 = Tessellator.instance;
+							float z = (1-e.searchAlpha)*1000;
+							v5.startDrawingQuads();
+							v5.addVertexWithUV(ix-2 + 0, iy+2 + w, z, 0, 1);
+							v5.addVertexWithUV(ix+2 + w, iy+2 + w, z, 1, 1);
+							v5.addVertexWithUV(ix+2 + w, iy-2 + 0, z, 1, 0);
+							v5.addVertexWithUV(ix-2 + 0, iy-2 + 0, z, 0, 0);
+							v5.draw();
+							GL11.glPopAttrib();
+						}
 						int mx = dx;
 						int mmx = mx+Section.elementWidth;
 						int my = dy;
@@ -443,6 +531,7 @@ public class GuiNavigation extends GuiScrollingPage {
 	private static class SectionElement implements Comparable<SectionElement> {
 
 		private int hoverTime = 0;
+		private float searchAlpha = 1;
 		private final ChromaResearch destination;
 		private final GuiNavigation gui;
 
@@ -459,6 +548,15 @@ public class GuiNavigation extends GuiScrollingPage {
 		private void decreaseHover() {
 			if (hoverTime > 0)
 				hoverTime--;
+		}
+
+		private void updateSearch(String key) {
+			if (Strings.isNullOrEmpty(key) || destination.getTitle().toLowerCase(Locale.ENGLISH).contains(key.toLowerCase(Locale.ENGLISH))) {
+				searchAlpha = Math.min(1, searchAlpha+0.05F);
+			}
+			else {
+				searchAlpha = Math.max(0, searchAlpha-0.1F);
+			}
 		}
 
 		public void draw(int ex, int ey) {

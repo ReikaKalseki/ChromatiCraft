@@ -108,6 +108,7 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
+import Reika.ChromatiCraft.Magic.Network.PylonFinder;
 import Reika.ChromatiCraft.Magic.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
@@ -146,6 +147,7 @@ import Reika.ChromatiCraft.World.Dimension.Rendering.SkyRiverRenderer;
 import Reika.ChromatiCraft.World.Dimension.Structure.AntFarmGenerator;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Auxiliary.CoreModDetection;
 import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler.KeyPressEvent;
 import Reika.DragonAPI.Auxiliary.Trackers.ModLockController.ModReVerifyEvent;
 import Reika.DragonAPI.Auxiliary.Trackers.SpecialDayTracker;
@@ -440,6 +442,8 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	}
 
 	public int getMaxRenderPass(Block b, int x, int y, int z) {
+		if (AbilityHelper.instance.isLOSViewEnabled)
+			return 0;
 		World world = Minecraft.getMinecraft().theWorld;
 		if (ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x, z)) && b.isWood(world, x, y, z))
 			return 1;
@@ -447,6 +451,8 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	}
 
 	public boolean tryRenderInPass(Block b, int x, int y, int z, int pass) {
+		if (AbilityHelper.instance.isLOSViewEnabled)
+			return pass == 0;
 		if (b.canRenderInPass(pass))
 			return true;
 		World world = Minecraft.getMinecraft().theWorld;
@@ -470,7 +476,80 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 			return true;
 		}
 		//ReikaJavaLibrary.pConsole("CLIENT RENDER NOCLIP "+AbilityHelper.instance.isNoClipEnabled);
-		if (AbilityHelper.instance.isNoClipEnabled) {
+		if (AbilityHelper.instance.isLOSViewEnabled) {
+			if (b != Blocks.air && renderPass == 0 && b.canRenderInPass(0)) {
+				boolean flag = render.enableAO;
+				render.enableAO = false;
+				int c = PylonFinder.isBlockPassable(Minecraft.getMinecraft().theWorld, xCoord, yCoord, zCoord) ? 0x77ff77 : 0xff7777;//b.colorMultiplier(access, xCoord, yCoord, zCoord);
+				Tessellator.instance.setNormal(0, 1, 0);
+				b.setBlockBoundsBasedOnState(access, xCoord, yCoord, zCoord);
+				render.renderMaxX = b.getBlockBoundsMaxX();
+				render.renderMaxY = b.getBlockBoundsMaxY();
+				render.renderMaxZ = b.getBlockBoundsMaxZ();
+				render.renderMinX = b.getBlockBoundsMinX();
+				render.renderMinY = b.getBlockBoundsMinY();
+				render.renderMinZ = b.getBlockBoundsMinZ();
+				for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
+					int dx = xCoord+dir.offsetX;
+					int dy = yCoord+dir.offsetY;
+					int dz = zCoord+dir.offsetZ;
+					if (b.shouldSideBeRendered(access, dx, dy, dz, dir.ordinal())) {
+						IIcon ico = ChromaIcons.BLANK.getIcon();//render.getIconSafe(b.getIcon(access, xCoord, yCoord, zCoord, dir.ordinal()));
+						//Tessellator.instance.setBrightness(b.getMixedBrightnessForBlock(access, xCoord, yCoord+(b.isOpaqueCube() ? 1 : 0), zCoord));
+						Tessellator.instance.setBrightness(240);
+						double d = CoreModDetection.OPTIFINE.isInstalled() ? 0.01 : 0.005;
+						switch(dir) {
+							case DOWN:
+								Tessellator.instance.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(c, 0.5F));
+								Tessellator.instance.addVertexWithUV(xCoord-d, yCoord-d, zCoord-d, ico.getMinU(), ico.getMinV());
+								Tessellator.instance.addVertexWithUV(xCoord+1+d, yCoord-d, zCoord-d, ico.getMaxU(), ico.getMinV());
+								Tessellator.instance.addVertexWithUV(xCoord+1+d, yCoord-d, zCoord+1+d, ico.getMaxU(), ico.getMaxV());
+								Tessellator.instance.addVertexWithUV(xCoord-d, yCoord-d, zCoord+1+d, ico.getMinU(), ico.getMaxV());
+								break;
+							case UP:
+								Tessellator.instance.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(c, 1));
+								Tessellator.instance.addVertexWithUV(xCoord-d, yCoord+1+d, zCoord+1+d, ico.getMinU(), ico.getMaxV());
+								Tessellator.instance.addVertexWithUV(xCoord+1+d, yCoord+1+d, zCoord+1+d, ico.getMaxU(), ico.getMaxV());
+								Tessellator.instance.addVertexWithUV(xCoord+1+d, yCoord+1+d, zCoord-d, ico.getMaxU(), ico.getMinV());
+								Tessellator.instance.addVertexWithUV(xCoord-d, yCoord+1+d, zCoord-d, ico.getMinU(), ico.getMinV());
+								break;
+							case WEST:
+								Tessellator.instance.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(c, 0.6F));
+								Tessellator.instance.addVertexWithUV(xCoord-d, yCoord-d, zCoord+1+d, ico.getMinU(), ico.getMaxV());
+								Tessellator.instance.addVertexWithUV(xCoord-d, yCoord+1+d, zCoord+1+d, ico.getMaxU(), ico.getMaxV());
+								Tessellator.instance.addVertexWithUV(xCoord-d, yCoord+1+d, zCoord-d, ico.getMaxU(), ico.getMinV());
+								Tessellator.instance.addVertexWithUV(xCoord-d, yCoord-d, zCoord-d, ico.getMinU(), ico.getMinV());
+								break;
+							case EAST:
+								Tessellator.instance.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(c, 0.6F));
+								Tessellator.instance.addVertexWithUV(xCoord+1+d, yCoord-d, zCoord-d, ico.getMinU(), ico.getMinV());
+								Tessellator.instance.addVertexWithUV(xCoord+1+d, yCoord+1+d, zCoord-d, ico.getMaxU(), ico.getMinV());
+								Tessellator.instance.addVertexWithUV(xCoord+1+d, yCoord+1+d, zCoord+1+d, ico.getMaxU(), ico.getMaxV());
+								Tessellator.instance.addVertexWithUV(xCoord+1+d, yCoord-d, zCoord+1+d, ico.getMinU(), ico.getMaxV());
+								break;
+							case NORTH:
+								Tessellator.instance.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(c, 0.8F));
+								Tessellator.instance.addVertexWithUV(xCoord-d, yCoord-d, zCoord-d, ico.getMinU(), ico.getMinV());
+								Tessellator.instance.addVertexWithUV(xCoord-d, yCoord+1+d, zCoord-d, ico.getMaxU(), ico.getMinV());
+								Tessellator.instance.addVertexWithUV(xCoord+1+d, yCoord+1+d, zCoord-d, ico.getMaxU(), ico.getMaxV());
+								Tessellator.instance.addVertexWithUV(xCoord+1+d, yCoord-d, zCoord-d, ico.getMinU(), ico.getMaxV());
+								break;
+							case SOUTH:
+								Tessellator.instance.setColorOpaque_I(ReikaColorAPI.getColorWithBrightnessMultiplier(c, 0.8F));
+								Tessellator.instance.addVertexWithUV(xCoord+1+d, yCoord-d, zCoord+1+d, ico.getMinU(), ico.getMaxV());
+								Tessellator.instance.addVertexWithUV(xCoord+1+d, yCoord+1+d, zCoord+1+d, ico.getMaxU(), ico.getMaxV());
+								Tessellator.instance.addVertexWithUV(xCoord-d, yCoord+1+d, zCoord+1+d, ico.getMaxU(), ico.getMinV());
+								Tessellator.instance.addVertexWithUV(xCoord-d, yCoord-d, zCoord+1+d, ico.getMinU(), ico.getMinV());
+								break;
+							default:
+								break;
+						}
+					}
+				}
+				render.enableAO = flag;
+			}
+		}
+		else if (AbilityHelper.instance.isNoClipEnabled) {
 			//ChromatiCraft.logger.debug("Checking render of "+b+":"+meta+" @ "+xCoord+"."+yCoord+","+zCoord);
 			if (!AbilityHelper.instance.isBlockOreclippable(Minecraft.getMinecraft().theWorld, xCoord, yCoord, zCoord, b, meta)) {
 				return true;

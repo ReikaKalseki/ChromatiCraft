@@ -134,7 +134,7 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase implements Ke
 			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.67F);
 			return true;
 		}
-		else if (Character.isLetter(c) || Character.isDigit(c) || " ,./?<>;:'\\\"[]{}|+=_-)(*&^%$#@!~`".contains(String.valueOf(c))) {
+		else if (isSearchableCharacter(c)) {
 			this.addToSearch(c);
 			return true;
 		}
@@ -170,6 +170,10 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase implements Ke
 		else {
 			return false;
 		}
+	}
+
+	public static boolean isSearchableCharacter(char c) {
+		return Character.isLetter(c) || Character.isDigit(c) || " ,./?<>;:'\\\"[]{}|+=_-)(*&^%$#@!~`".contains(String.valueOf(c));
 	}
 
 	private void addToSearch(char c) {

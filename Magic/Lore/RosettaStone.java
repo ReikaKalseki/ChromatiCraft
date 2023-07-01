@@ -11,8 +11,11 @@ package Reika.ChromatiCraft.Magic.Lore;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
+
+import com.google.common.base.Charsets;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -65,7 +68,7 @@ public class RosettaStone {
 
 	public void loadText() {
 		text.clear();
-		ArrayList<String> li = this.getData();
+		List<String> li = this.getData();
 		for (String s : li) {
 			if (s.isEmpty() || s.equals(System.lineSeparator()) || s.charAt(0) == '#')
 				continue;
@@ -73,7 +76,7 @@ public class RosettaStone {
 		}
 	}
 
-	private ArrayList<String> getData() {
+	private List<String> getData() {
 		/*
 		InputStream in1 = ChromatiCraft.class.getResourceAsStream("Resources/rosetta.txt");
 		InputStream in2 = ChromatiCraft.class.getResourceAsStream("Resources/lore.xml");
@@ -90,7 +93,7 @@ public class RosettaStone {
 		ReikaFileReader.writeDataToFile(f3, test2, true);
 		 */
 		if (LoreScripts.instance.hasReroutePath()) {
-			return ReikaFileReader.getFileAsLines(LoreScripts.instance.getReroutedRosettaFile(), true);
+			return ReikaFileReader.getFileAsLines(LoreScripts.instance.getReroutedRosettaFile(), true, Charsets.UTF_8);
 		}
 		else {
 			try {
@@ -102,7 +105,7 @@ public class RosettaStone {
 		}
 	}
 
-	private ArrayList<String> loadInternalRosettaFile() throws Exception {
+	private List<String> loadInternalRosettaFile() throws Exception {
 		return null;
 	}
 

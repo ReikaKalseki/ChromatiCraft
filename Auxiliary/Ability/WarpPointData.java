@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import com.google.common.base.Charsets;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -122,7 +123,7 @@ public class WarpPointData {
 	@SideOnly(Side.CLIENT)
 	private static void readMapWriterFile(File f, HashSet<WarpPoint> map) {
 		int idx = 0;
-		for (String s : ReikaFileReader.getFileAsLines(f, true)) {
+		for (String s : ReikaFileReader.getFileAsLines(f, true, Charsets.UTF_8)) {
 			if (s.startsWith("S:marker")) {
 				s = s.substring(s.indexOf('=')+1);
 				String[] parts = s.split(":");
@@ -170,7 +171,7 @@ public class WarpPointData {
 	@SideOnly(Side.CLIENT)
 	private static void readVoxelMapFile(File f, HashSet<WarpPoint> map) {
 		int idx = 0;
-		for (String s : ReikaFileReader.getFileAsLines(f, true)) {
+		for (String s : ReikaFileReader.getFileAsLines(f, true, Charsets.UTF_8)) {
 			if (s.startsWith("name")) {
 				String[] parts = s.split(",");
 				HashMap<String, String> dat = new HashMap();

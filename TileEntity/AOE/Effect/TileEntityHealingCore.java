@@ -192,6 +192,8 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 		public int getTickRand(int tier) {
 			return 1;
 		}
+
+		public abstract String getDescription();
 	}
 
 	private static class NoInterface extends RepairInterface { //Used for null
@@ -221,6 +223,11 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 		@Override
 		protected boolean runOnClient() {
 			return false;
+		}
+
+		@Override
+		public String getDescription() {
+			return "Does nothing";
 		}
 
 	}
@@ -344,6 +351,11 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 			return false;
 		}
 
+		@Override
+		public String getDescription() {
+			return "Repairs RailCraft turbine rotors";
+		}
+
 	}
 
 	private static class DecalcificationInterface extends FieldSetRepairInterface {
@@ -393,6 +405,11 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 		@Override
 		protected boolean runOnClient() {
 			return false;
+		}
+
+		@Override
+		public String getDescription() {
+			return "Decalcifies IC2 Steam Generators";
 		}
 
 	}

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -64,7 +64,7 @@ public class GuiChromability extends GuiScreen implements CustomSoundGui {
 	}
 
 	protected final Ability getActiveAbility() {
-		return abilities.get(index);
+		return abilities.isEmpty() ? null : abilities.get(index);
 	}
 
 	@Override
@@ -78,9 +78,11 @@ public class GuiChromability extends GuiScreen implements CustomSoundGui {
 		int h = ySize-14;
 		int out = xSize/2;//+60;
 
-		String tex = this.getButtonTexture();
-		buttonList.add(new CustomSoundImagedGuiButton(0, midx-w-out, midy-h/2, w, h, 244, 0, tex, ChromatiCraft.class, this));
-		buttonList.add(new CustomSoundImagedGuiButton(1, midx+out, midy-h/2, w, h, 232, 0, tex, ChromatiCraft.class, this));
+		if (!abilities.isEmpty()) {
+			String tex = this.getButtonTexture();
+			buttonList.add(new CustomSoundImagedGuiButton(0, midx-w-out, midy-h/2, w, h, 244, 0, tex, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(1, midx+out, midy-h/2, w, h, 232, 0, tex, ChromatiCraft.class, this));
+		}
 
 		/*
 		for (int i = 0; i < available.size(); i++) {
@@ -143,79 +145,94 @@ public class GuiChromability extends GuiScreen implements CustomSoundGui {
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		Ability c = abilities.get(index);
-		boolean has = Chromabilities.playerHasAbility(player, c);
+		if (abilities.isEmpty()) {
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/GUIs/ability2.png");
+			this.drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 
-		double px = 2D*Math.abs(dx)/width;
-		int sp = Math.max(1, (int)(360D/Math.max(1, ReikaRenderHelper.getFPS())*Math.max(1, 6*Math.abs(-(px*px)+2*px))));
-		if (dx > 0) {
-			dx += sp;
+			ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/Ability/unknown.png");
+			GL11.glPushMatrix();
+			double d = 0.1953125;
+			GL11.glScaled(d, d, d);
+			int x2 = j+8+dx;
+			int y2 = k+8;
+			this.drawTexturedModalRect((int)(x2/d), (int)(y2/d), 0, 0, 256, 256);
+			GL11.glPopMatrix();
 		}
-		if (dx < 0) {
-			dx -= sp;
-		}
-		if (dx >= width) {
-			dx = 0;
-			index--;
-			this.markButtons(true);
-		}
-		if (dx <= -width) {
-			dx = 0;
-			index++;
-			this.markButtons(true);
-		}
-		int m = dx != 0 ? 1 : 0;
-		int min = index > 0 ? -m : 0;
-		int max = index < abilities.size()-1 ? m : 0;
-		for (int i = min; i <= max; i++) {
-			int a = j+i*width+dx;
-			Ability ca = abilities.get(index+i);
-			String s = this.getBackTexture(ca);
-			ReikaTextureHelper.bindTexture(ChromatiCraft.class, s);
-			//GL11.glEnable(GL11.GL_BLEND);
-			this.drawTexturedModalRect(a, k, 0, 0, xSize, ySize);
-			//GL11.glDisable(GL11.GL_BLEND);
-		}
+		else {
+			Ability c = abilities.get(index);
+			boolean has = Chromabilities.playerHasAbility(player, c);
 
-		this.drawPreview(c, j, k);
-
-		fontRendererObj.drawString(c.getDisplayName(), j+63+dx, k+9, 0xffffff);
-		if (dx != 0) { //performance boost
-			if (index > 0) {
-				c = abilities.get(index-1);
-				fontRendererObj.drawString(c.getDisplayName(), j+63+dx-width, k+9, 0xffffff);
+			double px = 2D*Math.abs(dx)/width;
+			int sp = Math.max(1, (int)(360D/Math.max(1, ReikaRenderHelper.getFPS())*Math.max(1, 6*Math.abs(-(px*px)+2*px))));
+			if (dx > 0) {
+				dx += sp;
+			}
+			if (dx < 0) {
+				dx -= sp;
+			}
+			if (dx >= width) {
+				dx = 0;
+				index--;
+				this.markButtons(true);
+			}
+			if (dx <= -width) {
+				dx = 0;
+				index++;
+				this.markButtons(true);
+			}
+			int m = dx != 0 ? 1 : 0;
+			int min = index > 0 ? -m : 0;
+			int max = index < abilities.size()-1 ? m : 0;
+			for (int i = min; i <= max; i++) {
+				int a = j+i*width+dx;
+				Ability ca = abilities.get(index+i);
+				String s = this.getBackTexture(ca);
+				ReikaTextureHelper.bindTexture(ChromatiCraft.class, s);
+				//GL11.glEnable(GL11.GL_BLEND);
+				this.drawTexturedModalRect(a, k, 0, 0, xSize, ySize);
+				//GL11.glDisable(GL11.GL_BLEND);
 			}
 
-			if (index < abilities.size()-1) {
-				c = abilities.get(index+1);
-				fontRendererObj.drawString(c.getDisplayName(), j+63+dx+width, k+9, 0xffffff);
-			}
-		}
+			this.drawPreview(c, j, k);
 
-		int fx = 9;
-		int fy = 64;
-		if (!has)
-			;//return;
-		String desc = c.getDescription();
-		if (!this.hasFragment(c))
-			desc = FontType.OBFUSCATED.id+desc;
-		fontRendererObj.drawSplitString(desc, j+dx+fx, k+fy, xSize-fx*2, 0xffffff);
+			fontRendererObj.drawString(c.getDisplayName(), j+63+dx, k+9, 0xffffff);
+			if (dx != 0) { //performance boost
+				if (index > 0) {
+					c = abilities.get(index-1);
+					fontRendererObj.drawString(c.getDisplayName(), j+63+dx-width, k+9, 0xffffff);
+				}
 
-		if (dx != 0) { //performance boost
-			if (index > 0) {
-				c = abilities.get(index-1);
-				desc = c.getDescription();
-				if (!this.hasFragment(c))
-					desc = FontType.OBFUSCATED.id+desc;
-				fontRendererObj.drawSplitString(desc, j+dx+fx-width, k+fy, xSize-fx*2, 0xffffff);
+				if (index < abilities.size()-1) {
+					c = abilities.get(index+1);
+					fontRendererObj.drawString(c.getDisplayName(), j+63+dx+width, k+9, 0xffffff);
+				}
 			}
 
-			if (index < abilities.size()-1) {
-				c = abilities.get(index+1);
-				desc = c.getDescription();
-				if (!this.hasFragment(c))
-					desc = FontType.OBFUSCATED.id+desc;
-				fontRendererObj.drawSplitString(desc, j+dx+fx+width, k+fy, xSize-fx*2, 0xffffff);
+			int fx = 9;
+			int fy = 64;
+			if (!has)
+				;//return;
+			String desc = c.getDescription();
+			if (!this.hasFragment(c))
+				desc = FontType.OBFUSCATED.id+desc;
+			fontRendererObj.drawSplitString(desc, j+dx+fx, k+fy, xSize-fx*2, 0xffffff);
+
+			if (dx != 0) { //performance boost
+				if (index > 0) {
+					c = abilities.get(index-1);
+					desc = c.getDescription();
+					if (!this.hasFragment(c))
+						desc = FontType.OBFUSCATED.id+desc;
+					fontRendererObj.drawSplitString(desc, j+dx+fx-width, k+fy, xSize-fx*2, 0xffffff);
+				}
+
+				if (index < abilities.size()-1) {
+					c = abilities.get(index+1);
+					desc = c.getDescription();
+					if (!this.hasFragment(c))
+						desc = FontType.OBFUSCATED.id+desc;
+					fontRendererObj.drawSplitString(desc, j+dx+fx+width, k+fy, xSize-fx*2, 0xffffff);
+				}
 			}
 		}
 	}

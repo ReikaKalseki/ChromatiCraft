@@ -1045,20 +1045,20 @@
 			New areas in a new world
 		</desc>
 	</farlands>
-	<name>
+	<mudhint>
 		<title>
-			
+			Magical Residue
 		</title>
 		<hint>
-			
+			Can magical materials be found naturally? What happens when large amounts congregate? Does this stuff break down over time?
 		</hint>
 		<reveal>
-			
+			The debris falling off of rainbow trees accumulates and creates a muddy substance below.
 		</reveal>
 		<desc>
-			
+			Residue of magical substances
 		</desc>
-	</name>
+	</mudhint>
 	<name>
 		<title>
 			

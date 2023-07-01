@@ -33,7 +33,7 @@ public class BlockChromaMud extends Block implements ProgressionTrigger {
 		//stepSound = Blocks.farmland.stepSound;
 		slipperiness = Blocks.soul_sand.slipperiness;
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 0.9375F, 1.0F);
-		this.setLightOpacity(255);
+		this.setLightOpacity(4);
 
 		this.setStepSound(new SoundType("", 1, 0.5F) {
 			@Override

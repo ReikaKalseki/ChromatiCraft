@@ -419,7 +419,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						break;
 					}
 					case ROSETTAHANDLER: {
-						MethodNode m = ReikaASMHelper.getMethodByName(cn, "loadInternalRosettaFile", "()Ljava/util/ArrayList;");
+						MethodNode m = ReikaASMHelper.getMethodByName(cn, "loadInternalRosettaFile", "()Ljava/util/List;");
 						m.instructions.clear();
 						m.instructions.add(new LdcInsnNode("Reika.ChromatiCraft.ChromatiCraft"));
 						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Class", "forName", "(Ljava/lang/String;)Ljava/lang/Class;", false));
@@ -439,7 +439,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 						m.instructions.add(new VarInsnNode(Opcodes.ALOAD, 3));
 						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/io/ByteArrayInputStream", "<init>", "([B)V", false));
 						m.instructions.add(new InsnNode(Opcodes.ICONST_1));
-						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/DragonAPI/IO/ReikaFileReader", "getFileAsLines", "(Ljava/io/InputStream;Z)Ljava/util/ArrayList;", false));
+						m.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "Reika/DragonAPI/IO/ReikaFileReader", "getFileAsLines", "(Ljava/io/InputStream;Z)Ljava/util/List;", false));
 						m.instructions.add(new InsnNode(Opcodes.ARETURN));
 						break;
 					}

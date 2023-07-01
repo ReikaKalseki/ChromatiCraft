@@ -54,7 +54,7 @@ public abstract class BlockProtectedByStructure extends Block {
 		bfs.complete(world);
 		FoundPath li = bfs.getResult();
 		//ReikaJavaLibrary.pConsole(li);
-		if (li == null || !li.isEmpty())
+		if (li == null || li.isEmpty())
 			return null;
 		TileEntity te = li.getPath().getLast().getTileEntity(world);
 		return te instanceof MultiBlockChromaTile ? (MultiBlockChromaTile)te : null;

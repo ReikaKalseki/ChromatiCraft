@@ -7,22 +7,14 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper.FanDirections;
-import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
-import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
-
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class CastingTuningManager {
 
@@ -77,7 +69,8 @@ public class CastingTuningManager {
 			tk.putRune(tuningKeys.get(FanDirections.WSW), CrystalElement.RED);
 		}
 		else {
-			long seed = this.generateTuningSeed(world, ep);
+			long seed = ep.getLeastSignificantBits() ^ ep.getLeastSignificantBits();
+			seed += world.getWorldInfo().getGameType().getID()*237617;
 			this.seed(seed);
 			int n = 12;//8+rand.nextInt(5);
 			int i = 0;
@@ -94,33 +87,6 @@ public class CastingTuningManager {
 		return tk;
 	}
 
-	private long generateTuningSeed(World world, UUID ep) {
-		if (world.isRemote) {
-			return this.fetchClientSeed();
-		}
-		else {
-			long seed = ep.getMostSignificantBits() ^ ep.getLeastSignificantBits();
-			seed = seed ^ ReikaWorldHelper.getCurrentWorldID(world).worldCreationTime;
-			return seed;
-		}
-	}
-
-	@SideOnly(Side.CLIENT)
-	private long fetchClientSeed() {
-		EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
-		NBTTagCompound tag = ChromaResearchManager.instance.getRootNBTTag(ep);
-		boolean flag = false;
-		if (!tag.hasKey(NBT_KEY))
-			flag = true;
-		NBTTagCompound data = tag.getCompoundTag(NBT_KEY);
-		if (!data.hasKey("rootSeed"))
-			flag = true;
-		if (flag) {
-			ReikaPlayerAPI.requestCustomDataSyncFromClient(ep);
-		}
-		return data.getLong("rootSeed");
-	}
-
 	private void seed(long seed) {
 		rand.setSeed(seed);
 		rand.nextBoolean();
@@ -129,13 +95,5 @@ public class CastingTuningManager {
 
 	public Collection<Coordinate> getTuningKeyLocations() {
 		return Collections.unmodifiableCollection(tuningKeys.values());
-	}
-
-	public void calculateAndCacheKey(EntityPlayer player) {
-		TuningKey tk = this.getTuningKey(player);
-		NBTTagCompound tag = ChromaResearchManager.instance.getRootNBTTag(player);
-		NBTTagCompound data = tag.getCompoundTag(NBT_KEY);
-		data.setLong("rootSeed", this.generateTuningSeed(player.worldObj, player.getUniqueID()));
-		tag.setTag(NBT_KEY, data);
 	}
 }
