@@ -192,7 +192,7 @@ public class AbilityHelper implements AbilityAPI {
 	//private int savedAOSetting;
 
 	public boolean isNoClipEnabled;
-	public boolean isLOSViewEnabled;
+	public int losViewMode = 0;
 
 	private static final Random rand = new Random();
 
@@ -274,6 +274,10 @@ public class AbilityHelper implements AbilityAPI {
 
 	public void register() {
 		PlayerHandler.instance.registerTracker(LoginApplier.instance);
+	}
+
+	public boolean isLOSViewEnabled() {
+		return losViewMode > 0;
 	}
 
 	@SideOnly(Side.CLIENT)

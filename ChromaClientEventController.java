@@ -108,7 +108,9 @@ import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.ItemElementCalculator;
+import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
 import Reika.ChromatiCraft.Magic.Network.PylonFinder;
+import Reika.ChromatiCraft.Magic.Network.RelayNetworker;
 import Reika.ChromatiCraft.Magic.Potions.PotionVoidGaze.VoidGazeLevels;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
@@ -442,7 +444,7 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	}
 
 	public int getMaxRenderPass(Block b, int x, int y, int z) {
-		if (AbilityHelper.instance.isLOSViewEnabled)
+		if (AbilityHelper.instance.isLOSViewEnabled())
 			return 0;
 		World world = Minecraft.getMinecraft().theWorld;
 		if (ChromatiCraft.isRainbowForest(world.getBiomeGenForCoords(x, z)) && b.isWood(world, x, y, z))
@@ -451,7 +453,7 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	}
 
 	public boolean tryRenderInPass(Block b, int x, int y, int z, int pass) {
-		if (AbilityHelper.instance.isLOSViewEnabled)
+		if (AbilityHelper.instance.isLOSViewEnabled())
 			return pass == 0;
 		if (b.canRenderInPass(pass))
 			return true;
@@ -476,11 +478,13 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 			return true;
 		}
 		//ReikaJavaLibrary.pConsole("CLIENT RENDER NOCLIP "+AbilityHelper.instance.isNoClipEnabled);
-		if (AbilityHelper.instance.isLOSViewEnabled) {
+		if (AbilityHelper.instance.isLOSViewEnabled()) {
 			if (b != Blocks.air && renderPass == 0 && b.canRenderInPass(0)) {
 				boolean flag = render.enableAO;
 				render.enableAO = false;
-				int c = PylonFinder.isBlockPassable(Minecraft.getMinecraft().theWorld, xCoord, yCoord, zCoord) ? 0x77ff77 : 0xff7777;//b.colorMultiplier(access, xCoord, yCoord, zCoord);
+				World world = Minecraft.getMinecraft().theWorld;
+				boolean passable = AbilityHelper.instance.losViewMode == 1 ? PylonFinder.isBlockPassable(world, xCoord, yCoord, zCoord) : RelayNetworker.instance.isRelayPassable(world, xCoord, yCoord, zCoord);
+				int c = passable ? 0x77ff77 : 0xff7777;//b.colorMultiplier(access, xCoord, yCoord, zCoord);
 				Tessellator.instance.setNormal(0, 1, 0);
 				b.setBlockBoundsBasedOnState(access, xCoord, yCoord, zCoord);
 				render.renderMaxX = b.getBlockBoundsMaxX();
@@ -939,6 +943,7 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 		ChromatiCraft.enderforest.clearColorCache();
 		if (ModList.VOIDMONSTER.isLoaded())
 			this.clearVoidRituals();
+		ArtefactSpawner.resetShader();
 	}
 
 	@SubscribeEvent
@@ -947,6 +952,7 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 		ChromatiCraft.enderforest.clearColorCache();
 		if (ModList.VOIDMONSTER.isLoaded())
 			this.clearVoidRituals();
+		ArtefactSpawner.resetShader();
 	}
 
 	@SubscribeEvent
@@ -955,6 +961,7 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 		ChromatiCraft.enderforest.clearColorCache();
 		if (ModList.VOIDMONSTER.isLoaded())
 			this.clearVoidRituals();
+		ArtefactSpawner.resetShader();
 	}
 
 	@ModDependent(ModList.VOIDMONSTER)

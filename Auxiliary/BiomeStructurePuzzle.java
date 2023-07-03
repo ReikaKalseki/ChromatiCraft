@@ -85,6 +85,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	}
 
 	private final ArrayList<MusicKey> melody = new ArrayList();
+	private int playSpeed = 8;
 	private final SwitchGroup[] doorKeys = new SwitchGroup[4];
 	private final ArrayList<CrystalElement> crystalColors = new ArrayList();
 	private final ArrayList<CrystalElement> doorColors = new ArrayList();
@@ -144,6 +145,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			int attempts = 0;
 			MelodyPrefab pre = MusicPuzzleGenerator.getRandomPrefab(rand, Integer.MAX_VALUE, excl);
 			melody.addAll(pre.getNotes());
+			playSpeed = pre.playbackRate;
 			while (attempts < 10 && !this.calculateCrystals(rand)) {
 				crystalColors.clear();
 				attempts++;
@@ -156,12 +158,19 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			}
 		}
 
+		this.setGuess();
+	}
 
+	private void setGuess() {
+		remainingGuess.clear();
 		remainingGuess.addAll(melody);
+		while (remainingGuess.contains(null))
+			remainingGuess.remove(null);
 	}
 
 	private boolean calculateCrystals(Random rand) {
 		HashSet<MusicKey> needed = new HashSet(melody);
+		needed.remove(null);
 		while (!needed.isEmpty()) {
 			CrystalElement e = this.findMostEffective(needed);
 			if (e == null)
@@ -423,7 +432,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	public void writeToNBT(NBTTagCompound NBT) {
 		NBTTagList li = new NBTTagList();
 		for (MusicKey m : melody) {
-			li.appendTag(new NBTTagInt(m.ordinal()));
+			li.appendTag(new NBTTagInt(m == null ? -1 : m.ordinal()));
 		}
 		NBT.setTag("melody", li);
 
@@ -492,7 +501,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		keyIndex = NBT.getInteger("key");
 		complete = NBT.getBoolean("complete");
 
-		remainingGuess.addAll(melody);
+		this.setGuess();
 	}
 
 	@Override
@@ -544,8 +553,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			}
 		}
 		else {
-			remainingGuess.clear();
-			remainingGuess.addAll(melody);
+			this.setGuess();
 			ChromaSounds.ERROR.playSoundAtBlock(root);
 		}
 	}
@@ -798,28 +806,30 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 
 	private void playNextNote(TileEntityStructControl te) {
 		MusicKey key = melody.get(melodyIndex);
-		ChromaSounds.DING.playSoundAtBlock(te, 1, (float)CrystalMusicManager.instance.getPitchFactor(key));
+		if (key != null) { //skip rest
+			ChromaSounds.DING.playSoundAtBlock(te, 1, (float)CrystalMusicManager.instance.getPitchFactor(key));
 
-		ArrayList<CrystalElement> c = new ArrayList(CrystalMusicManager.instance.getColorsWithKey(key));
-		for (CrystalElement e : c) {
-			double s = 4.5-0.5*(c.size()-1);
-			int[] d1 = ReikaJavaLibrary.splitDoubleToInts(s);
-			int[] d2 = ReikaJavaLibrary.splitDoubleToInts(0);
-			double dd = s/6D;
-			double dx = ReikaRandomHelper.getRandomPlusMinus(te.xCoord+0.5, dd);
-			double dy = ReikaRandomHelper.getRandomPlusMinus(te.yCoord+3.5, dd);
-			double dz = ReikaRandomHelper.getRandomPlusMinus(te.zCoord+0.5, dd);
-			ReikaPacketHelper.sendPositionPacket(ChromatiCraft.packetChannel, ChromaPackets.RUNEPARTICLE.ordinal(), te.worldObj, dx, dy, dz, 32, e.ordinal(), d1[0], d1[1], d2[0], d2[1], 6);
+			ArrayList<CrystalElement> c = new ArrayList(CrystalMusicManager.instance.getColorsWithKey(key));
+			for (CrystalElement e : c) {
+				double s = 4.5-0.5*(c.size()-1);
+				int[] d1 = ReikaJavaLibrary.splitDoubleToInts(s);
+				int[] d2 = ReikaJavaLibrary.splitDoubleToInts(0);
+				double dd = s/6D;
+				double dx = ReikaRandomHelper.getRandomPlusMinus(te.xCoord+0.5, dd);
+				double dy = ReikaRandomHelper.getRandomPlusMinus(te.yCoord+3.5, dd);
+				double dz = ReikaRandomHelper.getRandomPlusMinus(te.zCoord+0.5, dd);
+				ReikaPacketHelper.sendPositionPacket(ChromatiCraft.packetChannel, ChromaPackets.RUNEPARTICLE.ordinal(), te.worldObj, dx, dy, dz, 32, e.ordinal(), d1[0], d1[1], d2[0], d2[1], 6);
+			}
 		}
 
-		nextNoteTick += 8;
+		nextNoteTick += playSpeed;
 		melodyIndex++;
 		if (melodyIndex >= melody.size()) {
 			melodyIndex = -1;
 			//nextNoteTick = 0;
 			//isPlayingMelody = false;
 
-			nextNoteTick += 16;
+			nextNoteTick += playSpeed*2;
 		}
 	}
 

@@ -96,6 +96,7 @@ import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.BurrowStructure;
 import Reika.ChromatiCraft.Auxiliary.Tab.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.Tab.TabChromatiCraft;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
@@ -236,6 +237,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerAboutToStartEvent;
 import cpw.mods.fml.common.event.FMLServerStartedEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.FMLServerStoppedEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
@@ -790,6 +792,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		TileEntityBiomePainter.buildBiomeList();
 		TileEntityOreCreator.initOreMap();
 		TileEntityTeleportationPump.buildProgressionMap();
+		TileEntityAdjacencyUpgrade.buildTileEffectCache();
 		ItemDuplicationWand.loadMappings();
 		BurrowStructure.buildLootCache();
 
@@ -985,6 +988,11 @@ public class ChromatiCraft extends DragonAPIMod {
 		ProgressionLoadHandler.instance.saveAll();
 		//if (MinecraftServer.getServer().isDedicatedServer())
 		ChromaDimensionManager.serverStopping = true;
+	}
+
+	@EventHandler
+	public void singlePlayerLogout(FMLServerStoppedEvent evt) {
+		ChromaticEventManager.instance.clearCaches();
 	}
 
 	private void setupClassFiles() {

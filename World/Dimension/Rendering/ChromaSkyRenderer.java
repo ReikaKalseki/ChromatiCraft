@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.World.Dimension.Rendering;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 import org.lwjgl.opengl.GL11;
@@ -23,8 +25,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
-import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -45,6 +47,8 @@ public class ChromaSkyRenderer extends IRenderHandler {
 	private final Star[] stars = new Star[BASE_STARS+STARS_VARIATION];
 	private final TexturedQuad[] nebulae = new TexturedQuad[16];
 	private final TexturedQuad[] planets = new TexturedQuad[32];
+
+	private final ArrayList<Supernova> supernovae = new ArrayList();
 
 	private ChromaSkyRenderer() {
 		//rand.setSeed(10842L);
@@ -77,6 +81,12 @@ public class ChromaSkyRenderer extends IRenderHandler {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void render(float partialTicks, WorldClient world, Minecraft mc) {
+		if (supernovae.size() < 30) {
+			Supernova s = Supernova.random(rand);
+			if (s != null)
+				supernovae.add(s);
+		}
+
 		GL11.glDisable(GL11.GL_FOG);
 
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -257,15 +267,107 @@ public class ChromaSkyRenderer extends IRenderHandler {
 				s.render(320-dl, Math.min(dt, 24*f), t);
 			}
 		}
+		v5.draw();
+
+		GL11.glColor4f(1, 1, 1, 1);
+		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/supernova.png");
+		v5.startDrawingQuads();
+		v5.setBrightness(240);
+		Iterator<Supernova> it = supernovae.iterator();
+		while (it.hasNext()) {
+			Supernova s = it.next();
+			s.render(240, 24, t);
+			if (s.frame >= s.getMaxFrame())
+				it.remove();
+		}
 
 		v5.draw();
+	}
+
+	private static class Supernova extends Star {
+
+		private int ticksToHoldMiddle = 0; //frame 48
+		private int frame;
+		private int animationSpeed = 1;
+
+		private Supernova(int c, double s, double d0, double d1, double d2, double d3, double d9, double d10, double d12, double d13, double d16) {
+			super(c, 0, s, 0, 0, d0, d1, d2, d3, d9, d10, d12, d13, d16);
+		}
+
+		public static Supernova random(Random rand) {
+			Star s = Star.createRandomized(0, 0, 0, 0, rand);
+			if (s == null)
+				return null;
+			int c = 0xffffff;
+			switch(rand.nextInt(5)) {
+				case 0:
+					c = 0x7CD5FF;
+					break;
+				case 1:
+					c = 0xAC7CFF;
+					break;
+				case 2:
+					c = 0xFFF47C;
+					break;
+				case 3:
+					c = 0x7CFFF4;
+					break;
+			}
+			Supernova ret = new Supernova(c, ReikaRandomHelper.getRandomBetween(18D, 24D, rand), s.d0, s.d1, s.d2, s.d3, s.d9, s.d10, s.d12, s.d13, s.d16);
+			ret.animationSpeed = ReikaRandomHelper.getRandomBetween(1, 4, rand);
+			ret.ticksToHoldMiddle = rand.nextInt(20);
+			return ret;
+		}
+
+		@Override
+		protected void render(double d, float brightness, double time) {
+			/*
+			double d5 = d0 * d;
+			double d6 = d1 * d;
+			double d7 = d2 * d;
+			double u = (frame%12)/12D;
+			double v = (frame/12)/10D;
+			double du = u+1/12D;
+			double dv = v+1/10D;
+			Tessellator.instance.setColorOpaque_I(color);
+			Tessellator.instance.addVertexWithUV(d5, d6, d7, u, v);
+			Tessellator.instance.addVertexWithUV(d5+size, d6, d7, du, v);
+			Tessellator.instance.addVertexWithUV(d5+size, d6+size, d7, du, dv);
+			Tessellator.instance.addVertexWithUV(d5, d6+size, d7, u, dv);
+			 */
+
+			double u = (frame/animationSpeed%12)/12D;
+			double v = (frame/animationSpeed/12)/10D;
+
+			texU[0] = u;
+			texU[1] = texU[0];
+			texU[2] = u+1/12D;
+			texU[3] = texU[2];
+
+			texV[0] = v;
+			texV[3] = texV[0];
+			texV[1] = v+1/10D;
+			texV[2] = texV[1];
+
+			super.render(d, brightness, time);
+
+			if (frame == 48*animationSpeed && ticksToHoldMiddle > 0)
+				ticksToHoldMiddle--;
+			else if (frame < this.getMaxFrame())
+				frame++;
+		}
+
+		protected int getMaxFrame() {
+			return 120*animationSpeed-1;
+		}
+
 	}
 
 	private static class Star extends TexturedQuad {
 
 		public final int color;
-		private final double twinkleSpeed;
-		private final double twinkleAmplitude;
+		protected final double twinkleSpeed;
+		protected final double twinkleAmplitude;
 
 		private double twinkleOffset;
 
@@ -322,18 +424,18 @@ public class ChromaSkyRenderer extends IRenderHandler {
 		public final int textureIndex;
 		public final double size;
 
-		private final double[] texU;
-		private final double[] texV;
+		protected final double[] texU;
+		protected final double[] texV;
 
-		private final double d0;
-		private final double d1;
-		private final double d2;
-		private final double d3;
-		private final double d9;
-		private final double d10;
-		private final double d12;
-		private final double d13;
-		private final double d16;
+		protected final double d0;
+		protected final double d1;
+		protected final double d2;
+		protected final double d3;
+		protected final double d9;
+		protected final double d10;
+		protected final double d12;
+		protected final double d13;
+		protected final double d16;
 
 		private TexturedQuad(int tex, int rowWidth, double s, double d0, double d1, double d2, double d3, double d9, double d10, double d12, double d13, double d16) {
 			textureIndex = tex;

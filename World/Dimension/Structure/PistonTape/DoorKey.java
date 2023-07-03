@@ -102,6 +102,16 @@ public class DoorKey {
 			return ret;
 		}
 
+		@Override
+		public boolean acceptsType(Object o) {
+			return o instanceof DoorKey;
+		}
+
+		@Override
+		public boolean acceptsTag(NBTBase tag) {
+			return tag instanceof NBTTagCompound;
+		}
+
 	}
 
 }

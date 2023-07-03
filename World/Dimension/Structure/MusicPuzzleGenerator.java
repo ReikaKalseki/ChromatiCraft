@@ -148,38 +148,45 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 	}
 
 	static {
-		addPrefabMelody(MusicKey.C5, MusicKey.G4, MusicKey.A4, MusicKey.E4, MusicKey.F4, MusicKey.C4, MusicKey.F4, MusicKey.G4);
-		addPrefabMelody(MusicKey.G5, MusicKey.A5, MusicKey.B5, MusicKey.D6, MusicKey.C6, MusicKey.C6, MusicKey.E6, MusicKey.D6, MusicKey.D6, MusicKey.G6, MusicKey.Fs6, MusicKey.G6, MusicKey.D6, MusicKey.B5, MusicKey.G5, MusicKey.A5, MusicKey.B5, MusicKey.C6, MusicKey.D6, MusicKey.E6, MusicKey.D6, MusicKey.C6, MusicKey.B5, MusicKey.A5, MusicKey.B5, MusicKey.G5, MusicKey.Fs5, MusicKey.G5, MusicKey.A5, MusicKey.D5);
+		addPrefabMelody(8, MusicKey.C5, null, MusicKey.G4, null, MusicKey.A4, null, MusicKey.E4, null, MusicKey.F4, null, MusicKey.C4, null, MusicKey.F4, null, MusicKey.G4, null);
+		addPrefabMelody(8, MusicKey.G5, MusicKey.A5, MusicKey.B5, MusicKey.D6, MusicKey.C6, MusicKey.C6, MusicKey.E6, MusicKey.D6, MusicKey.D6, MusicKey.G6, MusicKey.Fs6, MusicKey.G6, MusicKey.D6, MusicKey.B5, MusicKey.G5, MusicKey.A5, MusicKey.B5, MusicKey.C6, MusicKey.D6, MusicKey.E6, MusicKey.D6, MusicKey.C6, MusicKey.B5, MusicKey.A5, MusicKey.B5, MusicKey.G5, MusicKey.Fs5, MusicKey.G5, MusicKey.A5, MusicKey.D5);
 
-		addPrefabMelody(MusicKey.F5, MusicKey.C5, MusicKey.F5, MusicKey.C5, MusicKey.F5, MusicKey.Cs5, MusicKey.Eb5, MusicKey.G5, MusicKey.Ab5, MusicKey.G5, MusicKey.Eb5, MusicKey.F5);
-		addPrefabMelody(MusicKey.A4, MusicKey.A4, MusicKey.C5, MusicKey.G4, MusicKey.E4, MusicKey.A4, MusicKey.C5, MusicKey.G4);
-		addPrefabMelody(MusicKey.A4, MusicKey.B4, MusicKey.Cs5, MusicKey.E5, MusicKey.A4, MusicKey.B4, MusicKey.Cs5, MusicKey.E5, MusicKey.A4, MusicKey.B4, MusicKey.C5, MusicKey.D5, MusicKey.B4);
-		addPrefabMelody(MusicKey.A4, MusicKey.B4, MusicKey.D5, MusicKey.B4, MusicKey.E5, MusicKey.Fs5, MusicKey.D5, MusicKey.B4, MusicKey.D5, MusicKey.B4, MusicKey.Cs5);
-		addPrefabMelody(MusicKey.G5, MusicKey.E5, MusicKey.D5, MusicKey.B4, MusicKey.E5, MusicKey.C5, MusicKey.G5, MusicKey.G5, MusicKey.B4, MusicKey.D5, MusicKey.G5, MusicKey.A5, MusicKey.Fs5);
-		addPrefabMelody(MusicKey.G4, MusicKey.D4, MusicKey.A4, MusicKey.D4, MusicKey.Bb4, MusicKey.D4, MusicKey.C5, MusicKey.D5, MusicKey.Bb4, MusicKey.Eb4, MusicKey.C5, MusicKey.Eb4, MusicKey.A4, MusicKey.Eb4, MusicKey.F4, MusicKey.D4);
-		addPrefabMelody(MusicKey.C5, MusicKey.D5, MusicKey.Eb5, MusicKey.C5, MusicKey.G4, MusicKey.Ab4, MusicKey.Bb4, MusicKey.G4, MusicKey.F4, MusicKey.G4, MusicKey.Ab4, MusicKey.Bb4, MusicKey.F4);
-		addPrefabMelody(MusicKey.Ab5, MusicKey.Eb5, MusicKey.Ab5, MusicKey.Eb6, MusicKey.B5, MusicKey.Ab5, MusicKey.B5, MusicKey.Ab5, MusicKey.B5, MusicKey.Eb5, MusicKey.Eb6, MusicKey.Ab5, MusicKey.Eb5, MusicKey.B5, MusicKey.Eb6, MusicKey.B5, MusicKey.B5, MusicKey.Ab5, MusicKey.B5, MusicKey.E6, MusicKey.Fs5, MusicKey.E6, MusicKey.B5, MusicKey.B5, MusicKey.Fs5, MusicKey.Bb5, MusicKey.Eb5, MusicKey.Cs6, MusicKey.B5);
+		addPrefabMelody(8, MusicKey.F5, MusicKey.C5, MusicKey.F5, MusicKey.C5, MusicKey.F5, MusicKey.Cs5, MusicKey.Eb5, MusicKey.G5, MusicKey.Ab5, MusicKey.G5, MusicKey.Eb5, MusicKey.F5);
+		addPrefabMelody(8, MusicKey.A4, MusicKey.A4, MusicKey.C5, MusicKey.G4, MusicKey.E4, MusicKey.A4, MusicKey.C5, MusicKey.G4);
+		addPrefabMelody(8, MusicKey.A4, MusicKey.B4, MusicKey.Cs5, MusicKey.E5, MusicKey.A4, MusicKey.B4, MusicKey.Cs5, MusicKey.E5, MusicKey.A4, MusicKey.B4, MusicKey.C5, MusicKey.D5, MusicKey.B4);
+		addPrefabMelody(8, MusicKey.A4, MusicKey.B4, MusicKey.D5, MusicKey.B4, MusicKey.E5, MusicKey.Fs5, MusicKey.D5, MusicKey.B4, MusicKey.D5, MusicKey.B4, MusicKey.Cs5);
+		addPrefabMelody(8, MusicKey.G5, MusicKey.E5, MusicKey.D5, MusicKey.B4, MusicKey.E5, MusicKey.C5, MusicKey.G5, null, MusicKey.B4, MusicKey.D5, MusicKey.G5, MusicKey.A5, MusicKey.Fs5);
+		addPrefabMelody(8, MusicKey.G4, MusicKey.D4, MusicKey.A4, MusicKey.D4, MusicKey.Bb4, MusicKey.D4, MusicKey.C5, MusicKey.D5, MusicKey.Bb4, MusicKey.Eb4, MusicKey.C5, MusicKey.Eb4, MusicKey.A4, MusicKey.Eb4, MusicKey.F4, MusicKey.D4);
+		addPrefabMelody(8, MusicKey.C5, MusicKey.D5, MusicKey.Eb5, MusicKey.C5, MusicKey.G4, MusicKey.Ab4, MusicKey.Bb4, MusicKey.G4, MusicKey.F4, MusicKey.G4, MusicKey.Ab4, MusicKey.Bb4, MusicKey.F4);
+		addPrefabMelody(8, MusicKey.Ab5, MusicKey.Eb5, MusicKey.Ab5, MusicKey.Eb6, MusicKey.B5, MusicKey.Ab5, MusicKey.B5, MusicKey.Ab5, MusicKey.B5, MusicKey.Eb5, MusicKey.Eb6, MusicKey.Ab5, MusicKey.Eb5, MusicKey.B5, MusicKey.Eb6, MusicKey.B5, MusicKey.B5, MusicKey.Ab5, MusicKey.B5, MusicKey.E6, MusicKey.Fs5, MusicKey.E6, MusicKey.B5, MusicKey.B5, MusicKey.Fs5, MusicKey.Bb5, MusicKey.Eb5, MusicKey.Cs6, MusicKey.B5);
 
-		addPrefabMelody(MusicKey.G5, MusicKey.D5, MusicKey.G5, MusicKey.D5, MusicKey.G5, MusicKey.Eb5, MusicKey.G5, MusicKey.Eb5, MusicKey.A5, MusicKey.Eb5, MusicKey.Bb5, MusicKey.Eb5, MusicKey.F5, MusicKey.D5, MusicKey.F5, MusicKey.D5, MusicKey.G5, MusicKey.D5, MusicKey.A5, MusicKey.D5, MusicKey.A5, MusicKey.D5, MusicKey.A5, MusicKey.F5, MusicKey.G5);
+		addPrefabMelody(8, MusicKey.G5, MusicKey.D5, MusicKey.G5, MusicKey.D5, MusicKey.G5, MusicKey.Eb5, MusicKey.G5, MusicKey.Eb5, MusicKey.A5, MusicKey.Eb5, MusicKey.Bb5, MusicKey.Eb5, MusicKey.F5, MusicKey.D5, MusicKey.F5, MusicKey.D5, MusicKey.G5, MusicKey.D5, MusicKey.A5, MusicKey.D5, MusicKey.A5, MusicKey.D5, MusicKey.A5, MusicKey.F5, MusicKey.G5);
 
-		addPrefabMelody(MusicKey.E5, MusicKey.E5, MusicKey.F5, MusicKey.G5, MusicKey.G5, MusicKey.F5, MusicKey.E5, MusicKey.D5, MusicKey.C5, MusicKey.C5, MusicKey.D5, MusicKey.E5, MusicKey.E5, MusicKey.D5, MusicKey.D5, MusicKey.D5, MusicKey.E5, MusicKey.E5, MusicKey.F5, MusicKey.G5, MusicKey.G5, MusicKey.F5, MusicKey.E5, MusicKey.D5, MusicKey.C5, MusicKey.C5, MusicKey.D5, MusicKey.E5, MusicKey.D5, MusicKey.C5, MusicKey.C5);
+		addPrefabMelody(8, MusicKey.E5, MusicKey.E5, MusicKey.F5, MusicKey.G5, MusicKey.G5, MusicKey.F5, MusicKey.E5, MusicKey.D5, MusicKey.C5, MusicKey.C5, MusicKey.D5, MusicKey.E5, MusicKey.E5, null, MusicKey.D5, MusicKey.D5, null, MusicKey.E5, MusicKey.E5, MusicKey.F5, MusicKey.G5, MusicKey.G5, MusicKey.F5, MusicKey.E5, MusicKey.D5, MusicKey.C5, MusicKey.C5, MusicKey.D5, MusicKey.E5, MusicKey.D5, null, MusicKey.C5, MusicKey.C5);
+
+		addPrefabMelody(7, MusicKey.D5, null, MusicKey.A5, null, MusicKey.Cs6, null, null, MusicKey.A5, MusicKey.D6, MusicKey.Cs6, MusicKey.B5, MusicKey.A5, MusicKey.B5, MusicKey.Cs6, MusicKey.A5, MusicKey.E5, null, MusicKey.A5, null, MusicKey.Cs6, null, null, MusicKey.A5, MusicKey.D6, MusicKey.Cs6, MusicKey.B5, MusicKey.A5, MusicKey.B5, MusicKey.Cs6, MusicKey.E6, MusicKey.Cs6, MusicKey.A5);
+		addPrefabMelody(5, MusicKey.G5, null, null, MusicKey.D5, null, null, MusicKey.G5, null, null, MusicKey.D5, null, null, MusicKey.G5, null, MusicKey.A5, null, MusicKey.G5, null, null, MusicKey.Fs5, null, null, MusicKey.G5, null, null, MusicKey.Fs5, null, null, MusicKey.C6, null, MusicKey.B5, null, MusicKey.G5, null, null, MusicKey.D5, null, null, MusicKey.B4, null, null, MusicKey.G5, null, null, MusicKey.C5, null, MusicKey.B4, null, MusicKey.A5, null, null, MusicKey.B5, null, null, MusicKey.A5, null, null, MusicKey.B5, null, null, MusicKey.A5, MusicKey.B5, MusicKey.D6, MusicKey.B5, MusicKey.G5);
 	}
 
-	private static void addPrefabMelody(MusicKey... notes) {
+	private static void addPrefabMelody(int pace, MusicKey... notes) {
 		ArrayList<MusicKey> li = ReikaJavaLibrary.makeListFrom(notes);
 		int shift = verify(li);
 		if (shift > 0) {
 			for (int i = 0; i < li.size(); i++) {
-				li.set(i, li.get(i).getInterval(shift));
+				MusicKey mus = li.get(i);
+				if (mus != null)
+					li.set(i, mus.getInterval(shift));
 			}
 		}
-		prefabs.add(new MelodyPrefab(li));
+		prefabs.add(new MelodyPrefab(pace, li));
 	}
 
 	private static int verify(ArrayList<MusicKey> li) {
 		for (int d = 0; d < 12; d++) {
 			boolean flag = true;
 			for (MusicKey key : li) {
+				if (key == null)
+					continue;
 				if ((d != 0 && key.getInterval(d) == key) || !CrystalMusicManager.instance.canPlayKey(key.getInterval(d))) {
 					flag = false;
 					break;
@@ -191,6 +198,8 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 		for (int d = -1; d > -12; d--) {
 			boolean flag = true;
 			for (MusicKey key : li) {
+				if (key == null)
+					continue;
 				if ((d != 0 && key.getInterval(d) == key) || !CrystalMusicManager.instance.canPlayKey(key.getInterval(d))) {
 					flag = false;
 					break;
@@ -207,8 +216,10 @@ public class MusicPuzzleGenerator extends DimensionStructureGenerator {
 		private final ArrayList<MusicKey> notes;
 		public final CrystalElement center;
 		public final KeySignature key;
+		public final int playbackRate;
 
-		private MelodyPrefab(ArrayList<MusicKey> li) {
+		private MelodyPrefab(int rate, ArrayList<MusicKey> li) {
+			playbackRate = rate;
 			notes = li;
 			key = ReikaMusicHelper.KeySignature.findSignature(li);
 			center = key != null ? CrystalMusicManager.instance.getColorForKeySignature(key) : null;

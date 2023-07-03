@@ -50,6 +50,8 @@ public class MusicPuzzle extends StructurePiece<MusicPuzzleGenerator> implements
 
 	public boolean isSolved = false;
 
+	private int playSpeed = 8;
+
 	public Coordinate controllerLocation;
 
 	public MusicPuzzle(MusicPuzzleGenerator s, int len, int idx) {
@@ -134,9 +136,14 @@ public class MusicPuzzle extends StructurePiece<MusicPuzzleGenerator> implements
 		List<MusicKey> li = pre.getNotes();
 		melody.clear();
 		melody.addAll(li);
+		playSpeed = pre.playbackRate;
 		length = li.size();
 		signature = pre.key;
 		center = pre.center;
+	}
+
+	public int getPlaySpeed() {
+		return playSpeed;
 	}
 
 	public List<MusicKey> getMelody() {

@@ -179,7 +179,6 @@ import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityExplosionShield;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityProtectionUpgrade;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalBroadcaster;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalRepeater;
-import Reika.ChromatiCraft.TileEntity.Networking.TileEntityWirelessSource;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityHeatLily;
 import Reika.ChromatiCraft.TileEntity.Processing.TileEntityAutoEnchanter;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
@@ -754,26 +753,15 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void clearCachedTiles(SinglePlayerLogoutEvent evt) {
-		TileEntityItemCollector.clearCache();
-		TileEntityLocusPoint.clearCache();
-		TileEntityLampController.clearCache();
-		TileEntityChromaLamp.clearCache();
-		TileEntityCloakingTower.clearCache();
-		TileEntityCrystalBeacon.clearCache();
-		TileEntityMultiBuilder.clearCache();
-		TileEntityExplosionShield.clearCache();
-		TileEntityWirelessSource.clearCache();
-		TileEntityVoidMonsterTrap.clearCache();
-		TileEntityAuraInfuser.clearCache();
-		BlockFakeSky.clearCache();
-		MonumentCompletionRitual.clearRituals();
-		LoreManager.instance.clearOnLogout();
-		WarpNetwork.instance.clear();
-		EndOverhaulManager.instance.clear();
+		this.clearCaches();
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void clearCachedTiles(ClientDisconnectionFromServerEvent evt) {
+		this.clearCaches();
+	}
+
+	public void clearCaches() {
 		TileEntityItemCollector.clearCache();
 		TileEntityLocusPoint.clearCache();
 		TileEntityLampController.clearCache();

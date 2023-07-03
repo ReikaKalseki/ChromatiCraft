@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.Registry;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.StatCollector;
 
 import Reika.ChromatiCraft.ChromatiCraft;
@@ -62,7 +61,7 @@ public enum AdjacencyUpgrades {
 
 	private final Class tileClass;
 
-	private TileEntity renderInstance;
+	private TileEntityAdjacencyUpgrade renderInstance;
 
 	public static final AdjacencyUpgrades[] upgrades = values();
 
@@ -77,7 +76,7 @@ public enum AdjacencyUpgrades {
 	}
 
 	@SideOnly(Side.CLIENT)
-	public TileEntity createTEInstanceForRender() {
+	public TileEntityAdjacencyUpgrade createTEInstanceForRender() {
 		if (renderInstance == null) {
 			renderInstance = this.createTileEntity();
 		}

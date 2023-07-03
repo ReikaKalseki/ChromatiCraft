@@ -303,6 +303,23 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		return set;
 	}
 
+	public static void buildTileEffectCache() {/*
+		try {
+			Field f = TileEntity.class.getDeclaredField("classToNameMap");
+			f.setAccessible(true);
+			Map<Class<? extends TileEntity>, String> map = (Map<Class<? extends TileEntity>, String>)f.get(null);
+			for (CrystalElement e : CrystalElement.elements) {
+				TileEntityAdjacencyUpgrade te = AdjacencyUpgrades.upgrades[e.ordinal()].createTEInstanceForRender();
+				te.buildTileEffectCache(map.keySet());
+			}
+		}
+		catch (Exception e) {
+			throw new RegistrationException(ChromatiCraft.instance, "Could not build Tile Adjacency effect cache!", e);
+		}*/
+	}
+
+	//protected abstract void buildTileEffectCache(Collection<Class<? extends TileEntity>> c);
+
 	protected static enum EffectResult {
 		ACTION(true, true),
 		FINAL_ACTION(true, false),

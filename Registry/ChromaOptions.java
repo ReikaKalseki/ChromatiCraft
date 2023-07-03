@@ -96,7 +96,7 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	METEORFIRE("Meteor Tower Projectiles Start Fires On Impact", true),
 	PANELLAMPCOLLISION("Panel-Form Lumen Lamps Have No Hitbox", false),
 	EPILEPSY("Epilepsy Mode", false),
-	PYLONOVERWORLD("Spawn Pylons in Overworld", true),
+	//PYLONOVERWORLD("Spawn Pylons in Overworld", true),
 	RFEFFICIENCY("Wireless RF Transmission Efficiency (%)", 100F),
 	LAUNCHPOWER("Launch Pad Power", 1F),
 	FENCEHOPS("Crystal Fence segment count limit", 64),
@@ -360,8 +360,8 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	@Override
 	public boolean saveIfUnspecified() {
 		switch(this) {
-			case PYLONOVERWORLD:
-				return false;
+			//case PYLONOVERWORLD:
+			//	return false;
 			default:
 				return true;
 		}
@@ -370,8 +370,8 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	@Override
 	public String getCustomConfigFile() {
 		switch(this) {
-			case PYLONOVERWORLD:
-				return "*_ExtraOptions";
+			//case PYLONOVERWORLD:
+			//	return "*_ExtraOptions";
 			default:
 				return null;
 		}
@@ -380,8 +380,8 @@ public enum ChromaOptions implements SegmentedConfigList, SelectiveConfig, Integ
 	@Override
 	public boolean isAccessible() {
 		switch(this) {
-			case PYLONOVERWORLD:
-				return t2ConfigModel;
+			//case PYLONOVERWORLD:
+			//	return t2ConfigModel;
 			default:
 				return true;
 		}

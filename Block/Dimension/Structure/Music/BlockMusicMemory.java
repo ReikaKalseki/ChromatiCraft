@@ -115,7 +115,8 @@ public class BlockMusicMemory extends BlockDimensionStructureTile {
 
 		private ForgeDirection facing = ForgeDirection.NORTH;
 
-		private static final int DELAY = 10; //120 bpm, 8th notes
+		private static final int BASE_DELAY = 10; //120 bpm, 8th notes
+		private int playSpeed = BASE_DELAY;
 
 		private int correctIndex = -1;
 
@@ -123,6 +124,7 @@ public class BlockMusicMemory extends BlockDimensionStructureTile {
 
 		public void program(MusicPuzzle m, int idx) {
 			keys = m.getMelody();
+			playSpeed = m.getPlaySpeed()*BASE_DELAY/8;
 			structureIndex = idx;
 		}
 
@@ -142,6 +144,8 @@ public class BlockMusicMemory extends BlockDimensionStructureTile {
 
 		private void addCorrect() {
 			correctIndex++;
+			while (correctIndex < keys.size()-1 && keys.get(correctIndex+1) == null)
+				correctIndex++;
 			if (correctIndex == keys.size()-1) {
 				this.complete();
 			}
@@ -184,7 +188,7 @@ public class BlockMusicMemory extends BlockDimensionStructureTile {
 					else {
 						this.playKey(keys.get(index));
 						index++;
-						tick = DELAY;
+						tick = playSpeed;
 					}
 				}
 			}
@@ -206,7 +210,8 @@ public class BlockMusicMemory extends BlockDimensionStructureTile {
 		}
 		 */
 		private void playKey(MusicKey key) {
-			ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.MUSICPLAY.ordinal(), this, 24, key.ordinal());
+			if (key != null)
+				ReikaPacketHelper.sendDataPacketWithRadius(ChromatiCraft.packetChannel, ChromaPackets.MUSICPLAY.ordinal(), this, 24, key.ordinal());
 			//ReikaJavaLibrary.pConsole(key);
 		}
 
@@ -258,7 +263,7 @@ public class BlockMusicMemory extends BlockDimensionStructureTile {
 				return;
 			isPlaying = true;
 			index = 0;
-			tick = DELAY;
+			tick = playSpeed;
 		}
 
 		@Override
@@ -267,7 +272,7 @@ public class BlockMusicMemory extends BlockDimensionStructureTile {
 
 			NBTTagList li = new NBTTagList();
 			for (MusicKey key : keys) {
-				li.appendTag(new NBTTagInt(key.ordinal()));
+				li.appendTag(new NBTTagInt(key == null ? -1 : key.ordinal()));
 			}
 
 			NBT.setTag("keys", li);

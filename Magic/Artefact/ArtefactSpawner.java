@@ -202,6 +202,10 @@ public class ArtefactSpawner implements TickHandler {
 		lastShaderTime = ep.worldObj.getTotalWorldTime();
 	}
 
+	public static void resetShader() {
+		lastShaderTime = -1;
+	}
+
 	@SideOnly(Side.CLIENT)
 	private void updateShader(World world) {
 		if (this.isShaderActive(world)) {
@@ -218,7 +222,7 @@ public class ArtefactSpawner implements TickHandler {
 	}
 
 	public boolean isShaderActive(World world) {
-		return world.getTotalWorldTime()-lastShaderTime <= 10;
+		return lastShaderTime >= 0 && world.getTotalWorldTime()-lastShaderTime <= 10;
 	}
 
 	public static class SpawnedArtefact {

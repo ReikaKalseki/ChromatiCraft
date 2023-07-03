@@ -70,6 +70,16 @@ public class RainbowTreeEffects {
 			return nbt;
 		}
 
+		@Override
+		public boolean acceptsType(Object o) {
+			return o instanceof PersistentRainbowTreeFX;
+		}
+
+		@Override
+		public boolean acceptsTag(NBTBase tag) {
+			return tag instanceof NBTTagCompound;
+		}
+
 	};
 
 	private RainbowTreeEffects() {
