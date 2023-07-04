@@ -24,6 +24,7 @@ import net.minecraft.item.ItemStack;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
+import Reika.ChromatiCraft.GUI.Book.GuiCastingRecipe;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
@@ -78,6 +79,9 @@ public abstract class ChromaBookGui extends GuiScreen implements CustomSoundGui 
 		guiType = t;
 
 		cacheMouse = true;
+
+		GuiCastingRecipe.runeHintRecipe = null;
+		lastGui = null;
 	}
 
 	protected final ItemStack getBook() {

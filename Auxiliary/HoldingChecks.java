@@ -4,10 +4,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.ThaumItemHelper;
 
@@ -20,6 +22,7 @@ public enum HoldingChecks {
 	FOCUSCRYSTAL(),
 	DELEGATE,
 	POWERCRYS,
+	RUNE,
 	REPEATER();
 
 	private float fade;
@@ -63,6 +66,8 @@ public enum HoldingChecks {
 				return ChromaItems.PLACER.matchWith(is) && is.getItemDamage() == ChromaTiles.CRYSTAL.ordinal();
 			case REPEATER:
 				return ChromaItems.PLACER.matchWith(is) && ChromaTiles.TEList[is.getItemDamage()].isRepeater();
+			case RUNE:
+				return ReikaItemHelper.matchStackWithBlock(is, ChromaBlocks.RUNE.getBlockInstance());
 			default:
 				return false;
 		}

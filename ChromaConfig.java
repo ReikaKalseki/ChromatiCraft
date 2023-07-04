@@ -16,6 +16,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner.MineralCategory;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
 import Reika.DragonAPI.Base.DragonAPIMod;
@@ -36,6 +37,7 @@ public class ChromaConfig extends ControlledConfig {
 	private final DataElement<Boolean>[] trees = new DataElement[treeLength+vanillaTreeCount];
 	private final DataElement<Float>[] dyeChances = new DataElement[ReikaJavaLibrary.getEnumLengthWithoutInitializing(CrystalElement.class)];
 	private DataElement<String[]> guardianExceptions;
+	private DataElement<String[]> customMinerBlocks;
 	private Key superbuildKey;
 
 	private DataElement<int[]> structureDimensionBlacklist;
@@ -61,6 +63,7 @@ public class ChromaConfig extends ControlledConfig {
 		this.registerProperty("t2ConfigModel", ReikaJVMParser.isArgumentPresent("-ChromaTrustingConfigModel"));
 
 		guardianExceptions = this.registerAdditionalOption("Other Options", "Guardian Stone Exceptions", this.getDefaultGuardstoneExceptions());
+		customMinerBlocks = this.registerAdditionalOption("Other Options", "Custom Mineral Extractor Mappings", this.getDefaultMinerblockConfig());
 
 		structureDimensionBlacklist = this.registerAdditionalOption("Other Options", "Structure Dimension Blacklist", new int[0]);
 	}
@@ -85,8 +88,21 @@ public class ChromaConfig extends ControlledConfig {
 		return li.toArray(new String[li.size()]);
 	}
 
+	private String[] getDefaultMinerblockConfig() {
+		ArrayList<String> li = new ArrayList();
+		for (MineralCategory cat : MineralCategory.values()) {
+			if (cat != MineralCategory.ANY)
+				li.add("none#"+cat.name());
+		}
+		return li.toArray(new String[li.size()]);
+	}
+
 	public ArrayList<String> getGuardianExceptions() {
 		return ReikaJavaLibrary.makeListFromArray(guardianExceptions.getData());
+	}
+
+	public ArrayList<String> getMinerBlockExtras() {
+		return ReikaJavaLibrary.makeListFromArray(customMinerBlocks.getData());
 	}
 
 	private static ArrayList<String> getModTrees() {

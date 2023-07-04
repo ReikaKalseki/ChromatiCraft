@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -181,6 +181,7 @@ public class ItemBuilderWand extends ItemWandBase {
 		if (!this.sufficientEnergy(ep))
 			return false;
 		world.setBlock(x, y, z, b, m, 3);
+		b.onBlockPlacedBy(world, x, y, z, ep, new ItemStack(b, 1, m));
 		if (!ep.capabilities.isCreativeMode) {
 			this.drainPlayer(ep);
 			ReikaPlayerAPI.findAndDecrItem(ep, b, m);

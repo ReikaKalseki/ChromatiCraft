@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.Base.TileEntity;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -192,6 +193,11 @@ public abstract class TileEntityLocusPoint extends TileEntityChromaticBase imple
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		this.readOwnerData(is);
+	}
+
+	@Override
+	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+
 	}
 
 }

@@ -18,6 +18,7 @@ import com.bioxx.tfc.api.Interfaces.ISize;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -26,6 +27,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MovingObjectPosition;
@@ -37,7 +39,6 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.ModInterface.ThaumCraft.TileEntityAspectJar;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -293,15 +294,26 @@ public class ItemChromaPlacer extends Item implements ISize {
 	@Override
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
 		ChromaTiles r = ChromaTiles.TEList[is.getItemDamage()];
+		if (is.stackTagCompound != null) {
+			int offset = 0;
+			if (r == ChromaTiles.ADJACENCY)
+				offset = is.getItemDamage();
+			TileEntity te = r.createTEInstanceForRender(offset);
+			if (te instanceof NBTTile) {
+				NBTTile nb = (NBTTile)te;
+				nb.setDataFromItemStackTag(is);
+				nb.addTooltipInfo(li, is, GuiScreen.isShiftKeyDown());
+			}
+		}
 		if (r == ChromaTiles.GUARDIAN) {
 			li.add(String.format("Protects a radius-%d area", TileEntityGuardianStone.RANGE));
 		}
 		if (r == ChromaTiles.ADJACENCY) {
 			li.add(EnumChatFormatting.GOLD+"This item is deprecated! Craft it into the new version!");
-		}
+		}/*
 		if (r == ChromaTiles.ASPECTJAR && is.stackTagCompound != null && ModList.THAUMCRAFT.isLoaded()) {
 			li.addAll(TileEntityAspectJar.parseNBT(is.stackTagCompound));
-		}
+		}*/
 		if (r == ChromaTiles.FOCUSCRYSTAL) {
 			if (ItemStack.areItemStackTagsEqual(is, CrystalTier.TURBOCHARGED.getCraftedItem()))
 				li.add("Turbocharged");

@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Acquisition;
 
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -195,6 +197,11 @@ public class TileEntityCollector extends FluidIOInventoryBase implements OwnedTi
 	@Override
 	public int getChromaLevel() {
 		return output.getLevel();
+	}
+
+	@Override
+	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+
 	}
 
 }

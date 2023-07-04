@@ -19,7 +19,6 @@ import net.minecraft.item.ItemStack;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Registry.ChromaItems;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.DragonAPI.Instantiable.BasicInventory;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -88,6 +87,9 @@ public class ContainerAuraPouch extends Container {
 	public ItemStack slotClick(int slot, int button, int par3, EntityPlayer ep) {
 		boolean inGUI = slot < ItemAuraPouch.SIZE && slot >= 0;
 		if (inGUI) {
+			if (ChromaItems.AURAPOUCH.matchWith(ep.inventory.getStackInSlot(slot))) {
+				return ep.inventory.getItemStack();
+			}
 			if (button == 1) {
 				ItemStack is = player.getCurrentEquippedItem();
 				ItemAuraPouch iil = (ItemAuraPouch)is.getItem();
@@ -101,7 +103,7 @@ public class ContainerAuraPouch extends Container {
 		}
 		else if (slot >= ItemAuraPouch.SIZE+27) {
 			ItemStack in = ep.inventory.getStackInSlot(slot-ItemAuraPouch.SIZE-27);
-			if (ChromaItems.AURAPOUCH.matchWith(in) && !ChromaOptions.RECURSIVEPOUCH.getState()) {
+			if (ChromaItems.AURAPOUCH.matchWith(in)/* && !ChromaOptions.RECURSIVEPOUCH.getState()*/) { //introduces ability to move item and close gui
 				return ep.inventory.getItemStack();
 			}
 		}

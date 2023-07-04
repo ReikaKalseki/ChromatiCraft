@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.TileEntity.Auxiliary;
 
 import java.util.Collection;
+import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.EntityFX;
@@ -335,6 +336,11 @@ public class TileEntityFocusCrystal extends TileEntityChromaticBase implements N
 				((FocusAcceleratable)tgt).recountFocusCrystals();
 			}
 		}
+	}
+
+	@Override
+	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+
 	}
 
 }

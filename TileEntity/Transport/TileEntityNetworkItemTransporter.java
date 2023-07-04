@@ -3,6 +3,7 @@ package Reika.ChromatiCraft.TileEntity.Transport;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import net.minecraft.client.Minecraft;
@@ -507,6 +508,14 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 			this.syncAllData(true);
 	}
 
+	@Override
+	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+		for (Request r : requestFilters) {
+			if (r != null)
+				li.add(r.getDisplayString());
+		}
+	}
+
 	private void buildFilterSet() {
 		requestKeys.clear();
 		for (int i = 0; i < requestFilters.length; i++) {
@@ -547,6 +556,10 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 		private Request(int i) {
 			inventorySlot = i+12;
 			index = i;
+		}
+
+		public String getDisplayString() {
+			return item.getDisplayName()+" x"+requestAmount;
 		}
 
 		private void tick() {

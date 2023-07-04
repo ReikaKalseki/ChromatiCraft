@@ -16,6 +16,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,6 +35,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 import Reika.ChromatiCraft.API.Event.CastingEvent;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Auxiliary.CrystalNetworkLogger.FlowFail;
@@ -51,8 +53,10 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.TempleCastingR
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipes.Items.CrystalGroupRecipe;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
+import Reika.ChromatiCraft.GUI.Book.GuiCastingRecipe;
 import Reika.ChromatiCraft.Magic.CrystalTarget;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
+import Reika.ChromatiCraft.Magic.RuneShape;
 import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningManager;
 import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningMismatchReaction;
 import Reika.ChromatiCraft.Magic.Network.CrystalFlow;
@@ -108,6 +112,7 @@ import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaDyeHelper;
@@ -228,6 +233,9 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 		if (world.isRemote) {
 			ChromaFX.doFocusCrystalParticles(world, x, y, z, this);
+			if (/*HoldingChecks.RUNE.isClientHolding()*/this.isAtLeast(CastingRecipe.RecipeType.TEMPLE)) {
+				this.doRuneHintFX(world, x, y, z);
+			}
 			if (ChromaTiles.getTile(world, x, y+5, z) != ChromaTiles.AUTOMATOR && HoldingChecks.DELEGATE.isClientHolding()) {
 				this.doDelegateFX(world, x, y, z);
 			}
@@ -307,6 +315,19 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		 */
 
 		//ReikaJavaLibrary.pConsole(hasStructure, Side.SERVER);
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void doRuneHintFX(World world, int x, int y, int z) {
+		if (GuiCastingRecipe.runeHintRecipe != null) {
+			for (Entry<List<Integer>, CrystalElementProxy> e : GuiCastingRecipe.runeHintRecipe.getRunePositions().entrySet()) {
+				List<Integer> li = e.getKey();
+				Coordinate c = new Coordinate(li.get(0), li.get(1), li.get(2));
+				c = RuneShape.modifyRuneBySeed(c, world);
+				c = c.setY(0);
+				ChromaFX.doPlacementHintParticles(world, x, y, z, Arrays.asList(c), f -> f.setColor(e.getValue().getColor()));
+			}
+		}
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -730,12 +751,13 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 				map.put(dir, li);
 			}
 			TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)c.getTileEntity(worldObj);
-			if (te != null)
+			if (te != null) {
 				te.markAsTableGrouped(false);
-			CrystalElement e = te.getActiveColor();
-			if (e != null && hasPylonConnections) {
-				li.add(e);
-				locations.put(e, c);
+				CrystalElement e = te.getActiveColor();
+				if (e != null && hasPylonConnections) {
+					li.add(e);
+					locations.put(e, c);
+				}
 			}
 		}
 		if (!hasPylonConnections || locations.size() != CrystalElement.elements.length) //fail if any duplicates
@@ -1687,5 +1709,10 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 	}
 	 */
+
+	@Override
+	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+		li.add("Tier "+ReikaStringParser.parseRomanRumeral(this.getTier().ordinal()));
+	}
 
 }

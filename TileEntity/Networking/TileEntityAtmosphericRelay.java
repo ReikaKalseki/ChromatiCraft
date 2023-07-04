@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Networking;
 
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -179,6 +181,11 @@ public class TileEntityAtmosphericRelay extends CrystalTransmitterBase implement
 
 	public boolean canBeSuppliedBy(CrystalSource te, CrystalElement e) {
 		return true;
+	}
+
+	@Override
+	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+
 	}
 
 }

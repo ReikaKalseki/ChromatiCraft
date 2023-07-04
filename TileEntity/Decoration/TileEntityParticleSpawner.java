@@ -48,6 +48,8 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 
 	public float renderOpacity = 1F;
 
+	private int tick;
+
 	@Override
 	public ChromaTiles getTile() {
 		return ChromaTiles.PARTICLES;
@@ -56,8 +58,11 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		if (world.isRemote) {
-			if (!this.hasRedstoneSignal())
+			if (this.hasRedstoneSignal())
+				tick = 0;
+			else
 				this.spawnParticles(world, x, y, z);
+			tick++;
 		}
 	}
 
@@ -68,7 +73,7 @@ public class TileEntityParticleSpawner extends TileEntityChromaticBase implement
 
 	@SideOnly(Side.CLIENT)
 	private void spawnParticles(World world, int x, int y, int z) {
-		EntityFX fx = particles.getFX(this.getTicksExisted());
+		EntityFX fx = particles.getFX(tick);
 		if (fx != null) {
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}

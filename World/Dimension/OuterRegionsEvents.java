@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
 import Reika.ChromatiCraft.Auxiliary.ChromaTeleporter;
 import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
+import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
@@ -48,6 +49,7 @@ public class OuterRegionsEvents {
 	}
 
 	public void tickPlayerInOuterRegion(EntityPlayer ep) {
+		ProgressStage.FARLANDS.stepPlayerTo(ep);
 		if (ep.worldObj.rand.nextInt(400) == 0) {
 			AxisAlignedBB box = ReikaAABBHelper.getEntityCenteredAABB(ep, 192);
 			if (ep.worldObj.getEntitiesWithinAABB(EntityDimensionFlare.class, box).size() < 8)

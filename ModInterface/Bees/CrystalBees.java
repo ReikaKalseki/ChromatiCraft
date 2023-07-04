@@ -1027,7 +1027,7 @@ public class CrystalBees {
 			if (!ReikaMathLibrary.isValueInsideBoundsIncl(8, 32, ReikaWorldHelper.getAmbientTemperatureAt(world, x, y, z)))
 				return false;
 
-			return rand.nextInt(3) > 0 || ProgressStage.SHARDCHARGE.isPlayerAtStage(world, ibh.getOwner().getId());
+			return rand.nextInt(3) > 0 || ChromaBeeHelpers.checkProgression(world, ibh, ProgressStage.SHARDCHARGE);
 		}
 
 		@Override

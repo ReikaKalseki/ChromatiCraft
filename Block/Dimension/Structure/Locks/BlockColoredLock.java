@@ -85,10 +85,12 @@ public class BlockColoredLock extends BlockDimensionStructureTile {
 		if (te.isOpen) {
 			if (world.getBlockMetadata(x, y, z) == 0) {
 				CrystalElement e = ReikaJavaLibrary.getRandomCollectionEntry(rand, te.colors);
-				float r = e.getRed()/255F;
-				float g = e.getGreen()/255F;
-				float b = e.getBlue()/255F;
-				ReikaParticleHelper.spawnColoredParticles(world, x, y, z, r, g, b, 3);
+				if (e != null) {
+					float r = e.getRed()/255F;
+					float g = e.getGreen()/255F;
+					float b = e.getBlue()/255F;
+					ReikaParticleHelper.spawnColoredParticles(world, x, y, z, r, g, b, 3);
+				}
 			}
 		}
 	}

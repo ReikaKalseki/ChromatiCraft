@@ -1,5 +1,7 @@
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import java.util.List;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -17,6 +19,11 @@ public abstract class TileEntityPylonEnhancer extends TileEntityChromaticBase im
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		this.readOwnerData(is);
+	}
+
+	@Override
+	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+
 	}
 
 }

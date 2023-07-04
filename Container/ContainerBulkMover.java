@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -52,8 +52,12 @@ public class ContainerBulkMover extends Container {
 			inventory.setInventorySlotContents(slot, is);
 			return held;
 		}
-		else
+		else if (ChromaItems.BULKMOVER.matchWith(ep.inventory.getStackInSlot(slot-1-27))) {
+			return ep.inventory.getItemStack();
+		}
+		else {
 			return super.slotClick(slot, par2, par3, ep);
+		}
 	}
 
 	@Override

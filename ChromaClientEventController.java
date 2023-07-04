@@ -102,6 +102,7 @@ import Reika.ChromatiCraft.GUI.GuiAuraPouch;
 import Reika.ChromatiCraft.GUI.GuiFragmentSelect;
 import Reika.ChromatiCraft.GUI.GuiItemBurner.ButtonItemBurner;
 import Reika.ChromatiCraft.GUI.GuiItemWithFilter;
+import Reika.ChromatiCraft.GUI.Book.GuiCastingRecipe;
 import Reika.ChromatiCraft.Items.Tools.ItemFloatstoneBoots;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemBuilderWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemCaptureWand;
@@ -1034,12 +1035,15 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	@SubscribeEvent
 	public void clearSavedGui(ClientLoginEvent evt) {
 		ChromaBookGui.lastGui = null;
+		GuiCastingRecipe.runeHintRecipe = null;
 	}
 
 	@SubscribeEvent
 	public void clearSavedGui(LivingDeathEvent evt) {
-		if (evt.entityLiving == Minecraft.getMinecraft().thePlayer)
+		if (evt.entityLiving == Minecraft.getMinecraft().thePlayer) {
 			ChromaBookGui.lastGui = null;
+			GuiCastingRecipe.runeHintRecipe = null;
+		}
 	}
 
 	@SubscribeEvent
@@ -1093,11 +1097,13 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	@SubscribeEvent
 	public void clearLexiconCache(SinglePlayerLogoutEvent evt) {
 		ChromaBookGui.lastGui = null;
+		GuiCastingRecipe.runeHintRecipe = null;
 	}
 
 	@SubscribeEvent
 	public void clearLexiconCache(ClientLogoutEvent evt) {
 		ChromaBookGui.lastGui = null;
+		GuiCastingRecipe.runeHintRecipe = null;
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

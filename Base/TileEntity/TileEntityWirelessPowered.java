@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Base.TileEntity;
 
 import java.util.Collection;
+import java.util.List;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -110,6 +111,11 @@ public abstract class TileEntityWirelessPowered extends TileEntityChromaticBase 
 		if (is.stackTagCompound == null)
 			return;
 		energy.readFromNBT("energy", is.stackTagCompound);
+	}
+
+	@Override
+	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+
 	}
 
 }

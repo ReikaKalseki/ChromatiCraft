@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity.Networking;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
@@ -771,6 +772,11 @@ public class TileEntityCrystalRepeater extends CrystalTransmitterBase implements
 	@Override
 	public int getSensitivityRadius() {
 		return 5;
+	}
+
+	@Override
+	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+
 	}
 
 }

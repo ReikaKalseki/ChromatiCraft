@@ -614,7 +614,7 @@ public class CastingRecipe implements APICastingRecipe {
 			if (e != null) {
 				if (e != color) {
 					if (this instanceof ConfigRecipe.Rune || this instanceof ConfigRecipe.Multi || this instanceof ConfigRecipe.Pylon) {
-						throw new IllegalArgumentException("Rune conflict @ "+x+", "+y+", "+z+": "+color+"("+color.ordinal()+") over "+e+"("+e.ordinal()+");");
+						throw new IllegalArgumentException("Rune conflict @ "+x+", "+y+", "+z+": "+color+"("+color.ordinal()+") over "+e+"("+e.ordinal()+"); map:=\n"+this.getRuneMap(y));
 					}
 					else {
 						throw new RegistrationException(ChromatiCraft.instance, "Rune conflict @ "+x+", "+y+", "+z+": "+color+"("+color.ordinal()+") over "+e+"("+e.ordinal()+"); map:=\n"+this.getRuneMap(y));

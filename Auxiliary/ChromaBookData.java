@@ -58,12 +58,12 @@ public class ChromaBookData {
 	private static final int[][] permuOffset = new int[5][5];
 	private static final Random rand = new Random();
 
-	public static void drawPage(FontRenderer fr, RenderItem ri, ChromaResearch h, int subpage, int recipe, int posX, int posY) {
+	public static void drawPage(FontRenderer fr, RenderItem ri, ChromaResearch h, int subpage, int recipe, int posX, int posY, boolean isBook) {
 		if (h.isCrafting()) {
 			ArrayList<CastingRecipe> li = h.getCraftingRecipes();
 			if (!li.isEmpty()) {
 				CastingRecipe c = li.get(recipe);
-				drawCastingRecipe(fr, ri, c, subpage, posX, posY);
+				drawCastingRecipe(fr, ri, c, subpage, posX, posY, isBook);
 				if (h.getTitle().isEmpty()) {
 					fr.drawString(c.getOutputForDisplay().getDisplayName(), posX+6, posY-2, 0);
 				}
@@ -71,7 +71,7 @@ public class ChromaBookData {
 		}
 	}
 
-	public static void drawCastingRecipe(FontRenderer fr, RenderItem ri, CastingRecipe c, int subpage, int posX, int posY) {
+	public static void drawCastingRecipe(FontRenderer fr, RenderItem ri, CastingRecipe c, int subpage, int posX, int posY, boolean isBook) {
 		rand.setSeed(System.currentTimeMillis()/1000);
 		rand.nextBoolean();
 		ItemStack isout = c.getOutputForDisplay();
@@ -216,7 +216,7 @@ public class ChromaBookData {
 
 			ReikaGuiAPI.instance.drawTexturedModalRect(px+1, py+108-frac, 0, 118, 36, 7);
 		}
-		if (ChromaResearch.DOUBLECRAFT.playerHas(Minecraft.getMinecraft().thePlayer)) {
+		if (subpage == 0 && isBook && ChromaResearch.DOUBLECRAFT.playerHas(Minecraft.getMinecraft().thePlayer)) {
 			ReikaTextureHelper.bindFinalTexture(ChromatiCraft.class, "Textures/GUIs/Handbook/misc.png");
 			gui.drawTexturedModalRect(posX+10, posY+31, 224, c.canGiveDoubleOutput() ? 32 : 64, 32, 32);
 			if (gui.isMouseInBox(posX+10, posX+42, posY+31, posY+63)) {

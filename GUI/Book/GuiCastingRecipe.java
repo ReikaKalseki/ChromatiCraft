@@ -22,9 +22,11 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.IIcon;
 import net.minecraftforge.common.MinecraftForge;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.CastingAPI.RuneTempleRecipe;
 import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
@@ -37,6 +39,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.IO.DelegateFontRenderer;
 import Reika.DragonAPI.Instantiable.AlphabeticItemComparator;
@@ -59,6 +62,8 @@ public class GuiCastingRecipe extends GuiBookSection {
 	private int index = 0;
 	private int recipeTextOffset = 0;
 	private boolean centeredMouse = false;
+
+	public static RuneTempleRecipe runeHintRecipe;
 
 	public GuiCastingRecipe(EntityPlayer ep, ArrayList<CastingRecipe> out, int offset, boolean nei) {
 		super(ChromaGuis.RECIPE, ep, null, 256, 220, nei);
@@ -90,6 +95,23 @@ public class GuiCastingRecipe extends GuiBookSection {
 		if (subpage == 0 && this.getActiveRecipe().getItemCountsForDisplay().size() > 10) {
 			buttonList.add(new CustomSoundImagedGuiButton(2, j+205, k+50, 12, 10, 100, 6, file, ChromatiCraft.class, this));
 			buttonList.add(new CustomSoundImagedGuiButton(3, j+205, k+60, 12, 10, 112, 6, file, ChromatiCraft.class, this));
+		}
+
+		if (subpage == 1 && !((RuneTempleRecipe)this.getActiveRecipe()).getRunePositions().isEmpty()) {
+			CustomSoundImagedGuiButton b = new CustomSoundImagedGuiButton(SAVE_AND_EXIT+1, j+xSize, k+45, 22, 39, 65, 210, file, ChromatiCraft.class, this) {
+				@Override
+				protected void renderButton() {
+					super.renderButton();
+
+					ReikaTextureHelper.bindTerrainTexture();
+					BlendMode.ADDITIVEDARK.apply();
+					IIcon ico = CrystalElement.elements[(int)((System.currentTimeMillis()/1000L)%16)].getGlowRune();
+					ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(xPosition+1, yPosition+11, ico, 16, 16);
+					BlendMode.DEFAULT.apply();
+				}
+
+			};
+			this.addAuxButton(b, "Visualize");
 		}
 
 		if (NEItrigger && !centeredMouse) {
@@ -140,7 +162,11 @@ public class GuiCastingRecipe extends GuiBookSection {
 				recipeTextOffset = 0;
 				subpage = Math.min(subpage, this.getMaxSubpage());
 			}
-			if (button.id == 2 && recipeTextOffset > 0) {
+			if (button.id == SAVE_AND_EXIT+1) {
+				runeHintRecipe = (RuneTempleRecipe)this.getActiveRecipe();
+				this.saveAndExit();
+			}
+			else if (button.id == 2 && recipeTextOffset > 0) {
 				recipeTextOffset--;
 			}
 			else if (button.id == 3 && recipeTextOffset < this.getActiveRecipe().getItemCountsForDisplay().size()-11) {
@@ -183,7 +209,7 @@ public class GuiCastingRecipe extends GuiBookSection {
 		ReikaRenderHelper.disableLighting();
 		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glColor4f(1, 1, 1, 1);
-		ChromaBookData.drawCastingRecipe(fontRendererObj, ri, this.getActiveRecipe(), subpage, posX, posY);
+		ChromaBookData.drawCastingRecipe(fontRendererObj, ri, this.getActiveRecipe(), subpage, posX, posY, true);
 	}
 
 	private final void drawGraphics() {

@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import java.util.List;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -236,6 +238,11 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 	@Override
 	public boolean canBeSuppliedBy(CrystalSource te, CrystalElement e) {
 		return true;
+	}
+
+	@Override
+	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+
 	}
 
 }

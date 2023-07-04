@@ -801,7 +801,7 @@ public class ChromaFX {
 				if (particle != null)
 					particle.accept(fx);
 				EntityCCBlurFX fx2 = new EntityCCBlurFX(world, px, py, pz, v[0], v[1], v[2]);
-				fx2.setIcon(ico).setColor(0xffffff).setLife(l).setScale(s*0.6F).setGravity(g).setRapidExpand().setAlphaFading().lockTo(fx);
+				fx2.setIcon(ico).setColor(0xffffff).setLife(l).setScale(s*0.6F).setGravity(g).setRapidExpand().setAlphaFading().forceIgnoreLimits().lockTo(fx);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 				Minecraft.getMinecraft().effectRenderer.addEffect(fx2);
 			}

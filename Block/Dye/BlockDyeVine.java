@@ -134,7 +134,7 @@ public class BlockDyeVine extends BlockTallGrass {
 
 	@Override
 	public boolean canReplace(World world, int x, int y, int z, int side, ItemStack is) {
-		return world.getBlock(x, y, z).isReplaceable(world, x, y, z) && this.canBlockStay(world, x, y, z, is.getItemDamage());
+		return is != null && world.getBlock(x, y, z).isReplaceable(world, x, y, z) && this.canBlockStay(world, x, y, z, is.getItemDamage());
 	}
 
 	@Override

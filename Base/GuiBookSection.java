@@ -47,9 +47,11 @@ public abstract class GuiBookSection extends ChromaBookGui {
 
 	protected int subpage = 0;
 
-	protected final ChromaResearch page;
+	public final ChromaResearch page;
 
 	protected final boolean NEItrigger;
+
+	protected static final int SAVE_AND_EXIT = 51;
 
 	protected GuiBookSection(ChromaGuis g, EntityPlayer ep, ChromaResearch r, int x, int y, boolean nei) {
 		super(g, ep, x, y);
@@ -71,7 +73,7 @@ public abstract class GuiBookSection extends ChromaBookGui {
 		String file = "Textures/GUIs/Handbook/buttons.png";
 		buttonList.add(new CustomSoundGuiButton(50, j+xSize-27, k-2, 20, 20, "X", this));	//back to main navigation
 		if (!NEItrigger)
-			this.addAuxButton(new CustomSoundImagedGuiButton(51, j+xSize, k+5, 22, 39, 42, 210, file, ChromatiCraft.class, this), "Save & Exit");
+			this.addAuxButton(new CustomSoundImagedGuiButton(SAVE_AND_EXIT, j+xSize, k+5, 22, 39, 42, 210, file, ChromatiCraft.class, this), "Save & Exit");
 
 		if (this.getMaxSubpage() > 0) {
 			buttonList.add(new CustomSoundGuiButton(13, j+xSize-27, k+32, 20, 20, ">", this));
@@ -93,9 +95,8 @@ public abstract class GuiBookSection extends ChromaBookGui {
 				this.goTo(ChromaGuis.BOOKNAV, null);
 			return;
 		}
-		else if (button.id == 51) {
-			GuiNavigation.saveLocation(/*guiType, page, subpage*/this);
-			player.closeScreen();
+		else if (button.id == SAVE_AND_EXIT) {
+			this.saveAndExit();
 			return;
 		}
 		else if (button.id == 13) {
@@ -110,6 +111,11 @@ public abstract class GuiBookSection extends ChromaBookGui {
 			this.initGui();
 			return;
 		}
+	}
+
+	protected final void saveAndExit() {
+		GuiNavigation.saveLocation(/*guiType, page, subpage*/this);
+		player.closeScreen();
 	}
 
 	protected abstract int getMaxSubpage();

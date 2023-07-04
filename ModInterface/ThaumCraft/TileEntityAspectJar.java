@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.ModInterface.ThaumCraft;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -460,6 +461,13 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 			}
 		}
 		return li;
+	}
+
+	@Override
+	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+		for (Aspect a : tank.getAspects()) {
+			li.add(a.getChatcolor()+a.getLocalizedDescription()+": "+tank.getLevel(a));
+		}
 	}
 
 }

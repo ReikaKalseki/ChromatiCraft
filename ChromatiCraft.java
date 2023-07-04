@@ -139,6 +139,7 @@ import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.ChromatiCraft.Render.CCParticleEngine;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityOreCreator;
+import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.World.BiomeEnderForest;
@@ -793,6 +794,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		TileEntityOreCreator.initOreMap();
 		TileEntityTeleportationPump.buildProgressionMap();
 		TileEntityAdjacencyUpgrade.buildTileEffectCache();
+		TileEntityMiner.loadCustomMappings();
 		ItemDuplicationWand.loadMappings();
 		BurrowStructure.buildLootCache();
 

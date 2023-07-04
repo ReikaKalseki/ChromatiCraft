@@ -10,9 +10,13 @@
 package Reika.ChromatiCraft.TileEntity.Acquisition;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -54,6 +58,7 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.ItemHashMap;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
+import Reika.DragonAPI.Instantiable.IO.CustomRecipeList;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Interfaces.Block.SpecialOreBlock;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
@@ -108,6 +113,8 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	private StepTimer miningTimer = new StepTimer(5);
 
 	private static final ElementTagCompound required = new ElementTagCompound();
+
+	private static final HashMap<BlockKey, MineralCategory> customMappings = new HashMap();
 
 	private final EnumMap<MineralCategory, ArrayList<Coordinate>> coords = new EnumMap(MineralCategory.class);
 	private final ItemHashMap<ItemDisplay> found = new ItemHashMap(); //pre-unified for display
@@ -352,7 +359,8 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 		else if (ModList.HEXCRAFT.isLoaded() && HexcraftHandler.getActiveHandler().isWorldGenMonolith(b)) {
 			return MineralCategory.MISC_UNDERGROUND_VALUABLE;
 		}
-		return null;
+		MineralCategory cat = customMappings.get(new BlockKey(b, meta));
+		return cat;
 	}
 
 	public float getDigCompletion() {
@@ -848,6 +856,26 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		this.readOwnerData(is);
+	}
+
+	@Override
+	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+
+	}
+
+	public static void loadCustomMappings() {
+		for (String s : ChromatiCraft.config.getMinerBlockExtras()) {
+			try {
+				String[] parts = s.split("=");
+				for (ItemStack is : CustomRecipeList.parseItemCollection(Arrays.asList(parts[0]), false)) {
+					customMappings.put(BlockKey.fromItem(is), MineralCategory.valueOf(parts[1].toUpperCase(Locale.ENGLISH)));
+				}
+			}
+			catch (Exception e) {
+				ChromatiCraft.logger.logError("Failed to parse custom mineral extractor mapping '"+s+"'");
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public static enum MineralCategory {

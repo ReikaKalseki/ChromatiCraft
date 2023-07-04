@@ -97,6 +97,7 @@ public final class RuneShape {
 		if (id == null)
 			return c;
 		long hash = id.getUniqueHash();
+		//ReikaJavaLibrary.pConsole(world+">"+hash);
 		if (hash < 0)
 			c = c.setX(-c.xCoord);
 		if (hash%2 == 0)

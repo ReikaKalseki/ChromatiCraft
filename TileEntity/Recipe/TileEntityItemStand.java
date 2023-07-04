@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.Recipe;
 
+import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.client.Minecraft;
@@ -340,6 +341,11 @@ public class TileEntityItemStand extends InventoriedChromaticBase implements Ite
 		updateRadius = -1;
 		this.syncAllData(true);
 		updateRadius = 96;
+	}
+
+	@Override
+	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+
 	}
 
 }

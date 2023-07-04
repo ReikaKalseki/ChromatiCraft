@@ -191,6 +191,9 @@ public class ItemMagicRegistry {
 		this.addElement(ChromaStacks.voidmonsterEssence, CrystalElement.PINK, 2);
 		this.addElement(ChromaStacks.voidmonsterEssence, CrystalElement.GREEN, 1);
 
+		this.addElement(ChromaBlocks.CAVEINDICATOR.getStackOf(), CrystalElement.BROWN, 2);
+		this.addElement(ChromaBlocks.CAVEINDICATOR.getStackOf(), CrystalElement.BLUE, 1);
+
 		this.addFluids();
 	}
 

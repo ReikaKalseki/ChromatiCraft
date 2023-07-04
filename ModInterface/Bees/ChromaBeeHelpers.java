@@ -193,8 +193,8 @@ public class ChromaBeeHelpers {
 	}
 
 	public static EntityPlayer getOwnerAsPlayer(IBeeHousing ibh) {
-		GameProfile p = ibh.getOwner();
-		return p != null && p.getId() != null ? ibh.getWorld().func_152378_a(p.getId()) : null;
+		UUID id = getOwner(ibh);
+		return id != null ? ibh.getWorld().func_152378_a(id) : null;
 	}
 
 	public static boolean isLumenAlvearyEffectSelectedAndActive(IBeeHousing ibh, AlvearyEffect e) {
@@ -286,8 +286,8 @@ public class ChromaBeeHelpers {
 		if (te != null) {
 			return p.isPlayerAtStage(te.getPlacer());
 		}
-		GameProfile gp = ibh.getOwner();
-		return gp != null && p.isPlayerAtStage(world, gp.getId());
+		UUID id = getOwner(ibh);
+		return id != null && p.isPlayerAtStage(world, id);
 	}
 
 }

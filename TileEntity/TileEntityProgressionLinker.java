@@ -218,4 +218,9 @@ public class TileEntityProgressionLinker extends TileEntityChromaticBase impleme
 		this.readOwnerData(is);
 	}
 
+	@Override
+	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+
+	}
+
 }

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.function.Function;
 
 import net.minecraft.client.Minecraft;
@@ -585,6 +586,11 @@ IPipeConnection, OperationInterval, MultiBlockChromaTile, FocusAcceleratable, Lo
 	@Override
 	public final FluidTankInfo[] getTankInfo(ForgeDirection from) {
 		return new FluidTankInfo[0];
+	}
+
+	@Override
+	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+
 	}
 
 }

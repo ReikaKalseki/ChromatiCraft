@@ -724,8 +724,11 @@ public class AbilityHelper implements AbilityAPI {
 				return;
 			ItemStack is = evt.item.getEntityItem();
 			int n = Loader.isModLoaded("dualhotbar") ? 18 : 9;
+			boolean isOnHotbar = false;
 			for (int i = 0; i < n; i++) {
 				ItemStack in = evt.entityPlayer.inventory.mainInventory[i];
+				if (ReikaItemHelper.matchStacks(is, in))
+					isOnHotbar = true;
 				if (ReikaItemHelper.areStacksCombinable(is, in, Integer.MAX_VALUE)) {
 					if (in.stackSize < in.getMaxStackSize()) {
 						int diff = in.getMaxStackSize()-in.stackSize;
@@ -742,7 +745,7 @@ public class AbilityHelper implements AbilityAPI {
 				if (is == null)
 					break;
 			}
-			if (is != null) {
+			if (is != null && isOnHotbar) {
 				int added = this.addStackToMESystem(me, evt.entityPlayer, is);
 				if (added > 0) {
 					if (added < is.stackSize)

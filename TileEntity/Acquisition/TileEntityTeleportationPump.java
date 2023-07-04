@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import net.minecraft.block.Block;
@@ -435,6 +436,11 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	@Override
 	public void setDataFromItemStackTag(ItemStack is) {
 		this.readOwnerData(is);
+	}
+
+	@Override
+	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+
 	}
 
 	private static class FluidSource {

@@ -78,7 +78,7 @@ public class ProductChecks {
 			int tr = (int)(ibg.getTerritory()[0]*3F*beeModifier.getTerritoryModifier(ibg, 1.0F)); //x, should == z; code from HasFlowersCache
 			int r = tr >= 64 ? 128 : MathHelper.clamp_int(16*ReikaMathLibrary.intpow2(2, (tr-9)/2), 16, 96);
 			int r2 = r >= 64 ? 24 : r >= 32 ? 16 : r >= 16 ? 12 : 8;
-			UUID id = ibh.getOwner().getId();
+			UUID id = ChromaBeeHelpers.getOwner(ibh);
 			if (id == null)
 				return false;
 			if (!ProgressStage.ALLOY.isPlayerAtStage(world, id))
@@ -243,7 +243,7 @@ public class ProductChecks {
 
 		@Override
 		public boolean check(World world, int x, int y, int z, IBeeGenome ibg, IBeeHousing ibh) {
-			return progress.isPlayerAtStage(world, ibh.getOwner().getId());
+			return ChromaBeeHelpers.checkProgression(world, ibh, progress);
 		}
 
 		@Override

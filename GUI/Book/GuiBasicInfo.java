@@ -410,7 +410,7 @@ public class GuiBasicInfo extends GuiBookSection {
 	}
 
 	private void renderEnchantment(int posX, int posY, EnchantmentRecipe r) {
-		ChromaBookData.drawCastingRecipe(fontRendererObj, itemRender, r, 2, posX, posY+8);
+		ChromaBookData.drawCastingRecipe(fontRendererObj, itemRender, r, 2, posX, posY+8, true);
 
 		String s = r.getMainInput().getDisplayName()+" - "+r.enchantment.getTranslatedName(r.level);
 		fontRendererObj.drawString(s, posX+xSize/2-fontRendererObj.getStringWidth(s)/2, posY+192, 0xffffff);
