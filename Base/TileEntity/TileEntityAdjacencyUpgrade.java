@@ -9,6 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 
 import net.minecraft.client.Minecraft;
@@ -30,7 +33,10 @@ import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
+import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
@@ -45,6 +51,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPowered implements NBTTile, SneakPop {
 
 	public static final int MAX_TIER = 8;
+
+	private static final MultiMap<CrystalElement, SpecificAdjacencyEffect> effectMap = new MultiMap(CollectionType.HASHSET);
 
 	private int tier;
 
@@ -319,6 +327,37 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 	}
 
 	//protected abstract void buildTileEffectCache(Collection<Class<? extends TileEntity>> c);
+
+	public static abstract class SpecificAdjacencyEffect {
+
+		public final CrystalElement color;
+
+		protected SpecificAdjacencyEffect(CrystalElement e) {
+			color = e;
+			effectMap.addValue(e, this);
+		}
+
+		public abstract String getDescription();
+
+		@SideOnly(Side.CLIENT)
+		public abstract void getRelevantItems(ArrayList<GuiItemDisplay> li);
+
+		protected abstract boolean isActive();
+
+	}
+
+	public static Collection<CrystalElement> getSpecificEffectColors() {
+		return Collections.unmodifiableCollection(effectMap.keySet());
+	}
+
+	public static Collection<SpecificAdjacencyEffect> getSpecificEffects(CrystalElement e, boolean enabledOnly) {
+		Collection<SpecificAdjacencyEffect> c = effectMap.get(e);
+		if (enabledOnly) {
+			c = new ArrayList(c);
+			c.removeIf(ef -> !ef.isActive());
+		}
+		return Collections.unmodifiableCollection(c);
+	}
 
 	protected static enum EffectResult {
 		ACTION(true, true),

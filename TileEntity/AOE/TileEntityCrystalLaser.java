@@ -9,14 +9,15 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE;
 
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
 import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -45,18 +46,59 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityCrystalLaser extends InventoriedRelayPowered {
 
-	private static final HashSet<CrystalElement> localEffects = new HashSet();
-	private static final HashSet<CrystalElement> aabbEffects = new HashSet();
+	private static final EnumMap<CrystalElement, LensEffect> effects = new EnumMap(CrystalElement.class);
 
 	static {
-		localEffects.add(CrystalElement.GREEN);
-		localEffects.add(CrystalElement.ORANGE);
-		localEffects.add(CrystalElement.BLUE);
+		addLensEffect(CrystalElement.BLUE, "Creates light", (te, dx, dy, dz, d) -> {
+			if (te.worldObj.getBlock(dx, dy, dz).isAir(te.worldObj, dx, dy, dz)) {
+				te.worldObj.setBlock(dx, dy, dz, ChromaBlocks.LIGHT.getBlockInstance(), 0, 3);
+			}
+		});
+		addLensEffect(CrystalElement.GREEN, "Ticks blocks", (te, dx, dy, dz, d) -> BlockTickEvent.fire(te.worldObj, dx, dy, dz, rand, UpdateFlags.getForcedUnstoppableTick()));
+		addLensEffect(CrystalElement.ORANGE, "Applies heat (400C)", (te, dx, dy, dz, d) -> ReikaWorldHelper.temperatureEnvironment(te.worldObj, dx, dy, dz, 400));
 
-		aabbEffects.add(CrystalElement.RED);
-		aabbEffects.add(CrystalElement.BLACK);
-		aabbEffects.add(CrystalElement.MAGENTA);
-		aabbEffects.add(CrystalElement.LIME);
+		addLensEffect(CrystalElement.RED, "Adds resistance", (te, box, li) -> {
+			for (Entity e : li) {
+				if (e instanceof EntityLivingBase)
+					((EntityLivingBase)e).addPotionEffect(new PotionEffect(Potion.resistance.id, 100, 1));
+			}
+		});
+		//addLensEffect(CrystalElement.BLACK); something to players
+		addLensEffect(CrystalElement.MAGENTA, "Adds regeneration", (te, box, li) -> {
+			for (Entity e : li) {
+				if (e instanceof EntityLivingBase)
+					((EntityLivingBase)e).addPotionEffect(new PotionEffect(Potion.regeneration.id, 100, 1));
+			}
+		});
+		addLensEffect(CrystalElement.LIME, "Speeds motion", (te, box, li) -> {
+			double vmax = 1;
+			for (Entity e : li) {
+				if (Math.abs(e.motionX) < vmax)
+					e.motionX += te.getFacing().offsetX*0.0625;
+				if (Math.abs(e.motionY) < vmax)
+					e.motionY += te.getFacing().offsetY*0.0625;
+				if (Math.abs(e.motionZ) < vmax)
+					e.motionZ += te.getFacing().offsetZ*0.0625;
+			}
+		});
+	}
+
+	private static void addLensEffect(CrystalElement e, String desc, LensEffectAABB loc) {
+		effects.put(e, new AABBLensEffect(e, desc) {
+			@Override
+			public void doEffect(TileEntityCrystalLaser te, AxisAlignedBB box, List<Entity> li) {
+				loc.doEffect(te, box, li);
+			}
+		});
+	}
+
+	private static void addLensEffect(CrystalElement e, String desc, LensEffectLocal loc) {
+		effects.put(e, new LocalLensEffect(e, desc) {
+			@Override
+			public void doEffect(TileEntityCrystalLaser te, int dx, int dy, int dz, int dist) {
+				loc.doEffect(te, dx, dy, dz, dist);
+			}
+		});
 	}
 
 	private int range;
@@ -119,59 +161,18 @@ public class TileEntityCrystalLaser extends InventoriedRelayPowered {
 	private void applyEffects(World world, int x, int y, int z, ForgeDirection dir) {
 		int r = this.getRange();
 		CrystalElement color = this.getColor();
-		if (aabbEffects.contains(color)) {
+		LensEffect le = effects.get(color);
+		if (le instanceof LensEffectAABB) {
 			AxisAlignedBB box = this.getAABB(r);
 			List<Entity> li = world.getEntitiesWithinAABB(Entity.class, box);
-			switch(color) {
-				case LIME:
-					double vmax = 1;
-					for (Entity e : li) {
-						if (Math.abs(e.motionX) < vmax)
-							e.motionX += this.getFacing().offsetX*0.0625;
-						if (Math.abs(e.motionY) < vmax)
-							e.motionY += this.getFacing().offsetY*0.0625;
-						if (Math.abs(e.motionZ) < vmax)
-							e.motionZ += this.getFacing().offsetZ*0.0625;
-					}
-					break;
-				case RED:
-					for (Entity e : li) {
-						if (e instanceof EntityLivingBase)
-							((EntityLivingBase)e).addPotionEffect(new PotionEffect(Potion.resistance.id, 100, 1));
-					}
-					break;
-				case BLACK:
-					for (Entity e : li) {
-						if (e instanceof EntityPlayer) {
-							EntityPlayer ep = (EntityPlayer)e;
-
-						}
-					}
-					break;
-				default:
-					break;
-			}
+			((LensEffectAABB)le).doEffect(this, box, li);
 		}
-		if (localEffects.contains(color)) {
+		if (le instanceof LensEffectLocal) {
 			for (int i = 1; i <= r; i++) {
 				int dx = x+dir.offsetX*i;
 				int dy = y+dir.offsetY*i;
 				int dz = z+dir.offsetZ*i;
-				switch(color) {
-					case BLUE:
-						if (world.getBlock(dx, dy, dz).isAir(world, dx, dy, dz)) {
-							world.setBlock(dx, dy, dz, ChromaBlocks.LIGHT.getBlockInstance(), 0, 3);
-						}
-						break;
-					case GREEN:
-						BlockTickEvent.fire(world, dx, dy, dz, rand, UpdateFlags.getForcedUnstoppableTick());
-						break;
-					case ORANGE:
-						ReikaWorldHelper.temperatureEnvironment(world, dx, dy, dz, 400);
-						break;
-					default:
-						break;
-				}
+				((LensEffectLocal)le).doEffect(this, dx, dy, dz, i);
 			}
 		}
 		this.drainEnergy(color, this.getRange());
@@ -360,6 +361,65 @@ public class TileEntityCrystalLaser extends InventoriedRelayPowered {
 	@Override
 	protected boolean canReceiveFrom(CrystalElement e, ForgeDirection dir) {
 		return dir == this.getFacing().getOpposite();
+	}
+
+	public static abstract class LensEffect implements Comparable<LensEffect> {
+
+		public final CrystalElement color;
+		public final String description;
+
+		protected LensEffect(CrystalElement e, String desc) {
+			color = e;
+			description = desc;
+		}
+
+		public final int compareTo(LensEffect le) {
+			return color.compareTo(le.color);
+		}
+
+	}
+
+	private static interface LensEffectAABB {
+
+		void doEffect(TileEntityCrystalLaser te, AxisAlignedBB box, List<Entity> li);
+
+	}
+
+	public static abstract class AABBLensEffect extends LensEffect implements LensEffectAABB {
+
+		protected AABBLensEffect(CrystalElement e, String desc) {
+			super(e, desc);
+		}
+
+	}
+
+	private static interface LensEffectLocal {
+
+		void doEffect(TileEntityCrystalLaser te, int dx, int dy, int dz, int dist);
+
+	}
+
+	public static abstract class LocalLensEffect extends LensEffect implements LensEffectLocal {
+
+		protected LocalLensEffect(CrystalElement e, String desc) {
+			super(e, desc);
+		}
+
+	}
+
+	public static Collection<LensEffect> getEffects() {
+		return Collections.unmodifiableCollection(effects.values());
+	}
+
+	public static String getEffectsAsString() {
+		StringBuilder sb = new StringBuilder();
+		for (LensEffect le : effects.values()) {
+			sb.append(le.color.displayName);
+			sb.append(": ");
+			sb.append(le.description);
+			sb.append("\n");
+		}
+		return sb.toString();
 	}
 
 }

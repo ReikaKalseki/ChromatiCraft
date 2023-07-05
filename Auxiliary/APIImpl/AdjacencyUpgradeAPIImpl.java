@@ -4,14 +4,25 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.API.AdjacencyUpgradeAPI;
 import Reika.ChromatiCraft.API.CrystalElementAccessor;
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
+import Reika.ChromatiCraft.API.Interfaces.CustomAcceleration;
+import Reika.ChromatiCraft.API.Interfaces.CustomHealing.CustomBlockHealing;
+import Reika.ChromatiCraft.API.Interfaces.CustomHealing.CustomTileHealing;
+import Reika.ChromatiCraft.API.Interfaces.CustomRangeUpgrade;
+import Reika.ChromatiCraft.API.Interfaces.CustomRangeUpgrade.RangeUpgradeable;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityHealingCore;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
 
 
 public class AdjacencyUpgradeAPIImpl implements AdjacencyUpgradeAPI {
@@ -45,6 +56,36 @@ public class AdjacencyUpgradeAPIImpl implements AdjacencyUpgradeAPI {
 		CrystalElementProxy e = CrystalElementAccessor.getByEnum(color);
 		int tier = this.getAdjacentUpgradeTier(world, x, y, z, e);
 		return tier > 0 ? this.getFactor(e, tier) : 1;
+	}
+
+	@Override
+	public void addCustomAcceleration(Class<? extends TileEntity> c, CustomAcceleration a) {
+		TileEntityAccelerator.customizeTile(c, a);
+	}
+
+	@Override
+	public void addCustomRangeBoost(Class<? extends TileEntity> c, CustomRangeUpgrade a) {
+		TileEntityRangeBoost.customizeTile(c, a);
+	}
+
+	@Override
+	public void addBasicRangeBoost(Class<? extends RangeUpgradeable> c, ItemStack... items) {
+		TileEntityRangeBoost.addBasicHandling(c, items);
+	}
+
+	@Override
+	public void addCustomHealing(Block b, CustomBlockHealing h) {
+		TileEntityHealingCore.addBlockHandler(b, h);
+	}
+
+	@Override
+	public void addCustomHealing(Block b, int meta, CustomBlockHealing h) {
+		TileEntityHealingCore.addBlockHandler(b, meta, h);
+	}
+
+	@Override
+	public void addCustomHealing(Class<? extends TileEntity> c, CustomTileHealing h) {
+		TileEntityHealingCore.addTileHandler(c, h);
 	}
 
 }

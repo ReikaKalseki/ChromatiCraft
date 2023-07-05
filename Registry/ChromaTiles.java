@@ -21,6 +21,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.API.Interfaces.CustomRangeUpgrade.RangeUpgradeable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CustomHitbox;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.FocusAcceleratable;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
@@ -81,6 +82,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityExplosionShield;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityLumenTurret;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityMeteorTower;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityItemFabricator;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
@@ -496,6 +498,15 @@ public enum ChromaTiles implements TileEnum {
 				ItemStack is = r.getCraftedProduct();
 				if (is != null)
 					craftMap.put(is, r);
+			}
+		}
+	}
+
+	public static void loadPostMappings() {
+		for (int i = 0; i < TEList.length; i++) {
+			ChromaTiles r = TEList[i];
+			if (RangeUpgradeable.class.isAssignableFrom(r.tile)) {
+				TileEntityRangeBoost.addBasicHandling(r.tile, r.getCraftedProduct());
 			}
 		}
 	}

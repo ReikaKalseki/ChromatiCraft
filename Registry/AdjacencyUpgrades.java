@@ -189,4 +189,8 @@ public enum AdjacencyUpgrades {
 		return is;
 	}
 
+	public CrystalElement getColor() {
+		return CrystalElement.elements[this.ordinal()];
+	}
+
 }

@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.minecraft.block.Block;
@@ -22,10 +23,13 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 
@@ -104,9 +108,10 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 
 	}
 
-	private static abstract class DelegateInterface {
+	private static abstract class DelegateInterface extends SpecificAdjacencyEffect {
 
 		protected DelegateInterface() {
+			super(CrystalElement.LIGHTGRAY);
 			if (this.getMod() == null || this.getMod().isLoaded()) {
 				try {
 					String[] cs = this.getClasses();
@@ -141,6 +146,11 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 		}
 
 		protected abstract boolean canRunWithPlayerOffline();
+
+		@Override
+		public final boolean isActive() {
+			return this.getMod() == null || this.getMod().isLoaded();
+		}
 	}
 
 	private static class NoInterface extends DelegateInterface { //Used for null
@@ -170,6 +180,16 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 		@Override
 		protected boolean canRunWithPlayerOffline() {
 			return false;
+		}
+
+		@Override
+		public String getDescription() {
+			return "Does nothing";
+		}
+
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+
 		}
 
 	}
@@ -241,6 +261,16 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 			return false;
 		}
 
+		@Override
+		public String getDescription() {
+			return "Automatically collects generated aspects";
+		}
+
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+			li.add(new GuiStackDisplay("Thaumcraft:blockTable:14"));
+		}
+
 	}
 
 	private static class ChromaCollectorDelegateInterface extends DelegateInterface {
@@ -269,6 +299,16 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 		@Override
 		protected boolean canRunWithPlayerOffline() {
 			return false;
+		}
+
+		@Override
+		public String getDescription() {
+			return "Collects XP regardless of player position";
+		}
+
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+			li.add(new GuiStackDisplay(ChromaTiles.COLLECTOR));
 		}
 
 	}

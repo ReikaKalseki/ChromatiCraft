@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.ModInterface.Bees;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -20,6 +21,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.Acceleration;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.ModInteract.Bees.BeeEvent.BeeSetHealthEvent;
 import Reika.DragonAPI.ModInteract.Bees.ReikaBeeHelper;
@@ -144,6 +147,18 @@ public class ApiaryAcceleration extends Acceleration {
 	@Override
 	public boolean usesParentClasses() {
 		return false;
+	}
+
+	@Override
+	public String getDescription() {
+		return "Accelerates bee lifespans";
+	}
+
+	@Override
+	public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+		li.add(new GuiStackDisplay("Forestry:apiculture:2"));
+		li.add(new GuiStackDisplay("Forestry:apiculture"));
+		li.add(new GuiStackDisplay("Forestry:alveary"));
 	}
 
 }

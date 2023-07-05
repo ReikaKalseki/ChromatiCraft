@@ -507,6 +507,7 @@ public final class ChromaDescriptions {
 		addNotes(ChromaTiles.ITEMCOLLECTOR, TileEntityItemCollector.MAXRANGE);
 		addNotes(ChromaTiles.EXPLOSIONSHIELD, TileEntityExplosionShield.MAXRANGE);
 		addNotes(ChromaTiles.LAMP, TileEntityChromaLamp.FACTOR);
+		addNotes(ChromaTiles.LASER, TileEntityCrystalLaser.getEffectsAsString());
 		addNotes(ChromaTiles.POWERTREE, TileEntityPowerTree.BASE, TileEntityPowerTree.RATIO, TileEntityPowerTree.POWER);
 		addNotes(ChromaTiles.LAMPCONTROL, TileEntityLampController.MAXRANGE, TileEntityLampController.MAXCHANNEL);
 		addNotes(ChromaTiles.ASPECTJAR, TileEntityAspectJar.CAPACITY_PRIMAL, TileEntityAspectJar.CAPACITY);

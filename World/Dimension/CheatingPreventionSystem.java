@@ -71,6 +71,14 @@ public class CheatingPreventionSystem {
 			if (i != null)
 				this.banItem(i, BanReaction.PREVENTUSE);
 		}
+
+		i = GameRegistry.findItem("NotEnoughWands", "MovingWand");
+		if (i != null)
+			this.banItem(i, BanReaction.PREVENTUSE);
+
+		i = GameRegistry.findItem("NotEnoughWands", "DisplacementWand");
+		if (i != null)
+			this.banItem(i, BanReaction.PREVENTUSE);
 	}
 
 	private void banBlock(Block b) {

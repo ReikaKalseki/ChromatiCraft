@@ -164,7 +164,9 @@ public abstract class GuiBookSection extends ChromaBookGui {
 		POOL("pool"),
 		STRUCTPASS("password"),
 		COMPASS("compass"),
-		CASTTUNE("casttune");
+		CASTTUNE("casttune"),
+		ADJACENCY("adjacency_effects"),
+		;
 
 		private final String endString;
 

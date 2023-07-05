@@ -2,7 +2,7 @@ package Reika.ChromatiCraft.Auxiliary;
 
 import net.minecraft.nbt.NBTTagCompound;
 
-import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
+import Reika.ChromatiCraft.API.Interfaces.CustomRangeUpgrade.RangeUpgradeable;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;

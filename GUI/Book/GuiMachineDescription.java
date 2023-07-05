@@ -79,8 +79,6 @@ public class GuiMachineDescription extends GuiDescription {
 
 	@Override
 	protected int getMaxSubpage() {
-		if (page == ChromaResearch.ACCEL)
-			return 2+16-1;
 		if (page == ChromaResearch.ALVEARY && ModList.FORESTRY.isLoaded())
 			return 1+TileEntityLumenAlveary.getEffectSet().size();
 		/*
@@ -96,7 +94,7 @@ public class GuiMachineDescription extends GuiDescription {
 
 	@Override
 	protected String getText(int subpage) {
-		if (page == ChromaResearch.ACCEL || page == ChromaResearch.ALVEARY)
+		if (page == ChromaResearch.ALVEARY)
 			return super.getText(subpage);
 		switch(pageList.get(subpage)) {
 			case AOE:
@@ -157,8 +155,10 @@ public class GuiMachineDescription extends GuiDescription {
 		int posX = (width - xSize) / 2;
 		int posY = (height - ySize) / 2 - 8;
 
-		if (page == ChromaResearch.ACCEL && subpage != 1) {
+		if (page == ChromaResearch.ACCEL && ((GuiAdjacencyDescription)this).getMachine() != null) {
 			this.drawMachineRender(posX, posY);
+			if (subpage > 0)
+				this.drawNotesGraphics(posX, posY);
 		}
 		else {
 			switch (pageList.get(subpage)) {
@@ -232,34 +232,38 @@ public class GuiMachineDescription extends GuiDescription {
 					}
 					break;
 				case NOTES:
-					switch(page) {
-						case LUMENWIRE:
-							for (int i = 0; i < CheckType.list.length; i++) {
-								ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/infoicons.png");
-								double u = 0.0625*i;
-								double v = 0.0625;
-								double s = 0.0625;
-								int r = 48;
-								Tessellator v5 = Tessellator.instance;
-								v5.startDrawingQuads();
-								int dx = posX+(r+1)*(i%4-2)+xSize/2;
-								int dy = posY+(r+1)*(i/4)+115;
-								v5.setColorOpaque_I(CheckType.list[i].renderColor);
-								v5.addVertexWithUV(dx+0, dy+r, 0, u, v+s);
-								v5.addVertexWithUV(dx+r, dy+r, 0, u+s, v+s);
-								v5.addVertexWithUV(dx+r, dy+0, 0, u+s, v);
-								v5.addVertexWithUV(dx+0, dy+0, 0, u, v);
-
-								v5.draw();
-							}
-							break;
-						default:
-							break;
-					}
+					this.drawNotesGraphics(posX, posY);
 					break;
 				default:
 					break;
 			}
+		}
+	}
+
+	protected void drawNotesGraphics(int posX, int posY) {
+		switch(page) {
+			case LUMENWIRE:
+				for (int i = 0; i < CheckType.list.length; i++) {
+					ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/infoicons.png");
+					double u = 0.0625*i;
+					double v = 0.0625;
+					double s = 0.0625;
+					int r = 48;
+					Tessellator v5 = Tessellator.instance;
+					v5.startDrawingQuads();
+					int dx = posX+(r+1)*(i%4-2)+xSize/2;
+					int dy = posY+(r+1)*(i/4)+115;
+					v5.setColorOpaque_I(CheckType.list[i].renderColor);
+					v5.addVertexWithUV(dx+0, dy+r, 0, u, v+s);
+					v5.addVertexWithUV(dx+r, dy+r, 0, u+s, v+s);
+					v5.addVertexWithUV(dx+r, dy+0, 0, u+s, v);
+					v5.addVertexWithUV(dx+0, dy+0, 0, u, v);
+
+					v5.draw();
+				}
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -297,17 +301,7 @@ public class GuiMachineDescription extends GuiDescription {
 
 		int offset = 0;
 		if (m == ChromaTiles.ADJACENCY) {
-			ArrayList<Integer> li = new ArrayList();
-			for (int i = 0; i < CrystalElement.elements.length; i++) {
-				if (AdjacencyUpgrades.upgrades[i].isImplemented())
-					li.add(i);
-			}
-			offset = li.get((int)((System.currentTimeMillis()/(1000*TileEntityAdjacencyUpgrade.MAX_TIER))%li.size()));
-			if (subpage > 0) {
-				offset = subpage-2;
-			}
-			if (!AdjacencyUpgrades.upgrades[offset].isImplemented())
-				return;
+			offset = ((GuiAdjacencyDescription)this).getMachine().ordinal();
 		}
 		else if (m == ChromaTiles.FOCUSCRYSTAL) {
 			offset = (int)((System.currentTimeMillis()/4000)%CrystalTier.tierList.length);
@@ -366,10 +360,12 @@ public class GuiMachineDescription extends GuiDescription {
 				GL11.glTranslated(0, 0.5, 0);
 			}
 			if (m == ChromaTiles.ADJACENCY) {
-				ItemStack is = ChromaItems.ADJACENCY.getStackOfMetadata(offset);
-				is.stackTagCompound = new NBTTagCompound();
-				is.stackTagCompound.setInteger("tier", (int)((System.currentTimeMillis()/1000)%TileEntityAdjacencyUpgrade.MAX_TIER));
-				((TileEntityAdjacencyUpgrade)te).setDataFromItemStackTag(is);
+				if (te != null) {
+					ItemStack is = ChromaItems.ADJACENCY.getStackOfMetadata(offset);
+					is.stackTagCompound = new NBTTagCompound();
+					is.stackTagCompound.setInteger("tier", (int)((System.currentTimeMillis()/500)%TileEntityAdjacencyUpgrade.MAX_TIER));
+					((TileEntityAdjacencyUpgrade)te).setDataFromItemStackTag(is);
+				}
 			}
 			TileEntityRendererDispatcher.instance.renderTileEntityAt(te, a, 0, b, 0);
 			GL11.glPopMatrix();
@@ -400,7 +396,7 @@ public class GuiMachineDescription extends GuiDescription {
 		GL11.glTranslated(0, 0, -32);
 	}
 
-	private static enum Pages {
+	protected static enum Pages {
 		MAIN,
 		NOTES,
 		ENERGY,

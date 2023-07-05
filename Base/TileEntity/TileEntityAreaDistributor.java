@@ -17,7 +17,7 @@ import java.util.Iterator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.API.Interfaces.RangeUpgradeable;
+import Reika.ChromatiCraft.API.Interfaces.CustomRangeUpgrade.RangeUpgradeable;
 import Reika.ChromatiCraft.Auxiliary.RangeTracker;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.AbstractSearch.FoundPath;

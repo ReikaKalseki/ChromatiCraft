@@ -9,9 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
+import java.util.ArrayList;
+
 import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.Acceleration;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 import Reika.DragonAPI.ModInteract.DeepInteract.MultiblockControllerFinder;
 
 @Deprecated
@@ -40,6 +43,16 @@ public class MultiblockAcceleration extends Acceleration {
 	@Override
 	public boolean usesParentClasses() {
 		return true;
+	}
+
+	@Override
+	public String getDescription() {
+		return "";
+	}
+
+	@Override
+	public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+
 	}
 
 }

@@ -58,7 +58,7 @@ public class EntityTunnelNuker extends EntityLiving implements DestroyOnUnload {
 		isAirBorne = true;
 
 		int top = ReikaWorldHelper.getTopNonAirBlock(worldObj, x, z, true);
-		if (SFAPI.biomeHandler.isPinkForest(ReikaWorldHelper.getNaturalGennedBiomeAt(worldObj, x, z)))
+		if (SFAPI.biomeHandler.isPinkForest(worldObj.isRemote ? worldObj.getBiomeGenForCoords(x, z) : ReikaWorldHelper.getNaturalGennedBiomeAt(worldObj, x, z)))
 			top = SFAPI.biomeHandler.getTrueTopAt(worldObj, x, z);
 
 		double vy = motionY;

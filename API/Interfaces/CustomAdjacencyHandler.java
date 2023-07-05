@@ -9,15 +9,16 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.API.Interfaces;
 
-import net.minecraft.world.World;
+import java.util.Collection;
 
+import net.minecraft.item.ItemStack;
 
-/** Use this on TileEntities or blocks that are repairable in block form (NOT tools). */
-public interface Repairable {
+public interface CustomAdjacencyHandler {
 
-	public void repair(World world, int x, int y, int z, int tier);
-
-	/** A general description of what repairing means for this block, eg "repairs gearbox damage" or "Removes debris from smelter output tray". */
+	/** A basic description of the effect. */
 	public String getDescription();
+
+	/** A list of the item/held versions of the blocks on which this effect applies. Used for lexicon "show relevant items" display. */
+	public Collection<ItemStack> getItems();
 
 }

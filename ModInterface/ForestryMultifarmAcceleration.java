@@ -9,9 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.ModInterface;
 
+import java.util.ArrayList;
+
 import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.Acceleration;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 import Reika.DragonAPI.ModInteract.DeepInteract.ForestryMultiblockControllerHandling;
 
 import forestry.api.multiblock.IFarmComponent;
@@ -56,6 +60,18 @@ public class ForestryMultifarmAcceleration extends Acceleration {
 	@Override
 	public boolean usesParentClasses() {
 		return false;
+	}
+
+	@Override
+	public String getDescription() {
+		return "Accelerates farm operation";
+	}
+
+	@Override
+	public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+		for (int i = 0; i <= 5; i++)
+			if (i != 1)
+				li.add(new GuiStackDisplay("Forestry:ffarm:"+i));
 	}
 
 }

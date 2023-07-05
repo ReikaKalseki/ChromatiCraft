@@ -9,11 +9,13 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.API.Interfaces;
 
-/** Implement this to override accelerator behavior on your TileEntity. <b>Do not use this for blacklisting.</b> Use the dedicated class for that. */
-public interface CustomAcceleration {
+import Reika.ChromatiCraft.API.AdjacencyUpgradeAPI;
 
-	/** Return true to prevent further ticks (eg return true on the 30th tick to cap acceleration at 30x, or on the first but
-	 * perform a 128x bigger operation for a factor of 128 without actually ticking 128 times). Args: Tick, Acceleration Factor */
+/** Supply an instance of this to the {@link AdjacencyUpgradeAPI} to specify custom accelerator behavior on your TileEntity.
+<b>Do not use this for blacklisting.</b> Use the dedicated handler for that. */
+public interface CustomAcceleration extends CustomAdjacencyHandler {
+
+	/** This will be called once per tick, with 'factor' being the acceleration factor of the core, eg 16 or 64. */
 	public void tick(int factor);
 
 	/** Is this handler being registered for any parent classes; basically does the accelerator need to recursively call super() to get

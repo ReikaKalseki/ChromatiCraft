@@ -16,9 +16,9 @@ import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
+import Reika.ChromatiCraft.GUI.Book.GuiAdjacencyDescription;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
-import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
@@ -137,7 +137,7 @@ public abstract class GuiDescription extends GuiBookSection {
 	@Override
 	public final String getPageTitle() {
 		if (page == ChromaResearch.ACCEL && subpage > 1)
-			return AdjacencyUpgrades.upgrades[subpage-2].getName();
+			return ((GuiAdjacencyDescription)this).getMachine().getName();
 		else if (page == ChromaResearch.ALVEARY && subpage > 1)
 			return "Alveary Effect - "+TileEntityLumenAlveary.getSortedEffectList().get(subpage-2).getDescription();
 		return page.isConfigDisabled() ? page.getTitle()+" (Disabled)" : super.getPageTitle();

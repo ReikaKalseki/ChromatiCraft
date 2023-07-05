@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.ModInterface;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import net.minecraft.tileentity.TileEntity;
 
@@ -17,6 +18,8 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.Acceleration;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 
 import ic2.api.reactor.IReactorChamber;
 
@@ -58,6 +61,16 @@ public class IC2ReactorAcceleration extends Acceleration {
 	@Override
 	public boolean usesParentClasses() {
 		return false;
+	}
+
+	@Override
+	public String getDescription() {
+		return "Accelerates reactor fuel decay";
+	}
+
+	@Override
+	public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+		li.add(new GuiStackDisplay("IC2:blockGenerator:5"));
 	}
 
 }

@@ -1086,8 +1086,6 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 		if (this == PACKCHANGES) {
 			return PackModificationTracker.instance.getModifications(ChromatiCraft.instance).get(subpage-1).toString();
 		}
-		if (this == ACCEL)
-			return ChromaDescriptions.getNotes(this, subpage-1);
 		else if (this == ALVEARY && subpage > 1) {
 			StringBuilder sb = new StringBuilder();
 			TileEntityLumenAlveary.getSortedEffectList().get(subpage-2).getLexiconString(sb);

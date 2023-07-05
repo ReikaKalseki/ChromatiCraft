@@ -790,6 +790,7 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		ModCropList.addCustomCropType(new CrystalPlantHandler());
 
+		ChromaTiles.loadPostMappings();
 		TileEntityBiomePainter.buildBiomeList();
 		TileEntityOreCreator.initOreMap();
 		TileEntityTeleportationPump.buildProgressionMap();

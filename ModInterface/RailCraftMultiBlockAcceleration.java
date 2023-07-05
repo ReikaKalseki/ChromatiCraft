@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.ModInterface;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 
 import net.minecraft.tileentity.TileEntity;
 
@@ -17,6 +18,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.Acceleration;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 
 @Deprecated
 public class RailCraftMultiBlockAcceleration extends Acceleration {
@@ -57,6 +59,16 @@ public class RailCraftMultiBlockAcceleration extends Acceleration {
 	@Override
 	public boolean usesParentClasses() {
 		return true;
+	}
+
+	@Override
+	public String getDescription() {
+		return "";
+	}
+
+	@Override
+	public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+
 	}
 
 }

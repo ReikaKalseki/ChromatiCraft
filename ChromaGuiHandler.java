@@ -62,6 +62,7 @@ import Reika.ChromatiCraft.GUI.GuiOneSlot;
 import Reika.ChromatiCraft.GUI.GuiTeleportAbility;
 import Reika.ChromatiCraft.GUI.GuiTransitionWand;
 import Reika.ChromatiCraft.GUI.Book.GuiAbilityDesc;
+import Reika.ChromatiCraft.GUI.Book.GuiAdjacencyDescription;
 import Reika.ChromatiCraft.GUI.Book.GuiBasicInfo;
 import Reika.ChromatiCraft.GUI.Book.GuiBookEmpties;
 import Reika.ChromatiCraft.GUI.Book.GuiBookPages;
@@ -356,8 +357,10 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiBookPages(player, x);
 			case BOOKEMPTIES:
 				return new GuiBookEmpties(player);
-			case MACHINEDESC:
-				return new GuiMachineDescription(player, ChromaResearch.researchList[x]);
+			case MACHINEDESC: {
+				ChromaResearch r = ChromaResearch.researchList[x];
+				return r == ChromaResearch.ACCEL ? new GuiAdjacencyDescription(player) : new GuiMachineDescription(player, r);
+			}
 			case TOOLDESC:
 				return new GuiToolDescription(player, ChromaResearch.researchList[x]);
 			case BASICDESC:
@@ -372,9 +375,10 @@ public class ChromaGuiHandler implements IGuiHandler {
 				return new GuiRitual(player, ChromaResearch.researchList[x].getAbility());
 			case ABILITYDESC:
 				return new GuiAbilityDesc(player, ChromaResearch.researchList[x]);
-			case INFO:
+			case INFO: {
 				ChromaResearch r = ChromaResearch.researchList[x];
 				return r == ChromaResearch.PACKCHANGES ? new GuiPackChanges(player) : new GuiBasicInfo(player, r);
+			}
 			case STRUCTURE:
 				return new GuiStructure(player, ChromaResearch.researchList[x]);
 			case PROGRESS:

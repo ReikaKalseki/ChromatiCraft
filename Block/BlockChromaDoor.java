@@ -161,6 +161,11 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 		this.setBlockBounds(minx, miny, minz, maxx, maxy, maxz);
 	}
 
+	@Override
+	public void setBlockBoundsForItemRender() {
+		this.setBlockBounds(0, 0, 0, 1, 1, 1);
+	}
+
 	private boolean connectToBlock(IBlockAccess world, int x, int y, int z, ForgeDirection s) {
 		Block b = world.getBlock(x, y, z);
 		if (b == this)

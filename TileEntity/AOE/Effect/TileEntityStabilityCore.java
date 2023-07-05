@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.minecraft.tileentity.TileEntity;
@@ -21,6 +22,8 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 
 
 public class TileEntityStabilityCore extends TileEntityAdjacencyUpgrade {
@@ -74,9 +77,10 @@ public class TileEntityStabilityCore extends TileEntityAdjacencyUpgrade {
 
 	}
 
-	private static abstract class StabilityInterface {
+	private static abstract class StabilityInterface extends SpecificAdjacencyEffect {
 
 		protected StabilityInterface() {
+			super(CrystalElement.WHITE);
 			if (this.getMod() == null || this.getMod().isLoaded()) {
 				try {
 					String[] cs = this.getClasses();
@@ -109,6 +113,11 @@ public class TileEntityStabilityCore extends TileEntityAdjacencyUpgrade {
 		protected TileEntity getActingTileEntity(TileEntity te) throws Exception {
 			return te;
 		}
+
+		@Override
+		public final boolean isActive() {
+			return this.getMod() == null || this.getMod().isLoaded();
+		}
 	}
 
 	private static class NoInterface extends StabilityInterface { //Used for null
@@ -133,6 +142,16 @@ public class TileEntityStabilityCore extends TileEntityAdjacencyUpgrade {
 		@Override
 		protected String[] getClasses() {
 			return new String[0];
+		}
+
+		@Override
+		public String getDescription() {
+			return "Does nothing";
+		}
+
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+
 		}
 
 	}
@@ -206,6 +225,16 @@ public class TileEntityStabilityCore extends TileEntityAdjacencyUpgrade {
 
 		private double getReductionFactor(int tier) {
 			return Math.pow(0.67, 1+tier);
+		}
+
+		@Override
+		public String getDescription() {
+			return "Stabilizes the infusion matrix";
+		}
+
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+			li.add(new GuiStackDisplay("Thaumcraft:blockStoneDevice:2"));
 		}
 
 	}

@@ -9,9 +9,11 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -22,13 +24,20 @@ import Reika.ChromatiCraft.API.AcceleratorBlacklist.BlacklistReason;
 import Reika.ChromatiCraft.API.Interfaces.CustomAcceleration;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiIconDisplay;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 
@@ -48,6 +57,16 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 		public boolean usesParentClasses() {
 			return false;
 		}
+
+		@Override
+		public String getDescription() {
+			return "Does nothing";
+		}
+
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+
+		}
 	};
 
 	private static final Acceleration defaultKey = new Acceleration() {
@@ -57,6 +76,17 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 		@Override
 		public boolean usesParentClasses() {
 			return false;
+		}
+
+		@Override
+		public String getDescription() {
+			return "Accelerates operations";
+		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+			li.add(new GuiIconDisplay(ChromaIcons.QUESTION.getIcon()));
 		}
 	};
 
@@ -88,7 +118,12 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 
 	public static void customizeTile(Class c, Acceleration a) {
 		actions.put(c, a);
-		doRecursiveChecks = a.usesParentClasses();
+		doRecursiveChecks |= a.usesParentClasses();
+	}
+
+	public static void customizeTile(Class c, CustomAcceleration a) {
+		actions.put(c, new APIAcceleration(a));
+		doRecursiveChecks |= a.usesParentClasses();
 	}
 
 	private static void blacklistTile(String name, ModList mod, BlacklistReason r) {
@@ -269,7 +304,11 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 		return CrystalElement.LIGHTBLUE;
 	}
 
-	public static abstract class Acceleration {
+	public static abstract class Acceleration extends SpecificAdjacencyEffect {
+
+		protected Acceleration() {
+			super(CrystalElement.LIGHTBLUE);
+		}
 
 		protected abstract void tick(TileEntity te, int factor, TileEntity accelerator) throws Exception;
 
@@ -294,6 +333,11 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 			return root;
 		}
 
+		@Override
+		public boolean isActive() {
+			return true;
+		}
+
 	}
 
 	private static final class APIAcceleration extends Acceleration {
@@ -312,6 +356,17 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 		@Override
 		public boolean usesParentClasses() {
 			return accel.usesParentClasses();
+		}
+
+		@Override
+		public String getDescription() {
+			return accel.getDescription();
+		}
+
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+			for (ItemStack is : accel.getItems())
+				li.add(new GuiStackDisplay(is));
 		}
 
 	}

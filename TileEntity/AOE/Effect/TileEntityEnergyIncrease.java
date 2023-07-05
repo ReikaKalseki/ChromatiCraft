@@ -11,6 +11,7 @@ package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.minecraft.tileentity.TileEntity;
@@ -23,6 +24,8 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 
 import buildcraft.core.lib.engines.TileEngineBase;
@@ -59,8 +62,6 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		new IC2ReactorInterface();
 		//new HexGeneratorInterface();
 	}
-
-	protected Object cachedValue = null;
 
 	@Override
 	protected EffectResult tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {
@@ -127,9 +128,10 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		}
 	}
 
-	private static abstract class EnergyInterface {
+	private static abstract class EnergyInterface extends SpecificAdjacencyEffect {
 
 		protected EnergyInterface() {
+			super(CrystalElement.YELLOW);
 			if (this.getMod() == null || this.getMod().isLoaded()) {
 				try {
 					String[] cs = this.getClasses();
@@ -166,6 +168,11 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 
 		protected TileEntity getActingTileEntity(TileEntity te) throws Exception {
 			return te;
+		}
+
+		@Override
+		public final boolean isActive() {
+			return this.getMod() == null || this.getMod().isLoaded();
 		}
 
 		public double getMultiplier() {
@@ -206,6 +213,11 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 	private static abstract class BasicEnergyInterface extends EnergyInterface {
 
 		protected abstract int getBaseGeneration(TileEntity te) throws Exception;
+
+		@Override
+		public String getDescription() {
+			return "Increases energy output rate";
+		}
 
 	}
 
@@ -275,11 +287,19 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 			return new String[0];
 		}
 
+		@Override
+		public String getDescription() {
+			return "Does nothing";
+		}
+
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+
+		}
+
 	}
 
 	private static class IC2GeneratorInterface extends EnergyInjectionInterface {
-
-		private static final IC2GeneratorInterface instance = new IC2GeneratorInterface();
 
 		private Field storage;
 		private Field production;
@@ -316,11 +336,17 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 			return production.getInt(te);
 		}
 
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+			for (int i = 1; i <= 4; i++)
+				li.add(new GuiStackDisplay("IC2:blockGenerator:"+i));
+			for (int i = 6; i <= 9; i++)
+				li.add(new GuiStackDisplay("IC2:blockGenerator:"+i));
+		}
+
 	}
 
 	private static class IC2ReactorInterface extends EnergyInterface {
-
-		private static final IC2ReactorInterface instance = new IC2ReactorInterface();
 
 		//private Field output;
 		//private Method getReactor;
@@ -391,11 +417,19 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 			return 0.75;
 		}
 
+		@Override
+		public String getDescription() {
+			return "Increases reactor output";
+		}
+
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+			li.add(new GuiStackDisplay("IC2:blockGenerator:5"));
+		}
+
 	}
 
 	private static class TEDynamoInterface extends EnergyInjectionInterface {
-
-		private static final TEDynamoInterface instance = new TEDynamoInterface();
 
 		private Field energyStorage;
 		private Field config;
@@ -450,6 +484,12 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 			}
 		}
 
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+			for (int i = 0; i <= 4; i++)
+				li.add(new GuiStackDisplay("ThermalExpansion:Dynamo:"+i));
+		}
+
 	}
 	/* Implementation differs by machine type
 	private static class EiOGeneratorInterface extends EnergyInterface {
@@ -479,9 +519,6 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 	}
 	 */
 	private static class BCEngineInterface extends EnergyInjectionInterface {
-
-		private static final BCEngineInterface instance = new BCEngineInterface();
-
 		@Override
 		@ModDependent(ModList.BCENERGY)
 		protected int getBaseGeneration(TileEntity te) throws Exception {
@@ -509,6 +546,12 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 			return new String[]{"buildcraft.core.lib.engines.TileEngineBase"};
 		}
 
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+			for (int i = 0; i <= 4; i++)
+				li.add(new GuiStackDisplay("BuildCraft|Core:engineBlock:"+i));
+		}
+
 	}
 
 	private static class ForestryEngineInterface extends EnergyInjectionInterface {
@@ -516,8 +559,6 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		private Field currentOutput;
 		private Field energyManager;
 		private Field energyStorage;
-
-		private static final ForestryEngineInterface instance = new ForestryEngineInterface();
 
 		@Override
 		protected void init() throws Exception {
@@ -552,6 +593,13 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 			return new String[]{"forestry.core.tiles.TileEngine"};
 		}
 
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+			li.add(new GuiStackDisplay("Forestry:engine:1"));
+			li.add(new GuiStackDisplay("Forestry:engine:2"));
+			li.add(new GuiStackDisplay("Forestry:engine:4"));
+		}
+
 	}
 
 	private static class RailCraftEngineInterface extends EnergyInjectionInterface {
@@ -559,8 +607,6 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		private Method getMaxOutputRF;
 		private Method maxEnergy;
 		private Field energy;
-
-		private static final RailCraftEngineInterface instance = new RailCraftEngineInterface();
 
 		@Override
 		protected void init() throws Exception {
@@ -594,6 +640,12 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 			return new String[]{"mods.railcraft.common.blocks.machine.beta.TileEngineSteam"};
 		}
 
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+			for (int i = 7; i <= 9; i++)
+				li.add(new GuiStackDisplay("Railcraft:machine.beta:"+i));
+		}
+
 	}
 
 	private static class RailCraftTurbineInterface extends EnergyInjectionInterface {
@@ -601,8 +653,6 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		private Field output;
 		private Field energy;
 		private Method getMasterBlock;
-
-		private static final RailCraftTurbineInterface instance = new RailCraftTurbineInterface();
 
 		@Override
 		protected void init() throws Exception {
@@ -641,14 +691,17 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 			return (TileEntity)getMasterBlock.invoke(te);
 		}
 
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+			li.add(new GuiStackDisplay("Railcraft:machine.alpha:1"));
+		}
+
 	}
 
 	private static class ExUGeneratorInterface extends EnergyInjectionInterface {
 
 		private Method genLevel;
 		private Field storage;
-
-		private static final ExUGeneratorInterface instance = new ExUGeneratorInterface();
 
 		@Override
 		protected void init() throws Exception {
@@ -678,6 +731,12 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		@Override
 		protected String[] getClasses() {
 			return new String[]{"com.rwtema.extrautils.tileentity.generators.TileEntityGenerator"};
+		}
+
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+			for (int i = 0; i <= 11; i++)
+				li.add(new GuiStackDisplay("ExtraUtilities:generator:"+i));
 		}
 
 	}
