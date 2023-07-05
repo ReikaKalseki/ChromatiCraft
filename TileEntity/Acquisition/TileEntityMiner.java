@@ -859,7 +859,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	}
 
 	@Override
-	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+	public void addTooltipInfo(List li, boolean shift) {
 
 	}
 

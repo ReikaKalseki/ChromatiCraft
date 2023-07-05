@@ -9,7 +9,12 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import java.util.List;
+
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.DynamicallyGeneratedSubpage;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -49,12 +54,33 @@ public abstract class ItemWandBase extends ItemChromaTool implements Dynamically
 		return energy.copy().scale(scale);
 	}
 
+	@Override
+	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
+		if (!energy.isEmpty()) {
+			if (GuiScreen.isShiftKeyDown()) {
+				String[] parts = this.generateUsageData(true).split("\\n");
+				for (String s : parts) {
+					li.add(s);
+				}
+			}
+			else {
+				StringBuilder sb = new StringBuilder();
+				sb.append("Hold ");
+				sb.append(EnumChatFormatting.GREEN.toString());
+				sb.append("Shift");
+				sb.append(EnumChatFormatting.GRAY.toString());
+				sb.append(" for cost data");
+				li.add(sb.toString());
+			}
+		}
+	}
+
 	//@SideOnly(Side.CLIENT)
-	public String generateUsageData() {
+	public String generateUsageData(boolean color) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("Base usage cost: \n");
+		sb.append("Base usage requires: \n");
 		for (CrystalElement e : energy.elementSet()) {
-			sb.append(e.displayName+": "+energy.getValue(e)+"\n");
+			sb.append((color ? e.getChatColorString() : "")+" "+e.displayName/*+": "+energy.getValue(e)*/+"\n");
 		}
 		return sb.toString();
 	}
@@ -69,7 +95,7 @@ public abstract class ItemWandBase extends ItemChromaTool implements Dynamically
 	}
 
 	public String getNotes(int subpage) {
-		return this.generateUsageData();
+		return this.generateUsageData(false);
 	}
 
 	public int getMaxSubpage() {

@@ -1,5 +1,7 @@
 package Reika.ChromatiCraft.Items.Tools.Powered;
 
+import java.util.List;
+
 import org.apache.commons.lang3.text.WordUtils;
 import org.lwjgl.opengl.GL11;
 
@@ -58,6 +60,12 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 	}
 
 	@Override
+	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
+		super.addInformation(is, ep, li, vb);
+		li.add("Mode: "+Inspections.list[this.getActionType(is)].displayName());
+	}
+
+	@Override
 	public void onPlayerStoppedUsing(ItemStack is, World world, EntityPlayer ep, int count) {
 		count = MathHelper.clamp_int(this.getMaxItemUseDuration(is)-count, 0, CHARGE_TIME);
 		//ReikaChatHelper.write(power+"  ->  "+charge);
@@ -107,6 +115,7 @@ public class ItemCrystalProbe extends ItemPoweredChromaTool {
 			int type = this.getActionType(is);
 			type = (type+1)%Inspections.list.length;
 			is.stackTagCompound.setInteger("type", type);
+			ChromaSounds.USE.playSound(ep);
 		}
 		else if (!this.handleUseAllowance(ep) && this.isActivated(ep, is, true))
 			ep.setItemInUse(is, this.getMaxItemUseDuration(is));

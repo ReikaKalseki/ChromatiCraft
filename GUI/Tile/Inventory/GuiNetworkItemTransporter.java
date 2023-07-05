@@ -80,6 +80,7 @@ public class GuiNetworkItemTransporter extends GuiChromaBase
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		GL11.glColor4f(1, 1, 1, 1);
+		this.getContainer().setFilterDisplay(GuiScreen.isCtrlKeyDown());
 
 		//ReikaRenderHelper.disableEntityLighting();
 		//ReikaRenderHelper.disableLighting();
@@ -108,14 +109,14 @@ public class GuiNetworkItemTransporter extends GuiChromaBase
 			if (this.isMouseOverSlot(slot, api.getMouseRealX(), api.getMouseRealY())) {
 				String s = "Hold "+EnumChatFormatting.GREEN+"CTRL"+EnumChatFormatting.RESET+" to see/set filters";
 				int dx = 25;
-				if (GuiScreen.isCtrlKeyDown()) {
+				if (this.isFilterMode()) {
 					s = "Release "+EnumChatFormatting.GREEN+"CTRL"+EnumChatFormatting.RESET+" to see received items";
 					dx = 61;
 				}
 				api.drawTooltip(fontRendererObj, s, -fontRendererObj.getStringWidth(s)+dx, -28);
 			}
 
-			if (GuiScreen.isCtrlKeyDown()) {
+			if (this.isFilterMode()) {
 				api.drawItemStack(itemRender, fontRendererObj, net.getFilter(slot.slotNumber-12), slot.xDisplayPosition, slot.yDisplayPosition);
 			}
 			else {
@@ -125,6 +126,10 @@ public class GuiNetworkItemTransporter extends GuiChromaBase
 		else {
 			super.func_146977_a(slot);
 		}
+	}
+
+	public boolean isFilterMode() {
+		return this.getContainer().isFilterMode();
 	}
 
 	@Override

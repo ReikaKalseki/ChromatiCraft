@@ -9,40 +9,59 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Container;
 
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 
+import Reika.ChromatiCraft.ChromatiCraft;
+import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.TileEntity.Transport.TileEntityNetworkItemTransporter;
 import Reika.DragonAPI.Base.CoreContainer;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+import Reika.DragonAPI.Instantiable.GUI.Slot.SlotNoClick;
+import Reika.DragonAPI.Instantiable.IO.PacketTarget;
+import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
 public class ContainerNetworkItemTransporter extends CoreContainer {
 
 	private TileEntityNetworkItemTransporter tile;
 
+	private boolean showingFilters = false;
+
 	public ContainerNetworkItemTransporter(EntityPlayer player, TileEntityNetworkItemTransporter te) {
 		super(player, te);
-		int dx = -18;
-		int dy = 17;
 		tile = te;
 
-		int idx = 0;
-		for (int j = 0; j < 9; j++) {
-			if (j == 4)
-				continue;
-			for (int i = 0; i < 3; i++) {
-				int x = dx+26+j*18;
-				int y = dy+i*18;
-				Slot s = new Slot(te, idx, x, y);
-				this.addSlotToContainer(s);
-				idx++;
-			}
-		}
+		this.setFilterDisplay(false);
+	}
 
-		this.addPlayerInventoryWithOffset(player, 0, 0);
+	public boolean isFilterMode() {
+		return showingFilters;
+	}
+
+	public void setFilterDisplay(boolean show) {
+		if (show != showingFilters || inventorySlots.isEmpty()) {
+			inventorySlots.clear();
+			showingFilters = show;
+			int dx = -18;
+			int dy = 17;
+			int idx = 0;
+			for (int j = 0; j < 9; j++) {
+				if (j == 4)
+					continue;
+				for (int i = 0; i < 3; i++) {
+					int x = dx+26+j*18;
+					int y = dy+i*18;
+					Slot s = show ? new SlotNoClick(tile, idx, x, y, false, false) : new Slot(tile, idx, x, y);
+					this.addSlotToContainer(s);
+					idx++;
+				}
+			}
+
+			this.addPlayerInventoryWithOffset(ep, 0, 0);
+			if (ep.worldObj.isRemote)
+				ReikaPacketHelper.sendDataPacket(ChromatiCraft.packetChannel, ChromaPackets.NETWORKITEMMODE.ordinal(), PacketTarget.server, showingFilters ? 1 : 0);
+		}
 	}
 
 	@Override
@@ -60,10 +79,13 @@ public class ContainerNetworkItemTransporter extends CoreContainer {
 		}
 		 */
 
-		if (slot >= 12 && slot < tile.getSizeInventory() && GuiScreen.isCtrlKeyDown()) {
+		if (slot >= 12 && slot < tile.getSizeInventory() && showingFilters) {
 			action = 0;
 			ItemStack held = ep.inventory.getItemStack();
-			tile.setFilter(slot-12, ReikaItemHelper.getSizedItemStack(held, 1));
+			ItemStack cp = held == null ? null : held.copy();
+			if (cp != null && par2 != 1)
+				cp.stackSize = 1;
+			tile.setFilter(slot-12, cp);
 			//this.detectAndSendChanges();
 			return held;
 		}

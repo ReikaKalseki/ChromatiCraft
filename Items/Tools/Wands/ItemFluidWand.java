@@ -20,7 +20,6 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.Base.ItemWandBase;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -28,9 +27,9 @@ import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.BreakerCallback;
 import Reika.DragonAPI.Auxiliary.ProgressiveRecursiveBreaker.ProgressiveBreaker;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
-import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
+import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
 
 public class ItemFluidWand extends ItemWandBase implements BreakerCallback {
 
@@ -63,20 +62,7 @@ public class ItemFluidWand extends ItemWandBase implements BreakerCallback {
 					b.player = ep;
 					b.tickRate = 5;
 					b.bounds = new BlockBox(x, y, z, x, y, z).expand(128, 128, 128);
-					for (int i = 0; i < 16; i++)
-						b.addBlock(new BlockKey(id, i));
-					if (f == FluidRegistry.WATER) {
-						for (int i = 0; i < 16; i++) {
-							b.addBlock(new BlockKey(Blocks.water, i));
-							b.addBlock(new BlockKey(Blocks.flowing_water, i));
-						}
-					}
-					else if (f == FluidRegistry.LAVA) {
-						for (int i = 0; i < 16; i++) {
-							b.addBlock(new BlockKey(Blocks.lava, i));
-							b.addBlock(new BlockKey(Blocks.flowing_lava, i));
-						}
-					}
+					b.blockValidity = bk -> ReikaBlockHelper.isLiquid(bk.blockID) && ReikaFluidHelper.lookupFluidForBlock(id) == ReikaFluidHelper.lookupFluidForBlock(bk.blockID);
 					breakers.put(b.hashCode(), ep);
 				}
 			}

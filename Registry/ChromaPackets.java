@@ -235,6 +235,7 @@ public enum ChromaPackets {
 	ARTEZONEPARTICLES(),
 	ALTARSHOCK(4),
 	ALTARBREAK(3),
+	NETWORKITEMMODE(1, PacketTypes.RAW),
 	;
 
 	public final int numInts;

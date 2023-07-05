@@ -172,9 +172,12 @@ public class TileEntityFarmer extends TileEntityRelayPowered implements ComplexA
 		int dz = z+r*dir.offsetZ+sp*left.offsetZ;//ReikaRandomHelper.getRandomPlusMinus(z, r);
 		int dy = ReikaWorldHelper.findTopBlockBelowY(world, dx, y, dz);//Math.min(y, world.getTopSolidOrLiquidBlock(x, z));
 		return new Coordinate(dx, dy, dz);*/
-		Coordinate pos = coordinateRand[this.getFacing().ordinal()-2].getRandomEntry();
+		Coordinate pos = coordinateRand[this.getFacing().ordinal()-2].getRandomEntry().offset(x, y, z);
 		int dy = ReikaWorldHelper.findTopBlockBelowY(world, pos.xCoord, y, pos.zCoord);//Math.min(y, world.getTopSolidOrLiquidBlock(x, z));
-		return pos.setY(dy);
+		Coordinate ret = pos.setY(dy);
+		if (ReikaWorldHelper.isSubmerged(world, x, y, z) && ret.getTaxicabDistanceTo(x, y, z) >= 5)
+			ret = null;
+		return ret;
 	}
 	/*
 	@Override

@@ -302,7 +302,7 @@ public class ItemChromaPlacer extends Item implements ISize {
 			if (te instanceof NBTTile) {
 				NBTTile nb = (NBTTile)te;
 				nb.setDataFromItemStackTag(is);
-				nb.addTooltipInfo(li, is, GuiScreen.isShiftKeyDown());
+				nb.addTooltipInfo(li, GuiScreen.isShiftKeyDown());
 			}
 		}
 		if (r == ChromaTiles.GUARDIAN) {

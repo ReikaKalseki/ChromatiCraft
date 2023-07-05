@@ -14,10 +14,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -42,6 +45,25 @@ public class ItemBuilderWand extends ItemWandBase {
 		this.addEnergyCost(CrystalElement.BROWN, 10);
 		this.addEnergyCost(CrystalElement.BLACK, 5);
 		this.addEnergyCost(CrystalElement.WHITE, 10);
+	}
+
+	@Override
+	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
+		if (GuiScreen.isCtrlKeyDown()) {
+			for (BuildControl c : BuildControl.list) {
+				li.add(c.key+" - "+c.description);
+			}
+		}
+		else {
+			StringBuilder sb = new StringBuilder();
+			sb.append("Hold ");
+			sb.append(EnumChatFormatting.GREEN.toString());
+			sb.append("CTRL");
+			sb.append(EnumChatFormatting.GRAY.toString());
+			sb.append(" to see additional control info");
+			li.add(sb.toString());
+		}
+		super.addInformation(is, ep, li, vb);
 	}
 
 	@Override
@@ -84,12 +106,12 @@ public class ItemBuilderWand extends ItemWandBase {
 
 		int r = getRange(ep);
 
-		int rx = KeyWatcher.instance.isKeyDown(ep, Key.LCTRL) ? 0 : r;
-		int ry = ep.isSneaking() ? 0 : r;
-		int rz = KeyWatcher.instance.isKeyDown(ep, Key.LCTRL) ? 0 : r;
-		boolean fill = !KeyWatcher.instance.isKeyDown(ep, Key.TAB);
-		boolean fill2 = !KeyWatcher.instance.isKeyDown(ep, Key.TILDE);
-		int edge = KeyWatcher.instance.isKeyDown(ep, Key.END) ? ep.isSneaking() ? 2 : 1 : 0;
+		int rx = BuildControl.COLUMN.isInUse(ep) ? 0 : r;
+		int ry = BuildControl.FLAT.isInUse(ep) ? 0 : r;
+		int rz = BuildControl.COLUMN.isInUse(ep) ? 0 : r;
+		boolean fill = !BuildControl.FRAME.isInUse(ep);
+		boolean fill2 = !BuildControl.CENTER.isInUse(ep);
+		boolean edge = BuildControl.WALLS.isInUse(ep);
 
 		BlockArray base = new BlockArray();
 		base.maxDepth = 2*r;
@@ -155,19 +177,15 @@ public class ItemBuilderWand extends ItemWandBase {
 				}
 			}
 		}
-		if (edge > 0) {
+		if (edge) {
 			Iterator<Coordinate> it = li.iterator();
 			while (it.hasNext()) {
 				Coordinate c = it.next();
-				if (edge == 1) {
-					if (c.xCoord != minX && c.xCoord != maxX) {
-						it.remove();
-					}
+				if (dir.offsetX == 0 && c.xCoord != minX && c.xCoord != maxX) {
+					it.remove();
 				}
-				else if (edge == 2) {
-					if (c.yCoord != minY && c.yCoord != maxY) {
-						it.remove();
-					}
+				else if (dir.offsetZ == 0 && c.zCoord != minZ && c.zCoord != maxZ) {
+					it.remove();
 				}
 			}
 		}
@@ -187,6 +205,29 @@ public class ItemBuilderWand extends ItemWandBase {
 			ReikaPlayerAPI.findAndDecrItem(ep, b, m);
 		}
 		return true;
+	}
+
+	static enum BuildControl {
+		COLUMN(Key.LCTRL, "Column"),
+		FLAT(Key.LSHIFT, "Flat"),
+		FRAME(Key.TAB, "Frame Only"),
+		CENTER(Key.TILDE, "Center Only"),
+		WALLS(Key.END, "Walls Only"),
+		;
+
+		private final Key key;
+		private final String description;
+
+		private static final BuildControl[] list = values();
+
+		private BuildControl(Key k, String s) {
+			key = k;
+			description = s;
+		}
+
+		public boolean isInUse(EntityPlayer ep) {
+			return this == FLAT ? ep.isSneaking() : KeyWatcher.instance.isKeyDown(ep, key);
+		}
 	}
 
 	private static class ProximitySorter implements Comparator<Coordinate> {

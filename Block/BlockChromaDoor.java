@@ -43,6 +43,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.StructuredBlockArray;
+import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBounds;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Interfaces.Block.SemiUnbreakable;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -250,7 +251,14 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 
 	@Override
 	public boolean shouldSideBeRendered(IBlockAccess iba, int x, int y, int z, int s) {
-		return super.shouldSideBeRendered(iba, x, y, z, s) && iba.getBlock(x, y, z) != this;
+		if (!super.shouldSideBeRendered(iba, x, y, z, s))
+			return false;
+		if (iba.getBlock(x, y, z) != this)
+			return true;
+		ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[s].getOpposite();
+		BlockBounds box1 = BlockBounds.fromBlock(this, iba, x, y, z);
+		BlockBounds box2 = BlockBounds.fromBlock(this, iba, x+dir.offsetX, y+dir.offsetY, z+dir.offsetZ);
+		return !box1.sharesSideSize(box2, dir);
 	}
 
 	@Override

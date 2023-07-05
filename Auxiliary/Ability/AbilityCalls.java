@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Auxiliary.Ability;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
@@ -761,10 +762,12 @@ public class AbilityCalls {
 				return false;
 		Coordinate c = new Coordinate(ep).offset(0, 1, 0);
 		ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(ep.worldObj, c.xCoord, c.yCoord, c.zCoord, 200);
+		HashSet<BlockKey> set = new HashSet();
 		for (Block bk : LightCast.getPassthroughBlocks())
-			b.passthrough.add(new BlockKey(bk));
+			set.add(new BlockKey(bk));
 		if (ModList.THAUMCRAFT.isLoaded())
-			b.passthrough.add(new BlockKey(ThaumItemHelper.BlockEntry.HOLE.getBlock()));
+			set.add(new BlockKey(ThaumItemHelper.BlockEntry.HOLE.getBlock()));
+		b.passthrough = bk -> set.contains(bk);
 		b.call = new LightCast(ep);
 		b.player = ep;
 		b.hungerFactor = 0;

@@ -187,8 +187,9 @@ public class OreOverlayRenderer {
 		GL11.glPopMatrix();
 	}
 
-	public void startScan(World world, int x, int y, int z, EntityPlayer ep) {
+	public void startScan(World world, int x, int y, int z, EntityPlayer ep, OrePingDelegate ore) {
 		ProgressiveBreaker b = ProgressiveRecursiveBreaker.instance.addCoordinateWithReturn(world, x, y, z, 80);
+		b.blockValidity = bk -> ore.match(bk.blockID, bk.metadata);
 		b.call = new OreScanCallback();
 		this.addBreaker(b, ep);
 	}

@@ -63,7 +63,7 @@ public class CrystalPotionController implements CrystalPotionAPI {
 		this.addColorPotion(CrystalElement.ORANGE, Potion.fireResistance);
 		this.addColorPotion(CrystalElement.PINK, Potion.damageBoost);
 		this.addColorPotion(CrystalElement.YELLOW, Potion.digSpeed);
-		this.addColorPotion(CrystalElement.WHITE, Potion.invisibility);
+		//this.addColorPotion(CrystalElement.WHITE, Potion.invisibility);
 		this.addColorPotion(CrystalElement.BROWN, ChromatiCraft.betterSat);
 
 		this.addNetherPotion(CrystalElement.BLACK, Potion.wither);
@@ -189,13 +189,17 @@ public class CrystalPotionController implements CrystalPotionAPI {
 		return false;
 	}
 
-	public String getEffectName(CrystalElement color) {
+	public String getEffectName(CrystalElement color, boolean boost) {
 		if (color == CrystalElement.BLACK)
 			return "Confuses Mobs";
 		if (color == CrystalElement.PURPLE)
 			return "Gives XP";
+		if (color == CrystalElement.BROWN && !boost)
+			return "Prevents Starvation";
+		if (color == CrystalElement.ORANGE && boost)
+			return "Protects from Extreme Heat";
 		if (color == CrystalElement.WHITE)
-			return "Clears Effects";
+			return boost ? "Clears All Negative Effects" : "Clears Most Negative Effects";
 		return StatCollector.translateToLocal(potions.get(color).getName());
 	}
 

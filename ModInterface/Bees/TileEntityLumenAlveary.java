@@ -833,7 +833,8 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 	@ModDependent(ModList.FORESTRY)
 	public ItemStack getQueenItem() {
-		IBeeHousing ibh = this.getMultiblockLogic().getController();
+		IMultiblockLogicAlveary lgc = this.getMultiblockLogic();
+		IBeeHousing ibh = lgc == null ? null : lgc.getController();
 		if (ibh == null)
 			return null;
 		ItemStack is = ibh.getBeeInventory().getQueen();

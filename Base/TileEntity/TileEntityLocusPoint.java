@@ -196,7 +196,7 @@ public abstract class TileEntityLocusPoint extends TileEntityChromaticBase imple
 	}
 
 	@Override
-	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+	public void addTooltipInfo(List li, boolean shift) {
 
 	}
 

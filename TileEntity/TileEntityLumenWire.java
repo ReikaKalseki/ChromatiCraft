@@ -489,7 +489,7 @@ public class TileEntityLumenWire extends TileEntityChromaticBase implements Brea
 
 		public final int renderColor;
 
-		private static final CheckType[] list = values();
+		public static final CheckType[] list = values();
 
 		private CheckType(int c) {
 			renderColor = c;

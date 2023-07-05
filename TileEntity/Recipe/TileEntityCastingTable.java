@@ -750,8 +750,9 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 				li = new ArrayList();
 				map.put(dir, li);
 			}
-			TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)c.getTileEntity(worldObj);
-			if (te != null) {
+			TileEntity tile = c.getTileEntity(worldObj);
+			if (tile instanceof TileEntityCrystalRepeater) {
+				TileEntityCrystalRepeater te = (TileEntityCrystalRepeater)tile;
 				te.markAsTableGrouped(false);
 				CrystalElement e = te.getActiveColor();
 				if (e != null && hasPylonConnections) {
@@ -1615,6 +1616,11 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		return this.getState() == OperationState.RUNNING;
 	}
 
+	@Override
+	public void addTooltipInfo(List li, boolean shift) {
+		li.add("Tier "+ReikaStringParser.parseRomanRumeral(this.getTier().ordinal()+1));
+	}
+
 	public static enum CastingFocusLocation implements FocusLocation {
 
 		N1(-1, 1, -3),
@@ -1709,10 +1715,5 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 
 	}
 	 */
-
-	@Override
-	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
-		li.add("Tier "+ReikaStringParser.parseRomanRumeral(this.getTier().ordinal()));
-	}
 
 }

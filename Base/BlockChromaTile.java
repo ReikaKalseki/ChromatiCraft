@@ -890,6 +890,11 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 				}
 			}
 		}*/
+		if (te instanceof NBTTile) {
+			NBTTile nb = (NBTTile)te;
+			nb.addTooltipInfo(currenttip, acc.getPlayer().isSneaking());
+		}
+		ReikaJavaLibrary.removeDuplicates(currenttip);
 		return currenttip;
 	}
 

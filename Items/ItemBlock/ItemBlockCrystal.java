@@ -104,15 +104,15 @@ public class ItemBlockCrystal extends ItemBlock {
 		boolean nnegative = neff != null ? ReikaPotionHelper.isBadEffect(Potion.potionTypes[neff.getPotionID()]) || neff.getPotionID() == Potion.nightVision.id : false;
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 			if (block.shouldGiveEffects(color)) {
-				li.add("Effects: "+CrystalPotionController.instance.getEffectName(color));
+				li.add("Effects: "+CrystalPotionController.instance.getEffectName(color, block.getPotionLevel(color) > 0));
 				if (negative)
 					li.add("(Mobs only)");
 				String sg = nnegative || neff == null ? "(Players only)" : "(Mobs only)";
 				li.add("Nether Effects: "+CrystalPotionController.instance.getNetherEffectName(color));
 				li.add(sg);
-				if (CrystalPotionController.instance.getEffectFromColor(color, 200, 0, false) != null) {
-					li.add("");
-					li.add("Effect Range: "+block.getRange());
+				li.add("");
+				li.add("Effect Range: "+block.getRange());
+				if (color != CrystalElement.BROWN && CrystalPotionController.instance.getEffectFromColor(color, 200, 0, false) != null) {
 					li.add("Effect Level: "+(block.getPotionLevel(color)+1));
 
 				}

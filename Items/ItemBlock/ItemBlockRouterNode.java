@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -41,7 +41,10 @@ public class ItemBlockRouterNode extends ItemBlockSidePlaced {
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
 		super.addInformation(is, ep, li, vb);
 
-		if (is.stackTagCompound != null) {
+		if (is.stackTagCompound == null) {
+			li.add("Must be linked to an "+ChromaTiles.ROUTERHUB.getName()+" to work");
+		}
+		else {
 			Coordinate loc = Coordinate.readFromNBT("target", is.stackTagCompound);
 			if (loc != null) {
 				li.add("Linked to: "+loc.toString());

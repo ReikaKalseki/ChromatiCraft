@@ -32,48 +32,45 @@ public class CrystalPlantHandler implements CustomCropHandler {
 
 	@Override
 	public boolean isCrop(Block id, int meta) {
-		return ModList.CHROMATICRAFT.isLoaded() && id == ChromaBlocks.PLANT.getBlockInstance();
+		return id == ChromaBlocks.PLANT.getBlockInstance();
 	}
 
 	@Override
 	public boolean isRipeCrop(World world, int x, int y, int z) {
 		TileEntity te = world.getTileEntity(x, y, z);
-		return ModList.CHROMATICRAFT.isLoaded() && te instanceof TileEntityCrystalPlant && ((TileEntityCrystalPlant)te).canHarvest();
+		return te instanceof TileEntityCrystalPlant && ((TileEntityCrystalPlant)te).canHarvest();
 	}
 
 	@Override
 	public void makeRipe(World world, int x, int y, int z) {
 		TileEntity te = world.getTileEntity(x, y, z);
-		if (ModList.CHROMATICRAFT.isLoaded() && te instanceof TileEntityCrystalPlant) {
+		if (te instanceof TileEntityCrystalPlant) {
 			((TileEntityCrystalPlant)te).makeRipe();
 		}
 	}
 
 	@Override
 	public boolean isSeedItem(ItemStack is) {
-		return ModList.CHROMATICRAFT.isLoaded() && ChromaItems.SEED.matchWith(is);
+		return ChromaItems.SEED.matchWith(is);
 	}
 
 	@Override
 	public ArrayList<ItemStack> getAdditionalDrops(World world, int x, int y, int z, Block id, int meta, int fortune) {
-		if (ModList.CHROMATICRAFT.isLoaded()) {
-			TileEntityCrystalPlant te = (TileEntityCrystalPlant)world.getTileEntity(x, y, z);
-			return te.getDrops();
-		}
-		return null;
+		TileEntityCrystalPlant te = (TileEntityCrystalPlant)world.getTileEntity(x, y, z);
+		return te.getDrops();
 	}
 
 	@Override
 	public void editTileDataForHarvest(World world, int x, int y, int z) {
 		TileEntity te = world.getTileEntity(x, y, z);
-		if (ModList.CHROMATICRAFT.isLoaded() && te instanceof TileEntityCrystalPlant) {
+		if (te instanceof TileEntityCrystalPlant) {
 			((TileEntityCrystalPlant)te).harvest(false);
 		}
 	}
 
 	@Override
 	public boolean initializedProperly() {
-		return ModList.CHROMATICRAFT.isLoaded() && ChromaBlocks.PLANT.getBlockInstance() != null;
+		return ChromaBlocks.PLANT.getBlockInstance() != null;
 	}
 
 	@Override
@@ -84,7 +81,7 @@ public class CrystalPlantHandler implements CustomCropHandler {
 	@Override
 	public int getGrowthState(World world, int x, int y, int z) {
 		TileEntity te = world.getTileEntity(x, y, z);
-		if (ModList.CHROMATICRAFT.isLoaded() && te instanceof TileEntityCrystalPlant) {
+		if (te instanceof TileEntityCrystalPlant) {
 			return ((TileEntityCrystalPlant)te).getGrowthState();
 		}
 		else {

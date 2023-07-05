@@ -39,6 +39,7 @@ import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
@@ -46,6 +47,7 @@ import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher;
 import Reika.DragonAPI.Auxiliary.Trackers.KeyWatcher.Key;
+import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.ProximityMap;
 import Reika.DragonAPI.Instantiable.Effects.EntityFloatingSeedsFX;
@@ -117,6 +119,7 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
+		this.setUnmineable(true);
 		EntityPlayer ep = world.getClosestPlayer(x+0.5, y+0.5, z+0.5, 16);
 		lastLowerHeight = extension0+extension1;
 		lastUpperHeight = extension2;
@@ -203,6 +206,11 @@ public class TileEntityDataNode extends TileEntityChromaticBase implements Opera
 		}
 
 		if (tower != null && !world.isRemote) {
+			if (world.getBlock(x, y+1, z) != ChromaBlocks.DUMMYAUX.getBlockInstance() || world.getBlock(x, y-1, z) != ChromaBlocks.STRUCTSHIELD.getBlockInstance()) {
+				FilledBlockArray arr = ChromaStructures.DATANODE.getArray(world, x, y-1, z);
+				arr.remove(x, y, z);
+				arr.place();
+			}
 			if (rand.nextInt(plantRand) == 0) {
 				if (this.spawnMetaAlloy(world, x, y, z)) {
 					plantRand = 800; //reset random rate;

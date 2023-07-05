@@ -56,6 +56,7 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemCollector;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityLampController;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityChromaLamp;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityCrystalBeacon;
+import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityExplosionShield;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityGuardianStone;
 import Reika.ChromatiCraft.TileEntity.AOE.Defence.TileEntityLumenTurret;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
@@ -71,6 +72,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Maps.PluralMap;
 import Reika.DragonAPI.Instantiable.Event.Client.ResourceReloadEvent;
 import Reika.DragonAPI.Instantiable.IO.XMLInterface;
+import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 
@@ -498,10 +500,12 @@ public final class ChromaDescriptions {
 		addNotes(ChromaTiles.CHARGER, TileEntityCrystalCharger.CAPACITY);
 		//addNotes(ChromaTiles.TICKER, TileEntityInventoryTicker.getRequiredEnergy().toDisplay());
 		addNotes(ChromaTiles.FURNACE, TileEntityCrystalFurnace.MULTIPLY);
+		addNotes(ChromaTiles.INSERTER, ReikaDirectionHelper.getDirectionInfoAsString());
 		addNotes(ChromaTiles.FABRICATOR, FabricationRecipes.FACTOR, FabricationRecipes.INITFACTOR, FabricationRecipes.POWER);
 		addNotes(ChromaTiles.BEACON, TileEntityCrystalBeacon.RATIO, TileEntityCrystalBeacon.POWER, TileEntityCrystalBeacon.MAXRANGE);
 		addNotes(ChromaTiles.COLLECTOR, TileEntityCollector.XP_PER_CHROMA);
 		addNotes(ChromaTiles.ITEMCOLLECTOR, TileEntityItemCollector.MAXRANGE);
+		addNotes(ChromaTiles.EXPLOSIONSHIELD, TileEntityExplosionShield.MAXRANGE);
 		addNotes(ChromaTiles.LAMP, TileEntityChromaLamp.FACTOR);
 		addNotes(ChromaTiles.POWERTREE, TileEntityPowerTree.BASE, TileEntityPowerTree.RATIO, TileEntityPowerTree.POWER);
 		addNotes(ChromaTiles.LAMPCONTROL, TileEntityLampController.MAXRANGE, TileEntityLampController.MAXCHANNEL);

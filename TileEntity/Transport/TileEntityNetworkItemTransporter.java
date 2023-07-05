@@ -509,10 +509,12 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 	}
 
 	@Override
-	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
-		for (Request r : requestFilters) {
-			if (r != null)
-				li.add(r.getDisplayString());
+	public void addTooltipInfo(List li, boolean shift) {
+		if (shift) {
+			for (Request r : requestFilters) {
+				if (r != null && r.item != null)
+					li.add(r.getDisplayString());
+			}
 		}
 	}
 
@@ -526,7 +528,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 	}
 
 	public ItemStack getFilter(int slot) {
-		return requestFilters[slot].item != null ? requestFilters[slot].item.copy() : null;
+		return requestFilters[slot].item != null ? ReikaItemHelper.getSizedItemStack(requestFilters[slot].item, requestFilters[slot].requestAmount) : null;
 	}
 
 	@Override
@@ -559,7 +561,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 		}
 
 		public String getDisplayString() {
-			return item.getDisplayName()+" x"+requestAmount;
+			return index+": "+(item == null ? "None" : item.getDisplayName()+" x"+requestAmount);
 		}
 
 		private void tick() {
@@ -600,7 +602,7 @@ public class TileEntityNetworkItemTransporter extends InventoriedCrystalTransmit
 		private void setItem(ItemStack is) {
 			//ReikaJavaLibrary.pConsole(this+" item set to "+is+" direct", Side.SERVER);
 			item = is != null ? is.copy() : null;
-			requestAmount = is != null ? Math.min(is.getMaxStackSize(), TileEntityNetworkItemTransporter.this.getInventoryStackLimit()) : 0;
+			requestAmount = is != null ? is.stackSize > 1 ? is.stackSize : Math.min(is.getMaxStackSize(), TileEntityNetworkItemTransporter.this.getInventoryStackLimit()) : 0;
 		}
 
 		@Override

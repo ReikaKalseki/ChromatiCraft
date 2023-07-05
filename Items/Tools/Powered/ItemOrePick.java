@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.Items.Tools.Powered;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -52,6 +53,13 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite, En
 	public ItemOrePick(int index) {
 		super(index);
 		this.setMaxDamage(720);
+	}
+
+	@Override
+	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
+		super.addInformation(is, ep, li, vb);
+		li.add("Right click a vein to scan the vein");
+		li.add("Right click and hold in air to ping all nearby veins");
 	}
 
 	@Override
@@ -144,7 +152,7 @@ public class ItemOrePick extends ItemPoweredChromaTool implements ToolSprite, En
 		if (ore != null) {
 			if (!world.isRemote) {
 				ToolChargingSystem.instance.removeCharge(is, (int)(SCAN_COST*this.getMaxCharge()), ep);
-				OreOverlayRenderer.instance.startScan(world, x, y, z, ep);
+				OreOverlayRenderer.instance.startScan(world, x, y, z, ep, ore);
 			}
 			return true;
 		}

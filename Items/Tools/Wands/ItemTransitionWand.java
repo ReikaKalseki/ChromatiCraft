@@ -64,10 +64,13 @@ public class ItemTransitionWand extends ItemBlockChangingWand {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
-		if (ep.isSneaking())
-			is.stackTagCompound.removeTag("bbox");
-		else
+		if (ep.isSneaking()) {
+			if (is.stackTagCompound != null)
+				is.stackTagCompound.removeTag("bbox");
+		}
+		else {
 			ep.openGui(ChromatiCraft.instance, ChromaGuis.TRANSITION.ordinal(), world, 0, 0, 0);
+		}
 		return is;
 	}
 

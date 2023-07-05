@@ -178,6 +178,8 @@ public class ChromaAux {
 					BlockSetData dat = set.get(c);
 					if (dat.newBlock == ThaumItemHelper.BlockEntry.TOTEM.getBlock())
 						dat.revert(world);
+					else if (ChromaTiles.getTileFromIDandMetadata(dat.oldBlock, dat.oldMetadata) == ChromaTiles.DATANODE && (dat.newBlock != dat.oldBlock || dat.newMetadata != dat.oldMetadata))
+						dat.revert(world);
 					else if (dat.newBlock == Blocks.mob_spawner) {
 						TileEntityMobSpawner tm = (TileEntityMobSpawner)dat.getTileEntity(world);
 						MobSpawnerBaseLogic lgc = tm.func_145881_a();

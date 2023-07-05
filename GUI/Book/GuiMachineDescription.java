@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
+import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire.CheckType;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.Data.Proportionality;
@@ -228,6 +229,32 @@ public class GuiMachineDescription extends GuiDescription {
 						int clr = ReikaColorAPI.mixColors(c1, c2, 0.5F+0.5F*MathHelper.sin((this.getGuiTick()*0.1F+System.identityHashCode(c)%10000))*0.2F);
 						ReikaGuiAPI.instance.drawRect(dx, dy, w, w, clr, true);
 						ReikaGuiAPI.instance.drawRectFrame(dx, dy, w, w, clr | (a/3 << 24), LineType.SOLID);
+					}
+					break;
+				case NOTES:
+					switch(page) {
+						case LUMENWIRE:
+							for (int i = 0; i < CheckType.list.length; i++) {
+								ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/infoicons.png");
+								double u = 0.0625*i;
+								double v = 0.0625;
+								double s = 0.0625;
+								int r = 48;
+								Tessellator v5 = Tessellator.instance;
+								v5.startDrawingQuads();
+								int dx = posX+(r+1)*(i%4-2)+xSize/2;
+								int dy = posY+(r+1)*(i/4)+115;
+								v5.setColorOpaque_I(CheckType.list[i].renderColor);
+								v5.addVertexWithUV(dx+0, dy+r, 0, u, v+s);
+								v5.addVertexWithUV(dx+r, dy+r, 0, u+s, v+s);
+								v5.addVertexWithUV(dx+r, dy+0, 0, u+s, v);
+								v5.addVertexWithUV(dx+0, dy+0, 0, u, v);
+
+								v5.draw();
+							}
+							break;
+						default:
+							break;
 					}
 					break;
 				default:

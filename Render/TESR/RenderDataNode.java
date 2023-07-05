@@ -110,7 +110,7 @@ public class RenderDataNode extends ChromaRenderBase {
 			}
 			GL11.glPopMatrix();
 
-			if (te.isInWorld() && ScriptLocations.TOWER.isEnabled() && MinecraftForgeClient.getRenderPass() == 1 && Minecraft.getMinecraft().thePlayer.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5) < 4096) {
+			if ((StructureRenderer.isRenderingTiles() || te.getTower() != null) && te.isInWorld() && ScriptLocations.TOWER.isEnabled() && MinecraftForgeClient.getRenderPass() == 1 && Minecraft.getMinecraft().thePlayer.getDistanceSq(te.xCoord+0.5, te.yCoord+0.5, te.zCoord+0.5) < 4096) {
 				GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 				InWorldScriptRenderer.renderTowerScript(te, par8, v5, 0.03125/2, 4096);
 				GL11.glPopAttrib();

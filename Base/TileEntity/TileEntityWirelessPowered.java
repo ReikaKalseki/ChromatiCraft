@@ -114,7 +114,7 @@ public abstract class TileEntityWirelessPowered extends TileEntityChromaticBase 
 	}
 
 	@Override
-	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+	public void addTooltipInfo(List li, boolean shift) {
 
 	}
 

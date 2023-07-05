@@ -20,7 +20,7 @@ public interface NBTTile {
 
 	public void setDataFromItemStackTag(ItemStack is);
 
-	public void addTooltipInfo(List li, ItemStack is, boolean shift);
+	public void addTooltipInfo(List li, boolean shift);
 
 
 

@@ -56,6 +56,7 @@ public class ItemBoostedPendant extends ItemPendant implements PoweredItem {
 
 	@Override
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
+		super.addInformation(is, ep, li, vb);
 		if (ChromaOptions.POWEREDPENDANTS.getState())
 			li.add(String.format("Energy: %.2f%s", 100F*ToolChargingSystem.instance.getCharge(is)/this.getMaxCharge(), "%"));
 	}

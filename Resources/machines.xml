@@ -74,7 +74,7 @@
 			Protects against block placement and breaking, and the opening of GUIs within a %d block range
 
 			Owners and admins always have permissions
-			The owner can also use /guardstone add/remove &#60;player&#62; to allow/deny others access <!-- The &# tags are for angle brackets. Do not touch those. -->
+			The owner can also use ownership keys or the command /guardstone add/remove &#60;player&#62; to allow/deny others access <!-- The &# tags are for angle brackets. Do not touch those. -->
 		</note>
 	</guardian>
 	<stand>
@@ -213,6 +213,8 @@
 			Sure, whenever items need to be moved, you could just run a line of pipes, but those can become unsightly and hard to navigate. This has been something annoying you for years; long ago, you remember seeing a pair of attachments you could place onto the inventories to "beam" the items between them, but these were limited to a single block of range. At the time, it seemed trivial to replicate them into a longer-distance and more dynamic form, but your skills then proved insufficient. Maybe now is time to try again; maybe this idea can be rescued from its abandonment.
 		</desc>
 		<note>
+			Requires line of sight
+			
 			Can be accelerated with %s energy
 		</note>
 	</itemrift>
@@ -280,8 +282,12 @@
 			Everyone loves making potions...OK, no. Between collecting a hideous red weed that seems to grow so slowly you could mine a chunk before it grew, to fiddling with arcane procedures that seem designed as a last-resort replacement for something even worse, to burning through valuable ingredients for effects that last mere minutes - and at the expense of a boosted effect too! - nobody sane enjoys this process. At the very least, maybe, you can forgo most of the process by using the energy from the crystal shards instead, making the process actually worth your time.
 		</desc>
 		<note>
+			Can make potions directly from water bottles
+			
 			Standard shards yield Level I 3:00 potions
 			Boosted shards yield Level II 8:00 potions
+			
+			Some shards have special effects to modify potions
 		</note>
 	</brewer>
 	<ritual>
@@ -365,7 +371,7 @@
 			Harvesting crops is somewhat of a hassle. Doing it manually is extremely slow and ineffective, and those fans you used, while they work, are loud and tend to send items flying. Channelling nature-based energy is likely to provide a superior solution.
 		</desc>
 		<note>
-
+			Can be disabled with a redstone signal
 		</note>
 	</farmer>
 	<automator>
@@ -515,7 +521,8 @@
 		<note>
 			Link to a location with the linking tool
 			
-			Redstone input to a side disables the corresponding slot
+			Redstone input to a side disables the corresponding slot:
+			%s
 		</note>
 	</inserter>
 	<essentiarelay>
@@ -557,7 +564,7 @@
 			You took three steps into a ruined, overgrown stone structure deep in the jungle and were rewarded with an arrow to the face. Primitive as they might be, tripwires are an effective trap or other detector. However, they are just that - primitive. Not all constructions are amenable to redstone connectivity, and you would far prefer something a bit more visually appealing.
 		</desc>
 		<note>
-
+			Has several sensitivity/filter settings, including hostiles-only, drops only, and "all living". Defaults to owner-only.
 		</note>
 	</lumenwire>
 	<particles>
@@ -759,8 +766,6 @@
 		</desc>
 		<note>
 			The hub must be anchored on a valid storage (inventory, ME system, etc)
-			
-			Endpoints must be connected to the hub (by right-clicking) in order to be placed
 		</note>
 	</routerhub>
 	<avolaser>
@@ -809,7 +814,7 @@
 			For some applications, you find yourself needing to build either a structure consisting of a repeating unit, or multiple orderly-arranged multiblocks. Either case has generally proven tedious, as there is only so much enjoyment to be had in placing the same ten blocks over and over (and over and over and over) again. Your first attempt with a wooden axe proved utterly fruitless - whoever claimed it has magic capabilities is clearly about as sane as a house made of TNT - so what you may want to try is to mirror your actions when you build or break blocks.
 		</desc>
 		<note>
-			Interacting with a manipulator changes region size; empty hand changes cell count or region shape
+			Interacting with a manipulator changes region size; empty hand changes cell count (lateral) or region shape (top)
 		</note>
 	</multibuilder>
 	<explosionshield>
@@ -817,7 +822,7 @@
 			You found a way to convert between that magic fluidlike power and a more mechanical variant, a...manafetic...malgetonatic...macta...whatever. However, they require coolant, and when you tried to use them, your supply of said coolant apparently proved insufficient, as what you returned to was less a house and more a field of craters. You COULD hunt down the designer and leave them an immature rant, complaining about how they ruined your base, but a more dignified solution would be some sort of...shield. Something that, while it may not save the engines themselves, will prevent them from destroying their surroundings.
 		</desc>
 		<note>
-
+			Base Range: %dm
 		</note>
 	</explosionshield>
 	<aurapoint>

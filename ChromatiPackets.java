@@ -74,6 +74,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockUnknownArtefact;
 import Reika.ChromatiCraft.Container.ContainerBookPages;
 import Reika.ChromatiCraft.Container.ContainerFragmentSelect;
 import Reika.ChromatiCraft.Container.ContainerItemCollector;
+import Reika.ChromatiCraft.Container.ContainerNetworkItemTransporter;
 import Reika.ChromatiCraft.Entity.EntityBallLightning;
 import Reika.ChromatiCraft.Entity.EntityChainGunShot;
 import Reika.ChromatiCraft.Entity.EntityDimensionFlare;
@@ -1270,6 +1271,11 @@ public class ChromatiPackets implements PacketHandler {
 						ReikaItemHelper.dropItem(world, data[0]+DragonAPICore.rand.nextDouble(), data[1]+DragonAPICore.rand.nextDouble(), data[2]+DragonAPICore.rand.nextDouble(), ChromaStacks.crystalPowder);
 					if (DragonAPICore.rand.nextBoolean())
 						ReikaItemHelper.dropItem(world, data[0]+DragonAPICore.rand.nextDouble(), data[1]+DragonAPICore.rand.nextDouble(), data[2]+DragonAPICore.rand.nextDouble(), new ItemStack(Blocks.cobblestone));
+					break;
+				}
+				case NETWORKITEMMODE: {
+					if (ep.openContainer instanceof ContainerNetworkItemTransporter)
+						((ContainerNetworkItemTransporter)ep.openContainer).setFilterDisplay(data[0] > 0);
 					break;
 				}
 			}

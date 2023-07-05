@@ -105,10 +105,7 @@ public class ItemExcavationWand extends ItemBlockChangingWand {
 			b.taxiCabDistance = true;
 			b.player = ep;
 			b.hungerFactor = 0.125F;
-			HashSet<BlockKey> set = this.getSpreadBlocks(world, x, y, z);
-			for (BlockKey bk : set) {
-				b.addBlock(bk);
-			}
+			b.setBlocks(false, this.getSpreadBlocks(world, x, y, z));
 			breakers.put(b.hashCode(), new PlayerReference(ep));
 		}
 		return true;

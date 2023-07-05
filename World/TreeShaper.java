@@ -138,17 +138,17 @@ public class TreeShaper {
 	}
 
 	private void generateVine(float fertileFactor, World world, int x, int y, int z, int meta, Random rand) {
-		boolean below = world.getBlock(x, y-1, z).isAir(world, x, y-1, z);
+		boolean air = world.getBlock(x, y, z).isAir(world, x, y, z);
 		int n = 0;
 		int max = ReikaRandomHelper.getRandomBetween(1, 3, rand);
-		while (n < max && below) {
-			int y0 = y;
+		while (n < max && air) {
+			this.setBlock(world, x, y, z, ChromaBlocks.DYEVINE.getBlockInstance(), meta, 2);
 			y--;
-			below = world.getBlock(x, y-1, z).isAir(world, x, y-1, z);
-			Block b = fertileFactor > 0 && !below && ReikaRandomHelper.doWithChance(BASE_FERTILE_CHANCE*fertileFactor) ? ChromaBlocks.FERTILEDYEVINE.getBlockInstance() : ChromaBlocks.DYEVINE.getBlockInstance();
-			this.setBlock(world, x, y0, z, b, meta, 2);
+			air = world.getBlock(x, y, z).isAir(world, x, y, z);
 			n++;
 		}
+		if (fertileFactor > 0 && ReikaRandomHelper.doWithChance(BASE_FERTILE_CHANCE*fertileFactor))
+			world.setBlock(x, y+1, z, ChromaBlocks.FERTILEDYEVINE.getBlockInstance(), meta, 2);
 	}
 
 	private int generateNormalTree(World world, int x, int y, int z, Random rand, ReikaDyeHelper color, boolean force, float vineChance, float vineFertility, float hscale) {

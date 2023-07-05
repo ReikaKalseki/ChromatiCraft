@@ -464,7 +464,7 @@ public class TileEntityAspectJar extends TileEntityChromaticBase implements IAsp
 	}
 
 	@Override
-	public void addTooltipInfo(List li, ItemStack is, boolean shift) {
+	public void addTooltipInfo(List li, boolean shift) {
 		for (Aspect a : tank.getAspects()) {
 			li.add(a.getChatcolor()+a.getLocalizedDescription()+": "+tank.getLevel(a));
 		}
