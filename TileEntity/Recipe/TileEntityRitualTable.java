@@ -522,4 +522,9 @@ OperationInterval, MultiBlockChromaTile, VariableTexture {
 		return this.getState() == OperationState.RUNNING;
 	}
 
+	@Override
+	public boolean allowsEfficiencyBoost() {
+		return false;
+	}
+
 }

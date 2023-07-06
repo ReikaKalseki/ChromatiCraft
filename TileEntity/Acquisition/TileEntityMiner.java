@@ -38,6 +38,7 @@ import Reika.ChromatiCraft.API.Interfaces.MinerBlock;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyCheckHandlerImpl;
 import Reika.ChromatiCraft.Block.Worldgen.BlockTieredOre;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
@@ -115,6 +116,10 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	private static final ElementTagCompound required = new ElementTagCompound();
 
 	private static final HashMap<BlockKey, MineralCategory> customMappings = new HashMap();
+
+	public static final AdjacencyCheckHandlerImpl speed = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.LIGHTBLUE, null);
+	private static final AdjacencyCheckHandlerImpl fortuneSilk = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.PURPLE, "Add fortune/silk touch", ChromaTiles.MINER);
+	private static final AdjacencyCheckHandlerImpl adjRange = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.LIME, "Increase range", ChromaTiles.MINER);
 
 	private final EnumMap<MineralCategory, ArrayList<Coordinate>> coords = new EnumMap(MineralCategory.class);
 	private final ItemHashMap<ItemDisplay> found = new ItemHashMap(); //pre-unified for display
@@ -590,7 +595,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	}
 
 	private void calcSilkTouchAndFortune() {
-		int lvl = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PURPLE);
+		int lvl = fortuneSilk.getAdjacentUpgrade(this);
 		silkTouch = lvl > 5;
 		fortuneLevel = lvl+1;
 	}
@@ -818,7 +823,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	private void updateRange() {
 		int oldrange = range;
 		double r = 1;
-		int val = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.LIME);
+		int val = adjRange.getAdjacentUpgrade(this);
 		if (val > 0)
 			r = TileEntityRangeBoost.getFactor(val-1);
 		range = (int)(MAXRANGE*r);

@@ -17,9 +17,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
-import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyCheckHandlerImpl;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
+import Reika.ChromatiCraft.Magic.Interfaces.LumenConsumer;
 import Reika.ChromatiCraft.Magic.Network.RelayNetworker;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Magic.Progression.ProgressionCatchupHandling;
@@ -27,12 +27,13 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityEfficiencyUpgrade;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityRelaySource;
 import Reika.DragonAPI.DragonAPICore;
-import Reika.DragonAPI.Interfaces.TileEntity.AdjacentUpdateWatcher;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class TileEntityRelayPowered extends TileEntityChromaticBase implements LumenTile, NBTTile, AdjacentUpdateWatcher {
+public abstract class TileEntityRelayPowered extends TileEntityChromaticBase implements LumenConsumer {
+
+	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.BLACK, null);
 
 	protected final ElementTagCompound energy = new ElementTagCompound();
 
@@ -47,7 +48,7 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 		this.syncAllData(false);
 	}
 
-	public int getEfficiencyBoost() {
+	public final int getEfficiencyBoost() {
 		return efficiencyBoost;
 	}
 
@@ -60,7 +61,7 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 	}
 
 	private void calcEfficiency() {
-		efficiencyBoost = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.BLACK);
+		efficiencyBoost = adjacency.getAdjacentUpgrade(this);
 	}
 
 	@Override
@@ -183,7 +184,7 @@ public abstract class TileEntityRelayPowered extends TileEntityChromaticBase imp
 		energy.subtract(tag);
 	}
 
-	protected boolean allowsEfficiencyBoost() {
+	public boolean allowsEfficiencyBoost() {
 		return true;
 	}
 

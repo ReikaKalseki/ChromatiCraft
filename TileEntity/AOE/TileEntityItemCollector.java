@@ -34,6 +34,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
 import Reika.ChromatiCraft.Base.ItemWithItemFilter.Filter;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyCheckHandlerImpl;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -65,6 +66,8 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 
 	private static final ThreadSafeTileCache cache = new ThreadSafeTileCache().setTileClass(TileEntityItemCollector.class);
 
+	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.PURPLE, "Increase filter count", ChromaTiles.ITEMCOLLECTOR);
+
 	public static boolean haltCollection = false;
 
 	static {
@@ -84,7 +87,7 @@ public class TileEntityItemCollector extends InventoriedRelayPowered implements 
 	public int getMaxFilterCount() {
 		if (worldObj != null && worldObj.isRemote)
 			return filterLimit;
-		int adj = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PURPLE);
+		int adj = adjacency.getAdjacentUpgrade(this);
 		if (adj <= 0)
 			return 9;
 		return Math.min(filter.length, 9+(9*adj/2));

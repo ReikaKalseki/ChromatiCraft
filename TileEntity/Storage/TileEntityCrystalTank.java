@@ -26,6 +26,7 @@ import net.minecraftforge.fluids.FluidTankInfo;
 import Reika.ChromatiCraft.API.Interfaces.CrystalTank;
 import Reika.ChromatiCraft.Auxiliary.Render.TankRunes;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyCheckHandlerImpl;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -50,6 +51,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TileEntityCrystalTank extends TileEntityChromaticBase implements CrystalTank, TankWatcher, BreakAction, AdjacentUpdateWatcher {
 
 	public static final int MAXCAPACITY = 2000000000;
+
+	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.CYAN, "Increase capacity", ChromaTiles.TANK);
 
 	private final FlaggedTank tank = new FlaggedTank(this, "crystaltank", MAXCAPACITY);
 	private int scheduledUpdate = 0;
@@ -267,7 +270,7 @@ public class TileEntityCrystalTank extends TileEntityChromaticBase implements Cr
 	}
 
 	private void updateBoostFactor() {
-		int lvl = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.CYAN);
+		int lvl = adjacency.getAdjacentUpgrade(this);
 		capacityIncreaseFactor = lvl <= 0 ? 0 : TileEntityTankCapacityUpgrade.getCapacityFactor(lvl-1);
 	}
 

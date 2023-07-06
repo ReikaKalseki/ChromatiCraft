@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Auxiliary.Interfaces.ItemOnRightClick;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OperationInterval;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedRelayPowered;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyCheckHandlerImpl;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -42,6 +43,8 @@ public class TileEntityPageExtractor extends InventoriedRelayPowered implements 
 	private static ItemStack lastItem;
 
 	private static final ElementTagCompound required = new ElementTagCompound();
+
+	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.PURPLE, "Reduce book destruction rate", ChromaTiles.BOOKDECOMP);
 
 	private final WeightedRandom<IAgeSymbol> symbolMap = new WeightedRandom();
 
@@ -102,7 +105,7 @@ public class TileEntityPageExtractor extends InventoriedRelayPowered implements 
 	private double getConsumptionChance(IAgeSymbol ia) {
 		//int rank = ReikaMystcraftHelper.getSymbolRank(ia);
 		//ReikaJavaLibrary.pConsole(ia.identifier()+" > "+rank+" > "+(100-98*Math.exp(-rank/1.75)));
-		boolean boost = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PURPLE) > 1;
+		boolean boost = adjacency.getAdjacentUpgrade(this) > 1;
 		//double f = boost ? 99.5 : 98;
 		double p = boost ? 5 : 3;
 		//return 100-f*Math.exp(-rank/p);

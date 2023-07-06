@@ -22,6 +22,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.TileEntity.CrystalReceiverBase;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyCheckHandlerImpl;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -50,6 +51,9 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 	private ElementTagCompound currentRequest = new ElementTagCompound();
 
 	private static int CAPACITY;
+
+	private static final AdjacencyCheckHandlerImpl throughputBonus = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.PURPLE, "Increase lumen throughput", ChromaTiles.ASPECT);
+	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.LIGHTBLUE, null);
 
 	public static void initCapacity() {
 		int max = 0;
@@ -166,7 +170,7 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 	private void checkAndRequest(Aspect a) {
 		if (a != null) {
 			int n = 64;
-			int f = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.LIGHTBLUE);
+			int f = adjacency.getAdjacentUpgrade(this);
 			if (f > 0)
 				n *= TileEntityAccelerator.getAccelFromTier(f-1);
 			ElementTagCompound tag = this.getAspectCost(a).scale(n);
@@ -208,7 +212,7 @@ public class TileEntityAspectFormer extends CrystalReceiverBase implements GuiCo
 	@Override
 	public int maxThroughput() {
 		int base = 250;
-		int add = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PURPLE);
+		int add = throughputBonus.getAdjacentUpgrade(this);
 		return base+add*50;
 	}
 

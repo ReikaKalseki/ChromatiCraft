@@ -1621,6 +1621,11 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 		li.add("Tier "+ReikaStringParser.parseRomanRumeral(this.getTier().ordinal()+1));
 	}
 
+	@Override
+	public boolean allowsEfficiencyBoost() {
+		return false;
+	}
+
 	public static enum CastingFocusLocation implements FocusLocation {
 
 		N1(-1, 1, -3),

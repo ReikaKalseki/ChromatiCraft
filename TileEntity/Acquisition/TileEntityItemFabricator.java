@@ -26,6 +26,7 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.FabricationRecipes.FabricationRecipe;
 import Reika.ChromatiCraft.Base.TileEntity.InventoriedCrystalReceiver;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyCheckHandlerImpl;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -45,6 +46,8 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityItemFabricator extends InventoriedCrystalReceiver implements OperationInterval {
+
+	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.LIGHTBLUE, null);
 
 	public int progress = 0;
 
@@ -167,7 +170,7 @@ public class TileEntityItemFabricator extends InventoriedCrystalReceiver impleme
 	private void checkAndRequest() {
 		if (recipe == null)
 			return;
-		int n = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.LIGHTBLUE);
+		int n = adjacency.getAdjacentUpgrade(this);
 		if (n > 0)
 			n = TileEntityAccelerator.getAccelFromTier(n-1);
 		n++;

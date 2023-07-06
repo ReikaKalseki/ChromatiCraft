@@ -38,6 +38,7 @@ import net.minecraftforge.fluids.IFluidHandler;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.ChargedCrystalPowered;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyCheckHandlerImpl;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -62,6 +63,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class TileEntityTeleportationPump extends ChargedCrystalPowered implements IFluidHandler, OwnedTile, ChunkLoadingTile {
 
 	public static final int MAXRANGE = 256;
+
+	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.LIME, "Increase range", ChromaTiles.TELEPUMP);
 
 	private final HybridTank tank = new HybridTank("telepump", 4000);
 	private HashMap<Fluid, ArrayList<FluidSource>> fluids = new HashMap();
@@ -417,7 +420,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 	private void updateRange() {
 		int oldrange = range;
 		double r = 1;
-		int val = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.LIME);
+		int val = adjacency.getAdjacentUpgrade(this);
 		if (val > 0)
 			r = TileEntityRangeBoost.getFactor(val-1);
 		range = (int)(MAXRANGE*r);

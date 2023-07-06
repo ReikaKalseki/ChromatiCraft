@@ -97,6 +97,7 @@ import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.BurrowStructure;
 import Reika.ChromatiCraft.Auxiliary.Tab.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.Tab.TabChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityWirelessPowered;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
@@ -138,6 +139,7 @@ import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.ChromatiCraft.Render.CCParticleEngine;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityEfficiencyUpgrade;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityOreCreator;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
@@ -795,9 +797,11 @@ public class ChromatiCraft extends DragonAPIMod {
 		TileEntityOreCreator.initOreMap();
 		TileEntityTeleportationPump.buildProgressionMap();
 		TileEntityAdjacencyUpgrade.buildTileEffectCache();
+		TileEntityEfficiencyUpgrade.loadTileList();
 		TileEntityMiner.loadCustomMappings();
 		ItemDuplicationWand.loadMappings();
 		BurrowStructure.buildLootCache();
+		TileEntityWirelessPowered.loadAdjacencyHandler();
 
 		ReikaDispenserHelper.addDispenserAction(ChromaItems.TOOL, new ManipulatorDispenserAction());
 		ReikaDispenserHelper.addDispenserAction(ChromaItems.BUCKET, new BucketDispenserAction());

@@ -84,23 +84,28 @@ public class GuiAdjacencyDescription extends GuiMachineDescription {
 		AdjacencyPage ap = pages.get(subpage);
 		if (ap.isEffectList) {
 			Collection<SpecificAdjacencyEffect> li = TileEntityAdjacencyUpgrade.getSpecificEffects(ap.coreType.getColor(), true);
-			int i = 0;
+			int oy = posY+108;
+			int dy = 0;
 			for (SpecificAdjacencyEffect s : li) {
-				int dy = posY+107+i*24;
 				ArrayList<GuiItemDisplay> items = new ArrayList();
 				s.getRelevantItems(items);
 				items.removeIf(g -> g instanceof GuiStackDisplay && ((GuiStackDisplay)g).isEmpty());
 				if (!items.isEmpty()) {
-					int dx = posX+7;
+					int ox = posX+12;
+					int dx = 0;
 					for (GuiItemDisplay g : items) {
-						g.draw(fontRendererObj, dx, dy);
-						if (api.isMouseInBox(dx, dx+16, dy, dy+16)) {
+						g.draw(fontRendererObj, dx+ox, dy+oy);
+						if (api.isMouseInBox(dx+ox, dx+ox+16, dy+oy, dy+oy+16)) {
 							String sg = s.getDescription();
 							api.drawTooltipAt(fontRendererObj, sg, api.getMouseRealX()+fontRendererObj.getStringWidth(sg)+22, api.getMouseRealY());
 						}
 						dx += 18;
+						if (dx >= 220) {
+							dx = 0;
+							dy += 17;
+						}
 					}
-					i++;
+					dy += 24;
 				}
 			}
 		}

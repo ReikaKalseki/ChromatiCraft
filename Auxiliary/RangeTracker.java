@@ -4,11 +4,14 @@ import net.minecraft.nbt.NBTTagCompound;
 
 import Reika.ChromatiCraft.API.Interfaces.CustomRangeUpgrade.RangeUpgradeable;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyCheckHandlerImpl;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
 import Reika.DragonAPI.Base.TileEntityBase;
 
 public class RangeTracker {
+
+	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.LIME, null);
 
 	protected final int baseRange;
 	private final int stepSpeed;
@@ -31,7 +34,7 @@ public class RangeTracker {
 
 	protected final int getMaxUpgradedRange(RangeUpgradeable te) {
 		int max = baseRange;
-		int boost = TileEntityAdjacencyUpgrade.getAdjacentUpgrade((TileEntityBase)te, CrystalElement.LIME);
+		int boost = adjacency.getAdjacentUpgrade((TileEntityBase)te);
 		//ReikaJavaLibrary.pConsole(te+", "+FMLCommonHandler.instance().getEffectiveSide()+", "+boost);
 		if (boost > 0) {
 			double fac = TileEntityRangeBoost.getFactor(boost-1);

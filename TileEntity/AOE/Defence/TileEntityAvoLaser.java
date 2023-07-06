@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyCheckHandlerImpl;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
@@ -47,6 +48,8 @@ public class TileEntityAvoLaser extends TileEntityRelayPowered implements SidePl
 	private static final ElementTagCompound required = new ElementTagCompound();
 
 	private DamageSource damageSource;
+
+	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.PINK, "Increase damage", ChromaTiles.AVOLASER);
 
 	static {
 		required.addValueToColor(CrystalElement.PINK, 25);
@@ -92,7 +95,7 @@ public class TileEntityAvoLaser extends TileEntityRelayPowered implements SidePl
 		if (!attackCooldowns.containsKey(e.getUniqueID())) {
 			attackCooldowns.put(e.getUniqueID(), 40);
 			float base = this.hasPinkRune() ? 12 : 8;//4 hearts, since original does 40/100 damage
-			int adj = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.PINK);
+			int adj = adjacency.getAdjacentUpgrade(this);
 			double f = adj == 0 ? 1 : AdjacencyUpgrades.PINK.getFactor(adj-1);
 			base *= f;
 			e.attackEntityFrom(this.getDamageSource(), base);

@@ -12,9 +12,8 @@ package Reika.ChromatiCraft.Base.TileEntity;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
@@ -61,6 +60,7 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 	public static final int MAX_TIER = 8;
 
 	private static final MultiMap<CrystalElement, SpecificAdjacencyEffect> effectMap = new MultiMap(CollectionType.HASHSET);
+	private static final EnumMap<CrystalElement, AdjacencyCheckHandlerImpl> adjacencyChecks = new EnumMap(CrystalElement.class);
 
 	private int tier;
 
@@ -274,12 +274,17 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		return ChromaTiles.ADJACENCY;
 	}
 
-	private static int getAdjacentUpgrade(TileEntityBase core, CrystalElement color) {
+	protected static int getAdjacentUpgrade(TileEntityBase core, CrystalElement color) {
 		Integer ret = getAdjacentUpgrades(core).get(color);
 		return ret != null ? ret.intValue() : 0;
 	}
 
-	private static HashMap<CrystalElement, Integer> getAdjacentUpgrades(TileEntityBase core) {
+	protected static int getAdjacentUpgrade(World world, int x, int y, int z, CrystalElement color) {
+		Integer ret = getAdjacentUpgrades(world, x, y, z).get(color);
+		return ret != null ? ret.intValue() : 0;
+	}
+
+	protected static HashMap<CrystalElement, Integer> getAdjacentUpgrades(TileEntityBase core) {
 		HashMap<CrystalElement, Integer> set = new HashMap();
 		for (int i = 0; i < 6; i++) {
 			TileEntity te = core.getAdjacentTileEntity(ForgeDirection.VALID_DIRECTIONS[i]);
@@ -297,7 +302,7 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		return set;
 	}
 
-	private static HashMap<CrystalElement, Integer> getAdjacentUpgrades(World world, int x, int y, int z) {
+	protected static HashMap<CrystalElement, Integer> getAdjacentUpgrades(World world, int x, int y, int z) {
 		HashMap<CrystalElement, Integer> set = new HashMap();
 		for (int i = 0; i < 6; i++) {
 			ForgeDirection dir = ForgeDirection.VALID_DIRECTIONS[i];
@@ -319,103 +324,48 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		return set;
 	}
 
-	public static APIAdjacencyCheckHandler createAdjacencyCheckHandler(CrystalElementProxy color, String desc, ItemStack... items) {
-		CrystalElement e = CrystalElement.elements[color.ordinal()];
-		APIAdjacencyCheckHandler check = new APIAdjacencyCheckHandler(e);
-		effectMap.addValue(e, new SpecificAdjacencyEffect(e) {
-			@Override
-			public String getDescription() {
-				return desc;
-			}
-
-			@Override
-			public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-				for (ItemStack is : items) {
-					li.add(new GuiStackDisplay(is));
-				}
-			}
-
-			@Override
-			protected boolean isActive() {
-				return true;
-			}
-		});
-		return check;
+	public static AdjacencyCheckHandler createAdjacencyCheckHandler(CrystalElementProxy color, String desc, ItemStack... items) {
+		return getOrCreateAdjacencyCheckHandler(CrystalElement.elements[color.ordinal()], desc, items);
 	}
 
-	public static NativeAdjacencyCheckHandler getOrCreateAdjacencyCheckHandler(CrystalElement color, String desc, TileEnum te) {
+	public static AdjacencyCheckHandlerImpl getOrCreateAdjacencyCheckHandler(CrystalElement color, String desc, TileEnum te) {
 		return getOrCreateAdjacencyCheckHandler(color, desc, te.getCraftedProduct());
 	}
 
-	public static NativeAdjacencyCheckHandler getOrCreateAdjacencyCheckHandler(CrystalElement color, String desc, ItemStack... items) {
-		NativeAdjacencyCheckHandler check = new NativeAdjacencyCheckHandler(color);
-		effectMap.addValue(color, new SpecificAdjacencyEffect(color) {
-			@Override
-			public String getDescription() {
-				return desc;
-			}
-
-			@Override
-			public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-				for (ItemStack is : items) {
-					li.add(new GuiStackDisplay(is));
-				}
-			}
-
-			@Override
-			protected boolean isActive() {
-				return true;
-			}
-		});
+	public static AdjacencyCheckHandlerImpl getOrCreateAdjacencyCheckHandler(CrystalElement color, String desc, ItemStack... items) {
+		AdjacencyCheckHandlerImpl check = adjacencyChecks.get(color);
+		if (check == null) {
+			check = new AdjacencyCheckHandlerImpl(color);
+			adjacencyChecks.put(color, check);
+		}
+		check.addEffect(desc, items);
 		return check;
 	}
 
-	private static final class APIAdjacencyCheckHandler extends AdjacencyCheckHandlerBase implements AdjacencyCheckHandler {
+	public static final class AdjacencyCheckHandlerImpl extends AdjacencyCheckHandlerBase implements AdjacencyCheckHandler {
 
-		private APIAdjacencyCheckHandler(CrystalElement e) {
+		private AdjacencyCheckHandlerImpl(CrystalElement e) {
 			super(e);
 		}
 
-		@Override
-		public Map<CrystalElementProxy, Integer> getAdjacentUpgrades(World world, int x, int y, int z) {
-			Map<CrystalElement, Integer> map = TileEntityAdjacencyUpgrade.getAdjacentUpgrades(world, x, y, z);
-			Map<CrystalElementProxy, Integer> ret = new HashMap();
-			for (Entry<CrystalElement, Integer> e : map.entrySet()) {
-				ret.put(e.getKey(), e.getValue());
-			}
-			return ret;
-		}
-
-		public int getAdjacentUpgradeTier(World world, int x, int y, int z, CrystalElementProxy e) {
-			Integer get = this.getAdjacentUpgrades(world, x, y, z).get(e);
+		public int getAdjacentUpgradeTier(World world, int x, int y, int z) {
+			Integer get = TileEntityAdjacencyUpgrade.getAdjacentUpgrades(world, x, y, z).get(color);
 			return get != null ? get.intValue() : 0;
 		}
 
-		public double getFactorSimple(World world, int x, int y, int z, int color) {
-			CrystalElementProxy e = CrystalElementAccessor.getByIndex(color);
-			int tier = this.getAdjacentUpgradeTier(world, x, y, z, e);
-			return tier > 0 ? ChromatiAPI.getAPI().adjacency().getFactor(e, tier) : 1;
-		}
-
-		public double getFactorSimple(World world, int x, int y, int z, String color) {
-			CrystalElementProxy e = CrystalElementAccessor.getByEnum(color);
-			int tier = this.getAdjacentUpgradeTier(world, x, y, z, e);
-			return tier > 0 ? ChromatiAPI.getAPI().adjacency().getFactor(e, tier) : 1;
-		}
-
-
-	}
-
-	public static final class NativeAdjacencyCheckHandler extends AdjacencyCheckHandlerBase {
-
-		private NativeAdjacencyCheckHandler(CrystalElement e) {
-			super(e);
+		public double getFactorSimple(World world, int x, int y, int z) {
+			int tier = this.getAdjacentUpgradeTier(world, x, y, z);
+			return tier > 0 ? ChromatiAPI.getAPI().adjacency().getFactor(CrystalElementAccessor.getByIndex(color.ordinal()), tier) : 1;
 		}
 
 		public int getAdjacentUpgrade(TileEntityBase te) {
 			return TileEntityAdjacencyUpgrade.getAdjacentUpgrade(te, color);
 		}
 
+		public int getAdjacentUpgrade(World world, int x, int y, int z) {
+			return TileEntityAdjacencyUpgrade.getAdjacentUpgrade(world, x, y, z, color);
+		}
+		/*
 		public HashMap<CrystalElement, Integer> getAdjacentUpgrades(TileEntityBase te) {
 			return TileEntityAdjacencyUpgrade.getAdjacentUpgrades(te);
 		}
@@ -423,17 +373,65 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		public HashMap<CrystalElement, Integer> getAdjacentUpgrades(World world, int x, int y, int z) {
 			return TileEntityAdjacencyUpgrade.getAdjacentUpgrades(world, x, y, z);
 		}
-
+		 */
 	}
 
 	public static abstract class AdjacencyCheckHandlerBase {
 
 		public final CrystalElement color;
 
+		private final HashMap<String, EffectDescription> effects = new HashMap();
+
 		protected AdjacencyCheckHandlerBase(CrystalElement e) {
 			color = e;
 		}
 
+		protected void addEffect(String desc, ItemStack... items) {
+			EffectDescription eff = effects.get(desc);
+			if (eff == null) {
+				eff = new EffectDescription(color, desc);
+				effects.put(desc, eff);
+			}
+			eff.addItems(items);
+		}
+
+	}
+
+	private static class EffectDescription extends SpecificAdjacencyEffect {
+
+		private final ArrayList<ItemStack> items = new ArrayList();
+		private final String description;
+
+		private EffectDescription(CrystalElement e, String desc) {
+			super(e);
+			description = desc;
+		}
+
+		@Override
+		public String getDescription() {
+			return description;
+		}
+
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+			for (ItemStack is : items) {
+				li.add(new GuiStackDisplay(is));
+			}
+		}
+
+		@Override
+		protected boolean isActive() {
+			return !items.isEmpty();
+		}
+
+		private void addItems(ItemStack... li) {
+			for (ItemStack is : li) {
+				if (is.getItem() == null)
+					throw new IllegalArgumentException("Null item!");
+				items.add(is);
+			}
+			Collections.sort(items, ReikaItemHelper.comparator);
+		}
 	}
 
 	public static void buildTileEffectCache() {/*

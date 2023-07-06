@@ -11,31 +11,59 @@ package Reika.ChromatiCraft.Base.TileEntity;
 
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyCheckHandlerImpl;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalReceiver;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalSource;
 import Reika.ChromatiCraft.Magic.Interfaces.CrystalTransmitter;
+import Reika.ChromatiCraft.Magic.Interfaces.LumenConsumer;
 import Reika.ChromatiCraft.Magic.Interfaces.LumenRequestingTile;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityEfficiencyUpgrade;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 
-public abstract class CrystalReceiverBase extends TileEntityCrystalBase implements CrystalReceiver, LumenRequestingTile, NBTTile {
+public abstract class CrystalReceiverBase extends TileEntityCrystalBase implements CrystalReceiver, LumenConsumer, LumenRequestingTile {
+
+	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.BLACK, null);
 
 	protected final ElementTagCompound energy = new ElementTagCompound();
 	private int receiveCooldown = this.getCooldownLength();
 	protected StepTimer checkTimer = new StepTimer(this.getCooldownLength());
 
 	private long lastRequestDecrTime = -1;
+
+	private int efficiencyBoost;
+
+	public final void onAdjacentUpdate(World world, int x, int y, int z, Block b) {
+		this.calcEfficiency();
+		this.syncAllData(false);
+	}
+
+	public final int getEfficiencyBoost() {
+		return efficiencyBoost;
+	}
+
+	protected final float getEnergyCostScale() {
+		float f = 1;
+		int e = this.getEfficiencyBoost();
+		if (e > 0)
+			f *= TileEntityEfficiencyUpgrade.getCostFactor(e-1);
+		return f;
+	}
+
+	private void calcEfficiency() {
+		efficiencyBoost = adjacency.getAdjacentUpgrade(this);
+	}
 
 	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
@@ -134,6 +162,8 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 		super.readSyncTag(NBT);
 
 		energy.readFromNBT("energy", NBT);
+
+		efficiencyBoost = NBT.getInteger("eff");
 	}
 
 	@Override
@@ -141,6 +171,8 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 		super.writeSyncTag(NBT);
 
 		energy.writeToNBT("energy", NBT);
+
+		NBT.setInteger("eff", efficiencyBoost);
 	}
 
 	@Override
@@ -162,11 +194,21 @@ public abstract class CrystalReceiverBase extends TileEntityCrystalBase implemen
 	}
 
 	protected final void drainEnergy(CrystalElement e, int amt) {
+		if (this.allowsEfficiencyBoost())
+			amt = (int)Math.max(1, amt*this.getEnergyCostScale());
 		energy.subtract(e, amt);
 	}
 
 	protected final void drainEnergy(ElementTagCompound tag) {
+		if (this.allowsEfficiencyBoost()) {
+			tag = tag.copy();
+			tag.scale(this.getEnergyCostScale());
+		}
 		energy.subtract(tag);
+	}
+
+	public boolean allowsEfficiencyBoost() {
+		return true;
 	}
 
 	protected final void clamp(CrystalElement e) {

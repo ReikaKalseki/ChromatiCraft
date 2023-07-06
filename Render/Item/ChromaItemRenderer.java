@@ -71,20 +71,22 @@ public class ChromaItemRenderer implements IItemRenderer {
 			if (machine == ChromaTiles.ADJACENCY)
 				offset = item.getItemDamage();
 			TileEntity te = machine.createTEInstanceForRender(offset);
-			if (machine.hasNBTVariants()) {
-				((NBTTile)te).setDataFromItemStackTag(item);
+			if (te != null) {
+				if (machine.hasNBTVariants()) {
+					((NBTTile)te).setDataFromItemStackTag(item);
+				}
+				if ((machine == ChromaTiles.LUMENWIRE) && type == type.ENTITY) {
+					a = b = -1.25F;
+					double s = 1.25;
+					GL11.glScaled(s, s, s);
+					GL11.glTranslated(0, -0.75, 0);
+				}
+				if ((machine == ChromaTiles.FLUIDRELAY) && type == type.ENTITY) {
+					a = b = -1.5F;
+					GL11.glTranslated(0, -0.75, 0);
+				}
+				TileEntityRendererDispatcher.instance.renderTileEntityAt(te, a, -0.1D, b, entity ? -1 : 0);
 			}
-			if ((machine == ChromaTiles.LUMENWIRE) && type == type.ENTITY) {
-				a = b = -1.25F;
-				double s = 1.25;
-				GL11.glScaled(s, s, s);
-				GL11.glTranslated(0, -0.75, 0);
-			}
-			if ((machine == ChromaTiles.FLUIDRELAY) && type == type.ENTITY) {
-				a = b = -1.5F;
-				GL11.glTranslated(0, -0.75, 0);
-			}
-			TileEntityRendererDispatcher.instance.renderTileEntityAt(te, a, -0.1D, b, entity ? -1 : 0);
 		}
 		else {
 			ReikaTextureHelper.bindTerrainTexture();

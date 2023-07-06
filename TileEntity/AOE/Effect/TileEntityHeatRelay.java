@@ -31,6 +31,7 @@ import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Interfaces.TileEntity.ThermalTile;
+import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.ReactorCraft.Registry.ReactorTiles;
 import Reika.RotaryCraft.Registry.MachineRegistry;
@@ -41,11 +42,32 @@ import ic2.api.energy.tile.IHeatSource;
 public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements IHeatSource {
 
 	private static final BlockMap<Integer> blockTemps = new BlockMap();
-	private static final HashMap<Class, Integer> tileList = new HashMap();
+	private static final HashMap<Class, HeatTier> tileList = new HashMap();
 
-	private static final int machineHeat = 0;
-	private static final int tieredMachineHeat = 1;
-	private static final int reactorHeat = 10;
+	private static enum HeatTier {
+		MACHINE,
+		TIERED,
+		REACTOR,
+		;
+
+		public String getDescription() {
+			switch(this) {
+				case MACHINE:
+					return "Basic";
+				default:
+					return ReikaStringParser.capFirstChar(this.name());
+			}
+		}
+
+		public int getTierValue() {
+			switch(this) {
+				case REACTOR:
+					return 10;
+				default:
+					return this.ordinal();
+			}
+		}
+	}
 
 	private static final double[] factors = {
 			0.03125,
@@ -84,7 +106,7 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 
 	static {
 		for (int i = 0; i < heatBalance.length; i++)
-			heatBalance[i] = new HeatBalancingEffect(i);
+			heatBalance[i] = new HeatBalancingEffect(HeatTier.values()[i]);
 
 		setBlockTemp(Blocks.ice, 0);
 		setBlockTemp(Blocks.water, 15);
@@ -132,16 +154,16 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 	private static class HeatBalancingEffect extends SpecificAdjacencyEffect {
 
 		private final ArrayList<ItemStack> items = new ArrayList();
-		private final int tier;
+		private final HeatTier tier;
 
-		private HeatBalancingEffect(int tier) {
+		private HeatBalancingEffect(HeatTier tier) {
 			super(CrystalElement.ORANGE);
 			this.tier = tier;
 		}
 
 		@Override
 		public String getDescription() {
-			return "Balances heat, tier "+(tier+1);
+			return "Balances heat between "+tier.getDescription()+" machines";
 		}
 
 		@Override
@@ -159,18 +181,18 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 
 	@ModDependent(ModList.ROTARYCRAFT)
 	private static void addRC() {
-		addHeatEffect(MachineRegistry.BLASTFURNACE, tieredMachineHeat);
-		addHeatEffect(MachineRegistry.COMPACTOR, machineHeat);
-		addHeatEffect(MachineRegistry.COMPOSTER, machineHeat);
-		addHeatEffect(MachineRegistry.CRYSTALLIZER, machineHeat);
-		addHeatEffect(MachineRegistry.FERMENTER, machineHeat);
+		addHeatEffect(MachineRegistry.BLASTFURNACE, HeatTier.TIERED);
+		addHeatEffect(MachineRegistry.COMPACTOR, HeatTier.MACHINE);
+		addHeatEffect(MachineRegistry.COMPOSTER, HeatTier.MACHINE);
+		addHeatEffect(MachineRegistry.CRYSTALLIZER, HeatTier.MACHINE);
+		addHeatEffect(MachineRegistry.FERMENTER, HeatTier.MACHINE);
 	}
 
 	private static void setBlockTemp(Block b, int temp) {
 		blockTemps.put(b, temp);
 
-		for (int i = 0; i < heatBalance.length; i++)
-			heatBalance[i].items.add(new ItemStack(b));
+		//for (int i = 0; i < heatBalance.length; i++)
+		//	heatBalance[i].items.add(new ItemStack(b));
 	}
 
 	@ModDependent(ModList.REACTORCRAFT)
@@ -178,19 +200,19 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 		for (int i = 0; i < ReactorTiles.TEList.length; i++) {
 			ReactorTiles r = ReactorTiles.TEList[i];
 			if (r.isReactorCore()) {
-				addHeatEffect(r, reactorHeat);
+				addHeatEffect(r, HeatTier.REACTOR);
 			}
 		}
 
-		addHeatEffect(ReactorTiles.SYNTHESIZER, machineHeat);
-		addHeatEffect(ReactorTiles.ELECTROLYZER, machineHeat);
+		addHeatEffect(ReactorTiles.SYNTHESIZER, HeatTier.MACHINE);
+		addHeatEffect(ReactorTiles.ELECTROLYZER, HeatTier.MACHINE);
 	}
 
-	private static void addHeatEffect(TileEnum c, int tier) {
+	private static void addHeatEffect(TileEnum c, HeatTier tier) {
 		tileList.put(c.getTEClass(), tier);
 		//for (int i = 0; i <= tier; i++)
 		//	heatBalance[i].items.add(c.getCraftedProduct());
-		heatBalance[tier].items.add(c.getCraftedProduct());
+		heatBalance[tier.ordinal()].items.add(c.getCraftedProduct());
 	}
 
 	@Override
@@ -210,7 +232,8 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 			TileEntity te = this.getEffectiveTileOnSide(dirs[i]);
 			if (te instanceof ThermalTile && tileList.containsKey(te.getClass())) {
 				n++;
-				int tier = tileList.get(te.getClass());
+				HeatTier ht = tileList.get(te.getClass());
+				int tier = ht.getTierValue();
 				set.put((ThermalTile)te, tier);
 				tierThisCycle = Math.min(tierThisCycle, tier);
 				Tavg += ((ThermalTile)te).getTemperature();

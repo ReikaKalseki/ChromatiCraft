@@ -9,20 +9,24 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base.TileEntity;
 
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyCheckHandlerImpl;
 import Reika.ChromatiCraft.Items.ItemStorageCrystal;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
+import Reika.ChromatiCraft.Magic.Interfaces.LumenConsumer;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityEfficiencyUpgrade;
-import Reika.DragonAPI.Interfaces.TileEntity.AdjacentUpdateWatcher;
 
-public abstract class ChargedCrystalPowered extends InventoriedChromaticBase implements LumenTile, AdjacentUpdateWatcher {
+public abstract class ChargedCrystalPowered extends InventoriedChromaticBase implements LumenConsumer {
+
+	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.BLACK, null);
 
 	private int efficiencyBoost;
 
@@ -45,7 +49,7 @@ public abstract class ChargedCrystalPowered extends InventoriedChromaticBase imp
 		NBT.setInteger("eff", efficiencyBoost);
 	}
 
-	public int getEfficiencyBoost() {
+	public final int getEfficiencyBoost() {
 		return efficiencyBoost;
 	}
 
@@ -61,7 +65,7 @@ public abstract class ChargedCrystalPowered extends InventoriedChromaticBase imp
 	public abstract float getCostModifier();
 
 	private void calcEfficiency() {
-		efficiencyBoost = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.BLACK);
+		efficiencyBoost = adjacency.getAdjacentUpgrade(this);
 	}
 
 	public final int getEnergy(CrystalElement e) {
@@ -91,8 +95,16 @@ public abstract class ChargedCrystalPowered extends InventoriedChromaticBase imp
 	}
 
 	protected final void useEnergy(CrystalElement e, int amt) {
+		if (this.allowsEfficiencyBoost())
+			amt = (int)Math.max(1, amt*this.getEnergyCostScale());
 		ItemStorageCrystal c = ((ItemStorageCrystal)inv[0].getItem());
 		c.removeEnergy(inv[0], e, amt);
+	}
+
+	protected final void useEnergy(ElementTagCompound tag) {
+		for (CrystalElement e : tag.elementSet()) {
+			this.useEnergy(e, tag.getValue(e));
+		}
 	}
 
 	public final int getMaxStorage(CrystalElement e) {
@@ -101,12 +113,6 @@ public abstract class ChargedCrystalPowered extends InventoriedChromaticBase imp
 			return ((ItemStorageCrystal)is.getItem()).getCapacity(is);
 		}
 		return 0;
-	}
-
-	protected final void useEnergy(ElementTagCompound tag) {
-		for (CrystalElement e : tag.elementSet()) {
-			this.useEnergy(e, tag.getValue(e));
-		}
 	}
 
 	protected final boolean hasEnergy(ElementTagCompound tag) {
@@ -151,6 +157,26 @@ public abstract class ChargedCrystalPowered extends InventoriedChromaticBase imp
 	protected void onFirstTick(World world, int x, int y, int z) {
 		super.onFirstTick(world, x, y, z);
 		this.calcEfficiency();
+	}
+
+	@Override
+	public boolean allowsEfficiencyBoost() {
+		return true;
+	}
+
+	@Override
+	public void getTagsToWriteToStack(NBTTagCompound NBT) {
+
+	}
+
+	@Override
+	public void setDataFromItemStackTag(ItemStack is) {
+
+	}
+
+	@Override
+	public void addTooltipInfo(List li, boolean shift) {
+
 	}
 
 }

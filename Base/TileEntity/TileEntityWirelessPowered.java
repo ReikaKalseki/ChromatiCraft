@@ -12,19 +12,21 @@ package Reika.ChromatiCraft.Base.TileEntity;
 import java.util.Collection;
 import java.util.List;
 
+import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.NBTTile;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyCheckHandlerImpl;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.Magic.Interfaces.LumenTile;
+import Reika.ChromatiCraft.Magic.Interfaces.LumenConsumer;
 import Reika.ChromatiCraft.Magic.Interfaces.WirelessSource;
 import Reika.ChromatiCraft.Magic.Network.CrystalNetworker;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityAuraPoint;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityEfficiencyUpgrade;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 
@@ -32,9 +34,38 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 
-public abstract class TileEntityWirelessPowered extends TileEntityChromaticBase implements LumenTile, NBTTile {
+public abstract class TileEntityWirelessPowered extends TileEntityChromaticBase implements LumenConsumer {
+
+	private static AdjacencyCheckHandlerImpl adjacency;
+
+	public static void loadAdjacencyHandler() {
+		TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.BLACK, null);
+	}
 
 	protected final ElementTagCompound energy = new ElementTagCompound();
+
+	private int efficiencyBoost;
+
+	public final void onAdjacentUpdate(World world, int x, int y, int z, Block b) {
+		this.calcEfficiency();
+		this.syncAllData(false);
+	}
+
+	public final int getEfficiencyBoost() {
+		return efficiencyBoost;
+	}
+
+	protected final float getEnergyCostScale() {
+		float f = 1;
+		int e = this.getEfficiencyBoost();
+		if (e > 0)
+			f *= TileEntityEfficiencyUpgrade.getCostFactor(e-1);
+		return f;
+	}
+
+	private void calcEfficiency() {
+		efficiencyBoost = adjacency.getAdjacentUpgrade(this);
+	}
 
 	protected final boolean requestEnergy(CrystalElement e, int amt) {
 		if (DragonAPICore.debugtest && !worldObj.isRemote) {
@@ -73,6 +104,8 @@ public abstract class TileEntityWirelessPowered extends TileEntityChromaticBase 
 		super.readSyncTag(NBT);
 
 		energy.readFromNBT("energy", NBT);
+
+		efficiencyBoost = NBT.getInteger("eff");
 	}
 
 	@Override
@@ -80,14 +113,26 @@ public abstract class TileEntityWirelessPowered extends TileEntityChromaticBase 
 		super.writeSyncTag(NBT);
 
 		energy.writeToNBT("energy", NBT);
+
+		NBT.setInteger("eff", efficiencyBoost);
 	}
 
 	protected final void drainEnergy(CrystalElement e, int amt) {
+		if (this.allowsEfficiencyBoost())
+			amt = (int)Math.max(1, amt*this.getEnergyCostScale());
 		energy.subtract(e, amt);
 	}
 
 	protected final void drainEnergy(ElementTagCompound tag) {
+		if (this.allowsEfficiencyBoost()) {
+			tag = tag.copy();
+			tag.scale(this.getEnergyCostScale());
+		}
 		energy.subtract(tag);
+	}
+
+	public boolean allowsEfficiencyBoost() {
+		return true;
 	}
 
 	@SideOnly(Side.CLIENT)

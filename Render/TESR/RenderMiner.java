@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -20,7 +20,6 @@ import net.minecraft.util.IIcon;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import Reika.ChromatiCraft.Base.ChromaRenderBase;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -83,7 +82,7 @@ public class RenderMiner extends ChromaRenderBase {
 
 		ArrayList<Integer> li = new ArrayList();
 
-		if (TileEntityAdjacencyUpgrade.getAdjacentUpgrades(te).containsKey(CrystalElement.LIGHTBLUE))
+		if (TileEntityMiner.speed.getAdjacentUpgrade(te) > 0)
 			li.add(0xff0000);
 		if (te.getEfficiencyBoost() > 0)
 			li.add(0x00ff00);

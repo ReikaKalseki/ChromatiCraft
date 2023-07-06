@@ -16,6 +16,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Magic.Interfaces.LumenConsumer;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -65,18 +66,21 @@ public class TileEntityEfficiencyUpgrade extends TileEntityAdjacencyUpgrade {
 
 	}
 
-	static {
+	public static void loadTileList() {
 		for (int i = 0; i < ChromaTiles.TEList.length; i++) {
 			ChromaTiles r = ChromaTiles.TEList[i];
-			if (r == ChromaTiles.ADJACENCY)
+			if (r == ChromaTiles.ADJACENCY || r.isDummiedOut())
 				continue;
-			if (r.isPylonPowered() || r.isRelayPowered() || r.isWirelessPowered() || r.isChargedCrystalPowered()) {
-				lumenEfficiency.items.add(r.getCraftedProduct());
+			if (LumenConsumer.class.isAssignableFrom(r.getTEClass()) && !r.isRepeater()) {
+				LumenConsumer lc = (LumenConsumer)r.createTEInstanceForRender(0);
+				if (lc.allowsEfficiencyBoost())
+					lumenEfficiency.items.add(r.getCraftedProduct());
 			}
 		}
 		if (ChromaOptions.POWEREDACCEL.getState()) {
 			for (int i = 0; i < 16; i++) {
-				lumenEfficiency.items.add(AdjacencyUpgrades.upgrades[i].getStackOfTier(0));
+				if (AdjacencyUpgrades.upgrades[i].isImplemented())
+					lumenEfficiency.items.add(AdjacencyUpgrades.upgrades[i].getStackOfTier(2));
 			}
 		}
 	}

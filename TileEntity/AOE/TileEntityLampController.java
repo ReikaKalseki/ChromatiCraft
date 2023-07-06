@@ -17,6 +17,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyCheckHandlerImpl;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Block.Decoration.BlockRangedLamp.TileEntityRangedLamp;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -41,6 +42,8 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 
 	private static final MultiMap<Integer, LightSource> map = new MultiMap(CollectionType.CONCURRENTSET, new ConcurrencyDeterminator());
 	private static final MultiMap<Integer, WorldLocation> lights = new MultiMap(CollectionType.CONCURRENTSET, new ConcurrencyDeterminator());
+
+	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.LIME, "Increase range", ChromaTiles.LAMPCONTROL);
 
 	public static final int MAXRANGE = 64;
 	public static final int MAXCHANNEL = 999;
@@ -272,7 +275,7 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 
 	private int getRange() {
 		int base = MAXRANGE;
-		int lvl = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(this, CrystalElement.LIME);
+		int lvl = adjacency.getAdjacentUpgrade(this);
 		double fac = lvl > 0 ? TileEntityRangeBoost.getFactor(lvl-1) : 1;
 		if (fac > 1) {
 			base = ReikaMathLibrary.ceilPseudo2Exp((int)(base*fac));

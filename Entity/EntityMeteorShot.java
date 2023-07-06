@@ -23,10 +23,12 @@ import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyCheckHandlerImpl;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaPackets;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityFireSmokeFX;
@@ -61,6 +63,8 @@ public class EntityMeteorShot extends Entity implements IEntityAdditionalSpawnDa
 
 	private final double gravity;
 
+	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.PINK, "Increase damage", ChromaTiles.METEOR);
+
 	public EntityMeteorShot(TileEntityMeteorTower te, Entity e) {
 		this(te.worldObj);
 
@@ -68,7 +72,7 @@ public class EntityMeteorShot extends Entity implements IEntityAdditionalSpawnDa
 
 		target = e;
 
-		int adj = TileEntityAdjacencyUpgrade.getAdjacentUpgrade(te, CrystalElement.PINK);
+		int adj = adjacency.getAdjacentUpgrade(te);
 		damageFactor = adj == 0 ? 1 : AdjacencyUpgrades.PINK.getFactor(adj-1);
 
 		double dx = e.posX-posX;

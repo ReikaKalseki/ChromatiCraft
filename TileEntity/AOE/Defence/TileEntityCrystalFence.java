@@ -26,7 +26,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.OwnedTile;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.NativeAdjacencyCheckHandler;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyCheckHandlerImpl;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityRelayPowered;
 import Reika.ChromatiCraft.Block.BlockCrystalFence.CrystalFenceAuxTile;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
@@ -79,7 +79,7 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 
 	private static final ElementTagCompound required = new ElementTagCompound();
 
-	private static final NativeAdjacencyCheckHandler adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.PINK, "Increase damage", ChromaTiles.FENCE);
+	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.PINK, "Increase damage", ChromaTiles.FENCE);
 
 	static {
 		required.addTag(CrystalElement.RED, 100);
@@ -177,7 +177,7 @@ public class TileEntityCrystalFence extends TileEntityRelayPowered implements Ow
 		fence.clear();
 		fence.addPoint(xCoord, yCoord, zCoord);
 		this.findFrom(xCoord, zCoord, outputFace, 0);
-		int adj = adjacency.getAdjacentUpgrade(this, CrystalElement.PINK);
+		int adj = adjacency.getAdjacentUpgrade(this);
 		double f = adj == 0 ? 1 : AdjacencyUpgrades.PINK.getFactor(adj-1);
 		damageAmount *= f;
 		if (!renderOnly) {
