@@ -1,13 +1,11 @@
 package Reika.ChromatiCraft.API;
 
-import java.util.Map;
-
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
+import Reika.ChromatiCraft.API.Interfaces.AdjacencyCheckHandler;
 import Reika.ChromatiCraft.API.Interfaces.CustomAcceleration;
 import Reika.ChromatiCraft.API.Interfaces.CustomHealing.CustomBlockHealing;
 import Reika.ChromatiCraft.API.Interfaces.CustomHealing.CustomTileHealing;
@@ -16,16 +14,10 @@ import Reika.ChromatiCraft.API.Interfaces.CustomRangeUpgrade.RangeUpgradeable;
 
 public interface AdjacencyUpgradeAPI {
 
-	public Map<CrystalElementProxy, Integer> getAdjacentUpgrades(World world, int x, int y, int z);
-
-	/** Returns 1 though 8 for adjacent upgrades tiers 0-7 and 0 for none. */
-	public int getAdjacentUpgradeTier(World world, int x, int y, int z, CrystalElementProxy e);
+	/** Fetch a {@link AdjacencyCheckHandler}, for a given color. Supply what the effect will do, and the item versions of the blocks it applies to. */
+	public AdjacencyCheckHandler createCheckHandler(CrystalElementProxy color, String desc, ItemStack... items);
 
 	public double getFactor(CrystalElementProxy e, int tier);
-
-	public double getFactorSimple(World world, int x, int y, int z, int color);
-
-	public double getFactorSimple(World world, int x, int y, int z, String color);
 
 	public void addCustomAcceleration(Class<? extends TileEntity> c, CustomAcceleration a);
 

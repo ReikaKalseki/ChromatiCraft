@@ -9,11 +9,19 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
+import java.util.ArrayList;
+
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
+import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
+import Reika.ChromatiCraft.Registry.ChromaOptions;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 
 
 public class TileEntityEfficiencyUpgrade extends TileEntityAdjacencyUpgrade {
@@ -28,6 +36,50 @@ public class TileEntityEfficiencyUpgrade extends TileEntityAdjacencyUpgrade {
 			0.125,
 			0.0625,
 	};
+
+	private static final LumenEfficiencyEffect lumenEfficiency = new LumenEfficiencyEffect();
+
+	private static class LumenEfficiencyEffect extends SpecificAdjacencyEffect {
+
+		private final ArrayList<ItemStack> items = new ArrayList();
+
+		private LumenEfficiencyEffect() {
+			super(CrystalElement.BLACK);
+		}
+
+		@Override
+		public String getDescription() {
+			return "Improves lumen efficiency usage";
+		}
+
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+			for (ItemStack is : items)
+				li.add(new GuiStackDisplay(is));
+		}
+
+		@Override
+		protected boolean isActive() {
+			return !items.isEmpty();
+		}
+
+	}
+
+	static {
+		for (int i = 0; i < ChromaTiles.TEList.length; i++) {
+			ChromaTiles r = ChromaTiles.TEList[i];
+			if (r == ChromaTiles.ADJACENCY)
+				continue;
+			if (r.isPylonPowered() || r.isRelayPowered() || r.isWirelessPowered() || r.isChargedCrystalPowered()) {
+				lumenEfficiency.items.add(r.getCraftedProduct());
+			}
+		}
+		if (ChromaOptions.POWEREDACCEL.getState()) {
+			for (int i = 0; i < 16; i++) {
+				lumenEfficiency.items.add(AdjacencyUpgrades.upgrades[i].getStackOfTier(0));
+			}
+		}
+	}
 
 	@Override
 	protected EffectResult tickDirection(World world, int x, int y, int z, ForgeDirection dir, long startTime) {

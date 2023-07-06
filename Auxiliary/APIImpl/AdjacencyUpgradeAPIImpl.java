@@ -1,17 +1,12 @@
 package Reika.ChromatiCraft.Auxiliary.APIImpl;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
 
 import Reika.ChromatiCraft.API.AdjacencyUpgradeAPI;
-import Reika.ChromatiCraft.API.CrystalElementAccessor;
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
+import Reika.ChromatiCraft.API.Interfaces.AdjacencyCheckHandler;
 import Reika.ChromatiCraft.API.Interfaces.CustomAcceleration;
 import Reika.ChromatiCraft.API.Interfaces.CustomHealing.CustomBlockHealing;
 import Reika.ChromatiCraft.API.Interfaces.CustomHealing.CustomTileHealing;
@@ -19,14 +14,13 @@ import Reika.ChromatiCraft.API.Interfaces.CustomRangeUpgrade;
 import Reika.ChromatiCraft.API.Interfaces.CustomRangeUpgrade.RangeUpgradeable;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
-import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityHealingCore;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityRangeBoost;
 
 
 public class AdjacencyUpgradeAPIImpl implements AdjacencyUpgradeAPI {
-
+	/*
 	@Override
 	public Map<CrystalElementProxy, Integer> getAdjacentUpgrades(World world, int x, int y, int z) {
 		Map<CrystalElement, Integer> map = TileEntityAdjacencyUpgrade.getAdjacentUpgrades(world, x, y, z);
@@ -41,11 +35,11 @@ public class AdjacencyUpgradeAPIImpl implements AdjacencyUpgradeAPI {
 		Integer get = this.getAdjacentUpgrades(world, x, y, z).get(e);
 		return get != null ? get.intValue() : 0;
 	}
-
+	 */
 	public double getFactor(CrystalElementProxy e, int tier) {
 		return AdjacencyUpgrades.upgrades[e.ordinal()].getFactor(tier-1);
 	}
-
+	/*
 	public double getFactorSimple(World world, int x, int y, int z, int color) {
 		CrystalElementProxy e = CrystalElementAccessor.getByIndex(color);
 		int tier = this.getAdjacentUpgradeTier(world, x, y, z, e);
@@ -57,7 +51,7 @@ public class AdjacencyUpgradeAPIImpl implements AdjacencyUpgradeAPI {
 		int tier = this.getAdjacentUpgradeTier(world, x, y, z, e);
 		return tier > 0 ? this.getFactor(e, tier) : 1;
 	}
-
+	 */
 	@Override
 	public void addCustomAcceleration(Class<? extends TileEntity> c, CustomAcceleration a) {
 		TileEntityAccelerator.customizeTile(c, a);
@@ -86,6 +80,11 @@ public class AdjacencyUpgradeAPIImpl implements AdjacencyUpgradeAPI {
 	@Override
 	public void addCustomHealing(Class<? extends TileEntity> c, CustomTileHealing h) {
 		TileEntityHealingCore.addTileHandler(c, h);
+	}
+
+	@Override
+	public AdjacencyCheckHandler createCheckHandler(CrystalElementProxy color, String desc, ItemStack... items) {
+		return TileEntityAdjacencyUpgrade.createAdjacencyCheckHandler(color, desc, items);
 	}
 
 }

@@ -12,8 +12,10 @@ package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -27,6 +29,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 import buildcraft.core.lib.engines.TileEngineBase;
 import cofh.api.energy.EnergyStorage;
@@ -39,6 +42,8 @@ import ic2.api.reactor.IReactorChamber;
 public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade implements BreakAction {
 
 	private static final HashMap<Class, EnergyInterface> interactions = new HashMap();
+
+	private static final BasicEnergyEffect basicEnergy = new BasicEnergyEffect();
 
 	private static double[] factors = {
 			0.125,
@@ -128,10 +133,41 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		}
 	}
 
-	private static abstract class EnergyInterface extends SpecificAdjacencyEffect {
+	private static class BasicEnergyEffect extends SpecificAdjacencyEffect {
+
+		private final ArrayList<ItemStack> items = new ArrayList();
+
+		protected BasicEnergyEffect() {
+			super(CrystalElement.YELLOW);
+		}
+
+		@Override
+		public String getDescription() {
+			return "Increases energy generation rate";
+		}
+
+		@Override
+		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+			for (ItemStack is : items) {
+				li.add(new GuiStackDisplay(is));
+			}
+		}
+
+		private void addItem(ItemStack is) {
+			items.add(is);
+			Collections.sort(items, ReikaItemHelper.comparator);
+		}
+
+		@Override
+		protected boolean isActive() {
+			return !items.isEmpty();
+		}
+
+	}
+
+	private static abstract class EnergyInterface {
 
 		protected EnergyInterface() {
-			super(CrystalElement.YELLOW);
 			if (this.getMod() == null || this.getMod().isLoaded()) {
 				try {
 					String[] cs = this.getClasses();
@@ -168,11 +204,6 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 
 		protected TileEntity getActingTileEntity(TileEntity te) throws Exception {
 			return te;
-		}
-
-		@Override
-		public final boolean isActive() {
-			return this.getMod() == null || this.getMod().isLoaded();
 		}
 
 		public double getMultiplier() {
@@ -212,12 +243,19 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 
 	private static abstract class BasicEnergyInterface extends EnergyInterface {
 
+		protected BasicEnergyInterface() {
+			ArrayList<String> li = new ArrayList();
+			this.getRelevantItems(li);
+			for (String s : li) {
+				ItemStack is = ReikaItemHelper.lookupItem(s);
+				if (is != null)
+					basicEnergy.addItem(is);
+			}
+		}
+
 		protected abstract int getBaseGeneration(TileEntity te) throws Exception;
 
-		@Override
-		public String getDescription() {
-			return "Increases energy output rate";
-		}
+		protected abstract void getRelevantItems(ArrayList<String> li);
 
 	}
 
@@ -287,16 +325,6 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 			return new String[0];
 		}
 
-		@Override
-		public String getDescription() {
-			return "Does nothing";
-		}
-
-		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-
-		}
-
 	}
 
 	private static class IC2GeneratorInterface extends EnergyInjectionInterface {
@@ -337,11 +365,11 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		}
 
 		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+		public void getRelevantItems(ArrayList<String> li) {
 			for (int i = 1; i <= 4; i++)
-				li.add(new GuiStackDisplay("IC2:blockGenerator:"+i));
+				li.add("IC2:blockGenerator:"+i);
 			for (int i = 6; i <= 9; i++)
-				li.add(new GuiStackDisplay("IC2:blockGenerator:"+i));
+				li.add("IC2:blockGenerator:"+i);
 		}
 
 	}
@@ -355,7 +383,6 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 
 		@Override
 		protected void init() throws Exception {
-
 			Class c = Class.forName("ic2.core.block.reactor.tileentity.TileEntityNuclearReactorElectric");
 			/*output = c.getDeclaredField("output");
 			output.setAccessible(true);
@@ -367,6 +394,22 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 			//processChambers.setAccessible(true);
 			updateTicker = c.getDeclaredField("updateTicker");
 			updateTicker.setAccessible(true);
+			new SpecificAdjacencyEffect(CrystalElement.YELLOW) {
+				@Override
+				public String getDescription() {
+					return "Increases reactor output";
+				}
+
+				@Override
+				public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+					li.add(new GuiStackDisplay("IC2:blockGenerator:5"));
+				}
+
+				@Override
+				protected boolean isActive() {
+					return ModList.IC2.isLoaded();
+				}
+			};
 		}
 
 		@Override
@@ -415,16 +458,6 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		@Override
 		public double getMultiplier() {
 			return 0.75;
-		}
-
-		@Override
-		public String getDescription() {
-			return "Increases reactor output";
-		}
-
-		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			li.add(new GuiStackDisplay("IC2:blockGenerator:5"));
 		}
 
 	}
@@ -485,9 +518,9 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		}
 
 		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+		public void getRelevantItems(ArrayList<String> li) {
 			for (int i = 0; i <= 4; i++)
-				li.add(new GuiStackDisplay("ThermalExpansion:Dynamo:"+i));
+				li.add("ThermalExpansion:Dynamo:"+i);
 		}
 
 	}
@@ -547,9 +580,9 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		}
 
 		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			for (int i = 0; i <= 4; i++)
-				li.add(new GuiStackDisplay("BuildCraft|Core:engineBlock:"+i));
+		public void getRelevantItems(ArrayList<String> li) {
+			for (int i = 0; i <= 3; i++)
+				li.add("BuildCraft|Core:engineBlock:"+i);
 		}
 
 	}
@@ -594,10 +627,10 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		}
 
 		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			li.add(new GuiStackDisplay("Forestry:engine:1"));
-			li.add(new GuiStackDisplay("Forestry:engine:2"));
-			li.add(new GuiStackDisplay("Forestry:engine:4"));
+		public void getRelevantItems(ArrayList<String> li) {
+			li.add("Forestry:engine:1");
+			li.add("Forestry:engine:2");
+			li.add("Forestry:engine:4");
 		}
 
 	}
@@ -641,9 +674,9 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		}
 
 		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+		public void getRelevantItems(ArrayList<String> li) {
 			for (int i = 7; i <= 9; i++)
-				li.add(new GuiStackDisplay("Railcraft:machine.beta:"+i));
+				li.add("Railcraft:machine.beta:"+i);
 		}
 
 	}
@@ -692,8 +725,8 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		}
 
 		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			li.add(new GuiStackDisplay("Railcraft:machine.alpha:1"));
+		public void getRelevantItems(ArrayList<String> li) {
+			li.add("Railcraft:machine.alpha:1");
 		}
 
 	}
@@ -734,9 +767,9 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 		}
 
 		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+		public void getRelevantItems(ArrayList<String> li) {
 			for (int i = 0; i <= 11; i++)
-				li.add(new GuiStackDisplay("ExtraUtilities:generator:"+i));
+				li.add("ExtraUtilities:generator:"+i);
 		}
 
 	}

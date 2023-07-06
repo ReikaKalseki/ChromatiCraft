@@ -85,28 +85,55 @@ public class GuiAdjacencyDescription extends GuiMachineDescription {
 		if (ap.isEffectList) {
 			Collection<SpecificAdjacencyEffect> li = TileEntityAdjacencyUpgrade.getSpecificEffects(ap.coreType.getColor(), true);
 			int i = 0;
-			for (int k = 0; k < 9; k++) {
-				for (SpecificAdjacencyEffect s : li) {
-					int dy = posY+107+i*20;
-					ArrayList<GuiItemDisplay> items = new ArrayList();
-					s.getRelevantItems(items);
-					items.removeIf(g -> g instanceof GuiStackDisplay && ((GuiStackDisplay)g).isEmpty());
-					if (!items.isEmpty()) {
-						int dx = posX+7;
-						for (GuiItemDisplay g : items) {
-							g.draw(fontRendererObj, dx, dy);
-							if (api.isMouseInBox(dx, dx+16, dy, dy+16)) {
-								String sg = s.getDescription();
-								api.drawTooltipAt(fontRendererObj, sg, api.getMouseRealX()+fontRendererObj.getStringWidth(sg)+22, api.getMouseRealY());
-							}
-							dx += 18;
+			for (SpecificAdjacencyEffect s : li) {
+				int dy = posY+107+i*24;
+				ArrayList<GuiItemDisplay> items = new ArrayList();
+				s.getRelevantItems(items);
+				items.removeIf(g -> g instanceof GuiStackDisplay && ((GuiStackDisplay)g).isEmpty());
+				if (!items.isEmpty()) {
+					int dx = posX+7;
+					for (GuiItemDisplay g : items) {
+						g.draw(fontRendererObj, dx, dy);
+						if (api.isMouseInBox(dx, dx+16, dy, dy+16)) {
+							String sg = s.getDescription();
+							api.drawTooltipAt(fontRendererObj, sg, api.getMouseRealX()+fontRendererObj.getStringWidth(sg)+22, api.getMouseRealY());
 						}
-						i++;
+						dx += 18;
 					}
+					i++;
 				}
 			}
 		}
 	}
+
+	/*
+	 	@Override
+	protected void drawNotesGraphics(int posX, int posY) {
+		AdjacencyPage ap = pages.get(subpage);
+		if (ap.isEffectList) {
+			Collection<SpecificAdjacencyEffect> li = TileEntityAdjacencyUpgrade.getSpecificEffects(ap.coreType.getColor(), true);
+			int i = 0;
+			for (SpecificAdjacencyEffect s : li) {
+				ArrayList<GuiItemDisplay> items = new ArrayList();
+				s.getRelevantItems(items);
+				items.removeIf(g -> g instanceof GuiStackDisplay && ((GuiStackDisplay)g).isEmpty());
+				if (!items.isEmpty()) {
+					for (GuiItemDisplay g : items) {
+						int dx = posX+8+(i%15)*16;
+						int dy = posY+108+(i/15)*17;
+						g.draw(fontRendererObj, dx, dy);
+						if (api.isMouseInBox(dx, dx+16, dy, dy+16)) {
+							String sg = s.getDescription();
+							api.drawTooltipAt(fontRendererObj, sg, api.getMouseRealX()+fontRendererObj.getStringWidth(sg)+22, api.getMouseRealY());
+						}
+						i++;
+					}
+					i++;
+				}
+			}
+		}
+	}
+	 */
 
 	private static class AdjacencyPage {
 
