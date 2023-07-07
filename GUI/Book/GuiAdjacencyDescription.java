@@ -11,18 +11,18 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaDescriptions;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.SpecificAdjacencyEffect;
+import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade.AdjacencyEffectDescription;
 import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
-import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 
 public class GuiAdjacencyDescription extends GuiMachineDescription {
 
@@ -36,7 +36,7 @@ public class GuiAdjacencyDescription extends GuiMachineDescription {
 			AdjacencyUpgrades a = AdjacencyUpgrades.upgrades[i];
 			if (a.isImplemented()) {
 				pages.add(new AdjacencyPage(Pages.NOTES, a, ChromaDescriptions.getNotes(page, i+1), false));
-				Collection<SpecificAdjacencyEffect> c = TileEntityAdjacencyUpgrade.getSpecificEffects(a.getColor(), true);
+				Collection<AdjacencyEffectDescription> c = TileEntityAdjacencyUpgrade.getSpecificEffects(a.getColor());
 				if (!c.isEmpty()) {/*
 					StringBuilder sb = new StringBuilder();
 					sb.append("The following is a non-exhaustive sample list of effects:");
@@ -55,8 +55,29 @@ public class GuiAdjacencyDescription extends GuiMachineDescription {
 	}
 
 	@Override
+	public void initGui() {
+		super.initGui();
+
+		int j = (width - xSize) / 2;
+		int k = (height - ySize) / 2;
+
+		String file = "Textures/GUIs/Handbook/buttons.png";
+	}
+
+	@Override
+	protected boolean hasScroll() {
+		AdjacencyPage ap = this.getCurrentPage();
+		return ap.isEffectList;// && TileEntityAdjacencyUpgrade.getSpecificEffects(ap.coreType.getColor()).size() > 5;
+	}
+
+	@Override
+	protected int getMaxScroll() {
+		return 50;
+	}
+
+	@Override
 	protected PageType getGuiLayout() {
-		return pages.get(subpage).isEffectList ? PageType.ADJACENCY : PageType.PLAIN;
+		return this.getCurrentPage().isEffectList ? PageType.ADJACENCY : PageType.PLAIN;
 	}
 
 	@Override
@@ -66,38 +87,44 @@ public class GuiAdjacencyDescription extends GuiMachineDescription {
 
 	@Override
 	protected String getText(int subpage) {
-		String ret = pages.get(subpage).text;
+		String ret = this.getCurrentPage().text;
 		if (ChromaOptions.POWEREDACCEL.getState() && subpage == 1)
 			ret += "\nRequire "+this.getMachine().getColor().displayName+" lumens from an "+ChromaTiles.WIRELESS.getName();
 		return ret;
 	}
 
 	public AdjacencyUpgrades getMachine() {
-		AdjacencyUpgrades a = pages.get(subpage).coreType;
+		AdjacencyUpgrades a = this.getCurrentPage().coreType;
 		if (a == null && subpage <= 1)
 			return AdjacencyUpgrades.upgrades[(int)((System.currentTimeMillis()/(500*TileEntityAdjacencyUpgrade.MAX_TIER))%AdjacencyUpgrades.upgrades.length)];
 		return a;
 	}
 
+	private AdjacencyPage getCurrentPage() {
+		return pages.get(subpage);
+	}
+
 	@Override
 	protected void drawNotesGraphics(int posX, int posY) {
-		AdjacencyPage ap = pages.get(subpage);
+		AdjacencyPage ap = this.getCurrentPage();
 		if (ap.isEffectList) {
-			Collection<SpecificAdjacencyEffect> li = TileEntityAdjacencyUpgrade.getSpecificEffects(ap.coreType.getColor(), true);
-			int oy = posY+108;
+			Collection<AdjacencyEffectDescription> li = TileEntityAdjacencyUpgrade.getSpecificEffects(ap.coreType.getColor());
+			int oy = posY+107;
 			int dy = 0;
-			for (SpecificAdjacencyEffect s : li) {
-				ArrayList<GuiItemDisplay> items = new ArrayList();
-				s.getRelevantItems(items);
-				items.removeIf(g -> g instanceof GuiStackDisplay && ((GuiStackDisplay)g).isEmpty());
+			for (AdjacencyEffectDescription s : li) {
+				List<GuiItemDisplay> items = s.getRelevantItems();
 				if (!items.isEmpty()) {
 					int ox = posX+12;
 					int dx = 0;
 					for (GuiItemDisplay g : items) {
-						g.draw(fontRendererObj, dx+ox, dy+oy);
-						if (api.isMouseInBox(dx+ox, dx+ox+16, dy+oy, dy+oy+16)) {
-							String sg = s.getDescription();
-							api.drawTooltipAt(fontRendererObj, sg, api.getMouseRealX()+fontRendererObj.getStringWidth(sg)+22, api.getMouseRealY());
+						int dx2 = dx+ox;
+						int dy2 = dy+oy-textOffset*17;
+						if (dx2 >= 0 && dy2 >= oy && dy2 <= oy+90) {
+							g.draw(fontRendererObj, dx2, dy2);
+							if (api.isMouseInBox(dx2, dx2+16, dy2, dy2+16)) {
+								String sg = s.description;
+								api.drawTooltipAt(fontRendererObj, sg, api.getMouseRealX()+fontRendererObj.getStringWidth(sg)+22, api.getMouseRealY()+15);
+							}
 						}
 						dx += 18;
 						if (dx >= 220) {
@@ -105,7 +132,7 @@ public class GuiAdjacencyDescription extends GuiMachineDescription {
 							dy += 17;
 						}
 					}
-					dy += 24;
+					dy += 22;
 				}
 			}
 		}
@@ -114,7 +141,7 @@ public class GuiAdjacencyDescription extends GuiMachineDescription {
 	/*
 	 	@Override
 	protected void drawNotesGraphics(int posX, int posY) {
-		AdjacencyPage ap = pages.get(subpage);
+		AdjacencyPage ap = getCurrentPage();
 		if (ap.isEffectList) {
 			Collection<SpecificAdjacencyEffect> li = TileEntityAdjacencyUpgrade.getSpecificEffects(ap.coreType.getColor(), true);
 			int i = 0;

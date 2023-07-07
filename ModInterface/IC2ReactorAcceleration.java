@@ -10,12 +10,13 @@
 package Reika.ChromatiCraft.ModInterface;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 
 import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.Acceleration;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.SpecialAcceleration;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
@@ -23,7 +24,7 @@ import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 
 import ic2.api.reactor.IReactorChamber;
 
-public class IC2ReactorAcceleration extends Acceleration {
+public class IC2ReactorAcceleration extends SpecialAcceleration {
 
 	public static final IC2ReactorAcceleration instance = new IC2ReactorAcceleration();
 
@@ -69,8 +70,8 @@ public class IC2ReactorAcceleration extends Acceleration {
 	}
 
 	@Override
-	public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-		li.add(new GuiStackDisplay("IC2:blockGenerator:5"));
+	public Collection<GuiItemDisplay> getRelevantItems() {
+		return Arrays.asList(new GuiStackDisplay("IC2:blockGenerator:5"));
 	}
 
 }

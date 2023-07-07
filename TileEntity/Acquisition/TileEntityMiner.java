@@ -119,7 +119,7 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 
 	public static final AdjacencyCheckHandlerImpl speed = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.LIGHTBLUE, null);
 	private static final AdjacencyCheckHandlerImpl fortuneSilk = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.PURPLE, "Add fortune/silk touch", ChromaTiles.MINER);
-	private static final AdjacencyCheckHandlerImpl adjRange = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.LIME, "Increase range", ChromaTiles.MINER);
+	private static final AdjacencyCheckHandlerImpl adjRange = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.LIME, TileEntityRangeBoost.basicRangeUpgradeable.getDescription(), ChromaTiles.MINER);
 
 	private final EnumMap<MineralCategory, ArrayList<Coordinate>> coords = new EnumMap(MineralCategory.class);
 	private final ItemHashMap<ItemDisplay> found = new ItemHashMap(); //pre-unified for display
@@ -871,7 +871,10 @@ public class TileEntityMiner extends ChargedCrystalPowered implements OwnedTile,
 	public static void loadCustomMappings() {
 		for (String s : ChromatiCraft.config.getMinerBlockExtras()) {
 			try {
-				String[] parts = s.split("=");
+				String[] parts = s.split("#");
+				parts[0] = parts[0].trim();
+				if (parts[0].equalsIgnoreCase("none"))
+					continue;
 				for (ItemStack is : CustomRecipeList.parseItemCollection(Arrays.asList(parts[0]), false)) {
 					customMappings.put(BlockKey.fromItem(is), MineralCategory.valueOf(parts[1].toUpperCase(Locale.ENGLISH)));
 				}

@@ -12,13 +12,14 @@ package Reika.ChromatiCraft.ModInterface.Bees;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.Acceleration;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.SpecialAcceleration;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
@@ -36,7 +37,7 @@ import forestry.api.apiculture.IBeeModifier;
 import forestry.api.apiculture.IBeekeepingLogic;
 import forestry.api.multiblock.IAlvearyController;
 
-public class ApiaryAcceleration extends Acceleration {
+public class ApiaryAcceleration extends SpecialAcceleration {
 
 	public static final ApiaryAcceleration instance = new ApiaryAcceleration();
 
@@ -155,10 +156,12 @@ public class ApiaryAcceleration extends Acceleration {
 	}
 
 	@Override
-	public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+	public Collection<GuiItemDisplay> getRelevantItems() {
+		ArrayList<GuiItemDisplay> li = new ArrayList();
 		li.add(new GuiStackDisplay("Forestry:apiculture:2"));
 		li.add(new GuiStackDisplay("Forestry:apiculture"));
 		li.add(new GuiStackDisplay("Forestry:alveary"));
+		return li;
 	}
 
 }

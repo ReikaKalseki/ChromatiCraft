@@ -9,9 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
-import java.util.ArrayList;
-
-import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -21,8 +18,6 @@ import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
-import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 
 
 public class TileEntityEfficiencyUpgrade extends TileEntityAdjacencyUpgrade {
@@ -37,50 +32,26 @@ public class TileEntityEfficiencyUpgrade extends TileEntityAdjacencyUpgrade {
 			0.125,
 			0.0625,
 	};
+	;
 
-	private static final LumenEfficiencyEffect lumenEfficiency = new LumenEfficiencyEffect();
-
-	private static class LumenEfficiencyEffect extends SpecificAdjacencyEffect {
-
-		private final ArrayList<ItemStack> items = new ArrayList();
-
-		private LumenEfficiencyEffect() {
-			super(CrystalElement.BLACK);
-		}
-
-		@Override
-		public String getDescription() {
-			return "Improves lumen efficiency usage";
-		}
-
-		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			for (ItemStack is : items)
-				li.add(new GuiStackDisplay(is));
-		}
-
-		@Override
-		protected boolean isActive() {
-			return !items.isEmpty();
-		}
-
-	}
-
-	public static void loadTileList() {
+	private static void initHandlers() {
+		String desc = "Improves lumen efficiency usage";
+		AdjacencyEffectDescription adj = TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.BLACK, desc);
 		for (int i = 0; i < ChromaTiles.TEList.length; i++) {
 			ChromaTiles r = ChromaTiles.TEList[i];
-			if (r == ChromaTiles.ADJACENCY || r.isDummiedOut())
+			if (r == ChromaTiles.ADJACENCY || r.isDummiedOut() || r.isIncomplete())
 				continue;
 			if (LumenConsumer.class.isAssignableFrom(r.getTEClass()) && !r.isRepeater()) {
 				LumenConsumer lc = (LumenConsumer)r.createTEInstanceForRender(0);
-				if (lc.allowsEfficiencyBoost())
-					lumenEfficiency.items.add(r.getCraftedProduct());
+				if (lc.allowsEfficiencyBoost()) {
+					adj.addItems(r.getCraftedProduct());
+				}
 			}
 		}
 		if (ChromaOptions.POWEREDACCEL.getState()) {
 			for (int i = 0; i < 16; i++) {
 				if (AdjacencyUpgrades.upgrades[i].isImplemented())
-					lumenEfficiency.items.add(AdjacencyUpgrades.upgrades[i].getStackOfTier(2));
+					adj.addItems(AdjacencyUpgrades.upgrades[i].getStackOfTier(2));
 			}
 		}
 	}

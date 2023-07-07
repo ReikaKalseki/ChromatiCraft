@@ -4,6 +4,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.API.AdjacencyUpgradeAPI;
 import Reika.ChromatiCraft.API.CrystalElementAccessor.CrystalElementProxy;
 import Reika.ChromatiCraft.API.Interfaces.AdjacencyCheckHandler;
@@ -85,6 +86,15 @@ public class AdjacencyUpgradeAPIImpl implements AdjacencyUpgradeAPI {
 	@Override
 	public AdjacencyCheckHandler createCheckHandler(CrystalElementProxy color, String desc, ItemStack... items) {
 		return TileEntityAdjacencyUpgrade.createAdjacencyCheckHandler(color, desc, items);
+	}
+
+	public void addAcceleratorBlacklist(Class<? extends TileEntity> cl, String name, ItemStack item, BlacklistReason r) {
+		TileEntityAccelerator.blacklistTile(cl, item);
+		ChromatiCraft.logger.log("TileEntity \""+name+"\" has been blacklisted from the TileEntity Accelerator, because "+r.message);
+	}
+
+	public void addAcceleratorBlacklist(Class<? extends TileEntity> cl, ItemStack item, BlacklistReason r) {
+		this.addAcceleratorBlacklist(cl, cl.getSimpleName(), item, r);
 	}
 
 }

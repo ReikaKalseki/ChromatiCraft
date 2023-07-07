@@ -59,6 +59,11 @@ public class TileEntityRelaySource extends InventoriedCrystalReceiver implements
 		return cooldown;
 	}
 
+	@Override
+	public boolean allowsEfficiencyBoost() {
+		return false;
+	}
+
 	/*
 	@Override
 	public ResearchLevel getResearchTier() {

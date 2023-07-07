@@ -56,6 +56,11 @@ public class TileEntityPersonalCharger extends CrystalReceiverBase implements Ch
 	 */
 
 	@Override
+	public boolean allowsEfficiencyBoost() {
+		return false;
+	}
+
+	@Override
 	public void updateEntity(World world, int x, int y, int z, int meta) {
 		super.updateEntity(world, x, y, z, meta);
 

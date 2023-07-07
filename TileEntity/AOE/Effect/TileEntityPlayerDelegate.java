@@ -11,10 +11,13 @@ package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -23,6 +26,7 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.CrystalBlock;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
+import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityCollector;
@@ -30,6 +34,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackListDisplay;
 import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaThaumHelper;
 
@@ -40,9 +45,18 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 
 	private static final HashMap<Class, DelegateInterface> interactions = new HashMap();
 
-	static {
+	private static void initHandlers() {
 		new DeconstructionTableDelegateInterface();
 		new ChromaCollectorDelegateInterface();
+
+		AdjacencyEffectDescription adj = TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.LIGHTGRAY, "Applies crystal effects remotely");
+		ArrayList<ItemStack> li1 = new ArrayList();
+		ArrayList<ItemStack> li2 = new ArrayList();
+		for (int i = 0; i < 16; i++) {
+			li1.add(ChromaBlocks.CRYSTAL.getStackOfMetadata(i));
+			li2.add(ChromaBlocks.SUPER.getStackOfMetadata(i));
+		}
+		adj.addDisplays(new GuiStackListDisplay(li1).setCycleSpeed(500), new GuiStackListDisplay(li2).setCycleSpeed(500));
 	}
 
 	@Override
@@ -108,10 +122,9 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 
 	}
 
-	private static abstract class DelegateInterface extends SpecificAdjacencyEffect {
+	private static abstract class DelegateInterface extends BasicAdjacencyInterface {
 
 		protected DelegateInterface() {
-			super(CrystalElement.LIGHTGRAY);
 			if (this.getMod() == null || this.getMod().isLoaded()) {
 				try {
 					String[] cs = this.getClasses();
@@ -120,7 +133,13 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 						interactions.put(c, this);
 					}
 					this.init();
-					ChromatiCraft.logger.log("Loaded "+this+" for "+this.getMod());
+					if (cs.length > 0) {
+						AdjacencyEffectDescription adj = TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.LIGHTGRAY, this.getDescription());
+						Collection<GuiItemDisplay> c = this.getRelevantItems();
+						if (c != null)
+							adj.addDisplays(c);
+						ChromatiCraft.logger.log("Loaded "+this+" for "+this.getMod());
+					}
 				}
 				catch (Exception e) {
 					ChromatiCraft.logger.logError("Could not load "+this+" for "+this.getMod()+":");
@@ -146,11 +165,6 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 		}
 
 		protected abstract boolean canRunWithPlayerOffline();
-
-		@Override
-		public final boolean isActive() {
-			return this.getMod() == null || this.getMod().isLoaded();
-		}
 	}
 
 	private static class NoInterface extends DelegateInterface { //Used for null
@@ -188,8 +202,8 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 		}
 
 		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-
+		public Collection<GuiItemDisplay> getRelevantItems() {
+			return null;
 		}
 
 	}
@@ -267,8 +281,8 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 		}
 
 		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			li.add(new GuiStackDisplay("Thaumcraft:blockTable:14"));
+		public Collection<GuiItemDisplay> getRelevantItems() {
+			return Arrays.asList(new GuiStackDisplay("Thaumcraft:blockTable:14"));
 		}
 
 	}
@@ -307,8 +321,8 @@ public class TileEntityPlayerDelegate extends TileEntityAdjacencyUpgrade {
 		}
 
 		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			li.add(new GuiStackDisplay(ChromaTiles.COLLECTOR));
+		public Collection<GuiItemDisplay> getRelevantItems() {
+			return Arrays.asList(new GuiStackDisplay(ChromaTiles.COLLECTOR));
 		}
 
 	}

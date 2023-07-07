@@ -618,6 +618,11 @@ public class TileEntityPowerTree extends CrystalReceiverBase implements CrystalB
 	}
 
 	@Override
+	public boolean allowsEfficiencyBoost() {
+		return false;
+	}
+
+	@Override
 	public int getSendRange() {
 		return this.getReceiveRange();
 	}

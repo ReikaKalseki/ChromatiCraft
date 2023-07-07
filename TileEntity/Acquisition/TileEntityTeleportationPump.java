@@ -64,7 +64,7 @@ public class TileEntityTeleportationPump extends ChargedCrystalPowered implement
 
 	public static final int MAXRANGE = 256;
 
-	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.LIME, "Increase range", ChromaTiles.TELEPUMP);
+	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.LIME, TileEntityRangeBoost.basicRangeUpgradeable.getDescription(), ChromaTiles.TELEPUMP);
 
 	private final HybridTank tank = new HybridTank("telepump", 4000);
 	private HashMap<Fluid, ArrayList<FluidSource>> fluids = new HashMap();

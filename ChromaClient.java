@@ -184,7 +184,7 @@ public class ChromaClient extends ChromaCommon {
 
 		ChromaShaders.registerAll();
 
-		ReikaJavaLibrary.initClass(ChromaCloudRenderer.class);
+		ReikaJavaLibrary.initClass(ChromaCloudRenderer.class, true);
 
 		RenderingRegistry.registerEntityRenderingHandler(EntityBallLightning.class, new RenderBallLightning());
 		RenderingRegistry.registerEntityRenderingHandler(EntityAbilityFireball.class, new RenderFireball(2));

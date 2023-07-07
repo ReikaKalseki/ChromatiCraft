@@ -63,7 +63,11 @@ public class EntityMeteorShot extends Entity implements IEntityAdditionalSpawnDa
 
 	private final double gravity;
 
-	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.PINK, "Increase damage", ChromaTiles.METEOR);
+	private static AdjacencyCheckHandlerImpl adjacency;
+
+	public static void registerAdjacency() {
+		adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.PINK, "Increase damage", ChromaTiles.METEOR);
+	}
 
 	public EntityMeteorShot(TileEntityMeteorTower te, Entity e) {
 		this(te.worldObj);

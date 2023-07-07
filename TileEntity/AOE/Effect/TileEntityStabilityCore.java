@@ -10,7 +10,8 @@
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 
 import net.minecraft.tileentity.TileEntity;
@@ -30,7 +31,7 @@ public class TileEntityStabilityCore extends TileEntityAdjacencyUpgrade {
 
 	private static final HashMap<Class, StabilityInterface> interactions = new HashMap();
 
-	static {
+	private static void initHandlers() {
 		new InfusionStabilityInterface();
 	}
 
@@ -77,10 +78,9 @@ public class TileEntityStabilityCore extends TileEntityAdjacencyUpgrade {
 
 	}
 
-	private static abstract class StabilityInterface extends SpecificAdjacencyEffect {
+	private static abstract class StabilityInterface extends BasicAdjacencyInterface {
 
 		protected StabilityInterface() {
-			super(CrystalElement.WHITE);
 			if (this.getMod() == null || this.getMod().isLoaded()) {
 				try {
 					String[] cs = this.getClasses();
@@ -89,7 +89,10 @@ public class TileEntityStabilityCore extends TileEntityAdjacencyUpgrade {
 						interactions.put(c, this);
 					}
 					this.init();
-					ChromatiCraft.logger.log("Loaded "+this+" for "+this.getMod());
+					if (cs.length > 0) {
+						TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.WHITE, this.getDescription()).addDisplays(this.getRelevantItems());
+						ChromatiCraft.logger.log("Loaded "+this+" for "+this.getMod());
+					}
 				}
 				catch (Exception e) {
 					ChromatiCraft.logger.logError("Could not load "+this+" for "+this.getMod()+":");
@@ -112,11 +115,6 @@ public class TileEntityStabilityCore extends TileEntityAdjacencyUpgrade {
 
 		protected TileEntity getActingTileEntity(TileEntity te) throws Exception {
 			return te;
-		}
-
-		@Override
-		public final boolean isActive() {
-			return this.getMod() == null || this.getMod().isLoaded();
 		}
 	}
 
@@ -150,8 +148,8 @@ public class TileEntityStabilityCore extends TileEntityAdjacencyUpgrade {
 		}
 
 		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-
+		protected Collection<GuiItemDisplay> getRelevantItems() {
+			return null;
 		}
 
 	}
@@ -233,8 +231,8 @@ public class TileEntityStabilityCore extends TileEntityAdjacencyUpgrade {
 		}
 
 		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			li.add(new GuiStackDisplay("Thaumcraft:blockStoneDevice:2"));
+		public Collection<GuiItemDisplay> getRelevantItems() {
+			return Arrays.asList(new GuiStackDisplay("Thaumcraft:blockStoneDevice:2"));
 		}
 
 	}

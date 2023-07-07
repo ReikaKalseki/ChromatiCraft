@@ -9,7 +9,6 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import net.minecraft.item.ItemStack;
@@ -21,8 +20,6 @@ import Reika.ChromatiCraft.API.Interfaces.CustomRangeUpgrade;
 import Reika.ChromatiCraft.API.Interfaces.CustomRangeUpgrade.RangeUpgradeable;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Registry.CrystalElement;
-import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
-import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 
 
 public class TileEntityRangeBoost extends TileEntityAdjacencyUpgrade {
@@ -40,7 +37,19 @@ public class TileEntityRangeBoost extends TileEntityAdjacencyUpgrade {
 
 	private static final HashMap<Class, RangeEffect> specialInteractions = new HashMap();
 
-	private static final BasicRangeEffect basicRangeUpgradeable = new BasicRangeEffect();
+	public static final RangeEffect basicRangeUpgradeable = new RangeEffect() {
+
+		@Override
+		public String getDescription() {
+			return "Expands range";
+		}
+
+		@Override
+		protected void upgradeRange(TileEntity te, double r) {
+			((RangeUpgradeable)te).upgradeRange(r);
+		}
+
+	};
 
 	public static double getFactor(int tier) {
 		return factors[tier];
@@ -52,8 +61,10 @@ public class TileEntityRangeBoost extends TileEntityAdjacencyUpgrade {
 
 	public static void addBasicHandling(Class<? extends RangeUpgradeable> c, ItemStack... items) {
 		specialInteractions.put(c, basicRangeUpgradeable);
-		for (ItemStack is : items)
-			basicRangeUpgradeable.items.add(is);
+		for (ItemStack is : items) {
+			AdjacencyEffectDescription adj = TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.LIME, basicRangeUpgradeable.getDescription());
+			adj.addItems(items);
+		}
 	}
 
 	@Override
@@ -81,38 +92,6 @@ public class TileEntityRangeBoost extends TileEntityAdjacencyUpgrade {
 
 	}
 
-	private static class BasicRangeEffect extends RangeEffect {
-
-		private final ArrayList<ItemStack> items = new ArrayList();
-
-		private BasicRangeEffect() {
-			super();
-		}
-
-		@Override
-		public String getDescription() {
-			return "Expands range";
-		}
-
-		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			for (ItemStack is : items) {
-				li.add(new GuiStackDisplay(is));
-			}
-		}
-
-		@Override
-		protected boolean isActive() {
-			return true;
-		}
-
-		@Override
-		protected void upgradeRange(TileEntity te, double r) {
-			((RangeUpgradeable)te).upgradeRange(r);
-		}
-
-	}
-
 	private static class CustomRangeEffect extends RangeEffect {
 
 		private CustomRangeUpgrade effect;
@@ -120,23 +99,14 @@ public class TileEntityRangeBoost extends TileEntityAdjacencyUpgrade {
 		protected CustomRangeEffect(CustomRangeUpgrade e) {
 			super();
 			effect = e;
+
+			AdjacencyEffectDescription adj = TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.LIME, this.getDescription());
+			adj.addItems(effect.getItems());
 		}
 
 		@Override
 		public String getDescription() {
 			return effect.getDescription();
-		}
-
-		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			for (ItemStack is : effect.getItems()) {
-				li.add(new GuiStackDisplay(is));
-			}
-		}
-
-		@Override
-		protected boolean isActive() {
-			return true;
 		}
 
 		@Override
@@ -146,11 +116,13 @@ public class TileEntityRangeBoost extends TileEntityAdjacencyUpgrade {
 
 	}
 
-	private static abstract class RangeEffect extends SpecificAdjacencyEffect {
+	public static abstract class RangeEffect {
 
 		protected RangeEffect() {
-			super(CrystalElement.LIME);
+
 		}
+
+		public abstract String getDescription();
 
 		protected abstract void upgradeRange(TileEntity te, double r);
 

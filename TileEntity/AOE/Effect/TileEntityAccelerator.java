@@ -9,10 +9,14 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Locale;
 
+import org.lwjgl.opengl.GL11;
+
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -20,10 +24,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.API.AcceleratorBlacklist.BlacklistReason;
+import Reika.ChromatiCraft.API.AdjacencyUpgradeAPI.BlacklistReason;
 import Reika.ChromatiCraft.API.Interfaces.CustomAcceleration;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
+import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
@@ -31,10 +36,14 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiIconDisplay;
-import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackListDisplay;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
+import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
+import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaParticleHelper;
+import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -49,6 +58,10 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 
 	private int[] lagTimer = new int[6];
 
+	private static AdjacencyEffectDescription blacklist;
+
+	private static final HashMap<Item, BlacklistDisplay> blacklistDisplays = new HashMap();
+
 	private static final Acceleration blacklistKey = new Acceleration() {
 		@Override
 		public void tick(TileEntity te, int factor, TileEntity accelerator) {}
@@ -56,16 +69,6 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 		@Override
 		public boolean usesParentClasses() {
 			return false;
-		}
-
-		@Override
-		public String getDescription() {
-			return "Does nothing";
-		}
-
-		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-
 		}
 	};
 
@@ -77,56 +80,102 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 		public boolean usesParentClasses() {
 			return false;
 		}
-
-		@Override
-		public String getDescription() {
-			return "Accelerates operations";
-		}
-
-		@Override
-		@SideOnly(Side.CLIENT)
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			li.add(new GuiIconDisplay(ChromaIcons.QUESTION.getIcon()));
-		}
 	};
 
 	private static boolean doRecursiveChecks = false;
 
-	static {
-		blacklistTile("icbm.sentry.turret.Blocks.TileTurret", ModList.ICBM, BlacklistReason.BUGS); //by request
-		blacklistTile("bluedart.tile.decor.TileForceTorch", ModList.DARTCRAFT, BlacklistReason.CRASH); //StackOverflow
-		blacklistTile("com.sci.torcherino.tile.TileTorcherino", null, BlacklistReason.CRASH); //StackOverflow
+	private static void initHandlers() {
+		if (blacklist != null)
+			return;
+		TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.LIGHTBLUE, "Accelerates operations").addDisplays(new GuiIconDisplay(ChromaIcons.QUESTION)).setOrderIndex(Integer.MIN_VALUE);
+		blacklist = TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.LIGHTBLUE, "Does nothing");
 
-		blacklistTile("mrtjp.projectred.integration.Timer", ModList.PROJRED, BlacklistReason.BUGS);
-		blacklistTile("mrtjp.projectred.integration.Sequencer", ModList.PROJRED, BlacklistReason.BUGS);
-		blacklistTile("mrtjp.projectred.integration.Repeater", ModList.PROJRED, BlacklistReason.BUGS);
-		blacklistTile("mrtjp.projectred.integration.StateCell", ModList.PROJRED, BlacklistReason.BUGS);
+		blacklistTile("icbm.sentry.turret.Blocks.TileTurret", ModList.ICBM, "", BlacklistReason.BUGS); //by request
+		blacklistTile("bluedart.tile.decor.TileForceTorch", ModList.DARTCRAFT, "", BlacklistReason.CRASH); //StackOverflow
+		blacklistTile("com.sci.torcherino.tile.TileTorcherino", null, "Torcherino:tile.torcherino", BlacklistReason.CRASH); //StackOverflow
+		blacklistTile("com.sci.torcherino.tile.TileTorcherino", null, "Torcherino:tile.inverse_torcherino", BlacklistReason.CRASH); //StackOverflow
+
+		blacklistTile("mrtjp.projectred.integration.Timer", ModList.PROJRED, "ProjRed|Integration:projectred.integration.gate:17", BlacklistReason.BUGS);
+		blacklistTile("mrtjp.projectred.integration.Sequencer", ModList.PROJRED, "ProjRed|Integration:projectred.integration.gate:18", BlacklistReason.BUGS);
+		blacklistTile("mrtjp.projectred.integration.Repeater", ModList.PROJRED, "ProjRed|Integration:projectred.integration.gate:10", BlacklistReason.BUGS);
+		blacklistTile("mrtjp.projectred.integration.PulseFormer", ModList.PROJRED, "ProjRed|Integration:projectred.integration.gate:9", BlacklistReason.BUGS);
+		blacklistTile("mrtjp.projectred.integration.StateCell", ModList.PROJRED, "ProjRed|Integration:projectred.integration.gate:20", BlacklistReason.BUGS);
+		blacklistTile("mrtjp.projectred.integration.Synchronizer", ModList.PROJRED, "ProjRed|Integration:projectred.integration.gate:21", BlacklistReason.BUGS);
 
 		for (int i = 0; i < ChromaTiles.TEList.length; i++) {
 			ChromaTiles c = ChromaTiles.TEList[i];
-			if (!c.allowsAcceleration())
-				blacklistTile(c.getTEClass());
+			if (!c.allowsAcceleration()) {
+				if (c == ChromaTiles.ADJACENCY) {
+					for (int r = 0; r < 16; r++) {
+						AdjacencyUpgrades a = AdjacencyUpgrades.upgrades[r];
+						if (a.isImplemented()) {
+							blacklistTile(c.getTEClass(), a.getStackOfTier(2));
+						}
+					}
+				}
+			}
+			else {
+				blacklistTile(c.getTEClass(), c.getCraftedProduct());
+			}
 		}
 	}
 
-	public static void blacklistTile(Class<? extends TileEntity> cl) {
+	private static void addBlacklistItem(ItemStack is) {
+		if (is != null && is.getItem() != null) {
+			BlacklistDisplay bd = blacklistDisplays.get(is.getItem());
+			if (bd == null) {
+				bd = new BlacklistDisplay();
+				blacklistDisplays.put(is.getItem(), bd);
+			}
+			bd.addItems(is);
+			blacklist.addDisplays(bd);
+		}
+	}
+
+	private static class BlacklistDisplay extends GuiStackListDisplay {
+
+		private BlacklistDisplay() {
+			super();
+			this.setCycleSpeed(500);
+		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public void draw(FontRenderer fr, int x, int y) {
+			super.draw(fr, x, y);
+			ReikaTextureHelper.bindTerrainTexture();
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			GL11.glEnable(GL11.GL_BLEND);
+			BlendMode.DEFAULT.apply();
+			GL11.glColor4f(1, 1, 1, 0.5F);
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, ChromaIcons.X.getIcon(), 16, 16);
+			GL11.glPopAttrib();
+		}
+	}
+
+	public static void blacklistTile(Class<? extends TileEntity> cl, ItemStack is) {
 		if (cl == TileEntity.class)
 			throw new IllegalArgumentException("You cannot blacklist the core TE class!");
 		//ChromatiCraft.logger.log("Blacklisting "+cl+" from the accelerator");
+		initHandlers();
 		actions.put(cl, blacklistKey);
+		addBlacklistItem(is);
 	}
 
 	public static void customizeTile(Class c, Acceleration a) {
+		initHandlers();
 		actions.put(c, a);
 		doRecursiveChecks |= a.usesParentClasses();
 	}
 
 	public static void customizeTile(Class c, CustomAcceleration a) {
+		initHandlers();
 		actions.put(c, new APIAcceleration(a));
 		doRecursiveChecks |= a.usesParentClasses();
 	}
 
-	private static void blacklistTile(String name, ModList mod, BlacklistReason r) {
+	private static void blacklistTile(String name, ModList mod, String s, BlacklistReason r) {
+		initHandlers();
 		Class cl;
 		if (mod != null && !mod.isLoaded())
 			return;
@@ -136,6 +185,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 				throw new IllegalArgumentException("You cannot blacklist the core TE class!");
 			ChromatiCraft.logger.log("TileEntity \""+name+"\" has been blacklisted from the TileEntity Accelerator, because "+r.message);
 			actions.put(cl, blacklistKey);
+			addBlacklistItem(ReikaItemHelper.lookupItem(s));
 		}
 		catch (ClassNotFoundException e) {
 			ChromatiCraft.logger.log("Could not add "+name+" to the Accelerator blacklist: Class not found!");
@@ -304,10 +354,10 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 		return CrystalElement.LIGHTBLUE;
 	}
 
-	public static abstract class Acceleration extends SpecificAdjacencyEffect {
+	private static abstract class Acceleration {
 
 		protected Acceleration() {
-			super(CrystalElement.LIGHTBLUE);
+
 		}
 
 		protected abstract void tick(TileEntity te, int factor, TileEntity accelerator) throws Exception;
@@ -333,10 +383,17 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 			return root;
 		}
 
-		@Override
-		public boolean isActive() {
-			return true;
+	}
+
+	public static abstract class SpecialAcceleration extends Acceleration {
+
+		protected SpecialAcceleration() {
+			TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.LIGHTBLUE, this.getDescription()).addDisplays(this.getRelevantItems());
 		}
+
+		public abstract String getDescription();
+
+		public abstract Collection<GuiItemDisplay> getRelevantItems();
 
 	}
 
@@ -346,6 +403,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 
 		private APIAcceleration(CustomAcceleration acc) {
 			accel = acc;
+			TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.LIGHTBLUE, acc.getDescription()).addItems(acc.getItems());
 		}
 
 		@Override
@@ -356,17 +414,6 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 		@Override
 		public boolean usesParentClasses() {
 			return accel.usesParentClasses();
-		}
-
-		@Override
-		public String getDescription() {
-			return accel.getDescription();
-		}
-
-		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			for (ItemStack is : accel.getItems())
-				li.add(new GuiStackDisplay(is));
 		}
 
 	}

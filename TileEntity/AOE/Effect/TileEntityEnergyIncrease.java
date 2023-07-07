@@ -12,10 +12,8 @@ package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -26,10 +24,8 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
-import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 import buildcraft.core.lib.engines.TileEngineBase;
 import cofh.api.energy.EnergyStorage;
@@ -43,7 +39,7 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 
 	private static final HashMap<Class, EnergyInterface> interactions = new HashMap();
 
-	private static final BasicEnergyEffect basicEnergy = new BasicEnergyEffect();
+	public static final AdjacencyEffectDescription basicEnergy = TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.YELLOW, "Increases energy generation rate");
 
 	private static double[] factors = {
 			0.125,
@@ -56,7 +52,7 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 			31,
 	};
 
-	static {
+	private static void initHandlers() {
 		new TEDynamoInterface();
 		new RailCraftTurbineInterface();
 		new RailCraftEngineInterface();
@@ -131,38 +127,6 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 				}
 			}
 		}
-	}
-
-	private static class BasicEnergyEffect extends SpecificAdjacencyEffect {
-
-		private final ArrayList<ItemStack> items = new ArrayList();
-
-		protected BasicEnergyEffect() {
-			super(CrystalElement.YELLOW);
-		}
-
-		@Override
-		public String getDescription() {
-			return "Increases energy generation rate";
-		}
-
-		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			for (ItemStack is : items) {
-				li.add(new GuiStackDisplay(is));
-			}
-		}
-
-		private void addItem(ItemStack is) {
-			items.add(is);
-			Collections.sort(items, ReikaItemHelper.comparator);
-		}
-
-		@Override
-		protected boolean isActive() {
-			return !items.isEmpty();
-		}
-
 	}
 
 	private static abstract class EnergyInterface {
@@ -247,9 +211,7 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 			ArrayList<String> li = new ArrayList();
 			this.getRelevantItems(li);
 			for (String s : li) {
-				ItemStack is = ReikaItemHelper.lookupItem(s);
-				if (is != null)
-					basicEnergy.addItem(is);
+				basicEnergy.addDisplays(new GuiStackDisplay(s));
 			}
 		}
 
@@ -394,22 +356,8 @@ public class TileEntityEnergyIncrease extends TileEntityAdjacencyUpgrade impleme
 			//processChambers.setAccessible(true);
 			updateTicker = c.getDeclaredField("updateTicker");
 			updateTicker.setAccessible(true);
-			new SpecificAdjacencyEffect(CrystalElement.YELLOW) {
-				@Override
-				public String getDescription() {
-					return "Increases reactor output";
-				}
 
-				@Override
-				public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-					li.add(new GuiStackDisplay("IC2:blockGenerator:5"));
-				}
-
-				@Override
-				protected boolean isActive() {
-					return ModList.IC2.isLoaded();
-				}
-			};
+			TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.YELLOW, "Increases reactor output").addDisplays(new GuiStackDisplay("IC2:blockGenerator:5"));
 		}
 
 		@Override

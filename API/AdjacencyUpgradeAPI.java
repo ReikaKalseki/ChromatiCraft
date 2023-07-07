@@ -28,4 +28,30 @@ public interface AdjacencyUpgradeAPI {
 	public void addCustomHealing(Block b, CustomBlockHealing h);
 	public void addCustomHealing(Block b, int meta, CustomBlockHealing h);
 	public void addCustomHealing(Class<? extends TileEntity> c, CustomTileHealing h);
+
+
+	/** Use this to blacklist your TileEntity class from being accelerated with the TileEntity acclerator.
+	 * You must specify a reason (from the {@link BlacklistReason} enum) which will be put into the loading log.
+	 * Arguments: TileEntity class, Reason.
+	 * Sample log message:<br>
+	 * <i> CHROMATICRAFT:
+	 * "TileEntity "Miner" has been blacklisted from the TileEntity Accelerator, because the creator finds it unbalanced or overpowered."
+	 * </i>*/
+	public void addAcceleratorBlacklist(Class<? extends TileEntity> cl, String name, ItemStack item, BlacklistReason r);
+
+	public void addAcceleratorBlacklist(Class<? extends TileEntity> cl, ItemStack item, BlacklistReason r);
+
+	public static enum BlacklistReason {
+		BUGS("it will cause bugs or other errors."),
+		CRASH("it would cause a crash."),
+		BALANCE("the creator finds it unbalanced or overpowered."),
+		EXPLOIT("it creates an exploit."),
+		OPINION("the creator wishes it to be disabled.");
+
+		public final String message;
+
+		private BlacklistReason(String msg) {
+			message = msg;
+		}
+	}
 }

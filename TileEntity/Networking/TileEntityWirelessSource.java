@@ -152,6 +152,11 @@ public class TileEntityWirelessSource extends CrystalReceiverBase implements Wir
 	}
 
 	@Override
+	public boolean allowsEfficiencyBoost() {
+		return false;
+	}
+
+	@Override
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 

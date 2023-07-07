@@ -9,9 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -27,12 +26,10 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
-import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Interfaces.TileEntity.ThermalTile;
 import Reika.DragonAPI.Libraries.Java.ReikaStringParser;
-import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 import Reika.ReactorCraft.Registry.ReactorTiles;
 import Reika.RotaryCraft.Registry.MachineRegistry;
 
@@ -102,12 +99,7 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 			10,
 	};
 
-	private static final HeatBalancingEffect[] heatBalance = new HeatBalancingEffect[3];
-
-	static {
-		for (int i = 0; i < heatBalance.length; i++)
-			heatBalance[i] = new HeatBalancingEffect(HeatTier.values()[i]);
-
+	private static void initHandlers() {
 		setBlockTemp(Blocks.ice, 0);
 		setBlockTemp(Blocks.water, 15);
 		setBlockTemp(Blocks.fire, 90);
@@ -120,63 +112,16 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 		}
 
 		if (ModList.IC2.isLoaded()) {
-			new SpecificAdjacencyEffect(CrystalElement.ORANGE) {
-
-				@Override
-				public String getDescription() {
-					return "Transfers HU";
-				}
-
-				@Override
-				public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-					li.add(new GuiStackDisplay("IC2:blockKineticGenerator:5"));
-					for (int i = 0; i <= 3; i++)
-						li.add(new GuiStackDisplay("IC2:blockHeatGenerator:"+i));
-					li.add(new GuiStackDisplay("IC2:blockGenerator:8"));
-					li.add(new GuiStackDisplay("IC2:blockMachine3"));
-					li.add(new GuiStackDisplay("IC2:blockMachine3:1"));
-					li.add(new GuiStackDisplay("IC2:blockMachine2:12"));
-					li.add(new GuiStackDisplay("IC2:blockMachine2:13"));
-				}
-
-				@Override
-				protected boolean isActive() {
-					return true;
-				}
-
-			};
+			AdjacencyEffectDescription adj = TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.ORANGE, "Transfers HU").setOrderIndex(1000);
+			adj.addDisplays(new GuiStackDisplay("IC2:blockKineticGenerator:5"));
+			for (int i = 0; i <= 3; i++)
+				adj.addDisplays(new GuiStackDisplay("IC2:blockHeatGenerator:"+i));
+			adj.addDisplays(new GuiStackDisplay("IC2:blockGenerator:8"));
+			adj.addDisplays(new GuiStackDisplay("IC2:blockMachine3"));
+			adj.addDisplays(new GuiStackDisplay("IC2:blockMachine3:1"));
+			adj.addDisplays(new GuiStackDisplay("IC2:blockMachine2:12"));
+			adj.addDisplays(new GuiStackDisplay("IC2:blockMachine2:13"));
 		}
-
-		for (int i = 0; i < heatBalance.length; i++)
-			Collections.sort(heatBalance[i].items, ReikaItemHelper.comparator);
-	}
-
-	private static class HeatBalancingEffect extends SpecificAdjacencyEffect {
-
-		private final ArrayList<ItemStack> items = new ArrayList();
-		private final HeatTier tier;
-
-		private HeatBalancingEffect(HeatTier tier) {
-			super(CrystalElement.ORANGE);
-			this.tier = tier;
-		}
-
-		@Override
-		public String getDescription() {
-			return "Balances heat between "+tier.getDescription()+" machines";
-		}
-
-		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			for (ItemStack is : items)
-				li.add(new GuiStackDisplay(is));
-		}
-
-		@Override
-		protected boolean isActive() {
-			return !items.isEmpty();
-		}
-
 	}
 
 	@ModDependent(ModList.ROTARYCRAFT)
@@ -190,9 +135,7 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 
 	private static void setBlockTemp(Block b, int temp) {
 		blockTemps.put(b, temp);
-
-		//for (int i = 0; i < heatBalance.length; i++)
-		//	heatBalance[i].items.add(new ItemStack(b));
+		TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.ORANGE, "Transfers block temperature").addItems(new ItemStack(b)).setOrderIndex(-1000);
 	}
 
 	@ModDependent(ModList.REACTORCRAFT)
@@ -210,9 +153,9 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 
 	private static void addHeatEffect(TileEnum c, HeatTier tier) {
 		tileList.put(c.getTEClass(), tier);
-		//for (int i = 0; i <= tier; i++)
-		//	heatBalance[i].items.add(c.getCraftedProduct());
-		heatBalance[tier.ordinal()].items.add(c.getCraftedProduct());
+
+		String desc = "Balances heat between "+tier.getDescription().toLowerCase(Locale.ENGLISH)+" machines";
+		TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.ORANGE, desc).addItems(c.getCraftedProduct()).setOrderIndex(tier.ordinal());
 	}
 
 	@Override

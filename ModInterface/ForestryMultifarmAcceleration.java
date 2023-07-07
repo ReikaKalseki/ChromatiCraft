@@ -10,10 +10,11 @@
 package Reika.ChromatiCraft.ModInterface;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import net.minecraft.tileentity.TileEntity;
 
-import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.Acceleration;
+import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityAccelerator.SpecialAcceleration;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 import Reika.DragonAPI.ModInteract.DeepInteract.ForestryMultiblockControllerHandling;
@@ -22,7 +23,7 @@ import forestry.api.multiblock.IFarmComponent;
 import forestry.api.multiblock.IFarmController;
 import forestry.api.multiblock.IMultiblockLogicFarm;
 
-public class ForestryMultifarmAcceleration extends Acceleration {
+public class ForestryMultifarmAcceleration extends SpecialAcceleration {
 
 	public static final ForestryMultifarmAcceleration instance = new ForestryMultifarmAcceleration();
 
@@ -68,10 +69,12 @@ public class ForestryMultifarmAcceleration extends Acceleration {
 	}
 
 	@Override
-	public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
+	public Collection<GuiItemDisplay> getRelevantItems() {
+		ArrayList<GuiItemDisplay> li = new ArrayList();
 		for (int i = 0; i <= 5; i++)
 			if (i != 1)
 				li.add(new GuiStackDisplay("Forestry:ffarm:"+i));
+		return li;
 	}
 
 }

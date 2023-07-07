@@ -43,7 +43,7 @@ public class TileEntityLampController extends TileEntityChromaticBase implements
 	private static final MultiMap<Integer, LightSource> map = new MultiMap(CollectionType.CONCURRENTSET, new ConcurrencyDeterminator());
 	private static final MultiMap<Integer, WorldLocation> lights = new MultiMap(CollectionType.CONCURRENTSET, new ConcurrencyDeterminator());
 
-	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.LIME, "Increase range", ChromaTiles.LAMPCONTROL);
+	private static final AdjacencyCheckHandlerImpl adjacency = TileEntityAdjacencyUpgrade.getOrCreateAdjacencyCheckHandler(CrystalElement.LIME, TileEntityRangeBoost.basicRangeUpgradeable.getDescription(), ChromaTiles.LAMPCONTROL);
 
 	public static final int MAXRANGE = 64;
 	public static final int MAXCHANNEL = 999;

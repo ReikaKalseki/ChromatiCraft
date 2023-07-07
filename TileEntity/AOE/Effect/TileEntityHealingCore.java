@@ -10,8 +10,8 @@
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -29,7 +29,6 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Auxiliary.Trackers.ReflectiveFailureTracker;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
-import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -45,7 +44,7 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 
 	private boolean[] warnedSides = new boolean[6];
 
-	static {
+	private static void initHandlers() {
 		blockInteractions.put(new BlockKey(Blocks.anvil), new AnvilRepairInterface());
 
 		new DecalcificationInterface();
@@ -170,21 +169,20 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 
 	}
 
-	private static abstract class BaseRepairInterface extends SpecificAdjacencyEffect {
+	private static abstract class BaseRepairInterface {
 
-		protected BaseRepairInterface() {
-			super(CrystalElement.MAGENTA);
+		protected BaseRepairInterface(String desc, Consumer<AdjacencyEffectDescription> addItems) {
+			if (this.isActive()) {
+				addItems.accept(TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.MAGENTA, desc));
+			}
 		}
 
 		protected abstract boolean runOnClient();
-
-		protected abstract void init() throws Exception;
 
 		public int getTickRand(int tier) {
 			return 1;
 		}
 
-		@Override
 		public final boolean isActive() {
 			return this.getMod() == null || this.getMod().isLoaded();
 		}
@@ -195,10 +193,18 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 
 	private static abstract class BlockRepairInterface extends BaseRepairInterface {
 
+		protected BlockRepairInterface(String desc, Consumer<AdjacencyEffectDescription> addItems) {
+			super(desc, addItems);
+		}
+
 		protected abstract void tick(World world, int x, int y, int z, int tier) throws Exception;
 	}
 
 	private static class AnvilRepairInterface extends BlockRepairInterface {
+
+		protected AnvilRepairInterface() {
+			super("Repairs damage", adj -> adj.addDisplays(new GuiStackDisplay(Blocks.anvil)));
+		}
 
 		@Override
 		protected void tick(World world, int x, int y, int z, int tier) throws Exception {
@@ -214,21 +220,6 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 		}
 
 		@Override
-		protected void init() throws Exception {
-
-		}
-
-		@Override
-		public String getDescription() {
-			return "Repairs damage";
-		}
-
-		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			li.add(new GuiStackDisplay(Blocks.anvil));
-		}
-
-		@Override
 		protected ModList getMod() {
 			return null;
 		}
@@ -237,8 +228,8 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 
 	private static abstract class TileRepairInterface extends BaseRepairInterface {
 
-		protected TileRepairInterface() {
-			super();
+		protected TileRepairInterface(String desc, Consumer<AdjacencyEffectDescription> addItems) {
+			super(desc, addItems);
 			if (this.getMod() == null || this.getMod().isLoaded()) {
 				try {
 					String[] cs = this.getClasses();
@@ -260,6 +251,8 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 			}
 		}
 
+		protected abstract void init() throws Exception;
+
 		protected abstract void tick(TileEntity te, int tier) throws Exception;
 
 		protected abstract String[] getClasses();
@@ -278,24 +271,13 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 
 		private static final NoInterface instance = new NoInterface();
 
-		@Override
-		protected void init() throws Exception {
-
+		protected NoInterface() {
+			super("Does nothing", a -> {});
 		}
 
 		@Override
 		protected boolean runOnClient() {
 			return false;
-		}
-
-		@Override
-		public String getDescription() {
-			return "Does nothing";
-		}
-
-		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-
 		}
 
 		@Override
@@ -306,6 +288,10 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 	}
 
 	private static abstract class FieldSetRepairInterface extends TileRepairInterface {
+
+		protected FieldSetRepairInterface(String desc, Consumer<AdjacencyEffectDescription> addItems) {
+			super(desc, addItems);
+		}
 
 		@Override
 		protected final void tick(TileEntity te, int tier) throws Exception {
@@ -340,6 +326,10 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 
 	private static abstract class ItemSlotRepairInterface extends TileRepairInterface {
 
+		protected ItemSlotRepairInterface(String desc, Consumer<AdjacencyEffectDescription> addItems) {
+			super(desc, addItems);
+		}
+
 		@Override
 		protected final void tick(TileEntity te, int tier) throws Exception {
 			te = this.getActingTileEntity(te);
@@ -371,6 +361,10 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 	private static class RailTurbineInterface extends ItemSlotRepairInterface {
 
 		private Field inventory; //ranges from 0 at 0.00% to 100k at 100% -> each 1000 is 1%
+
+		private RailTurbineInterface() {
+			super("Repairs turbine rotors", adj -> adj.addDisplays(new GuiStackDisplay("Railcraft:machine.alpha:1")));
+		}
 
 		@Override
 		protected void init() throws Exception {
@@ -424,21 +418,15 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 			return false;
 		}
 
-		@Override
-		public String getDescription() {
-			return "Repairs turbine rotors";
-		}
-
-		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			li.add(new GuiStackDisplay("Railcraft:machine.alpha:1"));
-		}
-
 	}
 
 	private static class DecalcificationInterface extends FieldSetRepairInterface {
 
 		private Field calcification; //ranges from 0 at 0.00% to 100k at 100% -> each 1000 is 1%
+
+		private DecalcificationInterface() {
+			super("Decalcification", adj -> adj.addDisplays(new GuiStackDisplay("IC2:blockMachine3")));
+		}
 
 		@Override
 		protected void init() throws Exception {
@@ -485,16 +473,6 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 			return false;
 		}
 
-		@Override
-		public String getDescription() {
-			return "Decalcification";
-		}
-
-		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			li.add(new GuiStackDisplay("IC2:blockMachine3"));
-		}
-
 	}
 
 	private static final class APIHealingBlock extends BlockRepairInterface {
@@ -502,28 +480,13 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 		private final CustomBlockHealing effect;
 
 		private APIHealingBlock(CustomBlockHealing acc) {
+			super(acc.getDescription(), adj -> adj.addItems(acc.getItems()));
 			effect = acc;
-		}
-
-		@Override
-		public String getDescription() {
-			return effect.getDescription();
-		}
-
-		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			for (ItemStack is : effect.getItems())
-				li.add(new GuiStackDisplay(is));
 		}
 
 		@Override
 		protected boolean runOnClient() {
 			return effect.runOnClient();
-		}
-
-		@Override
-		protected void init() throws Exception {
-
 		}
 
 		@Override
@@ -543,18 +506,8 @@ public class TileEntityHealingCore extends TileEntityAdjacencyUpgrade {
 		private final CustomTileHealing effect;
 
 		private APIHealingTile(CustomTileHealing acc) {
+			super(acc.getDescription(), adj -> adj.addItems(acc.getItems()));
 			effect = acc;
-		}
-
-		@Override
-		public String getDescription() {
-			return effect.getDescription();
-		}
-
-		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			for (ItemStack is : effect.getItems())
-				li.add(new GuiStackDisplay(is));
 		}
 
 		@Override

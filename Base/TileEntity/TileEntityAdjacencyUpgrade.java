@@ -14,12 +14,16 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.List;
+
+import com.google.common.base.Strings;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -38,10 +42,10 @@ import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntitySparkleFX;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Base.TileEntityBase;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
-import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
+import Reika.DragonAPI.Instantiable.Data.Maps.NestedMap;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiIconDisplay;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -59,7 +63,7 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 
 	public static final int MAX_TIER = 8;
 
-	private static final MultiMap<CrystalElement, SpecificAdjacencyEffect> effectMap = new MultiMap(CollectionType.HASHSET);
+	private static final NestedMap<CrystalElement, String, AdjacencyEffectDescription> effectMap = new NestedMap();
 	private static final EnumMap<CrystalElement, AdjacencyCheckHandlerImpl> adjacencyChecks = new EnumMap(CrystalElement.class);
 
 	private int tier;
@@ -338,14 +342,29 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 			check = new AdjacencyCheckHandlerImpl(color);
 			adjacencyChecks.put(color, check);
 		}
-		check.addEffect(desc, items);
+		registerEffectDescription(color, desc).addItems(items);
 		return check;
 	}
 
-	public static final class AdjacencyCheckHandlerImpl extends AdjacencyCheckHandlerBase implements AdjacencyCheckHandler {
+	public static AdjacencyEffectDescription registerEffectDescription(CrystalElement color, String desc) {
+		return registerEffectDescription(color, desc, 0);
+	}
 
-		private AdjacencyCheckHandlerImpl(CrystalElement e) {
-			super(e);
+	public static AdjacencyEffectDescription registerEffectDescription(CrystalElement color, String desc, int index) {
+		AdjacencyEffectDescription ef = effectMap.get(color, desc);
+		if (ef == null) {
+			ef = new AdjacencyEffectDescription(color, desc).setOrderIndex(index);
+			effectMap.put(color, desc, ef);
+		}
+		return ef;
+	}
+
+	public static final class AdjacencyCheckHandlerImpl implements AdjacencyCheckHandler {
+
+		public final CrystalElement color;
+
+		protected AdjacencyCheckHandlerImpl(CrystalElement e) {
+			color = e;
 		}
 
 		public int getAdjacentUpgradeTier(World world, int x, int y, int z) {
@@ -365,107 +384,106 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		public int getAdjacentUpgrade(World world, int x, int y, int z) {
 			return TileEntityAdjacencyUpgrade.getAdjacentUpgrade(world, x, y, z, color);
 		}
-		/*
-		public HashMap<CrystalElement, Integer> getAdjacentUpgrades(TileEntityBase te) {
-			return TileEntityAdjacencyUpgrade.getAdjacentUpgrades(te);
-		}
-
-		public HashMap<CrystalElement, Integer> getAdjacentUpgrades(World world, int x, int y, int z) {
-			return TileEntityAdjacencyUpgrade.getAdjacentUpgrades(world, x, y, z);
-		}
-		 */
 	}
 
-	public static abstract class AdjacencyCheckHandlerBase {
+	public static final class AdjacencyEffectDescription implements Comparable<AdjacencyEffectDescription> {
 
 		public final CrystalElement color;
+		public final String description;
+		private final ArrayList<GuiItemDisplay> items = new ArrayList();
 
-		private final HashMap<String, EffectDescription> effects = new HashMap();
+		private int ordering;
 
-		protected AdjacencyCheckHandlerBase(CrystalElement e) {
+		protected AdjacencyEffectDescription(CrystalElement e, String s) {
 			color = e;
+			description = s;
 		}
 
-		protected void addEffect(String desc, ItemStack... items) {
-			EffectDescription eff = effects.get(desc);
-			if (eff == null) {
-				eff = new EffectDescription(color, desc);
-				effects.put(desc, eff);
-			}
-			eff.addItems(items);
+		public AdjacencyEffectDescription setOrderIndex(int index) {
+			ordering = index;
+			return this;
 		}
 
-	}
-
-	private static class EffectDescription extends SpecificAdjacencyEffect {
-
-		private final ArrayList<ItemStack> items = new ArrayList();
-		private final String description;
-
-		private EffectDescription(CrystalElement e, String desc) {
-			super(e);
-			description = desc;
+		public AdjacencyEffectDescription addIcons(IIcon... set) {
+			for (IIcon is : set)
+				items.add(new GuiIconDisplay(is));
+			Collections.sort(items);
+			return this;
 		}
 
-		@Override
-		public String getDescription() {
-			return description;
-		}
-
-		@Override
-		public void getRelevantItems(ArrayList<GuiItemDisplay> li) {
-			for (ItemStack is : items) {
-				li.add(new GuiStackDisplay(is));
-			}
-		}
-
-		@Override
-		protected boolean isActive() {
-			return !items.isEmpty();
-		}
-
-		private void addItems(ItemStack... li) {
-			for (ItemStack is : li) {
+		public AdjacencyEffectDescription addItems(Collection<ItemStack> c) {
+			for (ItemStack is : c) {
 				if (is.getItem() == null)
 					throw new IllegalArgumentException("Null item!");
-				items.add(is);
+				items.add(new GuiStackDisplay(is));
 			}
-			Collections.sort(items, ReikaItemHelper.comparator);
+			Collections.sort(items);
+			return this;
 		}
+
+		public AdjacencyEffectDescription addItems(ItemStack... set) {
+			for (ItemStack is : set) {
+				if (is.getItem() == null)
+					throw new IllegalArgumentException("Null item!");
+				items.add(new GuiStackDisplay(is));
+			}
+			Collections.sort(items);
+			return this;
+		}
+
+		public AdjacencyEffectDescription addDisplays(Collection<GuiItemDisplay> set) {
+			for (GuiItemDisplay is : set) {
+				if (!is.isEmpty() && !items.contains(is))
+					items.add(is);
+			}
+			Collections.sort(items);
+			return this;
+		}
+
+		public AdjacencyEffectDescription addDisplays(GuiItemDisplay... set) {
+			for (GuiItemDisplay is : set) {
+				if (!is.isEmpty() && !items.contains(is))
+					items.add(is);
+			}
+			Collections.sort(items);
+			return this;
+		}
+
+		public final List<GuiItemDisplay> getRelevantItems() {
+			return Collections.unmodifiableList(items);
+		}
+
+		@Override
+		public String toString() {
+			return description+": "+items;
+		}
+
+		@Override
+		public int compareTo(AdjacencyEffectDescription o) {
+			if (o.ordering != ordering)
+				return Integer.compare(ordering, o.ordering);
+			if (Strings.isNullOrEmpty(description) && Strings.isNullOrEmpty(o.description))
+				return 0;
+			else if (Strings.isNullOrEmpty(description))
+				return -1;
+			else if (Strings.isNullOrEmpty(o.description))
+				return 1;
+			else
+				return description.compareToIgnoreCase(o.description);
+		}
+
 	}
 
-	public static void buildTileEffectCache() {/*
-		try {
-			Field f = TileEntity.class.getDeclaredField("classToNameMap");
-			f.setAccessible(true);
-			Map<Class<? extends TileEntity>, String> map = (Map<Class<? extends TileEntity>, String>)f.get(null);
-			for (CrystalElement e : CrystalElement.elements) {
-				TileEntityAdjacencyUpgrade te = AdjacencyUpgrades.upgrades[e.ordinal()].createTEInstanceForRender();
-				te.buildTileEffectCache(map.keySet());
-			}
-		}
-		catch (Exception e) {
-			throw new RegistrationException(ChromatiCraft.instance, "Could not build Tile Adjacency effect cache!", e);
-		}*/
-	}
+	protected static abstract class BasicAdjacencyInterface {
 
-	//protected abstract void buildTileEffectCache(Collection<Class<? extends TileEntity>> c);
-
-	public static abstract class SpecificAdjacencyEffect {
-
-		public final CrystalElement color;
-
-		protected SpecificAdjacencyEffect(CrystalElement e) {
-			color = e;
-			effectMap.addValue(e, this);
-		}
+		protected abstract Collection<GuiItemDisplay> getRelevantItems();
 
 		public abstract String getDescription();
 
-		@SideOnly(Side.CLIENT)
-		public abstract void getRelevantItems(ArrayList<GuiItemDisplay> li);
-
-		protected abstract boolean isActive();
+		@Override
+		public String toString() {
+			return this.getDescription()+": "+this.getRelevantItems().toString();
+		}
 
 	}
 
@@ -473,13 +491,15 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		return Collections.unmodifiableCollection(effectMap.keySet());
 	}
 
-	public static Collection<SpecificAdjacencyEffect> getSpecificEffects(CrystalElement e, boolean enabledOnly) {
-		Collection<SpecificAdjacencyEffect> c = effectMap.get(e);
-		if (enabledOnly) {
-			c = new ArrayList(c);
-			c.removeIf(ef -> !ef.isActive());
-		}
-		return Collections.unmodifiableCollection(c);
+	public static Collection<AdjacencyEffectDescription> getSpecificEffects(CrystalElement e) {
+		Collection<AdjacencyEffectDescription> c = effectMap.getAllValuesIn(e);
+		if (c == null)
+			return new ArrayList();
+		ArrayList ret = new ArrayList(c);
+		ret.addAll(c);
+		ret.addAll(c);
+		Collections.sort((List)ret);
+		return ret;
 	}
 
 	protected static enum EffectResult {

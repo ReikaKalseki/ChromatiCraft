@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.HashMap;
@@ -49,6 +50,9 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
 
+import Reika.ChromatiCraft.API.AdjacencyUpgradeAPI;
+import Reika.ChromatiCraft.API.Interfaces.AdjacencyCheckHandler;
+import Reika.ChromatiCraft.API.Interfaces.CustomAdjacencyHandler;
 import Reika.ChromatiCraft.Auxiliary.CCTradeHandler;
 import Reika.ChromatiCraft.Auxiliary.ChromaASMHandler;
 import Reika.ChromatiCraft.Auxiliary.ChromaAux;
@@ -96,10 +100,10 @@ import Reika.ChromatiCraft.Auxiliary.Render.StructureErrorOverlays;
 import Reika.ChromatiCraft.Auxiliary.Structure.Worldgen.BurrowStructure;
 import Reika.ChromatiCraft.Auxiliary.Tab.FragmentTab;
 import Reika.ChromatiCraft.Auxiliary.Tab.TabChromatiCraft;
-import Reika.ChromatiCraft.Base.TileEntity.TileEntityAdjacencyUpgrade;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityWirelessPowered;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Entity.EntityGlowCloud;
+import Reika.ChromatiCraft.Entity.EntityMeteorShot;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemDuplicationWand;
 import Reika.ChromatiCraft.Magic.CrystalPotionController;
 import Reika.ChromatiCraft.Magic.Artefact.ArtefactSpawner;
@@ -139,7 +143,6 @@ import Reika.ChromatiCraft.Registry.ExtraChromaIDs;
 import Reika.ChromatiCraft.Registry.ItemMagicRegistry;
 import Reika.ChromatiCraft.Render.CCParticleEngine;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
-import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityEfficiencyUpgrade;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityOreCreator;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
@@ -195,6 +198,7 @@ import Reika.DragonAPI.Auxiliary.Trackers.TickRegistry;
 import Reika.DragonAPI.Auxiliary.Trackers.VanillaIntegrityTracker;
 import Reika.DragonAPI.Base.DragonAPIMod;
 import Reika.DragonAPI.Base.DragonAPIMod.LoadProfiler.LoadPhase;
+import Reika.DragonAPI.Exception.RegistrationException;
 import Reika.DragonAPI.Extras.PseudoAirMaterial;
 import Reika.DragonAPI.Instantiable.EnhancedFluid;
 import Reika.DragonAPI.Instantiable.RayTracer;
@@ -733,7 +737,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		ReikaEEHelper.blacklistEntry(ChromaBlocks.CRYSTAL);
 
 		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
-			ReikaJavaLibrary.initClassWithSubs(ChromaFontRenderer.class);
+			ReikaJavaLibrary.initClassWithSubs(ChromaFontRenderer.class, true);
 
 		if (ModList.ENDERIO.isLoaded()) {
 			ModInteraction.blacklistTravelStaff();
@@ -749,6 +753,10 @@ public class ChromatiCraft extends DragonAPIMod {
 
 		ChunkProviderChroma.regenerateGenerators();
 		RosettaStone.init.test();
+
+		ReikaJavaLibrary.initClass(AdjacencyUpgradeAPI.class, true);
+		ReikaJavaLibrary.initClass(AdjacencyCheckHandler.class, true);
+		ReikaJavaLibrary.initClass(CustomAdjacencyHandler.class, true);
 
 		this.finishTiming();
 	}
@@ -796,12 +804,27 @@ public class ChromatiCraft extends DragonAPIMod {
 		TileEntityBiomePainter.buildBiomeList();
 		TileEntityOreCreator.initOreMap();
 		TileEntityTeleportationPump.buildProgressionMap();
-		TileEntityAdjacencyUpgrade.buildTileEffectCache();
-		TileEntityEfficiencyUpgrade.loadTileList();
+		for (int i = 0; i < 16; i++) {
+			AdjacencyUpgrades a = AdjacencyUpgrades.upgrades[i];
+			if (a.isImplemented()) {
+				try {
+					Method m = a.getTileClass().getDeclaredMethod("initHandlers");
+					m.setAccessible(true);
+					m.invoke(null);
+				}
+				catch (NoSuchMethodException ex) {
+
+				}
+				catch (Exception e) {
+					throw new RegistrationException(instance, "Could not initialize adjacency handlers for "+a, e);
+				}
+			}
+		}
 		TileEntityMiner.loadCustomMappings();
 		ItemDuplicationWand.loadMappings();
 		BurrowStructure.buildLootCache();
 		TileEntityWirelessPowered.loadAdjacencyHandler();
+		EntityMeteorShot.registerAdjacency();
 
 		ReikaDispenserHelper.addDispenserAction(ChromaItems.TOOL, new ManipulatorDispenserAction());
 		ReikaDispenserHelper.addDispenserAction(ChromaItems.BUCKET, new BucketDispenserAction());
@@ -1093,15 +1116,20 @@ public class ChromatiCraft extends DragonAPIMod {
 						String label = "CC"+c.getUnlocalizedName().toLowerCase(Locale.ENGLISH).replaceAll("\\s","")+"_"+k;
 						Class cl = AdjacencyUpgrades.upgrades[k].getTileClass();
 						GameRegistry.registerTileEntity(cl, label);
-						ReikaJavaLibrary.initClass(cl);
+						ReikaJavaLibrary.initClass(cl, true);
 					}
 				}
 			}
 			else {
 				String label = "CC"+c.getUnlocalizedName().toLowerCase(Locale.ENGLISH).replaceAll("\\s","");
 				GameRegistry.registerTileEntity(c.getTEClass(), label);
-				ReikaJavaLibrary.initClass(c.getTEClass());
+				ReikaJavaLibrary.initClass(c.getTEClass(), true);
 			}
+		}
+		for (int i = 0; i < 16; i++) {
+			AdjacencyUpgrades a = AdjacencyUpgrades.upgrades[i];
+			if (a.isImplemented())
+				ReikaJavaLibrary.initClass(a.getTileClass(), true);
 		}
 		for (int i = 0; i < ChromaBlocks.blockList.length; i++) {
 			ChromaBlocks b = ChromaBlocks.blockList[i];
