@@ -32,6 +32,7 @@ public class TileEntityStabilityCore extends TileEntityAdjacencyUpgrade {
 	private static final HashMap<Class, StabilityInterface> interactions = new HashMap();
 
 	private static void initHandlers() {
+		//new NodeStabilityInterface(); do not add, nodenet does this
 		new InfusionStabilityInterface();
 	}
 
@@ -153,7 +154,43 @@ public class TileEntityStabilityCore extends TileEntityAdjacencyUpgrade {
 		}
 
 	}
+	/*
+	private static class NodeStabilityInterface extends StabilityInterface {
 
+		@Override
+		protected void tick(TileEntity te, int tier) throws Exception {
+			if (te instanceof INode && rand.nextFloat() < tier*0.001F) {
+				((INode)te).setNodeModifier(NodeModifier.BRIGHT);
+			}
+		}
+
+		@Override
+		protected void init() throws Exception {
+
+		}
+
+		@Override
+		protected ModList getMod() {
+			return ModList.THAUMCRAFT;
+		}
+
+		@Override
+		protected String[] getClasses() {
+			return new String[] {"thaumcraft.api.nodes.INode"};
+		}
+
+		@Override
+		protected Collection<GuiItemDisplay> getRelevantItems() {
+			return Arrays.asList(new GuiStackDisplay(ThaumItemHelper.BlockEntry.NODE.getItem()));
+		}
+
+		@Override
+		public String getDescription() {
+			return "Stabilizes aura nodes";
+		}
+
+	}
+	 */
 	private static abstract class FieldSetStabilityInterface extends StabilityInterface {
 
 		@Override

@@ -100,6 +100,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	private long musicTick;
 	private long nextNoteTick = 10;
 	private int melodyIndex;
+	private int cooldown;
 
 	private boolean complete;
 
@@ -770,6 +771,8 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 			if (!ProgressionManager.instance.playerHasPrerequisites(ep2, ProgressStage.BIOMESTRUCT))
 				this.pushPlayer(ep2, te);
 		}
+		if (cooldown > 0)
+			cooldown--;
 		if (this.isPlayingMelody(ep)) {
 			musicTick++;
 			if (musicTick >= nextNoteTick) {
@@ -786,7 +789,7 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 	}
 
 	public void triggerPlay() {
-		if (melodyIndex >= 0)
+		if (melodyIndex >= 0 || cooldown > 0)
 			return;
 		nextNoteTick = musicTick;
 		melodyIndex = 0;
@@ -826,10 +829,8 @@ public class BiomeStructurePuzzle implements FragmentStructureData {
 		melodyIndex++;
 		if (melodyIndex >= melody.size()) {
 			melodyIndex = -1;
-			//nextNoteTick = 0;
-			//isPlayingMelody = false;
-
-			nextNoteTick += playSpeed*2;
+			nextNoteTick = 0;
+			cooldown = 40;
 		}
 	}
 

@@ -1017,7 +1017,11 @@ public class ChromatiPackets implements PacketHandler {
 					((TileEntityRouterHub)tile).addHighlight(new Coordinate(data[0], data[1], data[2]));
 					break;
 				case STRUCTFIND: {
-					ItemStructureFinder.doHeldFX(ep, dx, dy, dz, ChromaStructures.structureList[data[0]], data[1] > 0, data[2] > 0);
+					ItemStructureFinder.doTriggerFX(ep, ChromaStructures.structureList[data[0]], data[1], data[2], data[3] > 0, data[4] > 0);
+					break;
+				}
+				case STRUCTFINDTICK: {
+					ItemStructureFinder.doTickFX(ep, ChromaStructures.structureList[data[0]]);
 					break;
 				}
 				case DATASCAN:

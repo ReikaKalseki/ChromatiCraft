@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import org.lwjgl.opengl.GL11;
 
@@ -40,13 +41,16 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Magic.Lore.Towers;
+import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.World.IWG.DungeonGenerator;
 import Reika.ChromatiCraft.World.IWG.DungeonGenerator.StructureGenStatus;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
+import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
 import Reika.DragonAPI.Interfaces.Item.SpriteRenderCallback;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+import Reika.DragonAPI.Libraries.IO.ReikaChatHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaObfuscationHelper;
@@ -63,6 +67,8 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 
 	private static final String TAG_NAME = "mapdata";
 
+	private static final PlayerMap<StructureSearch> activeSearches = new PlayerMap();
+
 	public ItemStructureMap(int index) {
 		super(index);
 	}
@@ -70,23 +76,29 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 	@Override
 	public ItemStack onItemRightClick(ItemStack is, World world, EntityPlayer ep) {
 		if (!world.isRemote) {
-			if (is.stackTagCompound != null && is.stackTagCompound.hasKey(TAG_NAME)) {
-
-			}
-			else if (ep.isSneaking()) {
-				StructureSearch s = StructureSearch.list[is.getItemDamage()];
-				int x0 = MathHelper.floor_double(ep.posX);
-				int z0 = MathHelper.floor_double(ep.posZ);
-				StructureMapData data = s.getLocations((WorldServer)world, x0, z0);
-				if (is.stackTagCompound == null)
-					is.stackTagCompound = new NBTTagCompound();
-				is.stackTagCompound.setTag(TAG_NAME, data.writeToNBT());
+			if (ep.isSneaking()) {
+				if (activeSearches.containsKey(ep)) {
+					ReikaChatHelper.sendChatToPlayer(ep, "Another scan is in progress.");
+				}
+				else if (is.stackTagCompound != null && (is.stackTagCompound.hasKey(TAG_NAME) || is.stackTagCompound.getBoolean("scanning") || is.stackTagCompound.getBoolean("searcher"))) {
+					ReikaChatHelper.sendChatToPlayer(ep, "This map is already scanning the world.");
+				}
+				else {
+					StructureSearchType s = StructureSearchType.list[is.getItemDamage()];
+					int x0 = MathHelper.floor_double(ep.posX);
+					int z0 = MathHelper.floor_double(ep.posZ);
+					if (is.stackTagCompound == null)
+						is.stackTagCompound = new NBTTagCompound();
+					is.stackTagCompound.setBoolean("scanning", true);
+					is.stackTagCompound.setString("searcher", ep.getUniqueID().toString());
+					activeSearches.put(ep, s.beginSearch((WorldServer)world, x0, z0));
+				}
 			}
 			else {
 				boolean flag = true;
 				while (flag) {
-					is.setItemDamage((is.getItemDamage()+1)%StructureSearch.list.length);
-					flag = StructureSearch.list[is.getItemDamage()].skip();
+					is.setItemDamage((is.getItemDamage()+1)%StructureSearchType.list.length);
+					flag = StructureSearchType.list[is.getItemDamage()].skip();
 				}
 			}
 		}
@@ -95,16 +107,32 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 
 	@Override
 	public void onUpdate(ItemStack is, World world, Entity e, int slot, boolean held) {
-		if (held && is.stackTagCompound != null && is.stackTagCompound.hasKey(TAG_NAME)) {
-
+		if (!world.isRemote && held && is.stackTagCompound != null && is.stackTagCompound.getBoolean("scanning") && is.stackTagCompound.hasKey("searcher")) {
+			UUID uid = UUID.fromString(is.stackTagCompound.getString("searcher"));
+			StructureSearch s = activeSearches.directGet(uid);
+			if (s == null) {
+				activeSearches.directRemove(uid);
+			}
+			else {
+				StructureMapData data = s.tick((WorldServer)world);
+				if (data != null) {
+					is.stackTagCompound.setTag(TAG_NAME, data.writeToNBT());
+					is.stackTagCompound.removeTag("scanning");
+					activeSearches.directRemove(uid);
+					ChromaSounds.CRAFTDONE.playSound(e);
+				}
+			}
 		}
 	}
 
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
-		li.add("Seeking "+StructureSearch.list[is.getItemDamage()].displayName());
-		if (is.stackTagCompound != null && is.stackTagCompound.hasKey(TAG_NAME)) {
+		li.add("Seeking "+StructureSearchType.list[is.getItemDamage()].displayName());
+		if (is.stackTagCompound != null && is.stackTagCompound.getBoolean("scanning")) {
+			li.add(String.format("Map is scanning: %.1f%% complete.", activeSearches.directGet(UUID.fromString(is.stackTagCompound.getString("searcher"))).getProgress()));
+		}
+		else if (is.stackTagCompound != null && is.stackTagCompound.hasKey(TAG_NAME)) {
 			if (GuiScreen.isCtrlKeyDown()) {
 				StructureMapData map = StructureMapData.readFromNBT(is.stackTagCompound.getCompoundTag(TAG_NAME));
 				map.addTooltip(li);
@@ -139,7 +167,7 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 		GL11.glColor4f(1, 1, 1, 1);
 		BlendMode.DEFAULT.apply();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
-		StructureSearch type = StructureSearch.list[item.getItemDamage()];
+		StructureSearchType type = StructureSearchType.list[item.getItemDamage()];
 		ReikaTextureHelper.bindTexture(ChromatiCraft.class, "Textures/StructureMap/overlay_typed.png");
 		double ou = (type.ordinal()%4)/4D;
 		double ov = (type.ordinal()/4)/4D;
@@ -190,7 +218,7 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 		v5.draw();
 	}
 
-	public static enum StructureSearch {
+	public static enum StructureSearchType {
 
 		STRONGHOLD(),
 		TOWERS(),
@@ -203,12 +231,16 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 		BIOME(ChromaStructures.BIOMEFRAG),
 		;
 
-		private static final StructureSearch[] list = values();
+		private static final StructureSearchType[] list = values();
 
 		private final ChromaStructures structure;
 
-		private StructureSearch() {
+		private StructureSearchType() {
 			this(null);
+		}
+
+		private StructureSearch beginSearch(WorldServer world, int x0, int z0) {
+			return new StructureSearch(this, x0, z0);
 		}
 
 		private boolean skip() {
@@ -228,7 +260,7 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 			}
 		}
 
-		private StructureSearch(ChromaStructures s) {
+		private StructureSearchType(ChromaStructures s) {
 			structure = s;
 		}
 
@@ -240,32 +272,77 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 			}
 			return ReikaStringParser.capFirstChar(this.name());
 		}
+	}
 
-		/** Return coords are absolute, not relative */
-		private StructureMapData getLocations(WorldServer world, int x0, int z0) {
-			HashMap<Coordinate, StructurePresence> li = new HashMap();
-			int cc = 0;
-			BlockBox bounds = BlockBox.nothing();
-			if (structure != null) {
-				int range = 128;
-				for (int i = -range; i <= range; i++) {
-					for (int k = -range; k <= range; k++) {
-						int rx = x0+i*16;
-						int rz = z0+k*16;
-						StructureGenStatus at = DungeonGenerator.instance.getGenStatus(structure, world, rx, rz);
-						if (at.hasStructure()) {
-							Coordinate c = new Coordinate(rx, 0, rz);
-							boolean cf = at.isFinalized();
-							if (cf)
-								cc++;
-							bounds = bounds.addCoordinate(c.xCoord, c.yCoord, c.zCoord);
-							li.put(c, cf ? StructurePresence.CONFIRMED : StructurePresence.EXPECTED);
-						}
-					}
+	private static class StructureSearch {
+
+		private static final int RANGE = 128;
+
+		private final StructureSearchType type;
+		private final int originX;
+		private final int originZ;
+
+		private int scanI = -RANGE;
+		private int scanK = -RANGE;
+
+		private int scannedChunks = 0;
+
+		private final HashMap<Coordinate, StructurePresence> foundStructures = new HashMap();
+
+		private StructureSearch(StructureSearchType t, int x, int z) {
+			type = t;
+			originX = x;
+			originZ = z;
+		}
+
+		private boolean updateScanChunk() {
+			boolean flag1 = false;
+			scanI++;
+			if (scanI > RANGE) {
+				scanI = -RANGE;
+				flag1 = true;
+			}
+			if (flag1) {
+				scanK++;
+				if (scanK > RANGE) {
+					scanK = -RANGE;
+					return true;
 				}
 			}
+			//ReikaJavaLibrary.pConsole(scanI+","+scanK);
+			return false;
+		}
+
+		public float getProgress() {
+			int r = RANGE*2+1;
+			return scannedChunks*100F/(r*r);
+		}
+
+		/** Return coords are absolute, not relative */
+		private StructureMapData tick(WorldServer world) {
+			int cc = 0;
+			BlockBox bounds = BlockBox.nothing();
+			if (type.structure != null) {
+				for (int i = 0; i < 24; i++) {
+					int rx = originX+scanI*16;
+					int rz = originZ+scanK*16;
+					StructureGenStatus at = DungeonGenerator.instance.getGenStatus(type.structure, world, rx, rz);
+					if (at.hasStructure()) {
+						Coordinate c = new Coordinate(rx, 0, rz);
+						boolean cf = at.isFinalized();
+						if (cf)
+							cc++;
+						bounds = bounds.addCoordinate(c.xCoord, c.yCoord, c.zCoord);
+						foundStructures.put(c, cf ? StructurePresence.CONFIRMED : StructurePresence.EXPECTED);
+					}
+					scannedChunks++;
+					if (this.updateScanChunk())
+						return new StructureMapData(foundStructures, originX, originZ, cc, bounds);
+				}
+				return null;
+			}
 			else {
-				switch(this) {
+				switch(type) {
 					case STRONGHOLD:
 						MapGenStronghold mg = ((ChunkProviderGenerate)world.theChunkProviderServer.currentChunkProvider).strongholdGenerator;
 						Field f = ReikaReflectionHelper.getProtectedInheritedField(mg, FMLForgePlugin.RUNTIME_DEOBF ? "field_75039_c" : "worldObj");
@@ -282,7 +359,7 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 							for (Object o : li0) {
 								Coordinate c = new Coordinate((ChunkPosition)o).to2D();
 								bounds = bounds.addCoordinate(c.xCoord, c.yCoord, c.zCoord);
-								li.put(c, StructurePresence.EXPECTED);
+								foundStructures.put(c, StructurePresence.EXPECTED);
 							}
 						}
 						for (StructureStart ss : ((Map<Long, StructureStart>)mg.structureMap).values()) {
@@ -291,7 +368,7 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 								if (sbb != null) {
 									Coordinate c = new Coordinate(sbb.getCenterX(), 0, sbb.getCenterZ());
 									bounds = bounds.addCoordinate(c.xCoord, c.yCoord, c.zCoord);
-									li.put(c, StructurePresence.CONFIRMED);
+									foundStructures.put(c, StructurePresence.CONFIRMED);
 									cc++;
 								}
 							}
@@ -306,14 +383,14 @@ public class ItemStructureMap extends ItemChromaTool implements SpriteRenderCall
 							boolean cf = ReikaWorldHelper.isChunkGenerated(world, c.xCoord, c.zCoord);
 							if (cf)
 								cc++;
-							li.put(c, cf ? StructurePresence.CONFIRMED : StructurePresence.EXPECTED);
+							foundStructures.put(c, cf ? StructurePresence.CONFIRMED : StructurePresence.EXPECTED);
 						}
 						break;
 					default:
 						break;
 				}
+				return new StructureMapData(foundStructures, originX, originZ, cc, bounds);
 			}
-			return new StructureMapData(li, x0, z0, cc, bounds);
 		}
 
 	}

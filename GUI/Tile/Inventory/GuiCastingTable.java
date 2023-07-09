@@ -147,7 +147,7 @@ public class GuiCastingTable extends GuiChromaBase {
 				if (api.isMouseInBox(189+a, 189+16+a, 12+b, 28+b)) {
 					int x0 = /*api.getMouseRealX()-a*/193+5;
 					int y0 = 40-b;//api.getMouseRealY()+20-b;
-					ChromaBookData.drawRecipeMissingProgress(r, player, itemRender, fontRendererObj, x0, y0);
+					ChromaBookData.drawRecipeMissingProgress(r, player, itemRender, fontRendererObj, x0, y0, !tile.isTuned());
 				}
 			}
 			zLevel = 0;

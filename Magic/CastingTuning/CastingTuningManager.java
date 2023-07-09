@@ -7,14 +7,20 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.UUID;
 
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager.ProgressIndicator;
+import Reika.ChromatiCraft.Registry.ChromaIcons;
+import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.DragonAPICore;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.PlayerMap;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper.FanDirections;
+import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
 
 public class CastingTuningManager {
 
@@ -25,6 +31,17 @@ public class CastingTuningManager {
 	final HashMap<FanDirections, Coordinate> tuningKeys = new HashMap();
 	private final PlayerMap<TuningKey> data = new PlayerMap();
 	private final Random rand = new Random();
+
+	public final ProgressIndicator tuningDisplay = new ProgressIndicator() {
+		@Override
+		public void renderIcon(RenderItem ri, FontRenderer fr, int x, int y) {
+			ReikaGuiAPI.instance.drawTexturedModelRectFromIcon(x, y, ChromaIcons.COLORRING.getIcon(), 16, 16);
+		}
+		@Override
+		public String name() {
+			return ChromaResearch.CASTTUNING.getTitle();
+		}
+	};
 
 	private CastingTuningManager() {
 		for (FanDirections dir : FanDirections.list) {

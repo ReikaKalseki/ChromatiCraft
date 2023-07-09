@@ -546,7 +546,17 @@ public final class ChromaResearchManager implements ResearchRegistry {
 
 	}
 
-	public static interface ProgressElement {
+	public static interface ProgressIndicator {
+
+		@SideOnly(Side.CLIENT)
+		//public ItemStack getIcon();
+		public void renderIcon(RenderItem ri, FontRenderer fr, int x, int y);
+
+		public String name();
+
+	}
+
+	public static interface ProgressElement extends ProgressIndicator {
 
 		//@SideOnly(Side.CLIENT)
 		public String getTitle();
@@ -554,16 +564,10 @@ public final class ChromaResearchManager implements ResearchRegistry {
 		//@SideOnly(Side.CLIENT)
 		public String getShortDesc();
 
-		@SideOnly(Side.CLIENT)
-		//public ItemStack getIcon();
-		public void renderIcon(RenderItem ri, FontRenderer fr, int x, int y);
-
 		//@SideOnly(Side.CLIENT)
 		public String getFormatting();
 
 		public boolean giveToPlayer(EntityPlayer ep, boolean notify);
-
-		public String name();
 
 	}
 

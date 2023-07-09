@@ -1080,7 +1080,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 
 		//private static final HashMap<AlvearyEffect, String> alvearyEffectText = new HashMap();
 
-		private String xmlText;
+		protected String xmlText;
 
 		protected AlvearyEffect(String id) {
 			ID = id;
@@ -1106,7 +1106,7 @@ IBeeModifier, IBeeListener, CopyableSettings<TileEntityLumenAlveary>, IEssentiaT
 		}
 
 		public void setXMLText(String text) {
-			if (Strings.isNullOrEmpty(text))
+			if (Strings.isNullOrEmpty(xmlText))
 				xmlText = text;
 		}
 

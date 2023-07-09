@@ -363,9 +363,9 @@ public final class ChromaDescriptions {
 					notes.put(iw.getNotes(p), h, p);
 			}
 			else if (tools.nodeExists(key+":notes")) {
-				notes.put(tools.getValueAtNode(key+":notes"), h, 0);
+				notes.put(String.format(tools.getValueAtNode(key+":notes"), itemNotes.get(h.getItem())), h, 0);
 				desc = tools.getValueAtNode(key+":desc");
-				desc = String.format(desc, itemNotes.get(h.getItem()));
+				desc = String.format(desc, itemData.get(h.getItem()));
 			}
 			addEntry(h, desc);
 		}

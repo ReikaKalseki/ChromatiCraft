@@ -23,7 +23,7 @@
 	</transition>
 	<invlink>
 		<desc>
-		Mining and other activities tend to fill your inventory with useless junk that seems to accumulate faster than you can get rid of it. By leveraging the power of elements associated with movement, you discover that you can create a linkage between your inventory and one placed somewhere in the world, and one for which you can control the items it transports.
+			Mining and other activities tend to fill your inventory with useless junk that seems to accumulate faster than you can get rid of it. By leveraging the power of elements associated with movement, you discover that you can create a linkage between your inventory and one placed somewhere in the world, and one for which you can control the items it transports.
 		</desc>
 		<notes>
 			Can be toggled to reverse the item flow direction
@@ -31,7 +31,7 @@
 	</invlink>
 	<pendant>
 		<desc>
-		As you have already discovered, crystallized elemental energy can be found scattered around the world, and its proximity imbues the effects of that element on yourself. However, the effect is rather less than convenient to transport in a form that bulky, so a logical next step would be to wear a small part of the crystal to allow you to benefit from its effects at any location.
+			As you have already discovered, crystallized elemental energy can be found scattered around the world, and its proximity imbues the effects of that element on yourself. However, the effect is rather less than convenient to transport in a form that bulky, so a logical next step would be to wear a small part of the crystal to allow you to benefit from its effects at any location.
 		</desc>
 		<notes>
 			In some cases, this may alter the specific nature of the application of the effect
@@ -53,7 +53,7 @@
 	</linktool>
 	<warp>
 		<desc>
-		By experimenting with the darker aspects of another branch of magic, you have suffered some serious consequences, including impaired vision and a nasty tendency for the air around you to come alive with hostile and destructive manifestations of that power. With this mixture, you should be able to work towards keeping those effects at bay.
+			By experimenting with the darker aspects of another branch of magic, you have suffered some serious consequences, including impaired vision and a nasty tendency for the air around you to come alive with hostile and destructive manifestations of that power. With this mixture, you should be able to work towards keeping those effects at bay.
 		</desc>
 		<notes>
 			Requires activation to be useful
@@ -89,7 +89,7 @@
 	</multitool>
 	<orepick>
 		<desc>
-		Branch mining is a waste of time. You make a narrow tunnel out of kilometers of rock and find barely anything - and most of what you find is worthless - except that which you blindly dug right into. No doubt large amounts of ore remain hidden to you just underneath the walls of your tunnel, but short of expending the herculean effort to clear all of the overlying stone, you will never know what you are missing...
+			Branch mining is a waste of time. You make a narrow tunnel out of kilometers of rock and find barely anything - and most of what you find is worthless - except that which you blindly dug right into. No doubt large amounts of ore remain hidden to you just underneath the walls of your tunnel, but short of expending the herculean effort to clear all of the overlying stone, you will never know what you are missing...
 		</desc>
 		<notes>
 			Can passively detect nearby ore behind walls, scan an ore vein's shape and size, or "ping" for ores in a large radius
@@ -109,7 +109,7 @@
 	</splash>
 	<endercrys>
 		<desc>
-		You recall needing eight of those mysterious pulsing crystals from the eldritch island, but attempting to interact with them blew up in your face...literally. You need a more delicate method of picking them up and storing them.
+			You recall needing eight of those mysterious pulsing crystals from the eldritch island, but attempting to interact with them blew up in your face...literally. You need a more delicate method of picking them up and storing them.
 		</desc>
 		<notes>
 			Can store multiple crystals
@@ -155,7 +155,7 @@
 	</telecapsule>
 	<caveexit>
 		<desc>
-		The first days of building a base are inevitably bottlenecked by the acquisition of ores, even with the help of your various machines to grind, pulverize, mill, or otherwise process them to increase the yield. And that means mining. Lots of mining. Branch mining is boring and unproductive, so you recently took up cave mining...something which is now a clear mistake, given your tendency to get lost in the deepest layers. You may not know the way back out, but perhaps you can create something that can...
+			The first days of building a base are inevitably bottlenecked by the acquisition of ores, even with the help of your various machines to grind, pulverize, mill, or otherwise process them to increase the yield. And that means mining. Lots of mining. Branch mining is boring and unproductive, so you recently took up cave mining...something which is now a clear mistake, given your tendency to get lost in the deepest layers. You may not know the way back out, but perhaps you can create something that can...
 		</desc>
 		<notes>
 			Can also be used in an alternate mode to find the deepest part of a cave system
@@ -165,12 +165,7 @@
 		The problem with caving, aside from the occasional pitfall into a ravine - and those should be avoidable by not being an idiot - is that no matter what you do, you are always forced to turn blind corners that more often than not hide one or more monsters who wish to kill you. You did have a radar you tried a while back, but its range was limited and your attempt at a moving version saw you exiled to another part of the world entirely. Perhaps you can try something more like sonar instead, this time without being accused of trying to gain unfair advantages by seeing that which you should not.
 	</mobsonar>
 	<structfind>
-		<desc>
 		You already know about the buried - slightly and deeply - structures in various biomes, from which you have learned the bulk of your knowledge of manipulating crystal energy. However, when it comes time to look for a new one, you thus far have had to rely on sheer luck, which is neither enjoyable nor productive. If you could tap into the ambient energy field the structures seem to focus on, you might help expedite that search.
-		</desc>
-		<notes>
-			Can only check for one kind of structure at a time
-		</notes>
 	</structfind>
 	<splineattack>
 		As noted before, clusters of enemies are the most difficult arrangement to deal with, as focusing your attacks on one often mean being attacked by another with impunity. What you need is some sort of attack that can bridge the gap and jump between mobs, attacking them in rapid succession. And now you have it, though for some insane reason you keep getting asked if you need to whistle to use it.
@@ -189,7 +184,7 @@
 	</endereye>
 	<spawnerbypass>
 		<desc>
-		More than once, you have happened upon a location where you were on the other side of a wall from a spawner, and then, while fiddling through your pouch of tools to find the appropriate weaponry, found yourself face-to-face with a mob that appeared on your side of the wall. Never again must that be allowed to happen; once you enter the room and engage the spawner is one thing, but having it activate before you can even see it is neither fair nor enjoyable.
+			More than once, you have happened upon a location where you were on the other side of a wall from a spawner, and then, while fiddling through your pouch of tools to find the appropriate weaponry, found yourself face-to-face with a mob that appeared on your side of the wall. Never again must that be allowed to happen; once you enter the room and engage the spawner is one thing, but having it activate before you can even see it is neither fair nor enjoyable.
 		</desc>
 		<notes>
 			Will not work on spawners which are directly visible
@@ -217,7 +212,14 @@
 		Your recent experiments with luma have proven revealing...in a very literal sense. Something about this fluid allows you to see through the material of reality itself, one use of which is to examine the form and content of cave systems from afar, even the surface (especially of value when searching for buried ruins or oil deposits). However, carting around a bucket of the stuff is annoying to do, even before you consider the inventory space that requires. Given your ability to fashion crystals into wearable versions, you could do that with luma as well, though you obviously cannot just put liquid on a string...right?
 	</etherpendant>
 	<structmap>
-		The artifact you recently found is probably the closest yet you have come to decoding the thoughts of those who built these structures. Perhaps you can pursue that even further, gaining the ability to predict where they might have placed yet other findings.
+		<desc>
+			The artifact you recently found is probably the closest yet you have come to decoding the thoughts of those who built these structures. Perhaps you can pursue that even further, gaining the ability to predict where they might have placed yet other findings.
+		</desc>
+		<notes>
+			Some scans might take some time to complete, and will prevent other scans from being started while in progress
+			
+			Scans only progress while the map is being viewed, and destroying the map will prevent further scans until the world is refreshed
+		</notes>
 	</structmap>
 	<name>
 		

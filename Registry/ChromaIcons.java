@@ -132,6 +132,7 @@ public enum ChromaIcons implements IconEnum {
 	ROSEFLARE("roseflare"),
 	ANGLER("anglerlight"),
 	ANGLER_BASIC("anglerlight_basic"),
+	COLORRING("color-ring"),
 	;
 
 	private IIcon icon;

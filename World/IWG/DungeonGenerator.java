@@ -195,7 +195,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 				it.remove();
 			else if (requireGenned && !stat.isGenerated())
 				it.remove();
-			else if (stat == StructureGenStatus.INERT || stat == StructureGenStatus.INERT_GEN)
+			else if (stat == StructureGenStatus.INERT || stat == StructureGenStatus.INERT_GEN || stat == StructureGenStatus.REMOVED)
 				it.remove();
 		}
 		boolean genned = true;
@@ -210,7 +210,7 @@ public class DungeonGenerator implements RetroactiveGenerator {
 					it2.remove();
 				else if (requireGenned && !stat.isGenerated())
 					it2.remove();
-				else if (stat == StructureGenStatus.INERT || stat == StructureGenStatus.INERT_GEN)
+				else if (stat == StructureGenStatus.INERT || stat == StructureGenStatus.INERT_GEN || stat == StructureGenStatus.REMOVED)
 					it2.remove();
 				else if (!this.isValidBiomeNear(world, MathHelper.floor_double(loc.xCoord), MathHelper.floor_double(loc.zCoord), s))
 					it2.remove();

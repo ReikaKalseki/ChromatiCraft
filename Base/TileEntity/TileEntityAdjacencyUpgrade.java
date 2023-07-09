@@ -496,8 +496,6 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		if (c == null)
 			return new ArrayList();
 		ArrayList ret = new ArrayList(c);
-		ret.addAll(c);
-		ret.addAll(c);
 		Collections.sort((List)ret);
 		return ret;
 	}

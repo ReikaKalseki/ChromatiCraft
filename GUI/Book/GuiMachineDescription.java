@@ -160,6 +160,9 @@ public class GuiMachineDescription extends GuiDescription {
 			if (subpage > 0)
 				this.drawNotesGraphics(posX, posY);
 		}
+		else if (page == ChromaResearch.ALVEARY && subpage > 1) {
+			this.drawNotesGraphics(posX, posY);
+		}
 		else {
 			switch (pageList.get(subpage)) {
 				case MAIN:

@@ -16,7 +16,6 @@ import java.util.Locale;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -36,7 +35,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiIconDisplay;
-import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackListDisplay;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -59,8 +58,7 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 	private int[] lagTimer = new int[6];
 
 	private static AdjacencyEffectDescription blacklist;
-
-	private static final HashMap<Item, BlacklistDisplay> blacklistDisplays = new HashMap();
+	private static AdjacencyEffectDescription defaultEffect;
 
 	private static final Acceleration blacklistKey = new Acceleration() {
 		@Override
@@ -87,13 +85,17 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 	private static void initHandlers() {
 		if (blacklist != null)
 			return;
-		TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.LIGHTBLUE, "Accelerates operations").addDisplays(new GuiIconDisplay(ChromaIcons.QUESTION)).setOrderIndex(Integer.MIN_VALUE);
+		defaultEffect = TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.LIGHTBLUE, "Accelerates operations");
+		defaultEffect.setOrderIndex(Integer.MIN_VALUE).addDisplays(new DefaultEffectDisplay());
 		blacklist = TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.LIGHTBLUE, "Does nothing");
 
 		blacklistTile("icbm.sentry.turret.Blocks.TileTurret", ModList.ICBM, "", BlacklistReason.BUGS); //by request
 		blacklistTile("bluedart.tile.decor.TileForceTorch", ModList.DARTCRAFT, "", BlacklistReason.CRASH); //StackOverflow
 		blacklistTile("com.sci.torcherino.tile.TileTorcherino", null, "Torcherino:tile.torcherino", BlacklistReason.CRASH); //StackOverflow
 		blacklistTile("com.sci.torcherino.tile.TileTorcherino", null, "Torcherino:tile.inverse_torcherino", BlacklistReason.CRASH); //StackOverflow
+		blacklistTile("com.sci.torcherino.tile.TileTorcherino", null, "Torcherino:tile.compressed_torcherino", BlacklistReason.CRASH); //StackOverflow
+		blacklistTile("com.sci.torcherino.tile.TileTorcherino", null, "Torcherino:tile.compressed_inverse_torcherino", BlacklistReason.CRASH); //StackOverflow
+		blacklistTile("com.sci.torcherino.tile.TileTorcherino", null, "Torcherino:tile.double_compressed_inverse_torcherino", BlacklistReason.CRASH); //StackOverflow
 
 		blacklistTile("mrtjp.projectred.integration.Timer", ModList.PROJRED, "ProjRed|Integration:projectred.integration.gate:17", BlacklistReason.BUGS);
 		blacklistTile("mrtjp.projectred.integration.Sequencer", ModList.PROJRED, "ProjRed|Integration:projectred.integration.gate:18", BlacklistReason.BUGS);
@@ -113,30 +115,44 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 						}
 					}
 				}
-			}
-			else {
-				blacklistTile(c.getTEClass(), c.getCraftedProduct());
+				else {
+					blacklistTile(c.getTEClass(), c.getCraftedProduct());
+				}
 			}
 		}
 	}
 
 	private static void addBlacklistItem(ItemStack is) {
 		if (is != null && is.getItem() != null) {
-			BlacklistDisplay bd = blacklistDisplays.get(is.getItem());
-			if (bd == null) {
-				bd = new BlacklistDisplay();
-				blacklistDisplays.put(is.getItem(), bd);
-			}
-			bd.addItems(is);
-			blacklist.addDisplays(bd);
+			blacklist.addDisplays(new BlacklistDisplay(is));
 		}
 	}
 
-	private static class BlacklistDisplay extends GuiStackListDisplay {
+	private static class DefaultEffectDisplay extends GuiIconDisplay {
 
-		private BlacklistDisplay() {
-			super();
-			this.setCycleSpeed(500);
+		public DefaultEffectDisplay() {
+			super(ChromaIcons.FADE_STAR);
+		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public void draw(FontRenderer fr, int x, int y) {
+			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
+			BlendMode.ADDITIVEDARK.apply();
+			super.draw(fr, x, y);
+			if (ReikaGuiAPI.instance.isMouseInBox(x, x+16, y, y+16)) {
+				String s = "Almost anything (Default Effect)";
+				ReikaGuiAPI.instance.drawTooltip(fr, s, 12+fr.getStringWidth(s), -1);
+			}
+			GL11.glPopAttrib();
+		}
+
+	}
+
+	private static class BlacklistDisplay extends GuiStackDisplay {
+
+		private BlacklistDisplay(ItemStack is) {
+			super(is);
 		}
 
 		@Override

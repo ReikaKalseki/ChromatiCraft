@@ -35,7 +35,8 @@ import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
 import Reika.ChromatiCraft.Auxiliary.Render.ChromaFontRenderer;
 import Reika.ChromatiCraft.Auxiliary.Render.RuneShapeRenderer;
 import Reika.ChromatiCraft.Magic.ElementTagCompound;
-import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager.ProgressElement;
+import Reika.ChromatiCraft.Magic.CastingTuning.CastingTuningManager;
+import Reika.ChromatiCraft.Magic.Progression.ChromaResearchManager.ProgressIndicator;
 import Reika.ChromatiCraft.Magic.Progression.ProgressAccess;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
@@ -231,8 +232,8 @@ public class ChromaBookData {
 		c.drawAdditionalBookData(fr, ri, posX+9, posY+80, subpage);
 	}
 
-	public static void drawRecipeMissingProgress(CastingRecipe r, EntityPlayer player, RenderItem itemRender, FontRenderer fontRendererObj, int x0, int y0) {
-		ArrayList<ProgressElement> li = new ArrayList();
+	public static void drawRecipeMissingProgress(CastingRecipe r, EntityPlayer player, RenderItem itemRender, FontRenderer fontRendererObj, int x0, int y0, boolean showMissingTuning) {
+		ArrayList<ProgressIndicator> li = new ArrayList();
 		ArrayList<ProgressStage> temp = new ArrayList();
 		r.getRequiredProgress(temp);
 		li.addAll(temp);
@@ -241,6 +242,9 @@ public class ChromaBookData {
 			li.add(0, frag);
 		}
 		li.removeIf(e -> e instanceof ProgressAccess && ((ProgressAccess)e).playerHas(player));
+		if (showMissingTuning && r instanceof TempleCastingRecipe && ((TempleCastingRecipe)r).requiresTuningKey()) {
+			li.add(CastingTuningManager.instance.tuningDisplay);
+		}
 		if (!li.isEmpty()) {
 			int idx = 0;
 			int count = li.size();
@@ -251,7 +255,7 @@ public class ChromaBookData {
 			int dx = x0-w/2;
 			ReikaGuiAPI.instance.drawRect(dx-gap, y0-gap, w+gap, h+gap, 0x000000, false);
 			ReikaGuiAPI.instance.drawRectFrame(dx-gap, y0-gap, w+gap, h+gap, 0x22aaff);
-			for (ProgressElement e : li) {
+			for (ProgressIndicator e : li) {
 				int x = dx+(idx%cols)*(16+gap);
 				int y = y0+(idx/cols)*(16+gap);
 				e.renderIcon(itemRender, fontRendererObj, x, y);

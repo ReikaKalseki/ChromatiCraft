@@ -45,6 +45,7 @@ import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.LootChestAccessEvent;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
+import Reika.ChromatiCraft.Items.Tools.Powered.ItemStructureFinder;
 import Reika.ChromatiCraft.Magic.MonumentCompletionRitual;
 import Reika.ChromatiCraft.Magic.Progression.ProgressStage;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
@@ -150,6 +151,9 @@ public class TileEntityStructControl extends InventoriedChromaticBase implements
 				if (ep.boundingBox.intersectsWith(this.getBox(x, y, z))) {
 					this.onPlayerProximity(world, x, y, z, ep);
 					lastTriggerPlayer = ep.getPersistentID();
+				}
+				if (!world.isRemote && ep.getDistanceSq(x+0.5, y+0.5, z+0.5) <= 64*64 && ChromaItems.STRUCTUREFINDER.matchWith(ep.getCurrentEquippedItem())) {
+					ItemStructureFinder.activate(ep.getCurrentEquippedItem(), ep, this);
 				}
 			}
 		}

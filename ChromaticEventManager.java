@@ -333,7 +333,7 @@ public class ChromaticEventManager {
 		if (evt.action == Action.RIGHT_CLICK_BLOCK && !evt.world.isRemote) {
 			TileEntity te = evt.world.getTileEntity(evt.x, evt.y, evt.z);
 			if (te instanceof IGridHost) {
-				IGridNode node = ((IGridHost)te).getGridNode(ForgeDirection.VALID_DIRECTIONS[evt.face]);
+				IGridNode node = ((IGridHost)te).getGridNode(evt.face == -1 ? ForgeDirection.UNKNOWN : ForgeDirection.VALID_DIRECTIONS[evt.face]);
 				if (node != null) {
 					IGrid grid = node.getGrid();
 					//NetworkEventBus bus = ((Grid)grid).eventBus;
