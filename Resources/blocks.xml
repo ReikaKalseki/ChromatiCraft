@@ -55,7 +55,15 @@
 		All this talk of a special world brimming with crystal energy is rather pointless without a way to actually GET there. Fortunately, you feel you just might have enough knowledge to rift space enough to venture into the unknown.
 	</portal>
 	<heatlamp>
-		When faced with the need to bring something to a precise temperature - most annoyingly, that metal fermentation box - your options are somewhat limited. Fire and lava, while they heat things, are often much too hot - only a fool would try using lava to gently warm yeast for composting - and ice and snow are frigidly cold. What would be most ideal would be some gentle heater you could affix directly to a block.
+		<desc>
+			When faced with the need to bring something to a precise temperature - most annoyingly, that metal fermentation box - your options are somewhat limited. Fire and lava, while they heat things, are often much too hot - only a fool would try using lava to gently warm yeast for composting - and ice and snow are frigidly cold. What would be most ideal would be some gentle heater you could affix directly to a block. Maybe you could make a cold version as well.
+		</desc>
+		<heat>
+			Heat lamps have the following effects:
+		</heat>
+		<cold>
+			Cold lamps have the following effects:
+		</cold>
 	</heatlamp>
 	<door>
 		Keeping creatures out of your house is proving more difficult than you would like. You had a nice door crafted from oak, but two hits from a zombie and you had unwanted guests. Sure, you could make iron doors, but they are expensive, unsightly, and will force you to endure the clanging noise as zombies ineffectually try to demolish it. A more flexible, visually ethereal - and now impenetrable - design would be wonderful.
@@ -103,7 +111,7 @@
 		Having somehow filled a book with knowledge by hitting it with a hammer, you have designed and built a number of large, boxy machines. However, while you could just run power pipes everywhere, you did not account for this in the design and would need to either run them along the floor or across the already-low ceiling. A better idea might be some way to send out little "packets" of energy which float on the air from source to destination. Such an ethereal method of transfer will probably result in massive losses over more than %dm or so, and even under the best conditions probably limits throughput, perhaps to around %dRF/t at most.
 	</rfpod>
 	<warpnode>
-		High above the ground lies an occasional swirling vortex of energy. Their appearance evokes a whirpool, or a wormhole, which brings to mind how you continue to lack a means to rapidly traverse large distances at will. Though to use these as such would require some way of choosing an endpoint, via...what? Looking in that direction and blindly hoping? Clearly this idea needs further development.
+		High above the ground lies an occasional swirling vortex of energy. Their appearance evokes a whirpool, or a wormhole, which brings to mind how you continue to lack a means to rapidly traverse large distances at will. Though to use these as such would require some way of choosing an endpoint, via...what? Looking in that direction and blindly hoping there is another open node in that direction? Clearly this idea needs further development.
 	</warpnode>
 	<injectoraux>
 		Having devised a construct with which to put items into casting stands automatically, you were presented with a problem. You designed it to be placed underneath the table, to accept items pushed into it upon the completion of the process. In doing so, you completely overlooked the fact that now that it is buried in the structure, it is inaccessible and thus unable to be given instructions on what to craft or when. That might have been the end of the idea, until you had a revelation: A ring of eight relays, placed under the outer stands, are both more accessible and more stable. Hopefully they also function as runes.

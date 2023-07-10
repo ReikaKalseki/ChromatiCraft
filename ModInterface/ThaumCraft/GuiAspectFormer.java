@@ -59,6 +59,16 @@ public class GuiAspectFormer extends GuiLetterSearchable<Aspect> {
 	}
 
 	@Override
+	protected int getSearchButtonX() {
+		return 30;
+	}
+
+	@Override
+	protected int getSearchButtonY() {
+		return 5;
+	}
+
+	@Override
 	public void initGui() {
 		super.initGui();
 
@@ -79,11 +89,12 @@ public class GuiAspectFormer extends GuiLetterSearchable<Aspect> {
 
 		buttonList.add(new CustomSoundImagedGuiButton(2, midx-w-out, midy-h/2-13, 10, 10, 90, 56, "Textures/GUIs/buttons.png", ChromatiCraft.class, this));
 		//}
-		buttonList.add(new CustomSoundImagedGuiButton(3, midx-w-out+15, midy-h/2-13, 10, 10, 90, 76, "Textures/GUIs/buttons.png", ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(3, midx-w-out+12, midy-h/2-13, 10, 10, 90, 76, "Textures/GUIs/buttons.png", ChromatiCraft.class, this).setTooltip("Maintain"));
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton b) {
+		super.actionPerformed(b);
 		//ReikaJavaLibrary.pConsole(this.getClickCooldown()+" @ "+b.id+" > "+buttonList.size()+":"+buttonList);
 		//ReikaJavaLibrary.pConsole(b.id+":"+this.getClickCooldown());
 		//Thread.dumpStack();

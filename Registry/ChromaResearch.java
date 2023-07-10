@@ -1091,6 +1091,9 @@ public enum ChromaResearch implements ProgressElement, ProgressAccess {
 			TileEntityLumenAlveary.getSortedEffectList().get(subpage-2).getLexiconString(sb);
 			return sb.toString();
 		}
+		else if (this == HEATLAMP && subpage > 0) {
+			return ChromaDescriptions.getNotes(this, subpage-1);
+		}
 		String ret = ChromaDescriptions.getNotes(this, 0);
 		if (item != null && item.getItemInstance() instanceof DynamicallyGeneratedSubpage) {
 			DynamicallyGeneratedSubpage iw = (DynamicallyGeneratedSubpage)this.getItem().getItemInstance();

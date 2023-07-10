@@ -55,16 +55,6 @@ public class GuiAdjacencyDescription extends GuiMachineDescription {
 	}
 
 	@Override
-	public void initGui() {
-		super.initGui();
-
-		int j = (width - xSize) / 2;
-		int k = (height - ySize) / 2;
-
-		String file = "Textures/GUIs/Handbook/buttons.png";
-	}
-
-	@Override
 	protected boolean hasScroll() {
 		AdjacencyPage ap = this.getCurrentPage();
 		return ap.isEffectList;// && TileEntityAdjacencyUpgrade.getSpecificEffects(ap.coreType.getColor()).size() > 5;

@@ -349,6 +349,11 @@ public final class ChromaDescriptions {
 
 		for (ChromaResearch h : blocktabs) {
 			String desc = blocks.getValueAtNode("blocks:"+h.name().toLowerCase(Locale.ENGLISH));
+			if (h == ChromaResearch.HEATLAMP) {
+				desc = blocks.getValueAtNode("blocks:"+h.name().toLowerCase(Locale.ENGLISH)+":desc");
+				notes.put(blocks.getValueAtNode("blocks:"+h.name().toLowerCase(Locale.ENGLISH)+":heat"), h, 0);
+				notes.put(blocks.getValueAtNode("blocks:"+h.name().toLowerCase(Locale.ENGLISH)+":cold"), h, 1);
+			}
 			desc = String.format(desc, blockData.get(h.getBlock()));
 			addEntry(h, desc);
 		}

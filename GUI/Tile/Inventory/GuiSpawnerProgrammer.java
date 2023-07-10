@@ -161,6 +161,7 @@ public class GuiSpawnerProgrammer extends GuiLetterSearchable<String> {
 
 	@Override
 	protected void actionPerformed(GuiButton b) {
+		super.actionPerformed(b);
 		switch (b.id) {
 			case 0:
 				this.decrIndex();

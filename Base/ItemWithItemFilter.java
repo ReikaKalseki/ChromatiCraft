@@ -3,8 +3,7 @@ package Reika.ChromatiCraft.Base;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.input.Keyboard;
-
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -16,6 +15,9 @@ import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper.NBTTypes;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class ItemWithItemFilter extends ItemChromaTool {
 
@@ -44,6 +46,7 @@ public abstract class ItemWithItemFilter extends ItemChromaTool {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
 		if (is.stackTagCompound != null) {
 			Mode m = this.getMode(is);
@@ -66,7 +69,7 @@ public abstract class ItemWithItemFilter extends ItemChromaTool {
 					break;
 			}
 			if (m.usesInventory() && is.stackTagCompound.hasKey("items")) {
-				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+				if (GuiScreen.isShiftKeyDown()) {
 					for (Filter in : this.getItemList(is)) {
 						li.add(">>"+in.item.getCriteriaAsChatFormatting()+in.item.getItemStack().getDisplayName());
 					}
@@ -76,6 +79,8 @@ public abstract class ItemWithItemFilter extends ItemChromaTool {
 				}
 			}
 		}
+		li.add("Set filters with right-click");
+		li.add("Cycle filter modes with shift right-click");
 	}
 
 	public final boolean matchesItem(EntityPlayer ep, ItemStack tool, ItemStack is) {

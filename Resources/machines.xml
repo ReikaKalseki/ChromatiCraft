@@ -463,7 +463,7 @@
 			Ever since you first started discovering and making use of the pylons, basically every person you have met has cracked some joke about how you should construct more of them. If you could do THAT, you would have already done so, not still be wasting time flying out to the ones you found so as to charge yourself off of them. Perhaps another attempt at an imitation for charging purposes is in order...
 		</desc>
 		<note>
-
+			Cannot be used to supply other constructs
 		</note>
 	</personal>
 	<cloaking>
@@ -492,7 +492,7 @@
 	</reverter>
 	<cobblegen>
 		<desc>
-			You never think you would run out of cobblestone...until you actually do. Sure, you could mine more out of the ground, but you have better things to occupy your time. You know that mixing water and lava will make cobblestone, but automating that process is messy and often costly. One solution would be a flower that would pull up the required liquid from nearby pools, mixing it and dropping the result. It might even be able to make things other than cobblestone given the correct input liquids.
+			You never think you would run out of cobblestone...until you actually do. Sure, you could mine more out of the ground, but you have better things to occupy your time. You know that mixing water and lava will make cobblestone, but automating that process is messy and often costly. One solution would be a flower that would pull up the required liquid from nearby pools, mixing it and dropping the result. It might even be able to make things other than cobblestone given the correct input liquids. As to what...some experimentation may be required.
 		</desc>
 		<note>
 
@@ -516,7 +516,7 @@
 	</cropspeed>
 	<inserter>
 		<desc>
-			You have repeatedly found yourself manually adding items to constructs that cannot be connected to normal item transport. You long ago tired of dropping stack after stack of sugar into a stone basin, or of berries into a puddle of chroma. You need a way to automate that process before you give up and find something less of a hassle to work with.
+			You have repeatedly found yourself manually adding items to constructs that cannot be connected to normal item transport. You long ago tired of dropping stack after stack of sugar into a stone basin, or of berries into a puddle of chroma. You needed a way to automate that process before you give up and find something less of a hassle to work with. Unfortunately, what you came up with is, while flexible, fairly complicated to use, where you need to connect the item flows on a connection-by-connection basis.
 		</desc>
 		<note>
 			Link to a location with the linking tool
@@ -904,7 +904,7 @@
 	</voidtrap>
 	<playerinfuser>
 		<desc>
-			Having found a new way to directly imbue significant quantities of chroma into shards, you wonder if you could apply that same sort of strategy with your own body. In particular, it would be useful to use this infusion to enhance your body's ability to store energy, thus allowing you to carry more around at any time. Obviously, this will require refinements to the construct, but it should not necessitate a total redesign.
+			Having found a new way to directly imbue significant quantities of chroma into shards, you wonder if you could apply that same sort of strategy with your own body. In particular, it would be useful to use this infusion to enhance your body's ability to store energy, thus allowing you to carry more around at any time. Obviously, this will require refinements to the construct, but it should not necessitate a total redesign. That said, you will need two separate structures, as any refinements will prevent the original construct from working.
 		</desc>
 		<note>
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -65,6 +65,8 @@ public class ItemDoorKey extends ItemChromaTool {
 	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
 		UUID uid = this.getUID(is);
 		li.add("ID: "+uid.toString());
+		if ((is.getItemDamage()&1) == 1)
+			li.add("Sets to auto-open");
 	}
 
 	public UUID getUID(ItemStack is) {

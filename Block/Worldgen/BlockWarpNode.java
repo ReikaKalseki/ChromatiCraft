@@ -71,6 +71,7 @@ public class BlockWarpNode extends BlockContainer {
 		if (!world.isRemote && HoldingChecks.MANIPULATOR.isHolding(ep)) {
 			TileEntityWarpNode te = (TileEntityWarpNode)world.getTileEntity(x, y, z);
 			te.open();
+			ProgressStage.WARPNODE.stepPlayerTo(ep);
 			ChromaSounds.USE.playSoundAtBlock(te);
 			world.markBlockForUpdate(x, y, z);
 			return true;

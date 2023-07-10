@@ -9,12 +9,14 @@ import org.lwjgl.opengl.GL11;
 
 import com.google.common.base.Strings;
 
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
@@ -34,9 +36,36 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase implements Ke
 
 	private boolean noResultsFound = false;
 
+	private boolean searchActive = false;
+
 	public GuiLetterSearchable(Container c, EntityPlayer ep, TileEntityChromaticBase te) {
 		super(c, ep, te);
 		this.buildList(ep);
+	}
+
+	@Override
+	public void initGui() {
+		super.initGui();
+
+		int j = (width - xSize) / 2;
+		int k = (height - ySize) / 2;
+
+		buttonList.add(new CustomSoundImagedGuiButton(-600, j+this.getSearchButtonX(), k+this.getSearchButtonY(), 10, 10, 70, 66, "Textures/GUIs/buttons.png", ChromatiCraft.class, this).setTooltip("Search..."));
+	}
+
+	protected int getSearchButtonX() {
+		return 3;
+	}
+
+	protected int getSearchButtonY() {
+		return 3;
+	}
+
+	@Override
+	protected void actionPerformed(GuiButton b) {
+		if (b.id == -600) {
+			searchActive = true;
+		}
 	}
 
 	protected abstract String getString(E val);
@@ -129,6 +158,8 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase implements Ke
 	}
 
 	private boolean handleKey(char c, int idx) {
+		if (!this.searchActive)
+			return false;
 		if (idx == Keyboard.KEY_HOME) {
 			index = 0;
 			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.67F);
@@ -151,10 +182,12 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase implements Ke
 			this.index = this.list.indexOf(selected);
 			ReikaSoundHelper.playClientSound(ChromaSounds.CAST, player, 0.5F, 1.5F);
 			this.onSelected(selected);
+			searchActive = false;
 			return true;
 		}
 		else if (idx == Keyboard.KEY_ESCAPE && !Strings.isNullOrEmpty(filterString)) {
 			this.resetFilter(true);
+			searchActive = false;
 			return true;
 		}
 		else if (idx == Keyboard.KEY_UP || idx == Keyboard.KEY_RIGHT) {

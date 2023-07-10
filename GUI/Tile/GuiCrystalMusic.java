@@ -96,7 +96,7 @@ public class GuiCrystalMusic extends GuiChromaBase implements PianoGui {
 
 		String file = "Textures/GUIs/musicoverlay.png";
 
-		buttonList.add(new CustomSoundImagedGuiButton(4, j+4, k+4, 19, 20, page == Pages.MIDI ? 209 : 228, 116, file, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(4, j+4, k+4, 19, 20, page == Pages.MIDI ? 209 : 228, 116, file, ChromatiCraft.class, this).setTooltip("Mode"));
 
 		if (page == Pages.KEYS) {
 			buttonList.add(new CustomSoundImagedGuiButton(0, j+4, k+4+20, 19, 20, 228, 136, file, ChromatiCraft.class, this));

@@ -19,12 +19,12 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.fluids.FluidRegistry;
 
+import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiChromaBase;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
@@ -37,6 +37,7 @@ import Reika.DragonAPI.Instantiable.GUI.GuiPainter.Brush;
 import Reika.DragonAPI.Instantiable.GUI.GuiPainter.PaintElement;
 import Reika.DragonAPI.Libraries.ReikaFluidHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
+import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
@@ -74,6 +75,8 @@ public class GuiBiomeChanger extends GuiChromaBase {
 	private GuiPages page = GuiPages.PAINT;
 
 	private boolean erase = false;
+	private static boolean showRangeMarkers = false;
+	private static boolean showTerrain = false;
 
 	private int frame = 0;
 
@@ -85,6 +88,8 @@ public class GuiBiomeChanger extends GuiChromaBase {
 		ySize = 212;
 
 		staticTileRef = te;
+		showRangeMarkers = false;
+		showTerrain = false;
 	}
 
 	@Override
@@ -113,8 +118,25 @@ public class GuiBiomeChanger extends GuiChromaBase {
 		buttonList.add(new CustomSoundGuiButton(0, j+w, k+ySize-20-w, 20, 20, "<", this));
 		buttonList.add(new CustomSoundGuiButton(1, j+xSize-20-w, k+ySize-20-w, 20, 20, ">", this));
 
-		if (page == GuiPages.PAINT)
+		if (page == GuiPages.PAINT) {
 			buttonList.add(new CustomSoundGuiButton(2, j+w, k+16, 50, 20, erase ? "Paint" : "Erase", this));
+			buttonList.add(new CustomSoundGuiButton(3, j+w+50, k+16, 20, 20, "", this) {
+				@Override
+				public void drawButton(Minecraft mc, int x, int y) {
+					super.drawButton(mc, x, y);
+					ReikaTextureHelper.bindTexture(ChromatiCraft.class, GuiBiomeChanger.this.getFullTexturePath());
+					api.drawTexturedModalRect(xPosition+4, yPosition+4, 0, 212, 12, 12);
+				}
+			});
+			buttonList.add(new CustomSoundGuiButton(4, j+w+70, k+16, 20, 20, "", this) {
+				@Override
+				public void drawButton(Minecraft mc, int x, int y) {
+					super.drawButton(mc, x, y);
+					ReikaTextureHelper.bindTexture(ChromatiCraft.class, GuiBiomeChanger.this.getFullTexturePath());
+					api.drawTexturedModalRect(xPosition+2, yPosition+2, 12, 212, 16, 16);
+				}
+			});
+		}
 
 		if (page == GuiPages.BRUSH) {
 			for (int i = 0; i < Brush.brushList.length; i++) {
@@ -138,6 +160,14 @@ public class GuiBiomeChanger extends GuiChromaBase {
 		}
 		else if (b.id == 2) {
 			erase = !erase;
+			this.initGui();
+		}
+		else if (b.id == 3) {
+			showRangeMarkers = !showRangeMarkers;
+			this.initGui();
+		}
+		else if (b.id == 4) {
+			showTerrain = !showTerrain;
 			this.initGui();
 		}
 
@@ -263,7 +293,7 @@ public class GuiBiomeChanger extends GuiChromaBase {
 			painter.drawLegend(fontRendererObj, j+10+TileEntityBiomePainter.RANGE*2+3, k+ySize/2-TileEntityBiomePainter.RANGE);
 			GL11.glPushMatrix();
 			GL11.glTranslated(0, 0, 100);
-			if (GuiScreen.isShiftKeyDown()) {
+			if (showRangeMarkers) {
 				for (int dx = -TileEntityBiomePainter.RANGE; dx <= TileEntityBiomePainter.RANGE; dx += 16) {
 					for (int dz = -TileEntityBiomePainter.RANGE; dz <= TileEntityBiomePainter.RANGE; dz += 16) {
 						int x = j+10+TileEntityBiomePainter.RANGE+dx;
@@ -272,7 +302,7 @@ public class GuiBiomeChanger extends GuiChromaBase {
 					}
 				}
 			}
-			else if (GuiScreen.isCtrlKeyDown()) {
+			else if (showTerrain) {
 				int x = j+10+TileEntityBiomePainter.RANGE;
 				int y = k+ySize/2;
 				api.drawRect(x, y, x+1, y+1, 0xffff0000);
@@ -366,7 +396,7 @@ public class GuiBiomeChanger extends GuiChromaBase {
 			int c = color;
 			int dx = staticTileRef.xCoord+i-TileEntityBiomePainter.RANGE;
 			int dz = staticTileRef.zCoord+k-TileEntityBiomePainter.RANGE;
-			if (!legend && GuiScreen.isCtrlKeyDown()) {
+			if (!legend && showTerrain) {
 				int old = c;
 				int dy = ReikaWorldHelper.getTopNonAirBlock(Minecraft.getMinecraft().theWorld, dx, dz, true);
 				if (ReikaFluidHelper.lookupFluidForBlock(Minecraft.getMinecraft().theWorld.getBlock(dx, dy, dz)) == FluidRegistry.WATER) {

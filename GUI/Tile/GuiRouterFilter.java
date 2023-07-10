@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -55,7 +55,7 @@ public class GuiRouterFilter extends GuiContainer {
 
 		if (tile instanceof TileEntityRouterNode) {
 			int v = blacklist ? 56 : 66;
-			buttonList.add(new ImagedGuiButton(0, j+10, k+10, 10, 10, 90, v, "/Reika/ChromatiCraft/Textures/GUIs/buttons.png", ChromatiCraft.class));
+			buttonList.add(new ImagedGuiButton(0, j+10, k+10, 10, 10, 90, v, "/Reika/ChromatiCraft/Textures/GUIs/buttons.png", ChromatiCraft.class).setTooltip("Blacklist/Whitelist"));
 		}
 	}
 
@@ -68,6 +68,7 @@ public class GuiRouterFilter extends GuiContainer {
 			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ROUTERFILTERFLAG.ordinal(), (TileEntity)tile, blacklist ? 1 : 0);
 			((TileEntityRouterNode)tile).isBlacklist = blacklist;
 		}
+		this.initGui();
 	}
 
 	@Override

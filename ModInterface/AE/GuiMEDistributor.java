@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -68,7 +68,8 @@ public class GuiMEDistributor extends GuiChromaBase
 		for (int i = 0; i < med.NSLOTS; i++) {
 			int x = j+94+16*(i*2/med.NSLOTS);
 			int y = k+19+20*(i%(med.NSLOTS/2));
-			buttonList.add(new ImagedGuiButton(i, x, y, 10, 10, 90, 6, tex, ChromatiCraft.class));
+			int u = 70+med.getMode(i).ordinal()*10;
+			buttonList.add(new ImagedGuiButton(i, x, y, 10, 10, u, 96, tex, ChromatiCraft.class).setTooltip("Match Mode"));
 		}
 	}
 
@@ -77,8 +78,10 @@ public class GuiMEDistributor extends GuiChromaBase
 		super.actionPerformed(b);
 
 		if (b.id < med.NSLOTS) {
+			med.toggleFuzzy(b.id);
 			ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.MEDISTRIBFUZZY.ordinal(), med, b.id);
 		}
+		this.initGui();
 	}
 
 	@Override
@@ -150,10 +153,18 @@ public class GuiMEDistributor extends GuiChromaBase
 			int dy = 7+(i%5)*20+9;
 			api.drawItemStack(itemRender, fontRendererObj, med.getMapping(i), dx+w, dy);
 			api.drawItemStack(itemRender, fontRendererObj, med.getMapping(i+med.NSLOTS), dx, dy);
-			if (api.isMouseInBox(j+dx-1, j+dx+w+18-1, k+dy-1, k+dy+18-1)) {
-				String s = med.getMode(i).desc;
-				api.drawTooltipAt(fontRendererObj, s, api.getMouseRealX()+fontRendererObj.getStringWidth(s)-80, api.getMouseRealY()+12);
+			String s = null;
+			if (api.isMouseInBox(j+dx-1, j+dx-1+17, k+dy-1, k+dy+18-1)) {
+				s = "Query";
 			}
+			else if (api.isMouseInBox(j+dx+w-1, j+dx+w+16, k+dy-1, k+dy+18-1)) {
+				s = "Transfer";
+			}
+			else if (api.isMouseInBox(j+dx-1+18, j+dx+w-2, k+dy-1, k+dy+18-1)) {
+				s = med.getMode(i).desc;
+			}
+			if (s != null)
+				api.drawTooltipAt(fontRendererObj, s, api.getMouseRealX()+fontRendererObj.getStringWidth(s)-80, api.getMouseRealY()+12);
 		}
 	}
 

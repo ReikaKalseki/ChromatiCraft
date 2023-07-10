@@ -2,6 +2,7 @@ package Reika.ChromatiCraft.Items.Tools;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,6 +25,7 @@ import Reika.ChromatiCraft.Base.ItemChromaTool;
 import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
+import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
 import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
@@ -107,6 +109,12 @@ public class ItemEnderBucket extends ItemChromaTool {
 
 	public BucketMode getMode(ItemStack is) {
 		return BucketMode.list[is.getItemDamage()];
+	}
+
+	@Override
+	public void addInformation(ItemStack is, EntityPlayer ep, List li, boolean vb) {
+		li.add("Mode: "+this.getMode(is).displayName);
+		li.add("Shift-right-click to bind to a "+ChromaTiles.TANK.getName());
 	}
 
 	public int getActiveLinkIndex(ItemStack is, EntityPlayer ep) {

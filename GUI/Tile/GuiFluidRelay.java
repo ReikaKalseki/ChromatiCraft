@@ -65,7 +65,7 @@ public class GuiFluidRelay extends GuiLetterSearchable<Fluid> {
 
 		int dx = 14;
 		buttonList.add(new CustomSoundImagedGuiButton(4, j+in-dx, k+iny, 10, 10, 90, 56, tex, ChromatiCraft.class, this));
-		buttonList.add(new CustomSoundImagedGuiButton(5, j+xSize-10-in+dx, k+iny-dy, 10, 10, 90, 76, tex, ChromatiCraft.class, this));
+		buttonList.add(new CustomSoundImagedGuiButton(5, j+xSize-10-in+dx, k+iny-dy, 10, 10, 90, 76, tex, ChromatiCraft.class, this).setTooltip("Auto"));
 
 		buttonList.add(new CustomSoundImagedGuiButton(6, j+xSize-10-in+dx, k+iny+dy, 10, 10, 90, relay.autoFilter ? 86 : 56, tex, ChromatiCraft.class, this));
 	}
@@ -181,7 +181,7 @@ public class GuiFluidRelay extends GuiLetterSearchable<Fluid> {
 
 	@Override
 	protected boolean isSearchActive() {
-		return ((ContainerFluidRelay)inventorySlots).getManualSelectSlot() >= 0;
+		return super.isSearchActive() && ((ContainerFluidRelay)inventorySlots).getManualSelectSlot() >= 0;
 	}
 
 	@Override

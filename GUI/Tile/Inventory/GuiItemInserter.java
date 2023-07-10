@@ -70,7 +70,7 @@ public class GuiItemInserter extends GuiChromaBase {
 						int dy = k+7+f*20+i*3-1;
 						int u = tile.isLinkEnabled(i, f) ? 181 : 187;
 						//ReikaJavaLibrary.pConsole(i+","+f+">"+tile.isLinkEnabled(i, f)+" @ "+dx+","+dy);
-						buttonList.add(new ImagedGuiButton(id, dx, dy, 5+2, 3+2, u-1, 170-1, this.getFullTexturePath(), ChromatiCraft.class));
+						buttonList.add(new ImagedGuiButton(id, dx, dy, 5+2, 3+2, u-1, 170-1, this.getFullTexturePath(), ChromatiCraft.class).setTooltip("Slot "+i+" > "+tile.getLink(f)));
 					}
 				}
 			}

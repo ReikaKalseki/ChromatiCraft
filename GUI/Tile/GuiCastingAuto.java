@@ -124,8 +124,8 @@ public class GuiCastingAuto extends GuiChromaBase {
 			buttonList.add(new CustomSoundImagedGuiButton(0, j+144, k+32, 64, 10, 150, 56, tex, ChromatiCraft.class, this));
 			buttonList.add(new CustomSoundImagedGuiButton(1, j+144, k+42, 64, 10, 150, 66, tex, ChromatiCraft.class, this));
 
-			buttonList.add(new CustomSoundImagedGuiButton(6, j+144+64, k+32, 10, 10, 80, rec.recursionEnabled ? 76 : 86, tex, ChromatiCraft.class, this));
-			buttonList.add(new CustomSoundImagedGuiButton(7, j+144+64, k+42, 10, 10, 90, 86, tex, ChromatiCraft.class, this));
+			buttonList.add(new CustomSoundImagedGuiButton(6, j+144+64, k+32, 10, 10, 80, rec.recursionEnabled ? 76 : 86, tex, ChromatiCraft.class, this).setTooltip("Recursion"));
+			buttonList.add(new CustomSoundImagedGuiButton(7, j+144+64, k+42, 10, 10, 90, 86, tex, ChromatiCraft.class, this).setTooltip("Priority"));
 		}
 		else {
 			buttonList.add(new CustomSoundImagedGuiButton(0, j+144, k+32, 74, 10, 100, 36, tex, ChromatiCraft.class, this));

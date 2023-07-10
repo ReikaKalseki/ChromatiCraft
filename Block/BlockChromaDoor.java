@@ -311,6 +311,8 @@ public class BlockChromaDoor extends BlockContainer implements SemiUnbreakable, 
 			currenttip.add("ID: "+te.uid);
 		else
 			currenttip.add("No ID");
+		if (te.autoOpen)
+			currenttip.add("Automatic");
 		return currenttip;
 	}
 

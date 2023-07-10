@@ -9,7 +9,9 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.TileEntity.AOE.Effect;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 
 import net.minecraft.block.Block;
@@ -26,6 +28,7 @@ import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Maps.BlockMap;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Interfaces.TileEntity.ThermalTile;
@@ -40,6 +43,8 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 
 	private static final BlockMap<Integer> blockTemps = new BlockMap();
 	private static final HashMap<Class, HeatTier> tileList = new HashMap();
+
+	private static AdjacencyEffectDescription ic2HUEffect;
 
 	private static enum HeatTier {
 		MACHINE,
@@ -112,16 +117,20 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 		}
 
 		if (ModList.IC2.isLoaded()) {
-			AdjacencyEffectDescription adj = TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.ORANGE, "Transfers HU").setOrderIndex(1000);
-			adj.addDisplays(new GuiStackDisplay("IC2:blockKineticGenerator:5"));
+			ic2HUEffect = TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.ORANGE, "Transfers HU").setOrderIndex(1000);
+			ic2HUEffect.addDisplays(new GuiStackDisplay("IC2:blockKineticGenerator:5"));
 			for (int i = 0; i <= 3; i++)
-				adj.addDisplays(new GuiStackDisplay("IC2:blockHeatGenerator:"+i));
-			adj.addDisplays(new GuiStackDisplay("IC2:blockGenerator:8"));
-			adj.addDisplays(new GuiStackDisplay("IC2:blockMachine3"));
-			adj.addDisplays(new GuiStackDisplay("IC2:blockMachine3:1"));
-			adj.addDisplays(new GuiStackDisplay("IC2:blockMachine2:12"));
-			adj.addDisplays(new GuiStackDisplay("IC2:blockMachine2:13"));
+				ic2HUEffect.addDisplays(new GuiStackDisplay("IC2:blockHeatGenerator:"+i));
+			ic2HUEffect.addDisplays(new GuiStackDisplay("IC2:blockGenerator:8"));
+			ic2HUEffect.addDisplays(new GuiStackDisplay("IC2:blockMachine3"));
+			ic2HUEffect.addDisplays(new GuiStackDisplay("IC2:blockMachine3:1"));
+			ic2HUEffect.addDisplays(new GuiStackDisplay("IC2:blockMachine2:12"));
+			ic2HUEffect.addDisplays(new GuiStackDisplay("IC2:blockMachine2:13"));
 		}
+	}
+
+	public static List<GuiItemDisplay> getHUItems() {
+		return ic2HUEffect == null ? new ArrayList() : ic2HUEffect.getRelevantItems();
 	}
 
 	@ModDependent(ModList.ROTARYCRAFT)

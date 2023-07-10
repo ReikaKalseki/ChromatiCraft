@@ -129,8 +129,8 @@ public class GuiNavigation extends GuiScrollingPage {
 		}
 
 		this.addAuxButton(new CustomSoundImagedGuiButton(2, j+xSize, k, 22, 39, 42, 84, file, ChromatiCraft.class, this), "Progress");
-		this.addAuxButton(new CustomSoundImagedGuiButton(3, j+xSize, k+40, 22, 39, 42, 168, file, ChromatiCraft.class, this), "Recovery");
-		this.addAuxButton(new CustomSoundImagedGuiButton(4, j+xSize, k+80, 22, 39, 42, 168, file, ChromatiCraft.class, this), "Notebook");
+		this.addAuxButton(new CustomSoundImagedGuiButton(3, j+xSize, k+40, 22, 39, 65, 168, file, ChromatiCraft.class, this), "Recovery");
+		this.addAuxButton(new CustomSoundImagedGuiButton(4, j+xSize, k+80, 22, 39, 88, 168, file, ChromatiCraft.class, this), "Notebook");
 	}
 
 	@Override

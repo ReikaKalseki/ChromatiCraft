@@ -87,6 +87,7 @@ public class GuiAutoEnchanter extends GuiLetterSearchable<Enchantment> {
 
 	@Override
 	protected void actionPerformed(GuiButton b) {
+		super.actionPerformed(b);
 		switch (b.id) {
 			case 0:
 				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.ENCHANTER.ordinal(), ench, this.getID(), 0, GuiScreen.isShiftKeyDown() ? 1 : 0);
