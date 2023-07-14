@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -38,28 +38,18 @@ public class GlowingCliffsDecorator extends BiomeDecorator {
 	GlowingCliffsDecorator() {
 		super();
 
-		sandPerChunk *= 2;
-		sandPerChunk2 *= 2;
+		sandPerChunk = 2;
+		sandPerChunk2 = 6;
 
-		clayPerChunk = BiomeGenBase.swampland.theBiomeDecorator.clayPerChunk;
-		grassPerChunk = BiomeGenBase.plains.theBiomeDecorator.grassPerChunk/3;
-		flowersPerChunk = BiomeGenBase.forest.theBiomeDecorator.flowersPerChunk*4;
-		treesPerChunk = (int)(BiomeGenBase.forest.theBiomeDecorator.treesPerChunk*0.4);
-		waterlilyPerChunk = BiomeGenBase.swampland.theBiomeDecorator.waterlilyPerChunk/2;
-		reedsPerChunk = BiomeGenBase.swampland.theBiomeDecorator.reedsPerChunk;//*3/2;
+		clayPerChunk = 1;
+		grassPerChunk = 3;
+		flowersPerChunk = 8;
+		treesPerChunk = 4;
+		waterlilyPerChunk = 2;
+		reedsPerChunk = 10;
+		mushroomsPerChunk = 0;
 
 		gravelGen = new NoFloatingGravelVein(/*((WorldGenMinable)gravelGen).numberOfBlocks*/32);
-
-		/*
-		islandWorld.addGetOverride(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.DIRT.getMeta(false, true), Blocks.dirt);
-		decoWorld.addGetOverride(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.DIRT.getMeta(false, true), Blocks.dirt);
-
-		islandWorld.addGetOverride(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.GRASS.getMeta(false, true), Blocks.grass);
-		decoWorld.addGetOverride(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.GRASS.getMeta(false, true), Blocks.grass);
-
-		islandWorld.addGetOverride(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.STONE.getMeta(false, true), Blocks.stone);
-		decoWorld.addGetOverride(ChromaBlocks.CLIFFSTONE.getBlockInstance(), Variants.STONE.getMeta(false, true), Blocks.stone);
-		 */
 	}
 
 	private void setWorld(World world) {

@@ -12,6 +12,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTileCallback;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.EmitterTile;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Laser.BlockLaserEffector.LaserEffectType;
@@ -24,7 +25,6 @@ import Reika.ChromatiCraft.World.Dimension.Structure.PistonTape.PistonTapeLoop.L
 import Reika.DragonAPI.Instantiable.RGBColorData;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper.CubeDirections;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -257,7 +257,7 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 		world.setTileEntity(x, y, z, ChromaBlocks.PISTONTARGET.getBlockInstance(), 0, new PistonTargetCallback(this, loop.level));
 	}
 
-	private static class PistonTargetCallback implements TileCallback {
+	private static class PistonTargetCallback extends DimensionStructureTileCallback {
 
 		private final UUID uid;
 		private final ForgeDirection facing;
@@ -283,7 +283,7 @@ public class PistonTapeSlice extends StructurePiece<PistonTapeGenerator> {
 
 	}
 
-	private static class PistonEmitterCallback implements TileCallback {
+	private static class PistonEmitterCallback extends DimensionStructureTileCallback {
 
 		private final UUID uid;
 		private final ForgeDirection facing;

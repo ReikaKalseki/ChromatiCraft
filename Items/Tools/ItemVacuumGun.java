@@ -38,4 +38,9 @@ public class ItemVacuumGun extends ProgressGatedProjectileFiringTool {
 		return new EntityVacuum(world, ep, randomVec);
 	}
 
+	@Override
+	public int getAutofireRate() {
+		return 50;
+	}
+
 }

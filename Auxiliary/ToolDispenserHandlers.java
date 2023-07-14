@@ -19,7 +19,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.ChromatiCraft;
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ProjectileFiringTool;
+import Reika.ChromatiCraft.API.Interfaces.ProjectileFiringTool;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBucket;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityAuraInfuser;
 import Reika.ChromatiCraft.TileEntity.Recipe.TileEntityItemStand;

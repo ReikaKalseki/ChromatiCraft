@@ -10,6 +10,7 @@
 package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.apache.logging.log4j.core.helpers.Strings;
 import org.lwjgl.opengl.GL11;
@@ -19,8 +20,10 @@ import net.minecraft.item.ItemStack;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.DynamicallyGeneratedSubpage;
 import Reika.ChromatiCraft.Base.GuiDescription;
+import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.DragonAPI.Instantiable.ItemSpecificEffectDescription;
 
 public class GuiToolDescription extends GuiDescription {
 
@@ -46,6 +49,10 @@ public class GuiToolDescription extends GuiDescription {
 			api.drawItemStack(itemRender, is, (int)(posX/s), (int)(posY/s));
 		}
 		GL11.glPopMatrix();
+
+		Collection<? extends ItemSpecificEffectDescription> lie = this.getEffectList();
+		if (lie != null)
+			this.drawEffectDescriptions(posX, posY+47, lie);
 	}
 
 	@Override
@@ -53,6 +60,26 @@ public class GuiToolDescription extends GuiDescription {
 		if (page.getItem().getItemInstance() instanceof DynamicallyGeneratedSubpage)
 			return ((DynamicallyGeneratedSubpage)page.getItem().getItemInstance()).getMaxSubpage();
 		return !Strings.isEmpty(page.getNotes(0)) ? 1 : 0;
+	}
+
+	@Override
+	protected boolean hasScroll() {
+		if (this.getEffectList() != null)
+			return true;
+		return super.hasScroll();
+	}
+
+	@Override
+	protected int getMaxScroll() {
+		if (this.getEffectList() != null)
+			return 50;
+		return super.getMaxScroll();
+	}
+
+	private Collection<? extends ItemSpecificEffectDescription> getEffectList() {
+		if (page == ChromaResearch.AURAPOUCH && subpage > 0)
+			return ItemAuraPouch.getEffects();
+		return null;
 	}
 
 }

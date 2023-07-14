@@ -243,10 +243,9 @@ public class TileEntityCrystalMusic extends TileEntityChromaticBase implements S
 		if (!world.isRemote) {
 			//this.loadDemo();
 			this.calcPaths(world, x, y, z);
-
-			temple.setCore(this);
-			temple.checkStructure(world, null);
 		}
+		temple.setCore(this);
+		temple.checkStructure(world, null);
 	}
 
 	private void calcPaths(World world, int x, int y, int z) {

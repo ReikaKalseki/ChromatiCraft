@@ -16,14 +16,11 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 
-import com.google.common.base.Strings;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
@@ -45,8 +42,7 @@ import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.Maps.NestedMap;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
-import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiIconDisplay;
-import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
+import Reika.DragonAPI.Instantiable.ItemSpecificEffectDescription.ItemListEffectDescription;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
@@ -353,7 +349,7 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 	public static AdjacencyEffectDescription registerEffectDescription(CrystalElement color, String desc, int index) {
 		AdjacencyEffectDescription ef = effectMap.get(color, desc);
 		if (ef == null) {
-			ef = new AdjacencyEffectDescription(color, desc).setOrderIndex(index);
+			ef = (AdjacencyEffectDescription)new AdjacencyEffectDescription(color, desc).setOrderIndex(index);
 			effectMap.put(color, desc, ef);
 		}
 		return ef;
@@ -386,90 +382,18 @@ public abstract class TileEntityAdjacencyUpgrade extends TileEntityWirelessPower
 		}
 	}
 
-	public static final class AdjacencyEffectDescription implements Comparable<AdjacencyEffectDescription> {
+	public static final class AdjacencyEffectDescription extends ItemListEffectDescription {
 
 		public final CrystalElement color;
-		public final String description;
-		private final ArrayList<GuiItemDisplay> items = new ArrayList();
-
-		private int ordering;
 
 		protected AdjacencyEffectDescription(CrystalElement e, String s) {
+			super(s);
 			color = e;
-			description = s;
-		}
-
-		public AdjacencyEffectDescription setOrderIndex(int index) {
-			ordering = index;
-			return this;
-		}
-
-		public AdjacencyEffectDescription addIcons(IIcon... set) {
-			for (IIcon is : set)
-				items.add(new GuiIconDisplay(is));
-			Collections.sort(items);
-			return this;
-		}
-
-		public AdjacencyEffectDescription addItems(Collection<ItemStack> c) {
-			for (ItemStack is : c) {
-				if (is.getItem() == null)
-					throw new IllegalArgumentException("Null item!");
-				items.add(new GuiStackDisplay(is));
-			}
-			Collections.sort(items);
-			return this;
-		}
-
-		public AdjacencyEffectDescription addItems(ItemStack... set) {
-			for (ItemStack is : set) {
-				if (is.getItem() == null)
-					throw new IllegalArgumentException("Null item!");
-				items.add(new GuiStackDisplay(is));
-			}
-			Collections.sort(items);
-			return this;
-		}
-
-		public AdjacencyEffectDescription addDisplays(Collection<GuiItemDisplay> set) {
-			for (GuiItemDisplay is : set) {
-				if (!is.isEmpty() && !items.contains(is))
-					items.add(is);
-			}
-			Collections.sort(items);
-			return this;
-		}
-
-		public AdjacencyEffectDescription addDisplays(GuiItemDisplay... set) {
-			for (GuiItemDisplay is : set) {
-				if (!is.isEmpty() && !items.contains(is))
-					items.add(is);
-			}
-			Collections.sort(items);
-			return this;
-		}
-
-		public final List<GuiItemDisplay> getRelevantItems() {
-			return Collections.unmodifiableList(items);
 		}
 
 		@Override
 		public String toString() {
-			return description+": "+items;
-		}
-
-		@Override
-		public int compareTo(AdjacencyEffectDescription o) {
-			if (o.ordering != ordering)
-				return Integer.compare(ordering, o.ordering);
-			if (Strings.isNullOrEmpty(description) && Strings.isNullOrEmpty(o.description))
-				return 0;
-			else if (Strings.isNullOrEmpty(description))
-				return -1;
-			else if (Strings.isNullOrEmpty(o.description))
-				return 1;
-			else
-				return description.compareToIgnoreCase(o.description);
+			return color+": "+super.toString();
 		}
 
 	}

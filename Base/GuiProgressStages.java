@@ -115,7 +115,7 @@ public abstract class GuiProgressStages extends GuiScrollingPage {
 		this.addAuxButton(new CustomSoundImagedGuiButton(10, j+xSize, k, 22, 39, 42, 126, file, ChromatiCraft.class, this), "Return");
 
 		this.addAuxButton(new CustomSoundImagedGuiButton(20, j-13, k-7, 13, 35, 1, 185, file, ChromatiCraft.class, this), "Tree");
-		this.addAuxButton(new CustomSoundImagedGuiButton(21, j-13, k+27, 13, 35, 1, 185, file, ChromatiCraft.class, this), "Levels");
+		this.addAuxButton(new CustomSoundImagedGuiButton(21, j-13, k+27, 13, 35, 1, 221, file, ChromatiCraft.class, this), "Levels");
 	}
 
 	@Override

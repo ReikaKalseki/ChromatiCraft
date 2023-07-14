@@ -74,10 +74,12 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.client.event.RenderWorldEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.event.sound.PlaySoundEvent17;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import net.minecraftforge.fluids.FluidRegistry;
 
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHelper;
 import Reika.ChromatiCraft.Auxiliary.Ability.AbilityHotkeys;
@@ -163,6 +165,7 @@ import Reika.DragonAPI.Instantiable.Event.ItemStackUpdateEvent;
 import Reika.DragonAPI.Instantiable.Event.NEIRecipeCheckEvent;
 import Reika.DragonAPI.Instantiable.Event.ProfileEvent;
 import Reika.DragonAPI.Instantiable.Event.ProfileEvent.ProfileEventWatcher;
+import Reika.DragonAPI.Instantiable.Event.Client.BlockIconEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.ChunkWorldRenderEvent;
 import Reika.DragonAPI.Instantiable.Event.Client.ChunkWorldRenderEvent.ChunkWorldRenderWatcher;
 import Reika.DragonAPI.Instantiable.Event.Client.ClientLoginEvent;
@@ -255,6 +258,8 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 	private double playerOverlayPosZ;
 
 	private final IIcon[] rainbowForestTreeGlowOverlays = new IIcon[5];
+	private IIcon biomeWaterIcon;
+	private IIcon biomeWaterIconFlow;
 
 	private ChromaClientEventController() {
 		/*
@@ -716,6 +721,24 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 		}
 	}
 
+	@SubscribeEvent
+	public void textureHook(TextureStitchEvent.Pre event) {
+		if (event.map.getTextureType() == 0) {
+			biomeWaterIconFlow = event.map.registerIcon("chromaticraft:fluid/glowcliffwater_flow");
+			biomeWaterIcon = event.map.registerIcon("chromaticraft:fluid/glowcliffwater_still");
+		}
+	}
+
+	@SubscribeEvent
+	public void retextureGlowCliffWater(BlockIconEvent evt) {
+		if (evt.access != null && BiomeGlowingCliffs.isGlowingCliffs(evt.getBiome()) && BiomeGlowingCliffs.isClearWater(evt.access, evt.xCoord, evt.yCoord, evt.zCoord)) {
+			if (evt.originalIcon == FluidRegistry.WATER.getFlowingIcon())
+				evt.icon = biomeWaterIconFlow;
+			else if (evt.originalIcon == FluidRegistry.WATER.getStillIcon())
+				evt.icon = biomeWaterIcon;
+		}
+	}
+
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void updateGlowCliffRendering(ClientTickEvent evt) {
 		BiomeGlowingCliffs.updateRenderFactor(Minecraft.getMinecraft().thePlayer);
@@ -1145,10 +1168,12 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 				ChromaSound c = (ChromaSound)es.sound;
 				if (c.hasWiderPitchRange()) {
 					if (es.getPitch() > 2) {
-						evt.result = new EnumSound(c.getUpshiftedPitch(), es.posX, es.posY, es.posZ, es.volume, es.pitch/c.getRangeInterval(), es.attenuate);
+						if (c.getUpshiftedPitch() != null)
+							evt.result = new EnumSound(c.getUpshiftedPitch(), es.posX, es.posY, es.posZ, es.volume, es.pitch/c.getRangeInterval(), es.attenuate);
 					}
 					else if (es.getPitch() < 0.5) {
-						evt.result = new EnumSound(c.getDownshiftedPitch(), es.posX, es.posY, es.posZ, es.volume, es.pitch*c.getRangeInterval(), es.attenuate);
+						if (c.getDownshiftedPitch() != null)
+							evt.result = new EnumSound(c.getDownshiftedPitch(), es.posX, es.posY, es.posZ, es.volume, es.pitch*c.getRangeInterval(), es.attenuate);
 					}
 				}
 			}

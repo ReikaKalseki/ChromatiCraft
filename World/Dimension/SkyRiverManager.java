@@ -133,7 +133,7 @@ public class SkyRiverManager {
 			moveVector.xCoord = rp.next.xCoord-rp.position.xCoord;
 			moveVector.yCoord = rp.next.yCoord-rp.position.yCoord;
 			moveVector.zCoord = rp.next.zCoord-rp.position.zCoord;
-			moveVector.normalize();
+			moveVector = moveVector.normalize();
 			multiplier = -1;
 			ejectPlayer(player, rs);
 		}

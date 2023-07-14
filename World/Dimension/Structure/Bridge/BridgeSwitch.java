@@ -16,11 +16,11 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTileCallback;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Bridge.BlockBridgeControl.TileBridgeControl;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.BridgeGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
 
@@ -142,7 +142,7 @@ public class BridgeSwitch extends BridgeNode {
 		parent.addKey(uid);
 	}
 
-	private static class KeyCallback implements TileCallback {
+	private static class KeyCallback extends DimensionStructureTileCallback {
 
 		private final UUID structure;
 		private final UUID key;

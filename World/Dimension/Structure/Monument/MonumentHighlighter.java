@@ -15,12 +15,12 @@ import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTileCallback;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 
 
 public class MonumentHighlighter {
@@ -881,7 +881,7 @@ public class MonumentHighlighter {
 		world.setBlock(i + 32, j + 0, k + 28, stone, 9);
 	}
 	 */
-	private static class MonumentPlace implements TileCallback {
+	private static class MonumentPlace extends DimensionStructureTileCallback {
 
 		private MonumentPlace() {
 

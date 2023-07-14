@@ -14,7 +14,7 @@ import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap.CollectionType;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
+import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerator.TileCallback;
 
 public abstract class GeneratedStructureBase extends ColoredStructureBase {
 

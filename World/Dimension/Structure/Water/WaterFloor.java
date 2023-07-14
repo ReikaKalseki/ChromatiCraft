@@ -21,6 +21,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTileCallback;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Water.BlockRotatingLock.TileEntityRotatingLock;
@@ -30,7 +31,6 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.World.Dimension.Structure.WaterPuzzleGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 
@@ -338,7 +338,7 @@ public class WaterFloor extends StructurePiece<WaterPuzzleGenerator> {
 		return path.startLoc;
 	}
 
-	private static class LockCallback implements TileCallback {
+	private static class LockCallback extends DimensionStructureTileCallback {
 
 		private final UUID uid;
 		private final int level;

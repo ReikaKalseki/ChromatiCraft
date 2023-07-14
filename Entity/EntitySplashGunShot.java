@@ -57,7 +57,7 @@ public class EntitySplashGunShot extends EntityFireball {
 			vec.xCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
 			vec.yCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
 			vec.zCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
-			vec.normalize();
+			vec = vec.normalize();
 		}
 		double v = 0.25;
 		motionX = v*vec.xCoord;

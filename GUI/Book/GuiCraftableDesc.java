@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
@@ -22,12 +21,11 @@ import net.minecraft.item.ItemStack;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.GuiDescription;
-import Reika.ChromatiCraft.Block.BlockHeatLamp.HeatLampEffect;
 import Reika.ChromatiCraft.Block.BlockHeatLamp.TileEntityHeatLamp;
 import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
-import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
+import Reika.DragonAPI.Instantiable.ItemSpecificEffectDescription;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.ModInteract.Bees.BeeSpecies;
@@ -81,45 +79,29 @@ public class GuiCraftableDesc extends GuiDescription {
 				api.drawItemStack(itemRender, is, (int)(posX/s), (int)(posY/s));
 			GL11.glPopMatrix();
 		}
-		if (page == ChromaResearch.HEATLAMP && subpage > 0) {
-			Collection<HeatLampEffect> li = TileEntityHeatLamp.getEffects(subpage == 2);
-			int oy = posY+107;
-			int dy = 0;
-			for (HeatLampEffect s : li) {
-				List<GuiItemDisplay> items = s.isActive() ? s.getRelevantItems() : null;
-				if (items != null && !items.isEmpty()) {
-					int ox = posX+12;
-					int dx = 0;
-					for (GuiItemDisplay g : items) {
-						int dx2 = dx+ox;
-						int dy2 = dy+oy-textOffset*17;
-						if (dx2 >= 0 && dy2 >= oy && dy2 <= oy+90) {
-							g.draw(fontRendererObj, dx2, dy2);
-							if (api.isMouseInBox(dx2, dx2+16, dy2, dy2+16)) {
-								String sg = s.getDescription();
-								api.drawTooltipAt(fontRendererObj, sg, api.getMouseRealX()+fontRendererObj.getStringWidth(sg)+22, api.getMouseRealY()+15);
-							}
-						}
-						dx += 18;
-						if (dx >= 220) {
-							dx = 0;
-							dy += 17;
-						}
-					}
-					dy += 22;
-				}
-			}
-		}
+		Collection<? extends ItemSpecificEffectDescription> lie = this.getEffectList();
+		if (lie != null)
+			this.drawEffectDescriptions(posX, posY+47, lie);
 	}
 
 	@Override
 	protected boolean hasScroll() {
-		return super.hasScroll() || (page == ChromaResearch.HEATLAMP && subpage > 0);
+		if (this.getEffectList() != null)
+			return true;
+		return super.hasScroll();
 	}
 
 	@Override
 	protected int getMaxScroll() {
-		return page == ChromaResearch.HEATLAMP && subpage > 0 ? 50 : super.getMaxScroll();
+		if (this.getEffectList() != null)
+			return 50;
+		return super.getMaxScroll();
+	}
+
+	private Collection<? extends ItemSpecificEffectDescription> getEffectList() {
+		if (page == ChromaResearch.HEATLAMP && subpage > 0)
+			return TileEntityHeatLamp.getEffects(subpage == 2);
+		return null;
 	}
 
 	private void renderBlock(int posX, int posY) {

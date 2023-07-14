@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.tileentity.TileEntityFurnace;
@@ -32,7 +33,7 @@ import Reika.DragonAPI.Instantiable.ItemDrop.OreDrop;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
+import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerator.TileCallback;
 import Reika.DragonAPI.Interfaces.Registry.OreType;
 import Reika.DragonAPI.Interfaces.Registry.OreType.OreRarity;
 import Reika.DragonAPI.Interfaces.Registry.TreeType;
@@ -185,6 +186,16 @@ public class BurrowStructure extends FragmentStructureBase {
 			world.setBlockMetadataWithNotify(x, y, z, 3, 3);
 		}
 
+		@Override
+		public void writeToNBT(NBTTagCompound tag) {
+
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound tag) {
+
+		}
+
 	};
 
 	private final TileCallback doorCall = new TileCallback() {
@@ -201,6 +212,16 @@ public class BurrowStructure extends FragmentStructureBase {
 			else {
 				throw new IllegalStateException("Burrow has no chest ID!");
 			}
+		}
+
+		@Override
+		public void writeToNBT(NBTTagCompound tag) {
+
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound tag) {
+
 		}
 
 	};
@@ -225,6 +246,16 @@ public class BurrowStructure extends FragmentStructureBase {
 			ItemStack ret = ChromaItems.KEY.getStackOf();
 			((ItemDoorKey)ret.getItem()).setID(ret, doorID);
 			return ret;
+		}
+
+		@Override
+		public void writeToNBT(NBTTagCompound tag) {
+
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound tag) {
+
 		}
 
 	};
@@ -282,6 +313,16 @@ public class BurrowStructure extends FragmentStructureBase {
 			ItemStack ret = ChromaItems.KEY.getStackOf();
 			((ItemDoorKey)ret.getItem()).setID(ret, doorID);
 			return ret;
+		}
+
+		@Override
+		public void writeToNBT(NBTTagCompound tag) {
+
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound tag) {
+
 		}
 
 	};

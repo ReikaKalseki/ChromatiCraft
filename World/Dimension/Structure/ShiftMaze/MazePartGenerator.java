@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -16,6 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTileCallback;
 import Reika.ChromatiCraft.Block.Worldgen.BlockLootChest.TileEntityLootChest;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Items.Tools.ItemDoorKey;
@@ -31,11 +32,11 @@ public class MazePartGenerator {
 	}
 
 	/* public static class ToggleDoorGenerator extends MazePartGenerator {
-	 * 
+	 *
 	 * @Override public void generateExtras(ShiftMazeGenerator gen,
 	 * ChunkSplicedGenerationCache world, int offsetX, int posY, int offsetZ,
 	 * MazeGrid.MazeSegment segment) {
-	 * 
+	 *
 	 * List<ShiftMazeState> state = segment.states; setDoor(gen, world, offsetX
 	 * + 2, posY + 1, offsetZ + 2, state); setDoor(gen, world, offsetX + 2, posY
 	 * + 2, offsetZ + 2, state); if (segment.isDoorHorizontal) { setDoor(gen,
@@ -47,15 +48,15 @@ public class MazePartGenerator {
 	 * offsetZ + 1, state); setDoor(gen, world, offsetX + 2, posY + 1, offsetZ +
 	 * 3, state); setDoor(gen, world, offsetX + 2, posY + 2, offsetZ + 3,
 	 * state); }
-	 * 
+	 *
 	 * }
-	 * 
+	 *
 	 * private void setDoor(ShiftMazeGenerator gen, ChunkSplicedGenerationCache
 	 * world, int x, int y, int z, List<ShiftMazeState> states) {
 	 * world.setBlock(x, y, z, ChromaBlocks.SHIFTLOCK.getBlockInstance(),
 	 * states.contains(gen.getActiveState()) ? 1 : 0); gen.addToggleDoor(x, y,
 	 * z, states); }
-	 * 
+	 *
 	 * } */
 
 	public static class ChestGenerator extends MazePartGenerator {
@@ -76,7 +77,7 @@ public class MazePartGenerator {
 
 		}
 
-		private static class LootChestCallback implements ChunkSplicedGenerationCache.TileCallback {
+		private static class LootChestCallback extends DimensionStructureTileCallback {
 
 			private final UUID uid;
 			private final Random rand;

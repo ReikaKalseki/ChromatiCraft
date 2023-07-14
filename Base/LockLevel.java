@@ -19,6 +19,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTileCallback;
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator.UUIDPlace;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockColoredLock.TileEntityColorLock;
 import Reika.ChromatiCraft.Block.Dimension.Structure.Locks.BlockLockKey;
@@ -28,7 +29,6 @@ import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.LocksGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Instantiable.Worldgen.OriginBlockCache;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
@@ -119,7 +119,7 @@ public abstract class LockLevel extends StructurePiece<LocksGenerator> implement
 		return mirror[1];
 	}
 
-	private static class LockColorSet implements TileCallback {
+	private static class LockColorSet extends DimensionStructureTileCallback {
 
 		private final LocksGenerator generator;
 		private final CrystalElement[] colors;

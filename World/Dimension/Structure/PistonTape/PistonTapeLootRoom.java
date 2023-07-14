@@ -9,6 +9,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Base.DimensionStructureGenerator;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTileCallback;
 import Reika.ChromatiCraft.Base.StructureLootRoom;
 import Reika.ChromatiCraft.Block.BlockEncrustedCrystal.CrystalGrowth;
 import Reika.ChromatiCraft.Block.BlockEncrustedCrystal.TileCrystalEncrusted;
@@ -18,7 +19,6 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
@@ -91,7 +91,7 @@ public class PistonTapeLootRoom extends StructureLootRoom<PistonTapeGenerator> {
 		}
 	}
 
-	private static class EncrustedCrystalCallback implements TileCallback {
+	private static class EncrustedCrystalCallback extends DimensionStructureTileCallback {
 
 		private final CrystalElement color;
 		private final Random rand;

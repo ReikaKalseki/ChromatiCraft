@@ -81,7 +81,7 @@
 		<notes>
 			Individual slots can be toggled to temporarily negate both effects and lumen consumption
 			
-			Some items which normally require being held may continue to work in the pouch
+			In addition to standard "keep it in your inventory" items, some items which normally require being held or manually used may continue to work in the pouch:
 		</notes>
 	</aurapouch>
 	<multitool>

@@ -15,7 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
-import Reika.ChromatiCraft.Auxiliary.Interfaces.ProjectileFiringTool;
+import Reika.ChromatiCraft.API.Interfaces.ProjectileFiringTool;
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 
 
@@ -40,6 +40,11 @@ public abstract class ItemProjectileFiringTool extends ItemChromaTool implements
 		e.setLocationAndAngles(ep.posX+vec.xCoord, ep.posY+vec.yCoord+1.5, ep.posZ+vec.zCoord, 0, 0);
 		world.spawnEntityInWorld(e);
 		ReikaSoundHelper.playSoundAtEntity(world, e, "random.fizz", 2, 0.7F);
+	}
+
+	@Override
+	public int getAutofireRate() {
+		return 10;
 	}
 
 	protected abstract Entity createProjectile(ItemStack is, World world, EntityPlayer ep, boolean randomVec);

@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.function.Function;
 
 import org.lwjgl.opengl.GL11;
 
@@ -113,45 +114,6 @@ public class EndOverhaulManager extends IRenderHandler implements RetroactiveGen
 		BlockTickEvent.disallowAllUpdates = true;
 
 		this.setSeed(world);
-		/*
-		for (int i = 0; i < 16; i++) {
-			for (int k = 0; k < 16; k++) {
-				int dx = chunkX*16+i;
-				int dz = chunkZ*16+k;
-				double val = Math.abs(placementNoise.getValue(dx, dz));
-				if (val <= TENDRIL_THRESH_2) {
-					double h = 0;
-					int c = 0;
-					int min = Integer.MAX_VALUE;
-					for (int a = -24; a <= 24; a += 8) {
-						for (int b = -24; b <= 24; b += 8) {
-							double hval = ReikaMathLibrary.normalizeToBounds(yLevelNoise.getValue(dx+a, dz+b), MIN_HEIGHT, MAX_HEIGHT);
-							int top = world.getTopSolidOrLiquidBlock(dx, dz);
-							if (top > 0)
-								hval = Math.min(hval, top-3);
-							h += hval;
-							min = Math.min((int)hval, min);
-							c++;
-						}
-					}
-					h /= c;
-					int y = (int)h;
-					double f = ((val-TENDRIL_THRESH_1)/(TENDRIL_THRESH_2-TENDRIL_THRESH_1));
-					double t = val < TENDRIL_THRESH_1 ? 1 : 1-f*f;
-					int th = (int)(t*4);
-					int y0 = y-th;
-					for (int dy = y0; dy <= y; dy++) {
-						if (world.getBlock(dx, dy, dz).isAir(world, dx, dy, dz)) {
-							BlockKey bk = val < TENDRIL_THRESH_0 && (dy == y || dy >= y0+2) ? coreBlock : coatingBlock;
-							if (bk == coreBlock && dy >= min)
-								continue;
-							bk.place(world, dx, dy, dz);
-						}
-					}
-				}
-			}
-		}
-		 */
 		for (Tendril t : tendrils) {
 			WorldChunk wc = new WorldChunk(world, chunkX, chunkZ);
 			Map<Coordinate, BlockKey> map = t.blocks.getMap(wc);
@@ -218,7 +180,7 @@ public class EndOverhaulManager extends IRenderHandler implements RetroactiveGen
 		float spf = 1;
 		float fogTarget = 999;
 		if (distChSq > 60) {
-			if (distChSq < MIN_DIST_SQ_CH+120) {
+			if (distChSq < MIN_DIST_SQ_CH+140) {
 				target = lim;
 				fogTarget = 80;
 			}
@@ -470,35 +432,16 @@ public class EndOverhaulManager extends IRenderHandler implements RetroactiveGen
 		}
 
 		private Tendril calculate(World world) {
-			LightningBolt lb = new LightningBolt(origin, endpoint, (int)(length/32)).setVariance(24, 6, 24).setRandom(rand);
-			lb.maximize();
+			Function<Integer, Double> f1 = (i) -> i < 3 ? i/3D : 1F;
+			Function<Integer, Double> f2 = (i) -> i < 8 ? Math.pow(i/8D, 1.6) : 1F;
+			LightningBolt lb = new LightningBolt(origin, endpoint, (int)(length/27)).setVariance(24, 18, 24, f1, f2, f1).setRandom(rand).maximize();
 			List<DecimalPosition> li = lb.spline(SplineType.CHORDAL, lb.nsteps*12);
 			for (DecimalPosition pos : li) {
-				//Coordinate c1 = pos.getCoordinate();
-				//blocks.put(new WorldChunk(world, c1.xCoord >> 4, c1.zCoord >> 4), c1, coatingBlock);
-				//blocks.put(new WorldChunk(world, c2.xCoord >> 4, c2.zCoord >> 4), c2, coatingBlock);
 				for (int a = -3; a <= 3; a++) {
 					for (int b = -3; b <= 3; b++) {
 						for (int c = -3; c <= 3; c++) {
 							double dist = ReikaMathLibrary.py3d(a, b, c);
-							if (dist <= 4) {/*
-								BlockKey bk = null;
-								if (dist <= 3)
-									bk = coreBlock;
-								else if (ReikaMathLibrary.py3d(a, 0, c) <= 1.2)
-									bk = coatingBlock;
-
-								if (bk != null) {
-									double dx = pos.xCoord+a;
-									double dy = Math.min(60, pos.yCoord)+b;
-									double dz = pos.zCoord+c;
-									Coordinate loc = new Coordinate(dx, dy, dz);
-									WorldChunk wc = new WorldChunk(world, loc.xCoord >> 4, loc.zCoord >> 4);
-									Map<Coordinate, BlockKey> map = blocks.getMap(wc);
-									if (map != null && coatingBlock.equals(map.get(loc)))
-										continue;
-									blocks.put(wc, loc, bk);
-								}*/
+							if (dist <= 4) {
 								double dx = pos.xCoord+a;
 								double dy = pos.yCoord+b;
 								double dz = pos.zCoord+c;

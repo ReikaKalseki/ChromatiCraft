@@ -1072,6 +1072,7 @@ public class RecipesCastingTable implements CastingAPI {
 	private CastingRecipe addModRecipe(CastingRecipe r) {
 		this.addRecipe(r);
 		moddedItemRecipes.add(r);
+		Collections.sort(moddedItemRecipes, (r1, r2) -> ReikaItemHelper.comparator.compare(r1.getOutput(), r2.getOutput()));
 		return r;
 	}
 
@@ -1117,6 +1118,7 @@ public class RecipesCastingTable implements CastingAPI {
 
 	private CastingRecipe addCustomRecipe(CastingRecipe r) {
 		APIrecipes.add(r);
+		Collections.sort(APIrecipes, (r1, r2) -> ReikaItemHelper.comparator.compare(r1.getOutput(), r2.getOutput()));
 		return this.addRecipe(r);
 	}
 

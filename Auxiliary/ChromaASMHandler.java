@@ -32,7 +32,6 @@ import org.objectweb.asm.tree.VarInsnNode;
 import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraftforge.classloading.FMLForgePlugin;
 
-import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.ASMEnum;
 import Reika.DragonAPI.Libraries.Java.ReikaASMHelper;
 
@@ -121,9 +120,7 @@ public class ChromaASMHandler implements IFMLLoadingPlugin {
 
 			public void apply(ClassNode cn) {
 				switch(this) {
-					case ENDPROVIDER: { //THIS WORKS
-						if (ModList.ENDEREXPANSION.isLoaded())
-							break;
+					case ENDPROVIDER: {
 						MethodNode m = ReikaASMHelper.getMethodByName(cn, "func_73187_a", "initializeNoiseField", "([DIIIIII)[D");
 						String func = FMLForgePlugin.RUNTIME_DEOBF ? "func_76129_c" : "sqrt_float";
 						AbstractInsnNode loc = ReikaASMHelper.getFirstMethodCall(cn, m, "net/minecraft/util/MathHelper", func, "(F)F");

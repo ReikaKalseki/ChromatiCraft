@@ -50,6 +50,7 @@ import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
+import Reika.DragonAPI.Instantiable.ItemSpecificEffectDescription;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 import Reika.DragonAPI.Interfaces.TileEntity.GuiController;
@@ -146,11 +147,9 @@ public class BlockHeatLamp extends BlockAttachableMini {
 		return iba.getBlockMetadata(x, y, z) >= 8;
 	}
 
-	public static abstract class HeatLampEffect {
+	public static abstract class HeatLampEffect extends ItemSpecificEffectDescription {
 
-		public abstract String getDescription();
 		public abstract void tickTile(TileEntity te, TileEntityHeatLamp lamp);
-		public abstract List<GuiItemDisplay> getRelevantItems();
 
 		public boolean isActive() {
 			return true;
@@ -184,7 +183,7 @@ public class BlockHeatLamp extends BlockAttachableMini {
 		static {
 			heatEffects.add(new HeatLampEffect(){
 				@Override
-				public String getDescription() {
+				public String getDescription(GuiItemDisplay i) {
 					return "Heats to temperature";
 				}
 
@@ -212,7 +211,7 @@ public class BlockHeatLamp extends BlockAttachableMini {
 			});
 			coldEffects.add(new HeatLampEffect(){
 				@Override
-				public String getDescription() {
+				public String getDescription(GuiItemDisplay i) {
 					return "Cools to temperature";
 				}
 
@@ -240,7 +239,7 @@ public class BlockHeatLamp extends BlockAttachableMini {
 			});
 			heatEffects.add(new HeatLampEffect(){
 				@Override
-				public String getDescription() {
+				public String getDescription(GuiItemDisplay i) {
 					return "Supplants fuel needs (>200C)";
 				}
 
@@ -271,7 +270,7 @@ public class BlockHeatLamp extends BlockAttachableMini {
 			});
 			heatEffects.add(new ModdedHeatLampEffect(){
 				@Override
-				public String getDescription() {
+				public String getDescription(GuiItemDisplay i) {
 					return "Keeps smelteries warm";
 				}
 
@@ -297,7 +296,7 @@ public class BlockHeatLamp extends BlockAttachableMini {
 			});
 			coldEffects.add(new ModdedHeatLampEffect(){
 				@Override
-				public String getDescription() {
+				public String getDescription(GuiItemDisplay i) {
 					return "Increases casting speeds";
 				}
 
@@ -326,7 +325,7 @@ public class BlockHeatLamp extends BlockAttachableMini {
 			});
 			heatEffects.add(new ModdedHeatLampEffect(){
 				@Override
-				public String getDescription() {
+				public String getDescription(GuiItemDisplay i) {
 					return "Keeps fireboxes warm";
 				}
 
@@ -355,7 +354,7 @@ public class BlockHeatLamp extends BlockAttachableMini {
 			});
 			heatEffects.add(new ModdedHeatLampEffect(){
 				@Override
-				public String getDescription() {
+				public String getDescription(GuiItemDisplay i) {
 					return "Supplants fuel needs (>200C)";
 				}
 
@@ -378,7 +377,7 @@ public class BlockHeatLamp extends BlockAttachableMini {
 			});
 			heatEffects.add(new HeatLampEffect(){
 				@Override
-				public String getDescription() {
+				public String getDescription(GuiItemDisplay i) {
 					return "Supplants fuel needs (>200C)";
 				}
 
@@ -407,7 +406,7 @@ public class BlockHeatLamp extends BlockAttachableMini {
 			});
 			coldEffects.add(new ModdedHeatLampEffect(){
 				@Override
-				public String getDescription() {
+				public String getDescription(GuiItemDisplay i) {
 					return "Cools reactors";
 				}
 
@@ -438,7 +437,7 @@ public class BlockHeatLamp extends BlockAttachableMini {
 			});
 			heatEffects.add(new ModdedHeatLampEffect(){
 				@Override
-				public String getDescription() {
+				public String getDescription(GuiItemDisplay i) {
 					return "Supplies HU";
 				}
 

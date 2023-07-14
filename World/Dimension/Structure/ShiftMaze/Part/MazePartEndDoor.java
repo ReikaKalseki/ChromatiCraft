@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.World.Dimension.Structure.ShiftMaze.Part;
 import java.util.UUID;
 
 import net.minecraft.block.Block;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -83,5 +84,15 @@ public class MazePartEndDoor extends StructurePieceChainable<ShiftMazeGenerator>
 		if (te instanceof BlockChromaDoor.TileEntityChromaDoor) {
 			((BlockChromaDoor.TileEntityChromaDoor)te).bindUUID(null, doorid, 0);
 		}
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound tag) {
+
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound tag) {
+
 	}
 }

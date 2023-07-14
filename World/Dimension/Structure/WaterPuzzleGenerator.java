@@ -30,7 +30,6 @@ import Reika.ChromatiCraft.World.Dimension.Structure.Water.WaterFloor;
 import Reika.ChromatiCraft.World.Dimension.Structure.Water.WaterLoot;
 import Reika.ChromatiCraft.World.Dimension.Structure.Water.WaterPath;
 import Reika.ChromatiCraft.World.Dimension.Structure.Water.WaterStructureEntrance;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 
 
@@ -195,7 +194,7 @@ public class WaterPuzzleGenerator extends DimensionStructureGenerator {
 		return levels.size();
 	}
 
-	private static class EverFluidCallback implements TileCallback {
+	private static class EverFluidCallback extends DimensionStructureTileCallback {
 
 		private final UUID uid;
 		private final int level;

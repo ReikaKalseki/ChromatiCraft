@@ -62,7 +62,7 @@ import Reika.DragonAPI.Instantiable.Data.Collections.ChancedOutputList;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
+import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerator.TileCallback;
 
 import cpw.mods.fml.common.Loader;
 
@@ -534,7 +534,26 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	}
 
-	private static final class StructureInterfaceCallback implements TileCallback {
+	public final void writeToNBT(NBTTagCompound tag) {
+
+	}
+
+	public final void readFromNBT(NBTTagCompound tag) {
+
+	}
+
+	public static abstract class DimensionStructureTileCallback implements TileCallback {
+
+		public final void writeToNBT(NBTTagCompound tag) {
+
+		}
+
+		public final void readFromNBT(NBTTagCompound tag) {
+
+		}
+	}
+
+	private static final class StructureInterfaceCallback extends DimensionStructureTileCallback {
 
 		private final DimensionStructureGenerator generator;
 		private final HashMap<String, Object> data;
@@ -560,7 +579,7 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	}
 
-	public static final class UUIDPlace implements TileCallback {
+	public static final class UUIDPlace extends DimensionStructureTileCallback {
 
 		private final UUID uid;
 
@@ -577,7 +596,7 @@ public abstract class DimensionStructureGenerator implements TileCallback {
 
 	}
 
-	public static final class LootChestCallback implements TileCallback {
+	public static final class LootChestCallback extends DimensionStructureTileCallback {
 
 		private final String chest;
 		private final int bonus;

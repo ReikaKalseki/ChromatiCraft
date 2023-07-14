@@ -33,6 +33,7 @@ public class ItemInventoryLinker extends ItemWithItemFilter {
 
 	public ItemInventoryLinker(int index) {
 		super(index);
+		//ItemAuraPouch.setSpecialEffect(ItemAuraPouch.WORKS_IN_POUCH_EFFECT_DESC, this);
 	}
 
 	@Override

@@ -66,7 +66,7 @@ public class EntityChainGunShot extends EntityFireball {
 			vec.xCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
 			vec.yCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
 			vec.zCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
-			vec.normalize();
+			vec = vec.normalize();
 		}
 		double v = 1.5;
 		motionX = v*vec.xCoord;

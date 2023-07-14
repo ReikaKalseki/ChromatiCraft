@@ -293,6 +293,11 @@ public class UATrades implements ConnectionErrorHandler {
 		ChromatiCraft.logger.logError("Could not load commodity price data - server not found!");
 	}
 
+	@Override
+	public final void onCertificateFailed() {
+		ChromatiCraft.logger.logError("Could not load commodity price data - your HTTP certificate is invalid!");
+	}
+
 	public static interface EDCommodityHook {
 
 		/** EDDB id */

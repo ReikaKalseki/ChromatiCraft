@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -55,7 +55,6 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.BlockVector;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 
@@ -314,7 +313,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 		}
 	}
 
-	private static class WindowPlace implements TileCallback {
+	private static class WindowPlace extends DimensionStructureTileCallback {
 
 		private final ForgeDirection direction;
 		private final Coordinate other;
@@ -342,7 +341,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 
 	}
 
-	private static class PortalPlace implements TileCallback {
+	private static class PortalPlace extends DimensionStructureTileCallback {
 
 		private final BlockVector location;
 		private final ForgeDirection direction;
@@ -366,7 +365,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 
 	}
 
-	private static class LootChestCallback implements TileCallback {
+	private static class LootChestCallback extends DimensionStructureTileCallback {
 
 		private final UUID uid;
 		private final Random rand;
@@ -388,7 +387,7 @@ public class NonEuclideanGenerator extends DimensionStructureGenerator {
 
 	}
 
-	private static class DoorCallback implements TileCallback {
+	private static class DoorCallback extends DimensionStructureTileCallback {
 
 		private final UUID uid;
 

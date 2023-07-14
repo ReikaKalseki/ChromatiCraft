@@ -24,6 +24,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 
 import Reika.ChromatiCraft.Auxiliary.ChromaStacks;
 import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTileCallback;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
@@ -35,7 +36,6 @@ import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.World.Dimension.Structure.LightPanelGenerator;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.KeySignature;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
@@ -451,7 +451,7 @@ public class LightPanelRoom extends StructurePiece<LightPanelGenerator> {
 
 	}
 
-	private static class SwitchCallback implements TileCallback {
+	private static class SwitchCallback extends DimensionStructureTileCallback {
 
 		private final UUID uid;
 		private final int level;

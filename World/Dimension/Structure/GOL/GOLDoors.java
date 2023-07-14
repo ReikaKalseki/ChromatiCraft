@@ -16,13 +16,13 @@ import net.minecraft.init.Blocks;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTileCallback;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.BlockChromaDoor.TileEntityChromaDoor;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.GOLGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 
 
 public class GOLDoors extends StructurePiece<GOLGenerator> {
@@ -236,7 +236,7 @@ public class GOLDoors extends StructurePiece<GOLGenerator> {
 		world.setTileEntity(x, y, z, ChromaBlocks.DOOR.getBlockInstance(), 0, new DoorCallback(parent.id));
 	}
 
-	private static class DoorCallback implements TileCallback {
+	private static class DoorCallback extends DimensionStructureTileCallback {
 
 		private final UUID id;
 

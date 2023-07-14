@@ -407,7 +407,7 @@ public class ChromaAux {
 		//ReikaJavaLibrary.pConsole(distsq+" @ "+chunkX*8+","+chunkZ*8+" > "+dx*16+","+dz*16);
 		if (distsq < EndOverhaulManager.MIN_DIST_SQ_CH) {
 			//ReikaJavaLibrary.pConsole(" > "+originalBias);
-			return originalBias-MathHelper.sqrt_float(Math.max(0, distsq-100)) * 4.0F;
+			return originalBias-MathHelper.sqrt_float(Math.max(0, distsq-100)) * 4.0F; //vanilla
 		}
 		else if (distsq < EndOverhaulManager.MAX_DIST_SQ_CH) {
 			double ang = Math.toDegrees(Math.atan2(dz, dx))+EndOverhaulManager.getAngleOffset(world);

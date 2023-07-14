@@ -6,6 +6,7 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ChestGenHooks;
@@ -25,7 +26,7 @@ import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl;
 import Reika.ChromatiCraft.TileEntity.Technical.TileEntityStructControl.InteractionDelegateTile;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
+import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerator.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 
 
@@ -451,6 +452,15 @@ public class BiomeStructure extends FragmentStructureWithBonusLoot {
 			((TileEntityStructControl)te).setStructureData(puzzle);
 		}
 
+		public final void writeToNBT(NBTTagCompound tag) {
+
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound tag) {
+
+		}
+
 	}
 
 	private static class ControllerDelegateCallback implements TileCallback {
@@ -464,6 +474,15 @@ public class BiomeStructure extends FragmentStructureWithBonusLoot {
 		@Override
 		public void onTilePlaced(World world, int x, int y, int z, TileEntity te) {
 			((InteractionDelegateTile)te).setDelegate(controllerLocation);
+		}
+
+		public final void writeToNBT(NBTTagCompound tag) {
+
+		}
+
+		@Override
+		public void readFromNBT(NBTTagCompound tag) {
+
 		}
 
 	}

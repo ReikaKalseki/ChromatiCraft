@@ -47,7 +47,7 @@ public class EntityLightShot extends EntityFireball {
 			vec.xCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
 			vec.yCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
 			vec.zCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
-			vec.normalize();
+			vec = vec.normalize();
 		}
 		double v = 3.5;
 		motionX = v*vec.xCoord;

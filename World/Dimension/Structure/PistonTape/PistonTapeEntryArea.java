@@ -8,13 +8,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTileCallback;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.Dimension.Structure.PistonTape.BlockPistonController.TilePistonController;
 import Reika.ChromatiCraft.Block.Worldgen.BlockStructureShield.BlockType;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.World.Dimension.Structure.PistonTapeGenerator;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
@@ -133,7 +133,7 @@ public class PistonTapeEntryArea extends StructurePiece<PistonTapeGenerator> {
 		world.setTileEntity(dx2, y+2, dz2, ChromaBlocks.PISTONCONTROL.getBlockInstance(), 3, new PistonControlCallback(level));
 	}
 
-	private static class PistonControlCallback implements TileCallback {
+	private static class PistonControlCallback extends DimensionStructureTileCallback {
 
 		private final UUID uid;
 		private final int index;

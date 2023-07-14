@@ -29,6 +29,7 @@ import net.minecraft.entity.passive.EntityBat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -50,6 +51,7 @@ import Reika.DragonAPI.Interfaces.WinterBiomeStrengthControl;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMathLibrary;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
+import Reika.DragonAPI.Libraries.World.ReikaWorldHelper;
 import Reika.DragonAPI.ModInteract.DeepInteract.ReikaMystcraftHelper;
 import Reika.DragonAPI.ModInteract.ItemHandlers.BoPBlockHandler;
 
@@ -177,9 +179,18 @@ public class BiomeGlowingCliffs extends BiomeGenBase implements WinterBiomeStren
 		return 0x22ffbb;//0xff70e0;
 	}
 
+	@SideOnly(Side.CLIENT)
 	public int getWaterColor(IBlockAccess world, int x, int y, int z, int l) {
+		if (isClearWater(world, x, y, z))
+			return 0xffffff;
 		float f = (float)ReikaMathLibrary.normalizeToBounds(waterColorMix.getValue(x, z), 0, 1);
 		return ReikaColorAPI.mixColors(0x22ffbb, 0xff50d0, f);//this.getWaterColorMultiplier();
+	}
+
+	@SideOnly(Side.CLIENT)
+	public static boolean isClearWater(IBlockAccess world, int x, int y, int z) {
+		World w = Minecraft.getMinecraft().theWorld;
+		return (y > 65 && ReikaWorldHelper.getWaterDepth(world, x, y, z) <= 3) || world.getBlockMetadata(x, y, z) > 0 || w.getSavedLightValue(EnumSkyBlock.Sky, x, y, z) < 2 || ReikaWorldHelper.countAdjacentBlocks(world, x, y, z, Blocks.air, false) >= 2;
 	}
 
 	private int shiftBrightness(int base, int x, int y, int z) {

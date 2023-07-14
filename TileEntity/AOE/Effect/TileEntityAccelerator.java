@@ -35,7 +35,7 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiIconDisplay;
-import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackListDisplay;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Java.ReikaJavaLibrary;
@@ -124,8 +124,12 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 
 	private static void addBlacklistItem(ItemStack is) {
 		if (is != null && is.getItem() != null) {
-			blacklist.addDisplays(new BlacklistDisplay(is));
+			addBlacklistItems(is);
 		}
+	}
+
+	public static void addBlacklistItems(ItemStack... is) {
+		blacklist.addDisplays(new BlacklistDisplay(is));
 	}
 
 	private static class DefaultEffectDisplay extends GuiIconDisplay {
@@ -149,9 +153,9 @@ public class TileEntityAccelerator extends TileEntityAdjacencyUpgrade {
 
 	}
 
-	private static class BlacklistDisplay extends GuiStackDisplay {
+	private static class BlacklistDisplay extends GuiStackListDisplay {
 
-		private BlacklistDisplay(ItemStack is) {
+		private BlacklistDisplay(ItemStack... is) {
 			super(is);
 		}
 

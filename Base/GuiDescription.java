@@ -9,6 +9,7 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Base;
 
+import java.util.Collection;
 import java.util.List;
 
 import net.minecraft.client.gui.GuiButton;
@@ -21,7 +22,9 @@ import Reika.ChromatiCraft.ModInterface.Bees.CrystalBees;
 import Reika.ChromatiCraft.ModInterface.Bees.TileEntityLumenAlveary;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
+import Reika.DragonAPI.Instantiable.ItemSpecificEffectDescription;
 import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGuiButton;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 
 public abstract class GuiDescription extends GuiBookSection {
@@ -154,6 +157,35 @@ public abstract class GuiDescription extends GuiBookSection {
 	@Override
 	public final int getTitleColor() {
 		return page.isConfigDisabled() ? 0xffffff : super.getTitleColor();
+	}
+
+	protected final void drawEffectDescriptions(int posX, int posY, Collection<? extends ItemSpecificEffectDescription> li) {
+		int oy = posY+107;
+		int dy = 0;
+		for (ItemSpecificEffectDescription s : li) {
+			List<GuiItemDisplay> items = s.getRelevantItems();
+			if (!items.isEmpty()) {
+				int ox = posX+12;
+				int dx = 0;
+				for (GuiItemDisplay g : items) {
+					int dx2 = dx+ox;
+					int dy2 = dy+oy-textOffset*17;
+					if (dx2 >= 0 && dy2 >= oy && dy2 <= oy+90) {
+						g.draw(fontRendererObj, dx2, dy2);
+						if (api.isMouseInBox(dx2, dx2+16, dy2, dy2+16)) {
+							String sg = s.getDescription(g);
+							api.drawTooltipAt(fontRendererObj, sg, api.getMouseRealX()+fontRendererObj.getStringWidth(sg)+22, api.getMouseRealY()+15);
+						}
+					}
+					dx += 18;
+					if (dx >= 220) {
+						dx = 0;
+						dy += 17;
+					}
+				}
+				dy += 22;
+			}
+		}
 	}
 
 }

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -28,7 +29,7 @@ import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator;
 import Reika.ChromatiCraft.World.Dimension.Structure.MusicPuzzleGenerator.MelodyPrefab;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
+import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerator.TileCallback;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.KeySignature;
 import Reika.DragonAPI.Libraries.MathSci.ReikaMusicHelper.MusicKey;
 
@@ -168,6 +169,16 @@ public class MusicPuzzle extends StructurePiece<MusicPuzzleGenerator> implements
 			((TileMusicMemory)te).uid = parent.id;
 			controllerLocation = new Coordinate(te);
 		}
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound tag) {
+
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound tag) {
+
 	}
 
 }

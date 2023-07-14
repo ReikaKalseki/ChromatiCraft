@@ -27,6 +27,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Auxiliary.ChromaFX;
 import Reika.ChromatiCraft.Items.Tools.ItemBottleneckFinder.WarningLevels;
+import Reika.ChromatiCraft.Items.Tools.ItemPylonFinder;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
 import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.CrystalElement;
@@ -62,7 +63,7 @@ public class PylonFinderOverlay {
 		if (evt.type == ElementType.HELMET) {
 			EntityPlayer ep = Minecraft.getMinecraft().thePlayer;
 			if (PylonGenerator.instance.canGenerateIn(ep.worldObj)) {
-				boolean compass = ChromaItems.FINDER.matchWith(ep.getCurrentEquippedItem()) || (ep.getEntityData().hasKey("pylonoverlay") && ep.getEntityData().getLong("pylonoverlay") >= ep.worldObj.getTotalWorldTime()-20);
+				boolean compass = ChromaItems.FINDER.matchWith(ep.getCurrentEquippedItem()) || (ep.getEntityData().hasKey(ItemPylonFinder.NBT_KEY) && ep.getEntityData().getLong(ItemPylonFinder.NBT_KEY) >= ep.worldObj.getTotalWorldTime()-20);
 				if (compass || !renders.isEmpty()) {
 					GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 					Tessellator v5 = Tessellator.instance;

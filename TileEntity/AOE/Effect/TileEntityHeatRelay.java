@@ -117,7 +117,8 @@ public class TileEntityHeatRelay extends TileEntityAdjacencyUpgrade implements I
 		}
 
 		if (ModList.IC2.isLoaded()) {
-			ic2HUEffect = TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.ORANGE, "Transfers HU").setOrderIndex(1000);
+			ic2HUEffect = TileEntityAdjacencyUpgrade.registerEffectDescription(CrystalElement.ORANGE, "Transfers HU");
+			ic2HUEffect.setOrderIndex(1000);
 			ic2HUEffect.addDisplays(new GuiStackDisplay("IC2:blockKineticGenerator:5"));
 			for (int i = 0; i <= 3; i++)
 				ic2HUEffect.addDisplays(new GuiStackDisplay("IC2:blockHeatGenerator:"+i));

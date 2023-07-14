@@ -91,6 +91,7 @@ import Reika.ChromatiCraft.Items.Tools.ItemAuraPouch;
 import Reika.ChromatiCraft.Items.Tools.ItemBulkMover;
 import Reika.ChromatiCraft.Items.Tools.ItemChromaBook;
 import Reika.ChromatiCraft.Items.Tools.ItemEnderBucket;
+import Reika.ChromatiCraft.Items.Tools.ItemSplineAttack;
 import Reika.ChromatiCraft.Items.Tools.Powered.ItemStructureFinder;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemFlightWand;
 import Reika.ChromatiCraft.Items.Tools.Wands.ItemTransitionWand;
@@ -1280,6 +1281,10 @@ public class ChromatiPackets implements PacketHandler {
 				case NETWORKITEMMODE: {
 					if (ep.openContainer instanceof ContainerNetworkItemTransporter)
 						((ContainerNetworkItemTransporter)ep.openContainer).setFilterDisplay(data[0] > 0);
+					break;
+				}
+				case SPLINEATTACKTARGETS: {
+					ItemSplineAttack.receiveTargetListForTrail(world, ep, data);
 					break;
 				}
 			}

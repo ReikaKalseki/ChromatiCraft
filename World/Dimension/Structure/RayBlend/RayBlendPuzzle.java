@@ -30,6 +30,7 @@ import Reika.ChromatiCraft.Auxiliary.CrystalMusicManager;
 import Reika.ChromatiCraft.Auxiliary.OverlayColor;
 import Reika.ChromatiCraft.Auxiliary.OverlayColor.IntOverlayColor;
 import Reika.ChromatiCraft.Base.CrystalTypeBlock;
+import Reika.ChromatiCraft.Base.DimensionStructureGenerator.DimensionStructureTileCallback;
 import Reika.ChromatiCraft.Base.StructurePiece;
 import Reika.ChromatiCraft.Block.BlockChromaDoor;
 import Reika.ChromatiCraft.Block.Dimension.BlockDimensionDeco.DimDecoTypes;
@@ -49,7 +50,6 @@ import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget.RadiusTarget;
 import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 import Reika.DragonAPI.Libraries.ReikaDirectionHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaArrayHelper;
@@ -1211,7 +1211,7 @@ public class RayBlendPuzzle extends StructurePiece<RayBlendGenerator> {
 
 	}
 
-	private static class RayblendFloorCallback implements TileCallback {
+	private static class RayblendFloorCallback extends DimensionStructureTileCallback {
 
 		private final UUID parent;
 		private final UUID uid;

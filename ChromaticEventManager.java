@@ -787,6 +787,17 @@ public class ChromaticEventManager {
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
+	public void preventSpawnsInEndTendrils(LivingSpawnEvent.CheckSpawn evt) {
+		if (evt.world.provider.dimensionId == 1) {
+			double distChSq = (evt.x*evt.x+evt.z*evt.z)/256;
+			if (distChSq > 55 && distChSq < EndOverhaulManager.MIN_DIST_SQ_CH+140) {
+				evt.setResult(Result.DENY);
+				//ReikaJavaLibrary.pConsole("Preventing spawn of "+evt.entityLiving+" @ "+evt.x+","+evt.z+"="+distChSq);
+			}
+		}
+	}
+
+	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void preventFertilitySeedReuse(EntityItemPickupEvent evt) {
 		if (evt.item.getEntityItem().getItem() == ChromaItems.FERTILITYSEED.getItemInstance()) {
 			if (evt.item.age >= ItemFertilitySeed.INITIAL_DELAY)

@@ -11,7 +11,6 @@ package Reika.ChromatiCraft.GUI.Book;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -22,7 +21,6 @@ import Reika.ChromatiCraft.Registry.AdjacencyUpgrades;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaResearch;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
-import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
 
 public class GuiAdjacencyDescription extends GuiMachineDescription {
 
@@ -97,35 +95,8 @@ public class GuiAdjacencyDescription extends GuiMachineDescription {
 	@Override
 	protected void drawNotesGraphics(int posX, int posY) {
 		AdjacencyPage ap = this.getCurrentPage();
-		if (ap.isEffectList) {
-			Collection<AdjacencyEffectDescription> li = TileEntityAdjacencyUpgrade.getSpecificEffects(ap.coreType.getColor());
-			int oy = posY+107;
-			int dy = 0;
-			for (AdjacencyEffectDescription s : li) {
-				List<GuiItemDisplay> items = s.getRelevantItems();
-				if (!items.isEmpty()) {
-					int ox = posX+12;
-					int dx = 0;
-					for (GuiItemDisplay g : items) {
-						int dx2 = dx+ox;
-						int dy2 = dy+oy-textOffset*17;
-						if (dx2 >= 0 && dy2 >= oy && dy2 <= oy+90) {
-							g.draw(fontRendererObj, dx2, dy2);
-							if (api.isMouseInBox(dx2, dx2+16, dy2, dy2+16)) {
-								String sg = s.description;
-								api.drawTooltipAt(fontRendererObj, sg, api.getMouseRealX()+fontRendererObj.getStringWidth(sg)+22, api.getMouseRealY()+15);
-							}
-						}
-						dx += 18;
-						if (dx >= 220) {
-							dx = 0;
-							dy += 17;
-						}
-					}
-					dy += 22;
-				}
-			}
-		}
+		if (ap.isEffectList)
+			this.drawEffectDescriptions(posX, posY, TileEntityAdjacencyUpgrade.getSpecificEffects(ap.coreType.getColor()));
 	}
 
 	/*

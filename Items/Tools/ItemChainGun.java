@@ -28,4 +28,9 @@ public class ItemChainGun extends ItemProjectileFiringTool {
 		return new EntityChainGunShot(world, ep, randomVec);
 	}
 
+	@Override
+	public int getAutofireRate() {
+		return 20;
+	}
+
 }

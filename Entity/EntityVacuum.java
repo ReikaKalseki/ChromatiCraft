@@ -69,7 +69,7 @@ public class EntityVacuum extends Entity implements IEntityAdditionalSpawnData, 
 			vec.xCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
 			vec.yCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
 			vec.zCoord = ReikaRandomHelper.getRandomPlusMinus(0, 1D);
-			vec.normalize();
+			vec = vec.normalize();
 		}
 		double v = 0.85;
 		motionX = v*vec.xCoord;

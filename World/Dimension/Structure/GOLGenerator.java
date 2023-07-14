@@ -29,7 +29,6 @@ import Reika.ChromatiCraft.World.Dimension.Structure.GOL.GOLDoors;
 import Reika.ChromatiCraft.World.Dimension.Structure.GOL.GOLEntrance;
 import Reika.ChromatiCraft.World.Dimension.Structure.GOL.GOLLoot;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
-import Reika.DragonAPI.Instantiable.Worldgen.ChunkSplicedGenerationCache.TileCallback;
 
 public class GOLGenerator extends DimensionStructureGenerator {
 
@@ -112,7 +111,7 @@ public class GOLGenerator extends DimensionStructureGenerator {
 		world.setBlock(x, floorY+ROOM_HEIGHT, z, ChromaBlocks.GOL.getBlockInstance(), 2);
 	}
 
-	private static class GOLTileCallback implements TileCallback {
+	private static class GOLTileCallback extends DimensionStructureTileCallback {
 
 		private final boolean initOn;
 		private final GOLGenerator generator;

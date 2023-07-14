@@ -237,6 +237,7 @@ public enum ChromaPackets {
 	ALTARSHOCK(4),
 	ALTARBREAK(3),
 	NETWORKITEMMODE(1, PacketTypes.RAW),
+	SPLINEATTACKTARGETS(-1),
 	;
 
 	public final int numInts;
