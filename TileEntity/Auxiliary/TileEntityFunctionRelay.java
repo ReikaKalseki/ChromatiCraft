@@ -10,9 +10,14 @@
 package Reika.ChromatiCraft.TileEntity.Auxiliary;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.TreeMap;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
@@ -20,13 +25,14 @@ import net.minecraftforge.common.ForgeHooks;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
+import Reika.DragonAPI.Instantiable.ItemSpecificEffectDescription.ItemListEffectDescription;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay;
+import Reika.DragonAPI.Instantiable.GUI.GuiItemDisplay.GuiStackDisplay;
 import Reika.DragonAPI.Instantiable.Rendering.ColorBlendList;
 import Reika.DragonAPI.Libraries.MathSci.ReikaPhysicsHelper;
-import Reika.DragonAPI.Libraries.Registry.ReikaCropHelper;
-import Reika.DragonAPI.ModRegistry.ModCropList;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -34,11 +40,43 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class TileEntityFunctionRelay extends TileEntityChromaticBase {
 
-	private RelayFunctions function = RelayFunctions.HARVEST;
+	private static final TreeMap<String, RelayedEffectDescription> specialEffects = new TreeMap();
 
 	private final StepTimer scanTimer = new StepTimer(50);
 
 	private final ArrayList<Coordinate> activeCoords = new ArrayList();
+
+	public static Collection<RelayedEffectDescription> getEffects() {
+		return Collections.unmodifiableCollection(specialEffects.values());
+	}
+
+	public static void setSpecialEffect(String desc, ChromaTiles t) {
+		setSpecialEffect(desc, t.getCraftedProduct());
+	}
+
+	public static void setSpecialEffect(String desc, ItemStack is) {
+		setSpecialEffect(desc, new GuiStackDisplay(is));
+	}
+
+	public static void setSpecialEffect(String desc, GuiItemDisplay d) {
+		RelayedEffectDescription eff = specialEffects.get(desc);
+		if (eff == null) {
+			eff = new RelayedEffectDescription(desc);
+			specialEffects.put(desc, eff);
+		}
+		eff.addDisplays(d);
+	}
+
+	public static void setDefaultEffects() {
+		setSpecialEffect("Expands bookshelf search", new ItemStack(Blocks.enchanting_table));
+		String s = "Relays harvest AoE";
+		setSpecialEffect(s, ChromaTiles.FARMER);
+		setSpecialEffect(s, ChromaTiles.HARVESTPLANT);
+		s = "Relays area of effect";
+		setSpecialEffect(s, ChromaTiles.CROPSPEED);
+		setSpecialEffect(s, ChromaTiles.REVERTER);
+		setSpecialEffect("Expands fluid search", ChromaTiles.COBBLEGEN);
+	}
 
 	@Override
 	public ChromaTiles getTile() {
@@ -96,9 +134,7 @@ public class TileEntityFunctionRelay extends TileEntityChromaticBase {
 						Block b = world.getBlock(dx, dy, dz);
 						if (!b.isAir(world, dx, dy, dz)) {
 							int meta = world.getBlockMetadata(dx, dy, dz);
-							if (function.isCoordinateSignificant(world, dx, dy, dz, b, meta)) {
-								activeCoords.add(new Coordinate(dx, dy, dz));
-							}
+							activeCoords.add(new Coordinate(dx, dy, dz));
 						}
 					}
 				}
@@ -111,26 +147,22 @@ public class TileEntityFunctionRelay extends TileEntityChromaticBase {
 
 	}
 
-	public RelayFunctions getFunctionType() {
-		return function;
-	}
-
 	@Override
 	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
-
-		NBT.setInteger("function", function.ordinal());
 	}
 
 	@Override
 	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
-
-		function = RelayFunctions.list[NBT.getInteger("function")];
 	}
 
 	public Coordinate getRandomCoordinate() {
 		return activeCoords.isEmpty() ? null : activeCoords.get(rand.nextInt(activeCoords.size()));
+	}
+
+	public Collection<Coordinate> getCoordinates() {
+		return Collections.unmodifiableCollection(activeCoords);
 	}
 
 	public float getEnchantPowerInRange(World world, int x, int y, int z) {
@@ -171,18 +203,12 @@ public class TileEntityFunctionRelay extends TileEntityChromaticBase {
 		return power;
 	}
 
-	public static enum RelayFunctions {
-		HARVEST();
+	public static class RelayedEffectDescription extends ItemListEffectDescription {
 
-		private static final RelayFunctions[] list = values();
-
-		private boolean isCoordinateSignificant(World world, int x, int y, int z, Block b, int meta) {
-			switch(this) {
-				case HARVEST:
-					return ReikaCropHelper.getCrop(b) != null || ModCropList.getModCrop(b, meta) != null;
-			}
-			return false;
+		public RelayedEffectDescription(String s) {
+			super(s);
 		}
+
 	}
 
 }

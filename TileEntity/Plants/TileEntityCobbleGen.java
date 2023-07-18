@@ -42,6 +42,7 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.Render.Particle.EntityRuneFX;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -103,8 +104,7 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant implements Operati
 	}
 
 	@Override
-	protected void writeSyncTag(NBTTagCompound NBT)
-	{
+	protected void writeSyncTag(NBTTagCompound NBT) {
 		super.writeSyncTag(NBT);
 
 		NBT.setInteger("recipeTick", recipeTick);
@@ -119,8 +119,7 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant implements Operati
 	}
 
 	@Override
-	protected void readSyncTag(NBTTagCompound NBT)
-	{
+	protected void readSyncTag(NBTTagCompound NBT) {
 		super.readSyncTag(NBT);
 
 		recipeTick = NBT.getInteger("recipeTick");
@@ -343,7 +342,7 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant implements Operati
 				for (int k = -XZ_RANGE; k <= XZ_RANGE; k++) {
 					int dx = x+i;
 					int dz = z+k;
-					this.scanPosition(world, dx, y, dz);
+					this.scanPosition(world, dx, y, dz, true);
 				}
 			}
 		}
@@ -351,7 +350,7 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant implements Operati
 			for (int i = 0; i < RANDOM_SCANS; i++) {
 				int dx = ReikaRandomHelper.getRandomPlusMinus(x, XZ_RANGE);
 				int dz = ReikaRandomHelper.getRandomPlusMinus(z, XZ_RANGE);
-				this.scanPosition(world, dx, y, dz);
+				this.scanPosition(world, dx, y, dz, false);
 			}
 		}
 
@@ -371,9 +370,27 @@ public class TileEntityCobbleGen extends TileEntityMagicPlant implements Operati
 		return null;
 	}
 
-	private void scanPosition(World world, int dx, int y, int dz) {
+	private void scanPosition(World world, int dx, int y, int dz, boolean all) {
 		int dy = this.getYPosition(world, dx, y, dz);
 		if (dy != -1) {
+			if (ChromaTiles.getTileFromIDandMetadata(world.getBlock(dx, dy, dz), world.getBlockMetadata(dx, dy, dz)) == ChromaTiles.FUNCTIONRELAY) {
+				TileEntityFunctionRelay te = (TileEntityFunctionRelay)world.getTileEntity(dx, dy, dz);
+				if (all) {
+					for (Coordinate c : te.getCoordinates()) {
+						FluidStack f = this.getFluidAtBlock(world, c.xCoord, c.yCoord, c.zCoord);
+						if (f != null) {
+							fluidLocations.addValue(f.getFluid().getName(), c);
+						}
+					}
+					return;
+				}
+				else {
+					Coordinate c = te.getRandomCoordinate();
+					dx = c.xCoord;
+					dy = c.yCoord;
+					dz = c.zCoord;
+				}
+			}
 			FluidStack f = this.getFluidAtBlock(world, dx, dy, dz);
 			if (f != null) {
 				fluidLocations.addValue(f.getFluid().getName(), new Coordinate(dx, dy, dz));

@@ -3,6 +3,7 @@ package Reika.ChromatiCraft.Base;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Locale;
+import java.util.function.Function;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -12,6 +13,7 @@ import com.google.common.base.Strings;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.util.MathHelper;
 
 import Reika.ChromatiCraft.ChromatiCraft;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
@@ -20,6 +22,7 @@ import Reika.DragonAPI.Instantiable.GUI.CustomSoundGuiButton.CustomSoundImagedGu
 import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Rendering.ReikaColorAPI;
 import Reika.DragonAPI.Libraries.Rendering.ReikaGuiAPI;
 import Reika.DragonAPI.ModInteract.DeepInteract.NEIIntercept.KeyConsumingGui;
 
@@ -64,7 +67,7 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase implements Ke
 	@Override
 	protected void actionPerformed(GuiButton b) {
 		if (b.id == -600) {
-			searchActive = true;
+			searchActive = !searchActive;
 		}
 	}
 
@@ -74,7 +77,9 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase implements Ke
 	protected abstract Collection<E> getAllEntries(EntityPlayer ep);
 	protected abstract void sortEntries(ArrayList<E> li);
 
-	private void buildList(EntityPlayer ep) {
+	protected final void buildList(EntityPlayer ep) {
+		this.list.clear();
+		this.filteredList.clear();
 		list.addAll(this.getAllEntries(ep));
 		this.sortEntries(list);
 		char c = 0;
@@ -132,18 +137,40 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase implements Ke
 		return idx;
 	}
 	 */
-	protected final void decrIndex() {/*
-		if (GuiScreen.isShiftKeyDown())
-			index = this.getLastIndexOfPreviousLetter();
-		else */if (index > 0)
-			index--;
+
+	protected final int decrIndex() {
+		return this.decrIndex(null);
 	}
 
-	protected final void incrIndex() {/*
-		if (GuiScreen.isShiftKeyDown())
-			index = this.getFirstIndexOfNextLetter();
-		else */if (index < this.filteredList.size()-1)
-			index++;
+	protected final int decrIndex(Function<E, Boolean> isValidToStopAt) {
+		int amt = 0;
+		E at;
+		if (index > 0) {
+			do {
+				amt++;
+				index--;
+				at = this.getActive();
+			} while(index > 0 && at != null && isValidToStopAt != null && !isValidToStopAt.apply(at));
+		}
+		return amt;
+	}
+
+	protected final int incrIndex() {
+		return this.incrIndex(null);
+	}
+
+	protected final int incrIndex(Function<E, Boolean> isValidToStopAt) {
+		int amt = 0;
+		E at;
+		if (index < this.filteredList.size()-1) {
+			do {
+				amt++;
+				index++;
+				at = this.getActive();
+				//ReikaJavaLibrary.pConsole("Stepped to "+at+" idx ="+index+": "+(isValidToStopAt != null && !isValidToStopAt.apply(at)));
+			} while(index < filteredList.size()-1 && at != null && isValidToStopAt != null && !isValidToStopAt.apply(at));
+		}
+		return amt;
 	}
 
 	@Override
@@ -158,12 +185,28 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase implements Ke
 	}
 
 	private boolean handleKey(char c, int idx) {
-		if (!this.searchActive)
-			return false;
 		if (idx == Keyboard.KEY_HOME) {
 			index = 0;
 			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.67F);
 			return true;
+		}
+		else if (idx == Keyboard.KEY_END) {
+			index = this.filteredList.size()-1;
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.67F);
+			return true;
+		}
+		else if (idx == Keyboard.KEY_PRIOR) {
+			this.decrIndex(this.getStepByCategory());
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.67F);
+			return true;
+		}
+		else if (idx == Keyboard.KEY_NEXT) {
+			this.incrIndex(this.getStepByCategory());
+			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 0.67F);
+			return true;
+		}
+		if (!this.searchActive) {
+			return false;
 		}
 		else if (isSearchableCharacter(c)) {
 			this.addToSearch(c);
@@ -203,6 +246,10 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase implements Ke
 		else {
 			return false;
 		}
+	}
+
+	protected Function<E, Boolean> getStepByCategory() {
+		return null;
 	}
 
 	public static boolean isSearchableCharacter(char c) {
@@ -248,27 +295,55 @@ public abstract class GuiLetterSearchable<E> extends GuiChromaBase implements Ke
 		super.drawGuiContainerForegroundLayer(par1, par2);
 	}
 
+	@Override
+	protected void drawGuiContainerBackgroundLayer(float f, int a, int b) {
+		super.drawGuiContainerBackgroundLayer(f, a, b);
+	}
+
 	protected void drawSearch() {
-		if (this.isSearchActive() && !Strings.isNullOrEmpty(filterString)) {
-			long ms = System.currentTimeMillis()-lastMillis;
-			searchFadeTick = Math.min(1, searchFadeTick+ms/150F);
+		long ms = System.currentTimeMillis()-lastMillis;
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		if (this.searchFadeTick > 0) {
 			GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
 			GL11.glEnable(GL11.GL_BLEND);
 			BlendMode.DEFAULT.apply();
 			GL11.glColor4f(0.0F, 0.0F, 0.0F, 0.67F*this.searchFadeTick);
 			ReikaTextureHelper.bindTexture(ChromatiCraft.class, this.getFullTexturePath());
 			this.drawTexturedModalRect(0, 0, 0, 0, xSize, ySize);
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GL11.glPopAttrib();
 
+			ArrayList<String> li = new ArrayList();
+			li.add("Return to start: HOME");
+			li.add("Go to end: END");
+			if (this.getStepByCategory() != null) {
+				li.add("Go back one category: PGUP");
+				li.add("Go forward one category: PGDN");
+			}
+			li.add("These keys work whether or not search is active");
+			GL11.glPushMatrix();
+			double s = 0.5;
+			GL11.glScaled(s, s, s);
+			GL11.glTranslated(0, 0, 250);
+			for (int i = 0; i < li.size(); i++) {
+				String sg = li.get(i);
+				int c = 0xffffff;
+				if (i == li.size()-1)
+					c = ReikaColorAPI.mixColors(c, 0x00ff00, 0.5F+0.5F*MathHelper.sin(player.ticksExisted/5F));
+				this.drawString(fontRendererObj, sg, (xSize-fontRendererObj.getStringWidth(sg)/2-6)*2, (4+(fontRendererObj.FONT_HEIGHT+1)*i)*2, c);
+			}
+			GL11.glPopMatrix();
+		}
+		if (this.isSearchActive() && this.searchActive) {
+			searchFadeTick = Math.min(1, searchFadeTick+ms/150F);
 			GL11.glPushMatrix();
 			double s = 2;
 			GL11.glScaled(s, s, s);
+			GL11.glTranslated(0, 0, 250);
 			ReikaGuiAPI.instance.drawCenteredStringNoShadow(fontRendererObj, filterString, (int)(xSize/(2*s)), (int)(ySize/(2*s)), this.noResultsFound ? 0xffa0a0 : 0xa0ffa0);
 			GL11.glPopMatrix();
-			GL11.glPopAttrib();
 		}
 		else {
-			searchFadeTick = 0;
+			searchFadeTick = Math.max(0, searchFadeTick-ms/50F);
 		}
 		lastMillis = System.currentTimeMillis();
 	}

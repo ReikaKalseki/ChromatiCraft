@@ -28,7 +28,6 @@ import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay;
-import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay.RelayFunctions;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Effects.EntityBlurFX;
@@ -154,8 +153,7 @@ public class TileEntityFarmer extends TileEntityRelayPowered implements ComplexA
 			return b;
 		int meta = c.getBlockMetadata(world);
 		if (ChromaTiles.getTileFromIDandMetadata(b, meta) == ChromaTiles.FUNCTIONRELAY) {
-			TileEntityFunctionRelay te = (TileEntityFunctionRelay)c.getTileEntity(world);
-			return te.getFunctionType() == RelayFunctions.HARVEST ? te : null;
+			return c.getTileEntity(world);
 		}
 		CropType type = ReikaCropHelper.getCrop(b);
 		if (type == null)

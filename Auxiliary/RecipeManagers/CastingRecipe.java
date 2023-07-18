@@ -1062,7 +1062,7 @@ public class CastingRecipe implements APICastingRecipe {
 		}
 	}
 
-	public static class RecipeComparator implements Comparator<CastingRecipe> {
+	public static Comparator<CastingRecipe> recipeComparator = new Comparator<CastingRecipe>() {
 
 		@Override
 		public int compare(CastingRecipe o1, CastingRecipe o2) {
@@ -1084,7 +1084,7 @@ public class CastingRecipe implements APICastingRecipe {
 			return flags;
 		}
 
-	}
+	};
 
 	public static class RecipeNameComparator implements Comparator<CastingRecipe> {
 

@@ -18,6 +18,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ComplexAOE;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay;
 import Reika.DragonAPI.Instantiable.StepTimer;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -95,6 +96,8 @@ public class TileEntityBiomeReverter extends TileEntityMagicPlant implements Com
 			c = c.scale(2D);
 		}
 		c = c.offset(x, y, z);
+		if (ChromaTiles.getTileFromIDandMetadata(c.getBlock(world), c.getBlockMetadata(world)) == ChromaTiles.FUNCTIONRELAY)
+			c = ((TileEntityFunctionRelay)c.getTileEntity(world)).getRandomCoordinate();
 		BiomeGenBase b = c.getBiome(world);
 		BiomeGenBase nat = ReikaWorldHelper.getNaturalGennedBiomeAt(world, c.xCoord, c.zCoord);
 		if (b != nat && nat != null) {

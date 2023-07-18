@@ -743,7 +743,8 @@ public class ChromaticEventManager {
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)
 	public void multiBuild(PlayerPlaceBlockEvent evt) {
-		TileEntityMultiBuilder.placeBlock(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, evt.block, evt.metadata, evt.player, evt.player.getCurrentEquippedItem());
+		if (evt.player != null)
+			TileEntityMultiBuilder.placeBlock(evt.world, evt.xCoord, evt.yCoord, evt.zCoord, evt.block, evt.metadata, evt.player, evt.player.getCurrentEquippedItem());
 	}
 
 	@SubscribeEvent(priority = EventPriority.LOWEST)

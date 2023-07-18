@@ -251,6 +251,8 @@ public class TileEntityMultiBuilder extends TileEntityChromaticBase implements L
 	}
 
 	public static void placeBlock(World world, int x, int y, int z, Block b, int meta, EntityPlayer ep, ItemStack is) {
+		if (ep == null)
+			return;
 		cache.applyToMatches(world, true, (WorldLocation loc, TileEntity te) -> {
 			((TileEntityMultiBuilder)te).checkAndBuild(world, x, y, z, b, meta, ep, is);
 		}, (WorldLocation loc, TileEntity te) -> {
@@ -259,6 +261,8 @@ public class TileEntityMultiBuilder extends TileEntityChromaticBase implements L
 	}
 
 	public static void breakBlock(World world, int x, int y, int z, Block b, int meta, EntityPlayer ep) {
+		if (ep == null)
+			return;
 		cache.applyToMatches(world, true, (WorldLocation loc, TileEntity te) -> {
 			if (x != te.xCoord || y != te.yCoord || z != te.zCoord)
 				((TileEntityMultiBuilder)te).checkAndBreak(world, x, y, z, b, meta, ep);

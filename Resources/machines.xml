@@ -803,10 +803,10 @@
 	</fluxmaker>
 	<functionrelay>
 		<desc>
-			Certain constructs have areas of effect that is difficult to work with, making you now somewhat regret your decision to build a terrace farm whose contours make the placement of any such device rather awkward. One solution would be to create some sort of relay, that would be placed in the primary construct's area of effect and which would delegate said effect to its own more workable region.
+			Certain constructs have areas of effect that is difficult to work with, making you now somewhat regret your decision to build a terrace farm whose contours make the placement of any such device rather awkward. One solution would be to create some sort of relay, that would be placed in the primary construct's area of effect and which would delegate said effect to its own more workable region. That is, when the construct selected the location occupied by the relay, its effects would instead be applied to an area within the relay's own range.
 		</desc>
 		<note>
-
+			The %s can relay the effect of the following constructs:
 		</note>
 	</functionrelay>
 	<multibuilder>

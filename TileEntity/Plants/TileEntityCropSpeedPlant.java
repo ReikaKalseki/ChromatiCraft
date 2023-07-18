@@ -24,6 +24,7 @@ import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Block.Worldgen.BlockCliffStone.Variants;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay;
 import Reika.DragonAPI.Instantiable.Data.WeightedRandom;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Libraries.Java.ReikaRandomHelper;
@@ -90,6 +91,11 @@ public class TileEntityCropSpeedPlant extends TileEntityMagicPlant implements Co
 		Coordinate c = growthRand.getRandomEntry().offset(x, y, z);
 		Block b = c.getBlock(world);
 		int meta = c.getBlockMetadata(world);
+		if (ChromaTiles.getTileFromIDandMetadata(b, meta) == ChromaTiles.FUNCTIONRELAY) {
+			c = ((TileEntityFunctionRelay)c.getTileEntity(world)).getRandomCoordinate();
+			b = c.getBlock(world);
+			meta = c.getBlockMetadata(world);
+		}
 		boolean flag = b instanceof BlockSapling || b == ChromaBlocks.DECOFLOWER.getBlockInstance() || b instanceof BlockReed || b instanceof BlockCactus || b == Blocks.vine;
 		flag |= ReikaCropHelper.getCrop(b) != null;
 		flag |= ModCropList.getModCrop(b, meta) != null;

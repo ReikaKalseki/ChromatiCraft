@@ -25,7 +25,6 @@ import Reika.ChromatiCraft.API.Event.CrystalGenEvent;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ChromaDecorator;
 import Reika.ChromatiCraft.ModInterface.MystPages;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.Interfaces.RetroactiveGenerator;
 import Reika.DragonAPI.Libraries.World.ReikaBlockHelper;
@@ -129,7 +128,7 @@ public class CrystalGenerator implements RetroactiveGenerator, ChromaDecorator {
 			}
 		}
 		if (world.provider.isHellWorld)
-			return ChromaOptions.NETHER.getState() ? 0.25F : 0;
+			return 0.25F;//ChromaOptions.NETHER.getState() ? 0.25F : 0;
 		if (ModList.MYSTCRAFT.isLoaded() && ReikaMystcraftHelper.isMystAge(world)) {
 			if (MystPages.Pages.DENSE.existsInWorld(world)) {
 				return 1.75F;

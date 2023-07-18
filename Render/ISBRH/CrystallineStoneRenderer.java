@@ -159,15 +159,15 @@ public class CrystallineStoneRenderer extends ISBRH {
 		v5.setColorOpaque_F(f6, f6, f6);
 		rb.renderFaceXPos(b, x, y, z, ico);
 		 */
-		if (renderPass == 0 || StructureRenderer.isRenderingTiles()) {
+		if (renderPass == 0 || StructureRenderer.isRenderingTiles()) {/*
 			if (s.isConnectedTexture()) {
 				v5.addTranslation(x, y, z);
 				this.renderConnectedTextures(world, x, y, z, s, b, meta, rb, v5);
 				v5.addTranslation(-x, -y, -z);
 			}
-			else {
-				rb.renderStandardBlockWithAmbientOcclusion(b, x, y, z, 1, 1, 1);
-			}
+			else {*/
+			rb.renderStandardBlockWithAmbientOcclusion(b, x, y, z, 1, 1, 1);
+			//			}
 		}
 
 		if (renderPass == s.getBrightRenderPass() || StructureRenderer.isRenderingTiles()) {

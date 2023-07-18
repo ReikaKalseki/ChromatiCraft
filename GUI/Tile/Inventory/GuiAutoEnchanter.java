@@ -12,6 +12,7 @@ package Reika.ChromatiCraft.GUI.Tile.Inventory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.function.Function;
 
 import org.lwjgl.opengl.GL11;
 
@@ -100,36 +101,23 @@ public class GuiAutoEnchanter extends GuiLetterSearchable<Enchantment> {
 				index = 0;
 				break;
 			case 2:
-				this.decrementEnchant(GuiScreen.isShiftKeyDown(), GuiScreen.isCtrlKeyDown());
+				this.decrIndex(this.getFilter(GuiScreen.isShiftKeyDown(), GuiScreen.isCtrlKeyDown()));
 				break;
 			case 3:
-				this.incrementEnchant(GuiScreen.isShiftKeyDown(), GuiScreen.isCtrlKeyDown());
+				this.incrIndex(this.getFilter(GuiScreen.isShiftKeyDown(), GuiScreen.isCtrlKeyDown()));
 				break;
 		}
 		this.initGui();
 	}
 
-	private void incrementEnchant(boolean newType, boolean skipInvalid) {
+	private Function<Enchantment, Boolean> getFilter(boolean newType, boolean skipInvalid) {
 		Enchantment pre = this.getActive();
-		if (index < list.size()-1) {
-			do {
-				index++;
-			} while(index < list.size()-1 && ((newType && this.getActive().type != pre.type) || (skipInvalid && !this.isValidForItem(this.getActive()))));
-		}
+		return (r) -> (newType && this.getActive().type != pre.type) || (skipInvalid && !this.isValidForItem(this.getActive()));
 	}
 
 	private boolean isValidForItem(Enchantment e) {
 		ItemStack is = ench.getStackInSlot(0);
 		return is == null || ench.isEnchantValid(e, is, is.getItem(), false);
-	}
-
-	private void decrementEnchant(boolean newType, boolean skipInvalid) {
-		Enchantment pre = this.getActive();
-		if (index > 0) {
-			do {
-				index--;
-			} while(index > 0 && ((newType && this.getActive().type != pre.type) || (skipInvalid && !this.isValidForItem(this.getActive()))));
-		}
 	}
 
 	private String getEnchantDisplayString() {

@@ -44,7 +44,9 @@ import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.ISBRH.CrystalRenderer;
 import Reika.ChromatiCraft.TileEntity.TileEntityLumenWire.CheckType;
 import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFocusCrystal.CrystalTier;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay;
 import Reika.DragonAPI.ModList;
+import Reika.DragonAPI.Instantiable.ItemSpecificEffectDescription;
 import Reika.DragonAPI.Instantiable.Data.Proportionality;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
@@ -244,6 +246,9 @@ public class GuiMachineDescription extends GuiDescription {
 	}
 
 	protected void drawNotesGraphics(int posX, int posY) {
+		Collection<? extends ItemSpecificEffectDescription> lie = this.getEffectList();
+		if (lie != null)
+			this.drawEffectDescriptions(posX, posY, lie);
 		switch(page) {
 			case LUMENWIRE:
 				for (int i = 0; i < CheckType.list.length; i++) {
@@ -268,6 +273,26 @@ public class GuiMachineDescription extends GuiDescription {
 			default:
 				break;
 		}
+	}
+
+	@Override
+	protected boolean hasScroll() {
+		if (this.getEffectList() != null)
+			return true;
+		return super.hasScroll();
+	}
+
+	@Override
+	protected int getMaxScroll() {
+		if (this.getEffectList() != null)
+			return 50;
+		return super.getMaxScroll();
+	}
+
+	private Collection<? extends ItemSpecificEffectDescription> getEffectList() {
+		if (page == ChromaResearch.FUNCRELAY && subpage > 0)
+			return TileEntityFunctionRelay.getEffects();
+		return null;
 	}
 
 	private void drawMachineRender(int posX, int posY) {

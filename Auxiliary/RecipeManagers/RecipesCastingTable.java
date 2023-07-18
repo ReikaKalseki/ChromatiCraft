@@ -597,8 +597,8 @@ public class RecipesCastingTable implements CastingAPI {
 			this.addRecipe(new PathRecipe(ChromaItems.ELEMENTAL.getStackOf(CrystalElement.LIME), i, p.getBlock()));
 		}
 
-		if (ChromaOptions.BIOMEPAINTER.getState())
-			this.addRecipe(new BiomePainterRecipe(ChromaTiles.BIOMEPAINTER.getCraftedProduct(), ChromaStacks.transformCoreHigh));
+		//if (ChromaOptions.BIOMEPAINTER.getState())
+		this.addRecipe(new BiomePainterRecipe(ChromaTiles.BIOMEPAINTER.getCraftedProduct(), ChromaStacks.transformCoreHigh));
 
 		this.addRecipe(new AuraPouchRecipe(ChromaItems.AURAPOUCH.getStackOf(), ChromaStacks.voidCore));
 

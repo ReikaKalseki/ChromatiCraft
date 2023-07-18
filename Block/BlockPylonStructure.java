@@ -34,7 +34,6 @@ import Reika.ChromatiCraft.Base.BlockProtectedByStructure;
 import Reika.ChromatiCraft.Registry.ChromaBlocks;
 import Reika.ChromatiCraft.Registry.ChromaISBRH;
 import Reika.ChromatiCraft.Registry.ChromaIcons;
-import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.ChromaStructures;
 import Reika.ChromatiCraft.Render.Particle.EntityCCBlurFX;
 import Reika.ChromatiCraft.TileEntity.Networking.TileEntityCrystalPylon;
@@ -108,9 +107,9 @@ public class BlockPylonStructure extends BlockProtectedByStructure implements Co
 			return this == GLOWCOL || this == GLOWBEAM || this == FOCUS || this == RESORING || this == STABILIZER || this == MULTICHROMIC;
 		}
 
-		public boolean isConnectedTexture() {
-			return this == SMOOTH && ChromaOptions.CONNECTEDCRYSTALSTONE.getState();
-		}
+		//public boolean isConnectedTexture() {
+		//	return this == SMOOTH && ChromaOptions.CONNECTEDCRYSTALSTONE.getState();
+		//}
 
 		public int getBrightRenderPass() {
 			switch(this) {

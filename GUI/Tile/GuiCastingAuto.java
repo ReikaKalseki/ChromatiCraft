@@ -10,9 +10,11 @@
 package Reika.ChromatiCraft.GUI.Tile;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -31,9 +33,8 @@ import Reika.ChromatiCraft.Auxiliary.ChromaBookData;
 import Reika.ChromatiCraft.Auxiliary.RecursiveCastingAutomationSystem;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CastingAutomationBlock;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
-import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe.RecipeComparator;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.RecipesCastingTable;
-import Reika.ChromatiCraft.Base.GuiChromaBase;
+import Reika.ChromatiCraft.Base.GuiLetterSearchable;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityChromaticBase;
 import Reika.ChromatiCraft.Container.ContainerCastingAuto;
 import Reika.ChromatiCraft.Items.ItemChromaPlacer;
@@ -49,7 +50,7 @@ import Reika.DragonAPI.Libraries.IO.ReikaSoundHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
 
-public class GuiCastingAuto extends GuiChromaBase {
+public class GuiCastingAuto extends GuiLetterSearchable<CastingRecipe> {
 
 	public static CastingRecipe lexiconSelectedRecipe = null;
 
@@ -63,17 +64,11 @@ public class GuiCastingAuto extends GuiChromaBase {
 		}
 	}
 
-	private int pgCooldown;
-
-	private int index = 0;
-	//private int subindex = 0;
-
 	private int number = 1;
 
-	private final List<CastingRecipe> usableRecipes = new ArrayList();
-	private final List<CastingRecipe> visible = new ArrayList();
-
 	private final CastingAutomationBlock tile;
+
+	private final ArrayList<CastingRecipe> usableRecipes = new ArrayList();
 
 	public GuiCastingAuto(CastingAutomationBlock te, EntityPlayer ep) {
 		super(new ContainerCastingAuto(te, ep), ep, (TileEntityChromaticBase)te);
@@ -81,27 +76,8 @@ public class GuiCastingAuto extends GuiChromaBase {
 		ySize = 227;
 
 		tile = te;
-
-		Collection<CastingRecipe> recipes = te.getAvailableRecipes();//ChromaResearchManager.instance.getRecipesPerformed(ep);
-		for (ChromaResearch r : list) {
-			if (ChromaResearchManager.instance.playerHasFragment(ep, r)) {
-				Collection<CastingRecipe> c = r.getCraftingRecipes();
-				for (CastingRecipe cr : c) {
-					if (recipes.contains(cr)) {
-						usableRecipes.add(cr);
-					}
-				}
-			}
-		}
-
-		this.filterRecipes();
-		index = visible.contains(te.getAutomationHandler().getCurrentRecipeOutput()) ? visible.indexOf(te.getAutomationHandler().getCurrentRecipeOutput()) : 0;
-	}
-
-	private CastingRecipe getRecipe() {
-		if (lexiconSelectedRecipe != null)
-			return lexiconSelectedRecipe;
-		return index >= 0 && !visible.isEmpty() ? visible.get(index) : null;
+		this.buildList(ep);
+		index = filteredList.contains(te.getAutomationHandler().getCurrentRecipeOutput()) ? filteredList.indexOf(te.getAutomationHandler().getCurrentRecipeOutput()) : 0;
 	}
 
 	@Override
@@ -136,35 +112,6 @@ public class GuiCastingAuto extends GuiChromaBase {
 	@Override
 	public void updateScreen() {
 		super.updateScreen();
-
-		if (Minecraft.getMinecraft().theWorld.getTotalWorldTime()%5 == 0)
-			this.filterRecipes();
-
-		if (pgCooldown > 0)
-			pgCooldown--;
-	}
-
-	private void filterRecipes() {
-		visible.clear();
-
-		Container c = Minecraft.getMinecraft().thePlayer.openContainer;
-		if (c instanceof ContainerCastingAuto) {
-			ContainerCastingAuto cc = (ContainerCastingAuto)c;
-			for (CastingRecipe cr : usableRecipes) {
-				if (cc.isRecipeValid(cr)) {
-					visible.add(cr);
-				}
-			}
-		}
-
-		Collections.sort(visible, new RecipeComparator());
-
-		index = Math.min(index, visible.size()-1);
-
-		if (!visible.isEmpty() && lexiconSelectedRecipe != null && !visible.contains(lexiconSelectedRecipe)) {
-			ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 1);
-			lexiconSelectedRecipe = null;
-		}
 	}
 
 	@Override
@@ -173,10 +120,10 @@ public class GuiCastingAuto extends GuiChromaBase {
 
 		switch(b.id) {
 			case 0:
-				this.prevRecipe(GuiScreen.isCtrlKeyDown(), Keyboard.isKeyDown(Keyboard.KEY_LSHIFT));
+				this.decrIndex(this.getFilter(GuiScreen.isCtrlKeyDown(), GuiScreen.isShiftKeyDown()));
 				break;
 			case 1:
-				this.nextRecipe(GuiScreen.isCtrlKeyDown(), Keyboard.isKeyDown(Keyboard.KEY_LSHIFT));
+				this.incrIndex(this.getFilter(GuiScreen.isCtrlKeyDown(), GuiScreen.isShiftKeyDown()));
 				break;
 
 			case 2:
@@ -190,15 +137,15 @@ public class GuiCastingAuto extends GuiChromaBase {
 				break;
 
 			case 4:
-				if (this.getRecipe() != null) {
-					ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTORECIPE.ordinal(), (TileEntity)tile, RecipesCastingTable.instance.getStringIDForRecipe(this.getRecipe()), number);
-					if (this.getRecipe() == lexiconSelectedRecipe)
-						lexiconSelectedRecipe = null;
+				if (this.getActive() != null) {
+					ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTORECIPE.ordinal(), (TileEntity)tile, RecipesCastingTable.instance.getStringIDForRecipe(this.getActive()), number);
+					if (this.getActive() == lexiconSelectedRecipe)
+						this.clearLexiconSelectedRecipe();
 				}
 				break;
 			case 5:
 				ReikaPacketHelper.sendPacketToServer(ChromatiCraft.packetChannel, ChromaPackets.AUTOCANCEL.ordinal(), (TileEntity)tile);
-				lexiconSelectedRecipe = null;
+				this.clearLexiconSelectedRecipe();
 				break;
 			case 6: {
 				RecursiveCastingAutomationSystem sys = (RecursiveCastingAutomationSystem)tile.getAutomationHandler();
@@ -207,13 +154,13 @@ public class GuiCastingAuto extends GuiChromaBase {
 				break;
 			}
 			case 7: {
-				if (this.getRecipe() == null) {
+				if (this.getActive() == null) {
 					ChromaSounds.ERROR.playSound(player);
 					break;
 				}
 				RecursiveCastingAutomationSystem sys = (RecursiveCastingAutomationSystem)tile.getAutomationHandler();
-				String cr = RecipesCastingTable.instance.getStringIDForRecipe(this.getRecipe());
-				sys.toggleRecipePriority(this.getRecipe());
+				String cr = RecipesCastingTable.instance.getStringIDForRecipe(this.getActive());
+				sys.toggleRecipePriority(this.getActive());
 				ReikaPacketHelper.sendStringIntPacket(ChromatiCraft.packetChannel, ChromaPackets.AUTORECIPEPRIORITY.ordinal(), (TileEntity)tile, cr);
 				break;
 			}
@@ -222,80 +169,33 @@ public class GuiCastingAuto extends GuiChromaBase {
 		this.initGui();
 	}
 
-	@Override
-	protected void keyTyped(char c, int key) {
-		super.keyTyped(c, key);
+	private void clearLexiconSelectedRecipe() {
+		lexiconSelectedRecipe = null;
+		this.refresh();
+	}
 
-		if (key == Keyboard.KEY_END) {
-			index = visible.size()-1;
-			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 1);
-		}
-		else if (key == Keyboard.KEY_HOME) {
-			index = 0;
-			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 1);
-		}
+	public void refresh() {
+		this.buildList(player);
 	}
 
 	@Override
-	public void handleKeyboardInput()  {
-		super.handleKeyboardInput();
-		int key = Keyboard.getEventKey();
-		if ((key == Keyboard.KEY_PRIOR || key == Keyboard.KEY_NEXT) && pgCooldown == 0) {
-			ChromaResearch r = this.getRecipe().getFragment();
-			if (r == null) //happens when you mash keys
-				return;
-			ChromaResearch par = r.getParent();
-			boolean next = key == Keyboard.KEY_NEXT;
-			while (par == r.getParent()) {
-				boolean flag = (next ? this.nextRecipe(true, true) : this.prevRecipe(true, true)) > 0;
-				r = this.getRecipe().getFragment();
-				if (!flag)
-					break;
-			}
-			pgCooldown = 4;
-			ReikaSoundHelper.playClientSound(ChromaSounds.GUICLICK, player, 0.5F, 1);
-		}
+	protected Function<CastingRecipe, Boolean> getStepByCategory() {
+		ChromaResearch r = this.getActive().getFragment();
+		if (r == null)
+			return null;
+		ChromaResearch par = r.getParent();
+		return (cr) -> cr.getFragment() != null && cr.getFragment().getParent() == par;
 	}
 
-	private int prevRecipe(boolean newItem, boolean newType) {
-		CastingRecipe cr = this.getRecipe();
-		ItemStack cur = null;
-		if (cr != null) {
-			cur = cr.getOutput();
-		}
-		int amt = 0;
-		if (index > 0) {
-			do {
-				//subindex = 0;
-				amt++;
-				index--;
-				number = 1;
-				cr = this.getRecipe();
-			} while(index > 0 && (newItem || newType) && this.getRecipe() != null && this.matchRecipe(cur, cr, newType));
-		}
-		return amt;
+	private Function<CastingRecipe, Boolean> getFilter(boolean newItem, boolean newType) {
+		if (!newItem && !newType)
+			return null;
+		CastingRecipe cr = this.getActive();
+		ItemStack cur = cr == null ? null : cr.getOutput();
+		return (r) -> !this.matchRecipe(r, cur, newType);
 	}
 
-	private int nextRecipe(boolean newItem, boolean newType) {
-		CastingRecipe cr = this.getRecipe();
-		ItemStack cur = null;
-		if (cr != null) {
-			cur = cr.getOutput();
-		}
-		int amt = 0;
-		if (index < visible.size()-1) {
-			//subindex = 0;
-			do {
-				amt++;
-				index++;
-				number = 1;
-				cr = this.getRecipe();
-			} while(index < visible.size()-1 && (newItem || newType) && this.getRecipe() != null && this.matchRecipe(cur, cr, newType));
-		}
-		return amt;
-	}
-
-	private boolean matchRecipe(ItemStack cur, CastingRecipe r, boolean newType) {
+	private boolean matchRecipe(CastingRecipe r, ItemStack cur, boolean newType) {
 		if (newType) {
 			if (cur.getItem() instanceof ItemPendant) {
 				return r.getOutput().getItem() instanceof ItemPendant;
@@ -304,7 +204,7 @@ public class GuiCastingAuto extends GuiChromaBase {
 				return r.getOutput().getItemDamage() == cur.getItemDamage();
 			}
 		}
-		return (newType ? cur.getItem() == this.getRecipe().getOutput().getItem() : ReikaItemHelper.matchStacks(cur, this.getRecipe().getOutput()));
+		return (newType ? cur.getItem() == this.getActive().getOutput().getItem() : ReikaItemHelper.matchStacks(cur, this.getActive().getOutput()));
 	}
 
 	private int getIncrement() {
@@ -317,7 +217,7 @@ public class GuiCastingAuto extends GuiChromaBase {
 		super.drawGuiContainerBackgroundLayer(par1, par2, par3);
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
-		CastingRecipe cr = this.getRecipe();
+		CastingRecipe cr = this.getActive();
 		if (cr != null) {
 			ChromaBookData.drawCompressedCastingRecipe(fontRendererObj, itemRender, cr, j, k);
 		}
@@ -328,7 +228,7 @@ public class GuiCastingAuto extends GuiChromaBase {
 	{
 		super.drawGuiContainerForegroundLayer(par1, par2);
 
-		CastingRecipe cr = this.getRecipe();
+		CastingRecipe cr = this.getActive();
 		if (cr != null) {
 			//r.drawTabIcon(itemRender, 21, 33);
 			//fontRendererObj.drawSplitString(r.getTitle(), 40, 36, 120, 0xffffff);
@@ -372,11 +272,54 @@ public class GuiCastingAuto extends GuiChromaBase {
 			}
 			 */
 		}
+
+		this.drawSearch();
 	}
 
 	@Override
 	public String getGuiTexture() {
 		return "automator3";
+	}
+
+	@Override
+	protected String getString(CastingRecipe val) {
+		return val.getDisplayName();
+	}
+
+	@Override
+	protected Collection<CastingRecipe> getAllEntries(EntityPlayer ep) {
+		if (tile == null || ep == null)
+			return new ArrayList();
+		Container open = Minecraft.getMinecraft().thePlayer.openContainer;
+		ArrayList<CastingRecipe> li = new ArrayList();
+		Collection<CastingRecipe> recipes = tile.getAvailableRecipes();//ChromaResearchManager.instance.getRecipesPerformed(ep);
+		for (ChromaResearch r : list) {
+			if (ChromaResearchManager.instance.playerHasFragment(ep, r)) {
+				Collection<CastingRecipe> c = r.getCraftingRecipes();
+				for (CastingRecipe cr : c) {
+					if (recipes.contains(cr)) {
+						if (open instanceof ContainerCastingAuto) {
+							ContainerCastingAuto cc = (ContainerCastingAuto)open;
+							if (!cc.isRecipeValid(cr))
+								continue;
+						}
+						li.add(cr);
+					}
+				}
+			}
+		}
+
+		if (!li.isEmpty() && lexiconSelectedRecipe != null && !li.contains(lexiconSelectedRecipe)) {
+			ReikaSoundHelper.playClientSound(ChromaSounds.ERROR, player, 1, 1);
+			lexiconSelectedRecipe = null;
+		}
+
+		return lexiconSelectedRecipe != null ? Arrays.asList(lexiconSelectedRecipe) : li;
+	}
+
+	@Override
+	protected void sortEntries(ArrayList<CastingRecipe> li) {
+		Collections.sort(li, CastingRecipe.recipeComparator);
 	}
 
 }

@@ -143,6 +143,7 @@ import Reika.ChromatiCraft.TileEntity.TileEntityBiomePainter;
 import Reika.ChromatiCraft.TileEntity.AOE.Effect.TileEntityOreCreator;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityMiner;
 import Reika.ChromatiCraft.TileEntity.Acquisition.TileEntityTeleportationPump;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay;
 import Reika.ChromatiCraft.TileEntity.Plants.TileEntityCrystalPlant;
 import Reika.ChromatiCraft.World.BiomeEnderForest;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
@@ -823,6 +824,7 @@ public class ChromatiCraft extends DragonAPIMod {
 		TileEntityWirelessPowered.loadAdjacencyHandler();
 		EntityMeteorShot.registerAdjacency();
 		ItemAuraPouch.setDefaultSpecialEffects();
+		TileEntityFunctionRelay.setDefaultEffects();
 
 		ReikaDispenserHelper.addDispenserAction(ChromaItems.TOOL, new ManipulatorDispenserAction());
 		ReikaDispenserHelper.addDispenserAction(ChromaItems.BUCKET, new BucketDispenserAction());

@@ -523,6 +523,7 @@ public final class ChromaDescriptions {
 		addNotes(ChromaTiles.FLUIDDISTRIBUTOR, TileEntityAreaDistributor.SCAN_RADIUS_XZ);
 		addNotes(ChromaTiles.AREABREAKER, TileEntityAreaBreaker.MAX_RANGE);
 		addNotes(ChromaTiles.TURRET, TileEntityLumenTurret.getUpgradesListString());
+		addNotes(ChromaTiles.FUNCTIONRELAY, ChromaTiles.FUNCTIONRELAY.getName());
 		addNotes(ChromaTiles.MANABOOSTER, TileEntityManaBooster.FLOWER_RANGE, TileEntityManaBooster.POOL_RANGE);
 
 		addData(ChromaBlocks.RELAY, RelayNetworker.instance.maxRange);

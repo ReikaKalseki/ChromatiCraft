@@ -9,6 +9,8 @@
  ******************************************************************************/
 package Reika.ChromatiCraft.Container;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
@@ -18,8 +20,13 @@ import net.minecraft.tileentity.TileEntity;
 
 import Reika.ChromatiCraft.Auxiliary.Interfaces.CastingAutomationBlock;
 import Reika.ChromatiCraft.Auxiliary.RecipeManagers.CastingRecipe;
+import Reika.ChromatiCraft.GUI.Tile.GuiCastingAuto;
 import Reika.DragonAPI.Base.CoreContainer;
 import Reika.DragonAPI.Libraries.Registry.ReikaItemHelper;
+
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ContainerCastingAuto extends CoreContainer {
 
@@ -70,14 +77,22 @@ public class ContainerCastingAuto extends CoreContainer {
 	}
 
 	@Override
-	public void onCraftMatrixChanged(IInventory ii)
-	{
+	public void onCraftMatrixChanged(IInventory ii) {
 		super.onCraftMatrixChanged(ii);
 
 		if (inventory == ii) {
 			ItemStack is = inventory.getStackInSlot(0);
 			recipeFilter = is;
 		}
+		if (FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT)
+			this.updateGUI();
+	}
+
+	@SideOnly(Side.CLIENT)
+	private void updateGUI() {
+		GuiScreen gui = Minecraft.getMinecraft().currentScreen;
+		if (gui instanceof GuiCastingAuto)
+			((GuiCastingAuto)gui).refresh();
 	}
 
 	public boolean isRecipeValid(CastingRecipe cr) {

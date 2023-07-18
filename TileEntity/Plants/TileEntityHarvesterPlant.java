@@ -25,6 +25,7 @@ import net.minecraftforge.common.util.ForgeDirection;
 import Reika.ChromatiCraft.Auxiliary.Interfaces.ComplexAOE;
 import Reika.ChromatiCraft.Base.TileEntity.TileEntityMagicPlant;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.ChromatiCraft.TileEntity.Auxiliary.TileEntityFunctionRelay;
 import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.ModList;
@@ -96,6 +97,11 @@ public class TileEntityHarvesterPlant extends TileEntityMagicPlant implements Co
 					Coordinate c = coordinateRand.getRandomEntry().offset(x, y+dy, z);
 					Block b = c.getBlock(world);
 					int bmeta = c.getBlockMetadata(world);
+					if (ChromaTiles.getTileFromIDandMetadata(b, bmeta) == ChromaTiles.FUNCTIONRELAY) {
+						c = ((TileEntityFunctionRelay)c.getTileEntity(world)).getRandomCoordinate();
+						b = c.getBlock(world);
+						bmeta = c.getBlockMetadata(world);
+					}
 					if (c.getTaxicabDistanceTo(new Coordinate(this)) > 1 && this.canHarvest(b, bmeta, world, c.xCoord, c.yCoord, c.zCoord)) {
 						this.harvest(world, c.xCoord, c.yCoord, c.zCoord, b, bmeta);
 					}
