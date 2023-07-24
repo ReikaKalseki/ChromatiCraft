@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
 
-import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -28,7 +27,7 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
-import Reika.DragonAPI.Base.TileEntityBase;
+import Reika.DragonAPI.Base.TileEntityRegistryBase;
 import Reika.DragonAPI.Interfaces.TextureFetcher;
 import Reika.DragonAPI.Interfaces.TileEntity.RenderFetcher;
 import Reika.DragonAPI.Libraries.ReikaNBTHelper;
@@ -37,7 +36,7 @@ import Reika.DragonAPI.Libraries.ReikaPlayerAPI;
 
 import li.cil.oc.api.network.Visibility;
 
-public abstract class TileEntityChromaticBase extends TileEntityBase implements RenderFetcher {
+public abstract class TileEntityChromaticBase extends TileEntityRegistryBase<ChromaTiles> implements RenderFetcher {
 
 	protected final HashSet<UUID> owners = new HashSet();
 
@@ -66,22 +65,6 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 	public final boolean canUpdate() {
 		return !ChromatiCraft.instance.isLocked();
 	}
-
-	@Override
-	public final Block getTileEntityBlockID() {
-		return this.getTile().getBlock();
-	}
-
-	public final int getIndex() {
-		return this.getTile().ordinal();
-	}
-
-	@Override
-	protected final String getTEName() {
-		return ChromaTiles.TEList[this.getIndex()].getName();
-	}
-
-	public abstract ChromaTiles getTile();
 
 	@Override
 	protected void writeSyncTag(NBTTagCompound NBT) {
@@ -117,13 +100,9 @@ public abstract class TileEntityChromaticBase extends TileEntityBase implements 
 		}
 	}
 
-	public boolean isThisTE(Block id, int meta) {
-		return id == this.getTileEntityBlockID() && meta == this.getIndex();
-	}
-
 	@Override
 	public final boolean shouldRenderInPass(int pass) {
-		ChromaTiles r = ChromaTiles.TEList[this.getIndex()];
+		ChromaTiles r = this.getTile();
 		return pass == 0 || (r.renderInPass1() && pass == 1);
 	}
 

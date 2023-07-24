@@ -90,14 +90,12 @@ import Reika.ChromatiCraft.TileEntity.Transport.TileEntityTransportWindow;
 import Reika.DragonAPI.ModList;
 import Reika.DragonAPI.ASM.APIStripper.Strippable;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ModDependent;
-import Reika.DragonAPI.Base.BlockTEBase;
+import Reika.DragonAPI.Base.BlockTileEnum;
 import Reika.DragonAPI.Base.TileEntityBase;
 import Reika.DragonAPI.Instantiable.Data.KeyedItemStack;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Interfaces.Item.MusicDataItem;
-import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Interfaces.TileEntity.AdjacentUpdateWatcher;
 import Reika.DragonAPI.Interfaces.TileEntity.ConditionalUnbreakability;
 import Reika.DragonAPI.Interfaces.TileEntity.HitAction;
@@ -125,7 +123,7 @@ import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.aspects.IEssentiaContainerItem;
 
 @Strippable(value = {"mcp.mobius.waila.api.IWailaDataProvider"})
-public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock, IWailaDataProvider {
+public class BlockChromaTile extends BlockTileEnum<TileEntityChromaticBase, ChromaTiles> implements IWailaDataProvider {
 
 	private static final Random par5Random = new Random();
 
@@ -198,9 +196,8 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 	}
 
 	@Override
-	public final TileEntity createTileEntity(World world, int meta) {
-		TileEntity te = ChromaTiles.createTEFromIDAndMetadata(this, meta);
-		return te;
+	public final TileEntityChromaticBase createTileEntity(World world, int meta) {
+		return (TileEntityChromaticBase)ChromaTiles.createTEFromIDAndMetadata(this, meta);
 	}
 
 	@Override
@@ -915,8 +912,13 @@ public class BlockChromaTile extends BlockTEBase implements MachineRegistryBlock
 	}
 
 	@Override
-	public final TileEnum getMachine(IBlockAccess world, int x, int y, int z) {
+	public final ChromaTiles getMapping(IBlockAccess world, int x, int y, int z) {
 		return ChromaTiles.getTile(world, x, y, z);
+	}
+
+	@Override
+	public ChromaTiles getMapping(int meta) {
+		return ChromaTiles.getTileFromIDandMetadata(this, meta);
 	}
 
 }

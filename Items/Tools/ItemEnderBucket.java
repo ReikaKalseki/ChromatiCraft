@@ -26,9 +26,9 @@ import Reika.ChromatiCraft.Block.BlockCrystalTank.CrystalTankAuxTile;
 import Reika.ChromatiCraft.Registry.ChromaGuis;
 import Reika.ChromatiCraft.Registry.ChromaSounds;
 import Reika.ChromatiCraft.Registry.ChromaTiles;
+import Reika.DragonAPI.Base.BlockTileEnum;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockKey;
 import Reika.DragonAPI.Instantiable.Data.Immutable.WorldLocation;
-import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Interfaces.TileEntity.PartialTank;
 import Reika.DragonAPI.Libraries.ReikaFluidHelper;
@@ -347,8 +347,8 @@ public class ItemEnderBucket extends ItemChromaTool {
 		private ItemStack calcItem() {
 			Block b = tank.getBlock();
 			int meta = tank.getBlockMetadata();
-			if (b instanceof MachineRegistryBlock) {
-				TileEnum te = ((MachineRegistryBlock)b).getMachine(tank.getWorld(), tank.xCoord, tank.yCoord, tank.zCoord);
+			if (b instanceof BlockTileEnum) {
+				TileEnum te = ((BlockTileEnum)b).getMapping(tank.getWorld(), tank.xCoord, tank.yCoord, tank.zCoord);
 				return te.getCraftedProduct(tank.getTileEntity());
 			}
 			else if (InterfaceCache.BCPIPEBLOCK.instanceOf(b)) {

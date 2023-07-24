@@ -37,13 +37,13 @@ import Reika.DragonAPI.APIPacketHandler.PacketIDs;
 import Reika.DragonAPI.DragonAPIInit;
 import Reika.DragonAPI.ASM.DependentMethodStripper.ClassDependent;
 import Reika.DragonAPI.Base.BlockTieredResource;
+import Reika.DragonAPI.Base.BlockTileEnum;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockSpiral;
 import Reika.DragonAPI.Instantiable.Data.Immutable.BlockBox;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.Data.Immutable.DecimalPosition;
 import Reika.DragonAPI.Instantiable.Data.Maps.MultiMap;
 import Reika.DragonAPI.Instantiable.Effects.LightningBolt;
-import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Interfaces.TileEntity.BreakAction;
 import Reika.DragonAPI.Libraries.ReikaAABBHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
@@ -213,8 +213,8 @@ public class TileEntityAreaBreaker extends ChargedCrystalPowered implements Brea
 			boolean harvest = ep != null && bt.isPlayerSufficientTier(world, x, y, z, ep);
 			items = harvest ? bt.getHarvestResources(world, x, y, z, 0, ep) : bt.getNoHarvestResources(world, x, y, z, 0, ep);
 		}
-		else if (b instanceof MachineRegistryBlock) {
-			items = ReikaJavaLibrary.makeListFrom(((MachineRegistryBlock)b).getMachine(world, x, y, z).getCraftedProduct());
+		else if (b instanceof BlockTileEnum) {
+			items = ReikaJavaLibrary.makeListFrom(((BlockTileEnum)b).getMapping(world, x, y, z).getCraftedProduct());
 		}
 		else {
 			items = ReikaJavaLibrary.makeListFrom(ReikaBlockHelper.getSilkTouch(world, x, y, z, b, meta, this.getPlacer(), false));

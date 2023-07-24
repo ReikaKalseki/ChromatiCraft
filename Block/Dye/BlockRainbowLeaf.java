@@ -21,7 +21,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
@@ -38,7 +37,6 @@ import Reika.ChromatiCraft.Registry.ChromaItems;
 import Reika.ChromatiCraft.Registry.ChromaOptions;
 import Reika.ChromatiCraft.Registry.CrystalElement;
 import Reika.ChromatiCraft.Render.Particle.EntityCCFloatingSeedsFX;
-import Reika.ChromatiCraft.TileEntity.AOE.TileEntityRainbowBeacon;
 import Reika.ChromatiCraft.World.BiomeGlowingCliffs;
 import Reika.ChromatiCraft.World.BiomeRainbowForest;
 import Reika.DragonAPI.ModList;
@@ -53,8 +51,6 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockRainbowLeaf extends BlockCustomLeaf {
-
-	private static final boolean TILE = false;
 
 	public BlockRainbowLeaf() {
 		super();
@@ -279,16 +275,6 @@ public class BlockRainbowLeaf extends BlockCustomLeaf {
 	@Override
 	public void onBlockDestroyedByExplosion(World world, int x, int y, int z, Explosion e) {
 		RainbowTreeEffects.instance.addInstability(world, x, y, z); //make exploding the tree add the instability back
-	}
-
-	@Override
-	public boolean hasTileEntity(int meta) {
-		return TILE && LeafMetas.list[meta].hasTile();
-	}
-
-	@Override
-	public TileEntity createTileEntity(World world, int meta) {
-		return this.hasTileEntity(meta) ? new TileEntityRainbowBeacon() : null;
 	}
 
 	@Override

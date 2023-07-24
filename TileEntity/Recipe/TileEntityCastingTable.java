@@ -1361,7 +1361,7 @@ OperationInterval, MultiBlockChromaTile, FocusAcceleratable, VariableTexture, Bl
 			PylonCastingRecipe pr = (PylonCastingRecipe)activeRecipe;
 			base = Math.min(2500, Math.max(base, pr.getRequiredAura().getAverageValue()*craftingAmount/40));
 		}
-		return (int)(base*throughputBonus);
+		return (int)(base*(1+throughputBonus));
 	}
 
 	@Override

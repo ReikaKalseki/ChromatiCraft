@@ -59,6 +59,8 @@ import Reika.RotaryCraft.Auxiliary.RecipeManagers.ExtractorModOres;
 
 import buildcraft.api.transport.IPipeConnection;
 import buildcraft.api.transport.IPipeTile.PipeType;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 @Strippable(value = {"buildcraft.api.transport.IPipeConnection"})
 public class TileEntityCrystalFurnace extends InventoriedRelayPowered implements IFluidHandler, IPipeConnection, OperationInterval,
@@ -248,6 +250,9 @@ VariableTexture {
 		else if (ModList.ROTARYCRAFT.isLoaded() && ReikaItemHelper.matchStacks(in, ItemStackRepository.instance.getItem(ModList.ROTARYCRAFT, "ironscrap")))
 			return 1;
 		else if (ModList.THAUMCRAFT.isLoaded() && in.getItem() == ThaumItemHelper.ItemEntry.NUGGETCLUSTER.getItem().getItem()) {
+			return 2*MULTIPLY;
+		}
+		else if (Loader.isModLoaded("WitchingGadgets") && in.getItem() == GameRegistry.findItem("WitchingGadgets", "item.WG_Cluster")) {
 			return 2*MULTIPLY;
 		}
 		else if (ModList.THAUMCRAFT.isLoaded() && in.getItem() == ThaumItemHelper.ItemEntry.COIN.getItem().getItem()) {

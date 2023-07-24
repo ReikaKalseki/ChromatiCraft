@@ -156,6 +156,7 @@ import Reika.DragonAPI.Auxiliary.CoreModDetection;
 import Reika.DragonAPI.Auxiliary.Trackers.KeybindHandler.KeyPressEvent;
 import Reika.DragonAPI.Auxiliary.Trackers.ModLockController.ModReVerifyEvent;
 import Reika.DragonAPI.Auxiliary.Trackers.SpecialDayTracker;
+import Reika.DragonAPI.Base.BlockTileEnum;
 import Reika.DragonAPI.Instantiable.RayTracer;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.BlockArray;
 import Reika.DragonAPI.Instantiable.Data.BlockStruct.FilledBlockArray;
@@ -196,7 +197,6 @@ import Reika.DragonAPI.Instantiable.Event.Client.WinterColorsEvent.WinterFogColo
 import Reika.DragonAPI.Instantiable.Event.Client.WinterColorsEvent.WinterSkyColorsEvent;
 import Reika.DragonAPI.Instantiable.IO.EnumSound;
 import Reika.DragonAPI.Instantiable.IO.PacketTarget;
-import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Interfaces.Registry.TileEnum;
 import Reika.DragonAPI.Interfaces.Registry.TreeType;
 import Reika.DragonAPI.Libraries.ReikaEntityHelper;
@@ -2043,8 +2043,8 @@ public class ChromaClientEventController implements ProfileEventWatcher, ChunkWo
 								GL11.glFrontFace(GL11.GL_CW);
 							int meta = Minecraft.getMinecraft().theWorld.getBlockMetadata(x, y, z);
 							ReikaTextureHelper.bindTerrainTexture();
-							if (b instanceof MachineRegistryBlock) {
-								TileEnum t = ((MachineRegistryBlock)b).getMachine(Minecraft.getMinecraft().theWorld, x, y, z);
+							if (b instanceof BlockTileEnum) {
+								TileEnum t = ((BlockTileEnum)b).getMapping(Minecraft.getMinecraft().theWorld, x, y, z);
 								if (t != null) {
 									ItemStack is = t.getCraftedProduct();
 									if (is != null) {

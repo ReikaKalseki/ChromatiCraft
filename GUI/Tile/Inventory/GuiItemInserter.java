@@ -27,10 +27,10 @@ import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter;
 import Reika.ChromatiCraft.TileEntity.AOE.TileEntityItemInserter.InsertionType;
 import Reika.DragonAPI.Instantiable.Data.Immutable.Coordinate;
 import Reika.DragonAPI.Instantiable.GUI.ImagedGuiButton;
-import Reika.DragonAPI.Interfaces.Block.MachineRegistryBlock;
 import Reika.DragonAPI.Libraries.IO.ReikaPacketHelper;
 import Reika.DragonAPI.Libraries.IO.ReikaTextureHelper;
 import Reika.DragonAPI.Libraries.Java.ReikaGLHelper.BlendMode;
+import Reika.DragonAPI.Libraries.Rendering.ReikaRenderHelper;
 import Reika.DragonAPI.Libraries.World.ReikaRedstoneHelper;
 
 
@@ -147,7 +147,7 @@ public class GuiItemInserter extends GuiChromaBase {
 			if (c != null) {
 				Block b = c.getBlock(tile.worldObj);
 				if (b != Blocks.air) {
-					ItemStack is = b instanceof MachineRegistryBlock ? ((MachineRegistryBlock)b).getMachine(tile.worldObj, c.xCoord, c.yCoord, c.zCoord).getCraftedProduct() : new ItemStack(b, 1, c.getBlockMetadata(tile.worldObj));
+					ItemStack is = ReikaRenderHelper.getBlockItem(b, c.getBlockMetadata(tile.worldObj));
 					api.drawItemStack(itemRender, fontRendererObj, is, 152, 8+20*i);
 
 					int x = j+137;
