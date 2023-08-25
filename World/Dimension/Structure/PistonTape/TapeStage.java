@@ -121,6 +121,8 @@ public class TapeStage extends StructurePiece<PistonTapeGenerator> {
 	}
 
 	public void fireEmitters(World world, int stage) {
+		if (stage >= doors.length) //past the end of the door list, but the tape might be a bit longer
+			return;
 		for (int i = 0; i < bitsPerDoor; i++) {
 			Coordinate c = tape.tape.getEmitter(i);
 			EmitterTile te = (EmitterTile)c.getTileEntity(world);

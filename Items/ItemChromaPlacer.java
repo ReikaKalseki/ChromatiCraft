@@ -318,8 +318,11 @@ public class ItemChromaPlacer extends Item implements ISize {
 			if (ItemStack.areItemStackTagsEqual(is, CrystalTier.TURBOCHARGED.getCraftedItem()))
 				li.add("Turbocharged");
 		}
-		if (r.isRepeater() && is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted")) {
-			li.add(EnumChatFormatting.GOLD+"Turbocharged");
+		if (r.isRepeater()) {
+			if (r != ChromaTiles.BROADCAST && r != ChromaTiles.SKYPEATER)
+				li.add("Sneak while placing to force upright orientation");
+			if (is.stackTagCompound != null && is.stackTagCompound.getBoolean("boosted"))
+				li.add(EnumChatFormatting.GOLD+"Turbocharged");
 		}
 		if (r == ChromaTiles.DIMENSIONCORE && is.stackTagCompound != null) {
 			CrystalElement e = CrystalElement.elements[is.stackTagCompound.getInteger("color")];

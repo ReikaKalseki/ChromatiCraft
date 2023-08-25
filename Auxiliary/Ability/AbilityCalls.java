@@ -266,7 +266,7 @@ public class AbilityCalls {
 				int x = mov.blockX;
 				int y = mov.blockY;
 				int z = mov.blockZ;
-				if (world.canBlockSeeTheSky(x, y+1, z) && ReikaPlayerAPI.playerCanBreakAt((WorldServer)ep.worldObj, x, y, z, (EntityPlayerMP)ep)) {
+				if (!world.provider.hasNoSky && world.canBlockSeeTheSky(x, y+1, z) && ReikaPlayerAPI.playerCanBreakAt((WorldServer)ep.worldObj, x, y, z, (EntityPlayerMP)ep)) {
 					world.addWeatherEffect(new EntityLightningBolt(world, x+0.5, y+0.5, z+0.5));
 					int r = 2+power*4;
 					if (power == 2) {
@@ -803,9 +803,8 @@ public class AbilityCalls {
 		else {
 			AxisAlignedBB box = AxisAlignedBB.getBoundingBox(px, py, pz, px, py, pz).expand(64, 32, 64);
 			List<EntityLiving> li = world.getEntitiesWithinAABB(EntityLiving.class, box);
-			for (EntityLiving e : li) {
+			for (EntityLiving e : li)
 				e.attackEntityFrom(new ReikaEntityHelper.WrappedDamageSource(ChromatiCraft.pylonDamage[CrystalElement.BLUE.ordinal()], ep), Integer.MAX_VALUE);
-			}
 			double r = ReikaRandomHelper.getRandomPlusMinus(10D, 2D);
 			double h = ReikaRandomHelper.getRandomBetween(r, r*4);
 			for (int i = -(int)Math.ceil(r); i <= Math.ceil(r); i++) {
@@ -821,7 +820,7 @@ public class AbilityCalls {
 							int dpz = MathHelper.floor_double(dz);
 							Block b = world.getBlock(dpx, dpy, dpz);
 							int meta = world.getBlockMetadata(dpx, dpy, dpz);
-							if (b == Blocks.bedrock && dpy <= 4)
+							if (b == Blocks.bedrock && (dpy <= 4 || (world.provider.dimensionId == -1 && Math.abs(dpy-128) < 4)))
 								continue;
 							if (b == ChromaBlocks.HOVER.getBlockInstance() && world.provider.dimensionId == ExtraChromaIDs.DIMID.getValue())
 								continue;
@@ -904,7 +903,7 @@ public class AbilityCalls {
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}
 
-		for (double dy = py; dy < 1024; dy += 1) {
+		for (double dy = py; dy < 1024; dy += 0.25) {
 			EntityFX fx = new EntityCCBlurFX(ep.worldObj, px, dy, pz).setColor(0xffffff).setScale(16).setLife(120).setRapidExpand();
 			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
 		}

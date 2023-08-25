@@ -12,6 +12,8 @@ package Reika.ChromatiCraft.GUI.Tile;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.google.common.base.Strings;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
@@ -176,6 +178,7 @@ public class GuiFluidRelay extends GuiLetterSearchable<Fluid> {
 
 	@Override
 	protected void sortEntries(ArrayList<Fluid> li) {
+		li.removeIf(f -> f == null || Strings.isNullOrEmpty(f.getName()) || f.getID() < 0);
 		li.sort((f1, f2) -> Integer.compare(f1.getID(), f2.getID()));
 	}
 

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * @author Reika Kalseki
- * 
+ *
  * Copyright 2017
- * 
+ *
  * All rights reserved.
  * Distribution of the software in any form is only allowed with
  * explicit, prior permission from the owner.
@@ -127,7 +127,7 @@ public class RenderRouterHub extends ChromaRenderBase {
 				Highlight h = it.next();
 				Coordinate c = h.location;
 				TileEntity node = c.getTileEntity(te.worldObj);
-				if (node != null) {
+				if (node instanceof TileEntityRouterNode) {
 					int a = (int)(255*ReikaMathLibrary.cosInterpolation(0, h.lifespan, h.age));
 					if (a > 0) {
 						DecimalPosition d = new DecimalPosition(c).offset(-0.5, -0.5, -0.5);
