@@ -248,7 +248,7 @@ public class FabricationRecipes {
 				tag.addValueToColor(CrystalElement.PURPLE, 1000);
 				tag.addValueToColor(CrystalElement.RED, 600);
 				tag.addValueToColor(CrystalElement.PINK, 100);
-				this.addRecipe(redheart, false, tag);
+				this.addRecipe(yellowheart, false, tag);
 			}
 		}
 
