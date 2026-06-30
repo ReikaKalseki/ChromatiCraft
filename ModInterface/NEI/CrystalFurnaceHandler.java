@@ -101,7 +101,7 @@ public class CrystalFurnaceHandler extends TemplateRecipeHandler {
 
 	@Override
 	public void loadTransferRects() {
-		if (!(Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerCrystalFurnace))
+		if (Minecraft.getMinecraft().thePlayer == null || !(Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerCrystalFurnace))
 			transferRects.add(new RecipeTransferRect(new Rectangle(70, 13, 34, 29), "ccfurnace"));
 	}
 
