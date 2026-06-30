@@ -34,6 +34,7 @@ public class NEIChromaConfig implements IConfigureNEI {
 	private static final GlowFireHandler glow = new GlowFireHandler();
 	private static final PlantDustHandler plants = new PlantDustHandler();
 	private static final EnchantDecompHandler enchant = new EnchantDecompHandler();
+	private static final CastingTableHandler casting = new CastingTableHandler();
 
 	private static final ChromaNEITabOccluder occlusion = new ChromaNEITabOccluder();
 
@@ -91,6 +92,9 @@ public class NEIChromaConfig implements IConfigureNEI {
 
 		API.registerRecipeHandler(enchant);
 		API.registerUsageHandler(enchant);
+
+		API.registerRecipeHandler(casting);
+		API.registerUsageHandler(casting);
 
 		ChromatiCraft.logger.log("Hiding technical blocks from NEI!");
 		for (int i = 0; i < ChromaBlocks.blockList.length; i++) {

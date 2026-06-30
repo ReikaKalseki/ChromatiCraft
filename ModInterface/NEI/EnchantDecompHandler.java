@@ -102,7 +102,7 @@ public class EnchantDecompHandler extends TemplateRecipeHandler {
 
 	@Override
 	public void loadTransferRects() {
-		if (!(Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerEnchantDecomposer))
+		if (Minecraft.getMinecraft().thePlayer == null || !(Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerEnchantDecomposer))
 			transferRects.add(new RecipeTransferRect(new Rectangle(100, 13, 24, 29), "ccenchantdecomp"));
 	}
 

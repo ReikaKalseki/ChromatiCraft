@@ -108,7 +108,7 @@ public class FabricatorHandler extends TemplateRecipeHandler {
 
 	@Override
 	public void loadTransferRects() {
-		if (!(Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerItemFabricator))
+		if (Minecraft.getMinecraft().thePlayer == null || !(Minecraft.getMinecraft().thePlayer.openContainer instanceof ContainerItemFabricator))
 			transferRects.add(new RecipeTransferRect(new Rectangle(32, -12, 105, 10), "ccfabric"));
 	}
 
